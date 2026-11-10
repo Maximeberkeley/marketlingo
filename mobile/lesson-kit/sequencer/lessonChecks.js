@@ -38,6 +38,19 @@ function isRealTerm(raw) {
   if (/[.!?]$/.test(term)) return false;
   return true;
 }
+const SMALL_WORDS = /* @__PURE__ */ new Set(["and", "of", "the", "for", "to", "in", "on", "&"]);
+function withoutExpansion(term, definition) {
+  const name = (term || "").replace(/\s+/g, " ").trim();
+  const text = (definition || "").replace(/\s+/g, " ").trim();
+  if (!/^[A-Z][A-Z0-9&]{1,6}s?$/.test(name)) return text;
+  const match = /^([^.:;]+)[.:;]\s+(.+)$/.exec(text);
+  if (!match) return text;
+  const initials = match[1].split(/[\s,\-/]+/).filter((word) => word && !SMALL_WORDS.has(word.toLowerCase())).map((word) => word[0].toUpperCase()).join("");
+  const letters = name.replace(/s$/, "").replace(/[^A-Z0-9]/g, "");
+  const rest = match[2].trim();
+  if (initials !== letters || rest.length < 15) return text;
+  return rest[0].toUpperCase() + rest.slice(1);
+}
 function checkDefinition(terms, id) {
   const usable = terms.filter((t) => isRealTerm(t.term) && (t.definition || "").trim().length > 14);
   const unique = usable.filter(
@@ -50,7 +63,9 @@ function checkDefinition(terms, id) {
   return {
     kind: "multipleChoice",
     id,
-    prompt: `This lesson defined it as: "${clean(target.definition)}". Which term is that?`,
+    // The definition goes in the context card, shown whole; a long one never cuts off the question.
+    prompt: "Which term did the lesson define this way?",
+    context: withoutExpansion(target.term, target.definition),
     options,
     correctIndex: options.indexOf(target.term),
     explanation: `${target.term}: ${clean(target.definition)}`
@@ -306,5 +321,6 @@ export {
   isRealTerm,
   isStandaloneClaim,
   lessonCheckFactories,
-  termsFromSlides
+  termsFromSlides,
+  withoutExpansion
 };

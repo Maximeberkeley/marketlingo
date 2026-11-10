@@ -18,7 +18,7 @@ function MultipleChoice({ exercise, phase, onChange }) {
     onChange({ canCheck: true, isCorrect: index === exercise.correctIndex, selectedIndex: index });
   };
   const revealed = phase === "feedback";
-  return /* @__PURE__ */ React.createElement(View, { style: styles.wrap }, /* @__PURE__ */ React.createElement(ColorText, { text: exercise.prompt, style: styles.prompt, maxSentences: 2, maxLength: 120 }), /* @__PURE__ */ React.createElement(View, { style: styles.options }, order.map((i) => exercise.options[i]).map((option, pos) => {
+  return /* @__PURE__ */ React.createElement(View, { style: styles.wrap }, /* @__PURE__ */ React.createElement(ColorText, { text: exercise.prompt, style: styles.prompt, maxSentences: 2, maxLength: 120 }), !!exercise.context && /* @__PURE__ */ React.createElement(View, { style: styles.context }, /* @__PURE__ */ React.createElement(ColorText, { text: exercise.context, style: styles.contextText, maxSentences: 3, maxLength: 260 })), /* @__PURE__ */ React.createElement(View, { style: styles.options }, order.map((i) => exercise.options[i]).map((option, pos) => {
     const i = order[pos];
     return /* @__PURE__ */ React.createElement(
       ChoiceCard,
@@ -37,6 +37,16 @@ function MultipleChoice({ exercise, phase, onChange }) {
 const styles = StyleSheet.create({
   wrap: { gap: tokens.space.xl },
   prompt: { fontSize: tokens.font.prompt, fontWeight: "800", color: tokens.color.text, lineHeight: 28 },
+  context: {
+    marginTop: -tokens.space.sm,
+    paddingVertical: tokens.space.md,
+    paddingHorizontal: tokens.space.lg,
+    borderLeftWidth: 4,
+    borderLeftColor: tokens.color.accent,
+    borderRadius: tokens.radius.md,
+    backgroundColor: tokens.color.surface
+  },
+  contextText: { fontSize: 17, lineHeight: 25, fontWeight: "600", color: tokens.color.text },
   options: { gap: tokens.space.md }
 });
 export {

@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { buildArena } from '../mobile/lesson-kit/arena/buildArena';
+import { buildArena, DEFINITION_PROMPT } from '../mobile/lesson-kit/arena/buildArena';
 import { studiedMaterial } from '../mobile/lesson-kit/practice/studiedMaterial';
 import { glossaryEntriesFor } from '../mobile/lesson-kit/glossary';
 import { quizQuestionKeys } from '../mobile/lib/quizHistory';
@@ -26,7 +26,7 @@ const lessonOf = (fixture: typeof cleanenergy) => ({ ...fixture, ...studiedMater
 const arenaFor = (marketId: keyof typeof fixtures) =>
   buildArena({ marketId, marketName: marketId, trainer: trainers, drills, stats, studied: [lessonOf(fixtures[marketId])] });
 const all = (waves: ReturnType<typeof buildArena>) => waves.flatMap(w => w.exercises);
-const isDefinition = (q: any) => q.kind === 'multipleChoice' && q.prompt.startsWith('This lesson defined');
+const isDefinition = (q: any) => q.kind === 'multipleChoice' && q.prompt === DEFINITION_PROMPT;
 
 describe('early-days Arena across industries', () => {
   // A first lesson with two written checks and two terms is a short starter round:
@@ -56,7 +56,8 @@ describe('early-days Arena across industries', () => {
       const waves = buildArena({ marketId, marketName: marketId, trainer: trainers, drills, stats, studied: [lessonOf(fixtures[marketId]), ...earlier] });
       const questions = all(waves);
       expect(questions.length).toBeGreaterThanOrEqual(8);
-      expect(waves.every(w => w.covers?.startsWith("Today's round: "))).toBe(true);
+      // Each round names what it draws on.
+      expect(waves.every(w => w.covers?.startsWith('From '))).toBe(true);
       for (const wave of waves) {
         const types = wave.exercises.map(e => e.source?.type);
         expect(types.indexOf('industry') === -1 || types.lastIndexOf('lesson') < types.indexOf('industry')).toBe(true);

@@ -32,7 +32,8 @@ function lessonQuestions(studied, limit = 5) {
       if (!item || out.length >= limit) return;
       out.push({
         id: item.id,
-        question: item.prompt,
+        // This screen has one text block, so a definition or gapped line rides with its prompt.
+        question: item.context ? `${item.prompt} "${item.context}"` : item.prompt,
         options: item.options,
         correctAnswer: item.correctIndex,
         explanation: item.explanation || label,

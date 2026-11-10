@@ -8,7 +8,7 @@ const normalize = (text: string) => text.normalize('NFKC').toLowerCase().replace
 export function quizQuestionKeys(exercise: Exercise): string[] {
   if (exercise.kind === 'speedRound') return exercise.rounds.map(round =>
     normalize(`${round.question} ${round.options[round.correctIndex] || ''}`));
-  if (exercise.kind === 'multipleChoice') return [normalize(`${exercise.prompt} ${exercise.options[exercise.correctIndex] || ''}`)];
+  if (exercise.kind === 'multipleChoice') return [normalize([exercise.prompt, exercise.context, exercise.options[exercise.correctIndex] || ''].filter(part => part !== undefined).join(' '))];
   if (exercise.kind === 'spotFake') return [normalize(exercise.explanation || [...exercise.statements].sort().join(' '))];
   if (exercise.kind === 'buildChain') return [normalize(exercise.steps.join(' '))];
   if (exercise.kind === 'numberSense') return [normalize(`${exercise.prompt} ${exercise.value} ${exercise.unit || ''}`)];

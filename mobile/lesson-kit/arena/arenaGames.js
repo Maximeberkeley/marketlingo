@@ -1,4 +1,4 @@
-import { isRealTerm } from "../sequencer/lessonChecks";
+import { isRealTerm, withoutExpansion } from "../sequencer/lessonChecks";
 import { norm } from "../sequencer/extract";
 const clean = (s) => s.replace(/\s+/g, " ").trim();
 function shuffle(arr) {
@@ -33,7 +33,7 @@ function matchPairsFrom(terms, id) {
     kind: "matchPairs",
     id,
     prompt: "Match each term to what it means.",
-    pairs: usable.map((term) => ({ left: clean(term.term), right: clean(term.definition) }))
+    pairs: usable.map((term) => ({ left: clean(term.term), right: withoutExpansion(term.term, term.definition) }))
   };
 }
 function quickFireFrom(input, id) {
@@ -72,20 +72,23 @@ function quickFireFrom(input, id) {
 }
 function fillBlankFrom(line, terms, decoyTerms, id, label = "rule") {
   const sentence = clean(line || "");
-  if (sentence.length < 30 || sentence.length > 180) return null;
+  if (sentence.length < 30 || sentence.length > 240) return null;
   for (const term of distinctTerms(terms)) {
     const name = clean(term.term);
     const pattern = new RegExp(`\\b${name.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\b`, "i");
     const hit = pattern.exec(sentence);
     if (!hit) continue;
-    const decoys = shuffle(distinctTerms(decoyTerms).filter((d) => norm(d.term) !== norm(name) && !pattern.test(d.term) && !new RegExp(`\\b${clean(d.term).replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\b`, "i").test(sentence))).slice(0, 2);
+    const fits = (d) => norm(d.term) !== norm(name) && !pattern.test(d.term) && !new RegExp(`\\b${clean(d.term).replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\b`, "i").test(sentence);
+    const sameLesson = shuffle(distinctTerms(terms).filter(fits));
+    const decoys = [...sameLesson, ...shuffle(distinctTerms(decoyTerms).filter(fits))].filter((d, index, list) => list.findIndex((o) => norm(o.term) === norm(d.term)) === index).slice(0, 2);
     if (decoys.length < 2) continue;
     const answer = hit[0];
     const options = shuffle([answer, ...decoys.map((d) => clean(d.term))]);
     return {
       kind: "multipleChoice",
       id,
-      prompt: `Complete the ${label}: ${sentence.slice(0, hit.index)}_____${sentence.slice(hit.index + answer.length)}`,
+      prompt: `Fill the gap in the lesson's ${label}.`,
+      context: `${sentence.slice(0, hit.index)}_____${sentence.slice(hit.index + answer.length)}`,
       options,
       correctIndex: options.indexOf(answer),
       explanation: `${name}: ${clean(term.definition)}`

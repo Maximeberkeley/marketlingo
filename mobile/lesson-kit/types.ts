@@ -66,6 +66,12 @@ export interface MultipleChoiceExercise {
   kind: 'multipleChoice';
   id: string;
   prompt: string;
+  /**
+   * A line the question is about, shown in full under the prompt: a definition
+   * to name, or a lesson sentence with a gap. Keeps the prompt itself short, so
+   * the question is never cut off.
+   */
+  context?: string;
   options: string[];
   correctIndex: number;
   explanation?: string;

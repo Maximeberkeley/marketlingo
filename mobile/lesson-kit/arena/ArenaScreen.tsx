@@ -24,7 +24,8 @@ import { leoFeedbackLine } from '../../components/mascot/leoAnimationRules';
 import { renderExerciseByKind, isPassiveKind } from '../components/ExerciseRenderer';
 import { ExerciseState } from '../exercises/types';
 import { Exercise } from '../types';
-import { ArenaWave, arenaXp, beatSeconds, rankForScore } from './buildArena';
+import { ArenaWave, arenaXp, beatSeconds, rankForAccuracy, RECOVERY_XP, secondChanceWave } from './buildArena';
+import { reviewAnswer, reviewQuestion } from './arenaReview';
 import { playSound } from '../../lib/sounds';
 import { trackEvent } from '../../lib/analytics';
 import { getMarketWorld } from '../../data/marketWorlds';
@@ -32,7 +33,7 @@ import { practiceSourceLabel } from '../practice/studiedMaterial';
 
 /** What Leo says while a game is on screen, when the question brings no line of its own. */
 const ARENA_IDLE_LINES: Partial<Record<Exercise['kind'], string>> = {
-  quickFire: 'Go with your gut. You read this.',
+  quickFire: 'Quick calls. You read all of these.',
   matchPairs: 'Start with the one you are sure of.',
   multipleChoice: 'Pick the one you could explain.',
   numberSense: 'Roughly the right size is enough.',
@@ -43,6 +44,9 @@ const ARENA_IDLE_LINES: Partial<Record<Exercise['kind'], string>> = {
   theCall: 'Think like you own the decision.',
 };
 
+/** The second chance is the only wave with this key. */
+const AGAIN_KEY = 'again';
+
 export interface ArenaResult {
   score: number;
   correct: number;
@@ -51,6 +55,8 @@ export interface ArenaResult {
   waveReached: number;
   survived: boolean;
   xp: number;
+  /** Misses put right in the second chance. */
+  recovered: number;
 }
 
 interface Props {
@@ -65,16 +71,22 @@ interface Props {
   replay?: boolean;
 }
 
+type Mark = 'right' | 'wrong' | undefined;
+
 /**
- * Daily Arena — three rounds of different games on the learner's own lessons.
- * Speed and combos raise the score; a miss only resets the combo, so every run
- * reaches the end and full credit comes from getting the questions right.
+ * Daily Arena: three rounds of different games on the learner's own lessons,
+ * then a second chance at the questions they missed. Speed and a run of right
+ * answers raise the score; a miss only resets the run, so every run reaches the
+ * end and full credit comes from getting the questions right the first time.
  */
 export function ArenaScreen({ waves, marketId, marketName, bestScore, onExit, onFinish, onQuestionSeen, replay = false }: Props) {
   useEffect(() => { trackEvent('quiz_started', { marketId: marketId ?? null }); }, []);
   const insets = useSafeAreaInsets();
   const world = getMarketWorld(marketId);
 
+  // The second chance joins the run only once the main rounds are over.
+  const [again, setAgain] = useState<ArenaWave | null>(null);
+  const runWaves = useMemo(() => (again ? [...waves, again] : waves), [waves, again]);
   const [waveIndex, setWaveIndex] = useState(0);
   const [beatIndex, setBeatIndex] = useState(0);
   const [showWaveIntro, setShowWaveIntro] = useState(true);
@@ -93,10 +105,19 @@ export function ArenaScreen({ waves, marketId, marketName, bestScore, onExit, on
   const [ended, setEnded] = useState<{ survived: boolean } | null>(null);
   const [showExit, setShowExit] = useState(false);
   const [banking, setBanking] = useState(false);
+  // One mark per question of the main rounds, and per question of the second chance.
+  const [marks, setMarks] = useState<Mark[]>([]);
+  const [againMarks, setAgainMarks] = useState<Mark[]>([]);
+  const missed = useRef<Exercise[]>([]);
+  const [recoveredIds, setRecoveredIds] = useState<string[]>([]);
 
-  const wave = waves[waveIndex];
+  const wave = runWaves[waveIndex];
   const exercise: Exercise | undefined = wave?.exercises[beatIndex];
   const passive = isPassiveKind(exercise?.kind);
+  const inAgain = wave?.key === AGAIN_KEY;
+  // Where this question sits in the main run, for the progress strip.
+  const mainTotal = waves.reduce((n, w) => n + w.exercises.length, 0);
+  const mainPosition = inAgain ? mainTotal : waves.slice(0, waveIndex).reduce((n, w) => n + w.exercises.length, 0) + beatIndex;
   useEffect(() => {
     if (exercise && !showWaveIntro && !ended && !passive) onQuestionSeen?.(exercise);
   }, [exercise, showWaveIntro, ended, passive, onQuestionSeen]);
@@ -149,13 +170,21 @@ export function ArenaScreen({ waves, marketId, marketName, bestScore, onExit, on
       clearTick();
       setTimedOut(outOfTime);
       setCoachCorrect(isCorrect);
-      setGraded(g => g + 1);
+      if (exercise && inAgain) {
+        // The second chance never changes the first-time tally; it records what was put right.
+        setAgainMarks(m => { const next = [...m]; next[beatIndex] = isCorrect ? 'right' : 'wrong'; return next; });
+        if (isCorrect) setRecoveredIds(ids => [...ids, exercise.id.replace(/-again$/, '')]);
+      } else if (exercise) {
+        setGraded(g => g + 1);
+        setMarks(m => { const next = [...m]; next[mainPosition] = isCorrect ? 'right' : 'wrong'; return next; });
+        if (!isCorrect) missed.current = [...missed.current, exercise];
+      }
       if (isCorrect) {
         const speedBonus = Math.round((secondsRemaining / Math.max(1, beatSecondsFor(wave, exercise))) * 40);
         const comboBonus = Math.round(combo * 15);
         const gain = Math.round((60 + speedBonus + comboBonus) * wave.multiplier);
         setScore(s => s + gain);
-        setCorrect(c => c + 1);
+        if (!inAgain) setCorrect(c => c + 1);
         setCombo(c => {
           const next = c + 1;
           setBestCombo(b => Math.max(b, next));
@@ -174,7 +203,7 @@ export function ArenaScreen({ waves, marketId, marketName, bestScore, onExit, on
       playSound('wrong').catch(() => {});
       setPhase('feedback');
     },
-    [clearTick, combo, popGain, wave, exercise],
+    [clearTick, combo, popGain, wave, exercise, inAgain, beatIndex, mainPosition],
   );
 
   // Countdown for the current beat
@@ -207,26 +236,38 @@ export function ArenaScreen({ waves, marketId, marketName, bestScore, onExit, on
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [waveIndex, beatIndex, showWaveIntro, phase, ended, passive]);
 
+  const nextQuestion = useCallback(() => {
+    setPhase('answering');
+    setTimedOut(false);
+    setState({ canCheck: false, isCorrect: false });
+  }, []);
+
   const advance = useCallback(() => {
     if (!wave) return;
     if (beatIndex < wave.exercises.length - 1) {
       setBeatIndex(i => i + 1);
-      setPhase('answering');
-      setTimedOut(false);
-      setState({ canCheck: false, isCorrect: false });
+      nextQuestion();
       return;
     }
-    if (waveIndex < waves.length - 1) {
+    if (waveIndex < runWaves.length - 1) {
       setWaveIndex(i => i + 1);
       setBeatIndex(0);
-      setPhase('answering');
-      setTimedOut(false);
-      setState({ canCheck: false, isCorrect: false });
+      nextQuestion();
+      setShowWaveIntro(true);
+      return;
+    }
+    // After the last round, the misses come back once before the summary.
+    const retry = again ? null : secondChanceWave(missed.current);
+    if (retry) {
+      setAgain(retry);
+      setWaveIndex(i => i + 1);
+      setBeatIndex(0);
+      nextQuestion();
       setShowWaveIntro(true);
       return;
     }
     endRun(true);
-  }, [beatIndex, endRun, wave, waveIndex, waves.length]);
+  }, [beatIndex, endRun, wave, waveIndex, runWaves.length, again, nextQuestion]);
 
   const onAction = useCallback(() => {
     if (passive) {
@@ -246,47 +287,97 @@ export function ArenaScreen({ waves, marketId, marketName, bestScore, onExit, on
 
   // ── Run summary ───────────────────────────────────────────────
   if (ended) {
-    const rank = rankForScore(score);
-    const xp = arenaXp(correct, graded, replay);
-    const newBest = score > bestScore;
+    const rank = rankForAccuracy(correct, graded);
+    const recovered = recoveredIds.length;
+    const xp = arenaXp(correct, graded, replay, recovered);
+    // The first run ever has no best to beat.
+    const newBest = bestScore > 0 && score > bestScore;
+    const perfect = graded > 0 && correct === graded;
+    const stillMissed = missed.current.filter(e => !recoveredIds.includes(e.id));
+    const putRight = missed.current.filter(e => recoveredIds.includes(e.id));
+    const leoLine = graded === 0
+      ? 'Nothing graded this time. Try again soon.'
+      : perfect
+        ? `All ${graded} right first time. Full credit.`
+        : !stillMissed.length
+          ? 'Every miss put right. Nicely done.'
+          : correct / graded >= 0.7
+            ? 'Strong run. Skim the misses below.'
+            : 'Read the misses below once more.';
     return (
-      <View style={[styles.root, { paddingTop: insets.top + 16, paddingBottom: insets.bottom + 20 }]}>
+      <View style={[styles.root, { paddingTop: insets.top + 16, paddingBottom: insets.bottom + 12 }]}>
         <ScrollView contentContainerStyle={styles.summaryScroll} showsVerticalScrollIndicator={false}>
           <LinearGradient
-            colors={[rank.color, world.colors[1]]}
+            colors={[world.colors[0] ?? rank.color, world.colors[1] ?? rank.color]}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 1 }}
             style={styles.summaryHero}
           >
-            <Text style={styles.summaryKicker}>DAILY QUIZ</Text>
+            <Text style={styles.summaryKicker}>DAILY ARENA · {marketName.toUpperCase()}</Text>
             <Text style={styles.summaryScore}>{`${correct} of ${graded}`}</Text>
-            <Text style={styles.summaryRank}>right</Text>
-            {newBest && (
-              <View style={styles.bestPill}>
-                <Feather name="trending-up" size={11} color="#FFFFFF" />
-                <Text style={styles.bestPillText}>NEW PERSONAL BEST</Text>
+            <Text style={styles.summaryRank}>right first time</Text>
+            <View style={styles.pillRow}>
+              <View style={styles.rankPill}>
+                <View style={[styles.rankDot, { backgroundColor: rank.color }]} />
+                <Text style={styles.rankPillText}>{rank.label}</Text>
               </View>
-            )}
+              {newBest && (
+                <View style={styles.bestPill}>
+                  <Feather name="trending-up" size={11} color="#FFFFFF" />
+                  <Text style={styles.bestPillText}>NEW BEST</Text>
+                </View>
+              )}
+            </View>
           </LinearGradient>
 
-          <View style={styles.statGrid}>
-            <SummaryStat icon="check-circle" label="Correct" value={`${correct}/${graded}`} />
-            <SummaryStat icon="star" label="Score" value={`${score}`} />
-            <SummaryStat icon="layers" label="Round" value={`${waveIndex + 1}/${waves.length}`} />
-            <SummaryStat icon="award" label="XP earned" value={`+${xp}`} />
+          <View style={styles.statRow}>
+            <SummaryStat label="Score" value={`${score}`} />
+            <SummaryStat label="Best run" value={`${bestCombo} in a row`} />
+            <SummaryStat label="XP" value={`+${xp}`} accent />
           </View>
 
-          <LeoCoach
-            line={
-              graded > 0 && correct === graded
-                ? `All ${graded} right. That's full credit.`
-                : `${correct} of ${graded} right. See you tomorrow.`
-            }
-            mood={graded > 0 && correct / graded >= 0.7 ? 'celebrate' : 'thinking'}
-          />
+          {again && (
+            <View style={styles.againCard}>
+              <Feather name="rotate-ccw" size={16} color={tokens.color.accent} />
+              <Text style={styles.againText}>
+                Second chance: {recovered} of {again.exercises.length} put right
+                {recovered > 0 && !replay ? ` (+${recovered * RECOVERY_XP} XP)` : ''}
+              </Text>
+            </View>
+          )}
+
+          <LeoCoach line={leoLine} mood={graded > 0 && correct / graded >= 0.7 ? 'celebrate' : 'thinking'} />
           {replay && <Text style={styles.replayNote}>Today's first run paid full XP. Extra runs pay a quarter.</Text>}
 
-          <View style={{ height: 12 }} />
+          {(stillMissed.length > 0 || putRight.length > 0) && (
+            <View style={styles.reviewBlock}>
+              <Text style={styles.reviewTitle}>{stillMissed.length ? 'Worth another look' : 'What you put right'}</Text>
+              {[...stillMissed, ...putRight].map(item => {
+                const fixed = recoveredIds.includes(item.id);
+                const answer = reviewAnswer(item);
+                const from = practiceSourceLabel(item);
+                return (
+                  <View key={item.id} style={styles.reviewRow}>
+                    <Feather
+                      name={fixed ? 'check-circle' : 'x-circle'}
+                      size={18}
+                      color={fixed ? tokens.color.correct : tokens.color.incorrect}
+                      style={styles.reviewIcon}
+                    />
+                    <View style={styles.reviewBody}>
+                      <Text style={styles.reviewQuestion}>{reviewQuestion(item)}</Text>
+                      {!!answer && <Text style={styles.reviewAnswer}>{answer}</Text>}
+                      <Text style={styles.reviewFrom}>{fixed ? `Put right · ${from}` : from}</Text>
+                    </View>
+                  </View>
+                );
+              })}
+            </View>
+          )}
+
+        </ScrollView>
+        {/* The collect button stays on screen, however long the review list gets. */}
+        <View style={styles.summaryFooter}>
           <PrimaryButton
             label={banking ? 'Saving…' : `Collect +${xp} XP`}
             variant={banking ? 'disabled' : 'primary'}
@@ -299,16 +390,14 @@ export function ArenaScreen({ waves, marketId, marketName, bestScore, onExit, on
                 correct,
                 total: graded,
                 bestCombo,
-                waveReached: waveIndex + 1,
+                waveReached: Math.min(waveIndex + 1, waves.length),
                 survived: ended.survived,
                 xp,
+                recovered,
               });
             }}
           />
-          <TouchableOpacity style={styles.ghostBtn} onPress={onExit} disabled={banking} activeOpacity={0.8}>
-            <Text style={styles.ghostText}>Back to {marketName} practice</Text>
-          </TouchableOpacity>
-        </ScrollView>
+        </View>
       </View>
     );
   }
@@ -336,25 +425,45 @@ export function ArenaScreen({ waves, marketId, marketName, bestScore, onExit, on
         ? 'primary'
         : 'disabled';
   const buttonLabel = passive ? 'Continue' : phase === 'feedback' ? 'Next' : 'Lock it in';
+  // The strip shows the main run, or the second chance while it plays.
+  const strip: Mark[] = inAgain ? wave.exercises.map((_, i) => againMarks[i]) : Array.from({ length: mainTotal }, (_, i) => marks[i]);
+  const current = inAgain ? beatIndex : mainPosition;
+  const roundLabel = inAgain ? 'SECOND CHANCE' : `ROUND ${waveIndex + 1} OF ${waves.length}`;
 
   return (
     <View style={[styles.root, { paddingTop: insets.top + 8 }]}>
-      {/* Top HUD */}
+      {/* Top HUD: leave, where you are in the run, and the score */}
       <View style={styles.hud}>
-        <TouchableOpacity onPress={() => setShowExit(true)} style={styles.hudExit} hitSlop={10}>
+        <TouchableOpacity onPress={() => setShowExit(true)} style={styles.hudExit} hitSlop={10} accessibilityLabel="Leave the run">
           <Feather name="x" size={20} color={tokens.color.textMuted} />
         </TouchableOpacity>
 
         <View style={styles.hudCenter}>
-          <Text style={styles.hudWave}>
-            ROUND {waveIndex + 1} OF {waves.length}
-          </Text>
-          <Animated.Text style={[styles.hudScore, { transform: [{ scale: scoreScale }] }]}>
-            {score}
-          </Animated.Text>
+          <Text style={styles.hudWave}>{roundLabel}</Text>
+          <View style={styles.strip} accessibilityLabel={`Question ${current + 1} of ${strip.length}`}>
+            {strip.map((mark, i) => (
+              <View
+                key={i}
+                style={[
+                  styles.segment,
+                  mark === 'right' && styles.segmentRight,
+                  mark === 'wrong' && styles.segmentWrong,
+                  !mark && i === current && styles.segmentCurrent,
+                ]}
+              />
+            ))}
+          </View>
         </View>
 
         <View style={styles.hudRight}>
+          <Animated.Text style={[styles.hudScore, { transform: [{ scale: scoreScale }] }]}>
+            {score}
+          </Animated.Text>
+          {combo >= 2 ? (
+            <Text style={styles.comboText}>{combo} in a row</Text>
+          ) : (
+            <Text style={styles.hudScoreLabel}>points</Text>
+          )}
         </View>
       </View>
 
@@ -413,7 +522,12 @@ export function ArenaScreen({ waves, marketId, marketName, bestScore, onExit, on
               mood={phase === 'feedback' && !isPassiveKind(exercise.kind) ? (coachCorrect ? 'correct' : 'incorrect') : (exercise.leo?.mood ?? 'idle')}
               intro={beatIndex === 0}
             />}
-            <Text style={{ color: tokens.color.textSecondary, fontSize: 12, marginBottom: 12 }}>{practiceSourceLabel(exercise)}</Text>
+            {!!practiceSourceLabel(exercise) && (
+              <View style={styles.sourceRow}>
+                <Feather name="book-open" size={12} color={tokens.color.textMuted} />
+                <Text style={styles.sourceText} numberOfLines={1}>{practiceSourceLabel(exercise)}</Text>
+              </View>
+            )}
             {renderExerciseByKind(exercise, phase, setState)}
           </RevealCorrectProvider>
         ) : null}
@@ -432,7 +546,7 @@ export function ArenaScreen({ waves, marketId, marketName, bestScore, onExit, on
         <PrimaryButton label={buttonLabel} onPress={onAction} variant={buttonVariant} />
       </View>
 
-      {/* Wave intro */}
+      {/* Round intro */}
       <Modal visible={showWaveIntro} transparent animationType="fade">
         <View style={styles.waveBackdrop}>
           <LinearGradient
@@ -441,14 +555,29 @@ export function ArenaScreen({ waves, marketId, marketName, bestScore, onExit, on
             end={{ x: 1, y: 1 }}
             style={styles.waveCard}
           >
-            <Text style={styles.waveKicker}>Round {waveIndex + 1} of {waves.length}</Text>
+            {!inAgain && (
+              <View style={styles.pips}>
+                {waves.map((w, i) => (
+                  <View key={w.key} style={[styles.pip, i < waveIndex && styles.pipDone, i === waveIndex && styles.pipNow]} />
+                ))}
+              </View>
+            )}
+            <Text style={styles.waveKicker}>{inAgain ? 'Bonus round' : `Round ${waveIndex + 1} of ${waves.length}`}</Text>
             {!!wave.name && <Text style={styles.waveName}>{wave.name}</Text>}
             {!!wave.tagline && <Text style={styles.waveTagline}>{wave.tagline}</Text>}
             {!!wave.covers && <Text style={styles.waveCovers}>{wave.covers}</Text>}
             <View style={styles.waveMetaRow}>
               <View style={styles.waveMeta}>
+                <Feather name="list" size={12} color="#FFFFFF" />
+                <Text style={styles.waveMetaText}>{wave.exercises.length} {wave.exercises.length === 1 ? 'question' : 'questions'}</Text>
+              </View>
+              <View style={styles.waveMeta}>
+                <Feather name={inAgain ? 'rotate-ccw' : 'zap'} size={12} color="#FFFFFF" />
+                <Text style={styles.waveMetaText}>{wave.multiplier < 1 ? 'Half points' : `Points ×${wave.multiplier}`}</Text>
+              </View>
+              <View style={styles.waveMeta}>
                 <Feather name="clock" size={12} color="#FFFFFF" />
-                <Text style={styles.waveMetaText}>{wave.seconds} seconds per question · more for long ones</Text>
+                <Text style={styles.waveMetaText}>{wave.seconds}s+ each</Text>
               </View>
             </View>
             <TouchableOpacity
@@ -459,7 +588,7 @@ export function ArenaScreen({ waves, marketId, marketName, bestScore, onExit, on
                 setShowWaveIntro(false);
               }}
             >
-              <Text style={styles.waveBtnText}>Start</Text>
+              <Text style={styles.waveBtnText}>{inAgain ? 'Try them again' : waveIndex === 0 ? 'Start' : 'Next round'}</Text>
             </TouchableOpacity>
           </LinearGradient>
         </View>
@@ -482,19 +611,10 @@ export function ArenaScreen({ waves, marketId, marketName, bestScore, onExit, on
   );
 }
 
-function SummaryStat({
-  icon,
-  label,
-  value,
-}: {
-  icon: keyof typeof Feather.glyphMap;
-  label: string;
-  value: string;
-}) {
+function SummaryStat({ label, value, accent = false }: { label: string; value: string; accent?: boolean }) {
   return (
     <View style={styles.statCard}>
-      <Feather name={icon} size={15} color={tokens.color.accent} />
-      <Text style={styles.statValue}>{value}</Text>
+      <Text style={[styles.statValue, accent && { color: tokens.color.accent }]} numberOfLines={1} adjustsFontSizeToFit>{value}</Text>
       <Text style={styles.statLabel}>{label}</Text>
     </View>
   );
@@ -506,36 +626,45 @@ const styles = StyleSheet.create({
   emptyTitle: { fontSize: 20, fontWeight: '800', color: tokens.color.text },
   emptyBody: { fontSize: 14, lineHeight: 21, color: tokens.color.textSecondary, textAlign: 'center' },
 
-  hud: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 16, paddingBottom: 8 },
-  hudExit: { width: 40 },
-  hudCenter: { flex: 1, alignItems: 'center' },
+  hud: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 16, paddingBottom: 10, gap: 10 },
+  hudExit: { width: 32 },
+  hudCenter: { flex: 1, gap: 6 },
   hudWave: { fontSize: 10, fontWeight: '800', letterSpacing: 1.2, color: tokens.color.textMuted },
-  hudScore: { fontSize: 26, fontWeight: '900', color: tokens.color.text, letterSpacing: -0.6 },
-  hudRight: { width: 62, alignItems: 'flex-end', gap: 3 },
-  shieldRow: { flexDirection: 'row', gap: 3 },
-  comboText: { fontSize: 10, fontWeight: '800', color: tokens.color.accent },
+  strip: { flexDirection: 'row', gap: 4 },
+  segment: { flex: 1, height: 8, borderRadius: 4, backgroundColor: tokens.color.track },
+  segmentRight: { backgroundColor: tokens.color.correct },
+  segmentWrong: { backgroundColor: tokens.color.incorrect },
+  // Ink, not the accent, so "you are here" never reads as the purple timer below.
+  segmentCurrent: { backgroundColor: tokens.color.text },
+  hudRight: { minWidth: 64, alignItems: 'flex-end' },
+  hudScore: { fontSize: 22, fontWeight: '900', color: tokens.color.text, letterSpacing: -0.5 },
+  hudScoreLabel: { fontSize: 10, fontWeight: '700', color: tokens.color.textMuted, letterSpacing: 0.4 },
+  comboText: { fontSize: 10, fontWeight: '800', color: tokens.color.correctDark, letterSpacing: 0.4 },
 
   timerTrack: {
-    height: 6,
+    height: 4,
     marginHorizontal: 16,
-    borderRadius: 4,
+    borderRadius: 2,
     backgroundColor: tokens.color.track,
     overflow: 'hidden',
   },
-  timerFill: { height: '100%', borderRadius: 4 },
+  timerFill: { height: '100%', borderRadius: 2 },
   timerLabel: {
     fontSize: 10,
     fontWeight: '700',
     letterSpacing: 0.6,
     color: tokens.color.textMuted,
-    textAlign: 'center',
-    marginTop: 5,
+    textAlign: 'right',
+    marginTop: 4,
+    marginRight: 16,
   },
 
   gain: { position: 'absolute', top: 96, alignSelf: 'center', zIndex: 40 },
   gainText: { fontSize: 20, fontWeight: '900', color: tokens.color.correctDark },
 
-  body: { padding: 16, paddingBottom: 28, gap: 14 },
+  body: { padding: 16, paddingTop: 8, paddingBottom: 28, gap: 14 },
+  sourceRow: { flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: -4 },
+  sourceText: { flex: 1, fontSize: 12, fontWeight: '600', color: tokens.color.textMuted },
   footer: {
     paddingHorizontal: 16,
     paddingTop: 12,
@@ -552,11 +681,15 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     padding: 24,
   },
-  waveCard: { width: '100%', borderRadius: 26, padding: 24, alignItems: 'center', gap: 6 },
-  waveKicker: { fontSize: 10, fontWeight: '800', letterSpacing: 1.6, color: 'rgba(255,255,255,0.8)' },
+  waveCard: { width: '100%', maxWidth: 440, borderRadius: 26, padding: 24, alignItems: 'center', gap: 6 },
+  pips: { flexDirection: 'row', gap: 6, marginBottom: 6 },
+  pip: { width: 22, height: 6, borderRadius: 3, backgroundColor: 'rgba(255,255,255,0.3)' },
+  pipDone: { backgroundColor: 'rgba(255,255,255,0.7)' },
+  pipNow: { backgroundColor: '#FFFFFF', width: 34 },
+  waveKicker: { fontSize: 10, fontWeight: '800', letterSpacing: 1.6, color: 'rgba(255,255,255,0.8)', textTransform: 'uppercase' },
   waveName: { fontSize: 30, fontWeight: '900', color: '#FFFFFF', letterSpacing: -0.8 },
   waveTagline: { fontSize: 14, color: 'rgba(255,255,255,0.9)', textAlign: 'center', lineHeight: 20 },
-  waveMetaRow: { flexDirection: 'row', gap: 10, marginTop: 12 },
+  waveMetaRow: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', gap: 8, marginTop: 12 },
   waveMeta: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -568,17 +701,17 @@ const styles = StyleSheet.create({
   },
   waveMetaText: { fontSize: 11, fontWeight: '700', color: '#FFFFFF' },
   waveCovers: { marginTop: 6, fontSize: 14, fontWeight: '700', color: '#FFFFFF', textAlign: 'center' },
-  replayNote: { marginTop: 8, fontSize: 12, fontWeight: '600', color: tokens.color.textMuted, textAlign: 'center' },
+  replayNote: { marginTop: -4, fontSize: 12, fontWeight: '600', color: tokens.color.textMuted, textAlign: 'center' },
   waveBtn: {
     marginTop: 18,
-     backgroundColor: tokens.color.bg,
+    backgroundColor: tokens.color.bg,
     borderRadius: 16,
     paddingVertical: 15,
     paddingHorizontal: 28,
     alignSelf: 'stretch',
     alignItems: 'center',
   },
-   waveBtnText: { fontSize: 16, fontWeight: '800', color: tokens.color.text },
+  waveBtnText: { fontSize: 16, fontWeight: '800', color: tokens.color.text },
 
   exitBackdrop: { flex: 1, backgroundColor: 'rgba(10,12,20,0.6)', justifyContent: 'flex-end' },
   exitSheet: {
@@ -594,36 +727,74 @@ const styles = StyleSheet.create({
   ghostBtn: { alignItems: 'center', paddingVertical: 14 },
   ghostText: { fontSize: 15, fontWeight: '700', color: tokens.color.textMuted },
 
-  summaryScroll: { padding: 20, gap: 16 },
-  summaryHero: { borderRadius: 26, padding: 24, alignItems: 'center', gap: 2 },
+  summaryScroll: { padding: 20, paddingBottom: 12, gap: 16 },
+  summaryFooter: { paddingHorizontal: 20, paddingTop: 12, borderTopWidth: 1, borderTopColor: tokens.color.border, backgroundColor: tokens.color.bg },
+  summaryHero: { borderRadius: 26, paddingVertical: 26, paddingHorizontal: 24, alignItems: 'center', gap: 2 },
   summaryKicker: { fontSize: 10, fontWeight: '800', letterSpacing: 1.6, color: 'rgba(255,255,255,0.85)' },
   summaryScore: { fontSize: 52, fontWeight: '900', color: '#FFFFFF', letterSpacing: -1.5 },
   summaryRank: { fontSize: 15, fontWeight: '800', color: '#FFFFFF' },
+  pillRow: { flexDirection: 'row', gap: 8, marginTop: 12 },
+  rankPill: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    backgroundColor: '#FFFFFF',
+    paddingHorizontal: 12,
+    paddingVertical: 5,
+    borderRadius: 20,
+  },
+  rankDot: { width: 8, height: 8, borderRadius: 4 },
+  rankPillText: { fontSize: 11, fontWeight: '800', color: '#111827', letterSpacing: 0.4 },
   bestPill: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 5,
-    marginTop: 10,
     backgroundColor: 'rgba(255,255,255,0.22)',
     paddingHorizontal: 10,
     paddingVertical: 5,
     borderRadius: 20,
   },
   bestPillText: { fontSize: 10, fontWeight: '800', color: '#FFFFFF', letterSpacing: 0.8 },
-  statGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 10 },
+  statRow: { flexDirection: 'row', gap: 10 },
   statCard: {
-    flexGrow: 1,
-    flexBasis: '46%',
+    flex: 1,
     alignItems: 'center',
-    gap: 4,
-    paddingVertical: 16,
-    borderRadius: 18,
+    gap: 2,
+    paddingVertical: 14,
+    paddingHorizontal: 6,
+    borderRadius: 16,
     backgroundColor: tokens.color.surface,
     borderWidth: 1,
     borderColor: tokens.color.border,
   },
-  statValue: { fontSize: 18, fontWeight: '800', color: tokens.color.text },
-  statLabel: { fontSize: 10, fontWeight: '700', color: tokens.color.textMuted, letterSpacing: 0.4 },
+  statValue: { fontSize: 17, fontWeight: '800', color: tokens.color.text },
+  statLabel: { fontSize: 10, fontWeight: '700', color: tokens.color.textMuted, letterSpacing: 0.4, textTransform: 'uppercase' },
+  againCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    paddingVertical: 12,
+    paddingHorizontal: 14,
+    borderRadius: 14,
+    backgroundColor: tokens.color.accentSoft,
+  },
+  againText: { flex: 1, fontSize: 14, fontWeight: '700', color: tokens.color.text },
+  reviewBlock: { gap: 10 },
+  reviewTitle: { fontSize: 13, fontWeight: '800', letterSpacing: 0.6, color: tokens.color.textMuted, textTransform: 'uppercase' },
+  reviewRow: {
+    flexDirection: 'row',
+    gap: 10,
+    padding: 14,
+    borderRadius: 16,
+    backgroundColor: tokens.color.card,
+    borderWidth: 1,
+    borderColor: tokens.color.border,
+  },
+  reviewIcon: { marginTop: 1 },
+  reviewBody: { flex: 1, gap: 4 },
+  reviewQuestion: { fontSize: 15, lineHeight: 21, fontWeight: '700', color: tokens.color.text },
+  reviewAnswer: { fontSize: 14, lineHeight: 20, fontWeight: '600', color: tokens.color.correctDark },
+  reviewFrom: { fontSize: 12, fontWeight: '600', color: tokens.color.textMuted },
 });
 
 /** The round's clock, stretched for long questions (shared with the Arena builder). */
