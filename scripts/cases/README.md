@@ -134,7 +134,23 @@ python3 scripts/cases/build.py <market> scripts/cases/<market>/days_*.py --out d
 - **PR body:** end with "🤖 Generated with [Claude Code](https://claude.com/claude-code)", then the session
   URL.
 - **Merge:** open the PR and merge it through `gh api`. Never commit `mobile/package-lock.json`.
-- **After each merge:** tell the user which migration to run (again) in Supabase.
+- **Loader data:** after rebuilding any migration, run `python3 scripts/cases/export_loader.py`. It writes
+  the same rows into `supabase/functions/load-deep-cases/data/`, and `tests/deep-cases-loader.test.ts`
+  fails if you forget.
+- **After each merge:** tell the user to call the `load-deep-cases` function again (see below).
+
+## Loading into Supabase
+
+Lovable runs schema changes and data separately, and it cannot pass a 500 KB data file through its
+tools. So the cases ship inside an edge function:
+
+1. **Once:** create the table with a Lovable migration from `scripts/cases/supabase/deep_cases_schema.sql`.
+2. **Every time cases change:** have Lovable deploy `load-deep-cases` and call it with POST.
+   - A GET call previews what would change.
+   - It upserts only rows whose content fingerprint (`src:` tag) differs, so calling it twice is safe.
+   - It answers with the number of cases per market and any day that does not hold three cases.
+3. **Without Lovable:** the `drizzle/migrations/00NN_<market>_deep_cases.sql` files still work as they
+   are in the Supabase SQL editor.
 
 ## Aerospace days 19-24, research already verified
 
