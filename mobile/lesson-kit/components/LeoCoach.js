@@ -21,7 +21,7 @@ const SCENES = {
   // incorrect: require('../../../assets/scenes/leo-scene-incorrect.png'),
 };
 const BUBBLE_DELAY_MS = 900;
-function LeoCoach({ line, mood = "idle", intro = false, accent = tokens.color.accent }) {
+function LeoCoach({ line, mood = "idle", intro = false, accent = tokens.color.accent, compact = false }) {
   const enter = useRef(new Animated.Value(0)).current;
   const [speaking, setSpeaking] = useState(false);
   useEffect(() => {
@@ -43,7 +43,7 @@ function LeoCoach({ line, mood = "idle", intro = false, accent = tokens.color.ac
   const moodTint = mood === "correct" || mood === "celebrate" ? tokens.color.correct : mood === "incorrect" ? tokens.color.incorrect : accent;
   const scene = SCENES[mood];
   const clip = leoCoachClip(mood, intro);
-  return /* @__PURE__ */ React.createElement(View, { style: styles.wrap }, /* @__PURE__ */ React.createElement(View, { style: styles.scene }, scene ? /* @__PURE__ */ React.createElement(Image, { source: scene, style: StyleSheet.absoluteFill, resizeMode: "cover" }) : null, /* @__PURE__ */ React.createElement(View, { style: styles.leo, pointerEvents: "none" }, clip ? /* @__PURE__ */ React.createElement(LeoAnimated, { key: JSON.stringify([line, mood, intro]), clip, size: 80, fallback: ANIM[mood] }) : /* @__PURE__ */ React.createElement(LeoCharacter, { animation: ANIM[mood], size: "sm", still: true })), /* @__PURE__ */ React.createElement(View, { style: styles.bubbleSlot }, /* @__PURE__ */ React.createElement(
+  return /* @__PURE__ */ React.createElement(View, { style: [styles.wrap, compact && styles.wrapCompact] }, /* @__PURE__ */ React.createElement(View, { style: [styles.scene, compact && styles.sceneCompact] }, scene ? /* @__PURE__ */ React.createElement(Image, { source: scene, style: StyleSheet.absoluteFill, resizeMode: "cover" }) : null, /* @__PURE__ */ React.createElement(View, { style: [styles.leo, compact && styles.leoCompact], pointerEvents: "none" }, clip ? /* @__PURE__ */ React.createElement(LeoAnimated, { key: JSON.stringify([line, mood, intro]), clip, size: compact ? 60 : 80, fallback: ANIM[mood] }) : /* @__PURE__ */ React.createElement(LeoCharacter, { animation: ANIM[mood], size: "sm", still: true })), /* @__PURE__ */ React.createElement(View, { style: styles.bubbleSlot }, /* @__PURE__ */ React.createElement(
     Animated.View,
     {
       pointerEvents: speaking ? "auto" : "none",
@@ -54,7 +54,7 @@ function LeoCoach({ line, mood = "idle", intro = false, accent = tokens.color.ac
         { opacity: enter, transform: [{ scale: pop }, { translateY: rise }] }
       ]
     },
-    /* @__PURE__ */ React.createElement(SpeechBubble, { tail: "left", showLabel: true, style: styles.bubble }, /* @__PURE__ */ React.createElement(ColorText, { text: line, style: styles.text, maxSentences: 2, maxLength: 110 }))
+    /* @__PURE__ */ React.createElement(SpeechBubble, { tail: "left", showLabel: !compact, style: styles.bubble }, /* @__PURE__ */ React.createElement(ColorText, { text: line, style: styles.text, maxSentences: 2, maxLength: 110 }))
   ))));
 }
 const SCENE_H = 112;
@@ -85,6 +85,9 @@ const styles = StyleSheet.create({
     // Always above Leo — even if his artwork overhangs, the words stay readable.
     zIndex: 2
   },
+  wrapCompact: { marginBottom: 0 },
+  sceneCompact: { minHeight: 76 },
+  leoCompact: { width: 72, height: 76 },
   bubbleWrap: { width: "100%" },
   bubble: { width: "100%" },
   text: {

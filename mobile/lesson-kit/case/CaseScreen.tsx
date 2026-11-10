@@ -177,6 +177,7 @@ export function CaseScreen({ deepCase, marketId, marketName, onExit, onFinish, g
           )}
 
           <LeoCoach
+            compact
             line={caseDebriefLine(daily)}
             mood={result.grade === 'A' || result.grade === 'B' ? 'celebrate' : 'thinking'}
           />
@@ -274,6 +275,7 @@ export function CaseScreen({ deepCase, marketId, marketName, onExit, onFinish, g
         <RevealCorrectProvider value={revealCorrect.reveal}>
         {(!!stage.exercise.leo?.line || (phase === 'feedback' && !passive)) && (
           <LeoCoach
+            compact
             key={stageIndex}
             line={stage.exercise.leo?.line || leoFeedbackLine(state.isCorrect, stageIndex)}
             mood={phase === 'feedback' && !passive ? (state.isCorrect ? 'correct' : 'incorrect') : (stage.exercise.leo?.mood ?? 'idle')}

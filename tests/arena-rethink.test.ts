@@ -189,3 +189,18 @@ describe('the second chance and the summary', () => {
     }
   }, 60000);
 });
+
+describe('visual cleanup', () => {
+  const src = (p: string) => readFileSync(p, 'utf8');
+  it('keeps names like DO-160 and AS9100 whole and bolds only standalone figures', () => {
+    const text = src('mobile/lesson-kit/components/ColorText.tsx');
+    expect(text).toContain('never part of a name like DO-160');
+    expect(text).not.toContain('const SIGNAL');
+  });
+  it('keeps the round-intro button white in dark mode and the practice screens compact', () => {
+    const arena = src('mobile/lesson-kit/arena/ArenaScreen.tsx');
+    expect(arena).toContain("backgroundColor: '#FFFFFF',");
+    expect(arena).toMatch(/<LeoCoach\s+compact/);
+    expect(src('mobile/lesson-kit/case/CaseScreen.tsx')).toMatch(/<LeoCoach\s+compact/);
+  });
+});

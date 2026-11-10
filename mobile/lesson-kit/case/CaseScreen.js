@@ -126,6 +126,7 @@ function CaseScreen({ deepCase, marketId, marketName, onExit, onFinish, goal, da
     )), !!deepCase.proReasoning && /* @__PURE__ */ React.createElement(DebriefBlock, { icon: "award", title: "How a pro reads it", body: deepCase.proReasoning, tint: tokens.color.accent }), !!deepCase.commonMistake && /* @__PURE__ */ React.createElement(DebriefBlock, { icon: "alert-triangle", title: "Where most people slip", body: deepCase.commonMistake, tint: tokens.color.signalEnergy }), !!deepCase.mentalModel && /* @__PURE__ */ React.createElement(DebriefBlock, { icon: "compass", title: "Keep this model", body: deepCase.mentalModel, tint: tokens.color.signalData }), /* @__PURE__ */ React.createElement(
       LeoCoach,
       {
+        compact: true,
         line: caseDebriefLine(daily),
         mood: result.grade === "A" || result.grade === "B" ? "celebrate" : "thinking"
       }
@@ -171,6 +172,7 @@ function CaseScreen({ deepCase, marketId, marketName, onExit, onFinish, goal, da
   }))), stage.hint ? /* @__PURE__ */ React.createElement(Text, { style: styles.stageHint }, stage.hint) : null, /* @__PURE__ */ React.createElement(ScrollView, { ref: scrollRef, onScroll: revealCorrect.onScroll, scrollEventThrottle: 16, contentContainerStyle: styles.body, showsVerticalScrollIndicator: false }, /* @__PURE__ */ React.createElement(RevealCorrectProvider, { value: revealCorrect.reveal }, (!!stage.exercise.leo?.line || phase === "feedback" && !passive) && /* @__PURE__ */ React.createElement(
     LeoCoach,
     {
+      compact: true,
       key: stageIndex,
       line: stage.exercise.leo?.line || leoFeedbackLine(state.isCorrect, stageIndex),
       mood: phase === "feedback" && !passive ? state.isCorrect ? "correct" : "incorrect" : stage.exercise.leo?.mood ?? "idle",

@@ -25,7 +25,7 @@ export function ColdOpen({ exercise, onChange }: ExerciseProps<ColdOpenExercise>
         <View style={styles.coverSky} />
         <View style={styles.coverCopy}>
         {!!exercise.eyebrow && <Text style={styles.eyebrow}>{shortLabel(exercise.eyebrow).toUpperCase()}</Text>}
-        <ColorText text={exercise.headline} style={styles.headline} maxSentences={4} maxLength={260} />
+        <ColorText text={exercise.headline} style={[styles.headline, headlineSize(exercise.headline)]} maxSentences={4} maxLength={260} />
         {!!exercise.kicker && <ColorText text={exercise.kicker} style={styles.kicker} maxSentences={1} maxLength={80} glossary keyTerms={cardTerms(exercise)} excludedText={[exercise.headline]} />}
         {hasBriefing && (
           <View style={styles.readButton}>
@@ -48,6 +48,13 @@ export function ColdOpen({ exercise, onChange }: ExerciseProps<ColdOpenExercise>
       )}
     </View>
   );
+}
+
+/** A long situation brief at display size fills the screen; shrink it so the whole opening stays in view. */
+function headlineSize(text: string) {
+  if (text.length > 120) return { fontSize: 24, lineHeight: 31 };
+  if (text.length > 80) return { fontSize: 28, lineHeight: 34 };
+  return null;
 }
 
 const styles = StyleSheet.create({

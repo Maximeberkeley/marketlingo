@@ -130,7 +130,7 @@ describe('the run: three named rounds of different games', () => {
   it('never ends a run on a miss', () => {
     const screen = read('mobile/lesson-kit/arena/ArenaScreen.tsx');
     expect(screen).not.toMatch(/suddenDeath|setShields|endRun\(false\)/);
-    expect(screen).toContain("{phase === 'feedback' ? (timedOut ? \"Time's up\" : '\\u00a0') : `${timeLeft}s left`}");
+    expect(screen).toContain("{phase === 'feedback' ? (timedOut ? \"Time's up\" : '\\u00a0') : timeLeft <= 10 ? `${timeLeft}s left` : '\\u00a0'}");
     expect(screen).toContain('{!!wave.name && <Text style={styles.waveName}>{wave.name}</Text>}');
   });
 });

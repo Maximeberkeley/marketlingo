@@ -4,10 +4,13 @@ import { shortText } from "../text";
 import { glossaryFor, cardGlossaryMatches } from "../glossary";
 import { useDeepDiveTarget } from "./DeepDiveContext";
 import { tokens } from "../theme/tokens";
-const SIGNAL = /(\$?\d[\d,.]*(?:%|[KMBT])?)/gi;
-const NUMBER = /^\$?\d/i;
+const FIGURE = /^(\$?\d[\d,.]*(?:%|[KMBT])?)$/i;
+const AROUND = /^([^\w$]*)(.*?)([^\w%]*)$/;
 function figures(text, keyPrefix) {
-  return text.split(SIGNAL).map((part, index) => NUMBER.test(part) ? /* @__PURE__ */ React.createElement(Text, { key: `${keyPrefix}-${index}`, style: { fontWeight: "800" } }, part) : part);
+  return text.split(/(\s+)/).map((word, index) => {
+    const [, lead = "", core = "", tail = ""] = word.match(AROUND) ?? [];
+    return FIGURE.test(core) ? /* @__PURE__ */ React.createElement(Text, { key: `${keyPrefix}-${index}` }, lead, /* @__PURE__ */ React.createElement(Text, { style: { fontWeight: "800" } }, core), tail) : word;
+  });
 }
 function ColorText({ text, style, maxSentences = 2, maxLength = 170, numberOfLines, glossary = false, keyTerms, precedingText, excludedText }) {
   const { marketId } = useDeepDiveTarget();
