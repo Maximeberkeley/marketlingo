@@ -305,12 +305,14 @@ export default function PracticeScreen() {
               {studied.isLoading
                 ? 'Finding the concepts you own…'
                 : studied.lessons.length > 0
-                  ? `Practice ${studied.lessons[0].title}`
+                  ? `Ready: ${studied.lessons.length} ${studied.lessons.length === 1 ? 'lesson' : 'lessons'} to practice`
                   : 'Complete your first lesson to unlock practice'}
             </Text>
-            {studied.lessons.length === 0 && !studied.isLoading && (
+            {!studied.isLoading && (
               <Text style={styles.groundedBody}>
-                Arena and Deep Case stay locked until they can test something you actually studied.
+                {studied.lessons.length === 0
+                  ? 'Arena and Deep Case stay locked until they can test something you actually studied.'
+                  : `Latest: ${studied.lessons[0].title}`}
               </Text>
             )}
           </View>

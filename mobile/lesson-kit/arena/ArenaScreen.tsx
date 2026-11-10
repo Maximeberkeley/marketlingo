@@ -480,7 +480,7 @@ export function ArenaScreen({ waves, marketId, marketName, bestScore, onExit, on
           </View>
           {!passive && (
             <Text style={[styles.timerLabel, urgent && { color: tokens.color.incorrect }]}>
-              {phase === 'feedback' ? (timedOut ? "Time's up" : '\u00a0') : `${timeLeft}s left`}
+              {phase === 'feedback' ? (timedOut ? "Time's up" : '\u00a0') : timeLeft <= 10 ? `${timeLeft}s left` : '\u00a0'}
             </Text>
           )}
         </>
@@ -515,6 +515,7 @@ export function ArenaScreen({ waves, marketId, marketName, bestScore, onExit, on
           <RevealCorrectProvider value={revealCorrect.reveal}>
             {/* Leo is on screen from the start of each game, so feedback never pushes the question down. */}
             {(!!exercise.leo?.line || !!ARENA_IDLE_LINES[exercise.kind] || (phase === 'feedback' && !isPassiveKind(exercise.kind))) && <LeoCoach
+              compact
               key={`${waveIndex}/${beatIndex}`}
               line={phase === 'feedback' && !isPassiveKind(exercise.kind)
                 ? leoArenaLine(coachCorrect, waveIndex * 31 + beatIndex, { streak: combo, secondChance: inAgain })
@@ -566,20 +567,11 @@ export function ArenaScreen({ waves, marketId, marketName, bestScore, onExit, on
             {!!wave.name && <Text style={styles.waveName}>{wave.name}</Text>}
             {!!wave.tagline && <Text style={styles.waveTagline}>{wave.tagline}</Text>}
             {!!wave.covers && <Text style={styles.waveCovers}>{wave.covers}</Text>}
-            <View style={styles.waveMetaRow}>
-              <View style={styles.waveMeta}>
-                <Feather name="list" size={12} color="#FFFFFF" />
-                <Text style={styles.waveMetaText}>{wave.exercises.length} {wave.exercises.length === 1 ? 'question' : 'questions'}</Text>
-              </View>
-              <View style={styles.waveMeta}>
-                <Feather name={inAgain ? 'rotate-ccw' : 'zap'} size={12} color="#FFFFFF" />
-                <Text style={styles.waveMetaText}>{wave.multiplier < 1 ? 'Half points' : `Points ×${wave.multiplier}`}</Text>
-              </View>
-              <View style={styles.waveMeta}>
-                <Feather name="clock" size={12} color="#FFFFFF" />
-                <Text style={styles.waveMetaText}>{wave.seconds}s+ each</Text>
-              </View>
-            </View>
+            <Text style={styles.waveMetaLine}>
+              {wave.exercises.length} {wave.exercises.length === 1 ? 'question' : 'questions'}
+              {' \u00b7 '}
+              {wave.multiplier < 1 ? 'Half points' : `Points \u00d7${wave.multiplier}`}
+            </Text>
             <TouchableOpacity
               style={styles.waveBtn}
               activeOpacity={0.9}
@@ -689,6 +681,7 @@ const styles = StyleSheet.create({
   waveKicker: { fontSize: 10, fontWeight: '800', letterSpacing: 1.6, color: 'rgba(255,255,255,0.8)', textTransform: 'uppercase' },
   waveName: { fontSize: 30, fontWeight: '900', color: '#FFFFFF', letterSpacing: -0.8 },
   waveTagline: { fontSize: 14, color: 'rgba(255,255,255,0.9)', textAlign: 'center', lineHeight: 20 },
+  waveMetaLine: { fontSize: 13, fontWeight: '700', color: 'rgba(255,255,255,0.85)', marginTop: 14, marginBottom: 2, textAlign: 'center' },
   waveMetaRow: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', gap: 8, marginTop: 12 },
   waveMeta: {
     flexDirection: 'row',
@@ -704,14 +697,14 @@ const styles = StyleSheet.create({
   replayNote: { marginTop: -4, fontSize: 12, fontWeight: '600', color: tokens.color.textMuted, textAlign: 'center' },
   waveBtn: {
     marginTop: 18,
-    backgroundColor: tokens.color.bg,
+    backgroundColor: '#FFFFFF',
     borderRadius: 16,
     paddingVertical: 15,
     paddingHorizontal: 28,
     alignSelf: 'stretch',
     alignItems: 'center',
   },
-  waveBtnText: { fontSize: 16, fontWeight: '800', color: tokens.color.text },
+  waveBtnText: { fontSize: 16, fontWeight: '800', color: '#14182B' },
 
   exitBackdrop: { flex: 1, backgroundColor: 'rgba(10,12,20,0.6)', justifyContent: 'flex-end' },
   exitSheet: {

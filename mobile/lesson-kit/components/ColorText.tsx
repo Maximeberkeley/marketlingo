@@ -18,13 +18,17 @@ interface Props {
   excludedText?: readonly string[];
 }
 
-const SIGNAL = /(\$?\d[\d,.]*(?:%|[KMBT])?)/gi;
-const NUMBER = /^\$?\d/i;
+/** A figure on its own ("$1.2B", "5%", "2024"), never part of a name like DO-160, AS9100 or 737-800. */
+const FIGURE = /^(\$?\d[\d,.]*(?:%|[KMBT])?)$/i;
+const AROUND = /^([^\w$]*)(.*?)([^\w%]*)$/;
 
 function figures(text: string, keyPrefix: string) {
-  return text.split(SIGNAL).map((part, index) => NUMBER.test(part)
-    ? <Text key={`${keyPrefix}-${index}`} style={{ fontWeight: '800' }}>{part}</Text>
-    : part);
+  return text.split(/(\s+)/).map((word, index) => {
+    const [, lead = '', core = '', tail = ''] = word.match(AROUND) ?? [];
+    return FIGURE.test(core)
+      ? <Text key={`${keyPrefix}-${index}`}>{lead}<Text style={{ fontWeight: '800' }}>{core}</Text>{tail}</Text>
+      : word;
+  });
 }
 
 /** Figures are bold and inherit their surrounding text color, including feedback. */

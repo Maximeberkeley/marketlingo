@@ -318,7 +318,7 @@ function ArenaScreen({ waves, marketId, marketName, bestScore, onExit, onFinish,
         { width: timerWidth, backgroundColor: urgent ? tokens.color.incorrect : tokens.color.accent }
       ]
     }
-  )), !passive && /* @__PURE__ */ React.createElement(Text, { style: [styles.timerLabel, urgent && { color: tokens.color.incorrect }] }, phase === "feedback" ? timedOut ? "Time's up" : "\xA0" : `${timeLeft}s left`)), lastGain !== null && /* @__PURE__ */ React.createElement(
+  )), !passive && /* @__PURE__ */ React.createElement(Text, { style: [styles.timerLabel, urgent && { color: tokens.color.incorrect }] }, phase === "feedback" ? timedOut ? "Time's up" : "\xA0" : timeLeft <= 10 ? `${timeLeft}s left` : "\xA0")), lastGain !== null && /* @__PURE__ */ React.createElement(
     Animated.View,
     {
       style: [
@@ -345,6 +345,7 @@ function ArenaScreen({ waves, marketId, marketName, bestScore, onExit, onFinish,
     !showWaveIntro ? /* @__PURE__ */ React.createElement(RevealCorrectProvider, { value: revealCorrect.reveal }, (!!exercise.leo?.line || !!ARENA_IDLE_LINES[exercise.kind] || phase === "feedback" && !isPassiveKind(exercise.kind)) && /* @__PURE__ */ React.createElement(
       LeoCoach,
       {
+        compact: true,
         key: `${waveIndex}/${beatIndex}`,
         line: phase === "feedback" && !isPassiveKind(exercise.kind) ? leoArenaLine(coachCorrect, waveIndex * 31 + beatIndex, { streak: combo, secondChance: inAgain }) : exercise.leo?.line || ARENA_IDLE_LINES[exercise.kind] || "",
         mood: phase === "feedback" && !isPassiveKind(exercise.kind) ? coachCorrect ? "correct" : "incorrect" : exercise.leo?.mood ?? "idle",
@@ -373,7 +374,7 @@ function ArenaScreen({ waves, marketId, marketName, bestScore, onExit, onFinish,
     !!wave.name && /* @__PURE__ */ React.createElement(Text, { style: styles.waveName }, wave.name),
     !!wave.tagline && /* @__PURE__ */ React.createElement(Text, { style: styles.waveTagline }, wave.tagline),
     !!wave.covers && /* @__PURE__ */ React.createElement(Text, { style: styles.waveCovers }, wave.covers),
-    /* @__PURE__ */ React.createElement(View, { style: styles.waveMetaRow }, /* @__PURE__ */ React.createElement(View, { style: styles.waveMeta }, /* @__PURE__ */ React.createElement(Feather, { name: "list", size: 12, color: "#FFFFFF" }), /* @__PURE__ */ React.createElement(Text, { style: styles.waveMetaText }, wave.exercises.length, " ", wave.exercises.length === 1 ? "question" : "questions")), /* @__PURE__ */ React.createElement(View, { style: styles.waveMeta }, /* @__PURE__ */ React.createElement(Feather, { name: inAgain ? "rotate-ccw" : "zap", size: 12, color: "#FFFFFF" }), /* @__PURE__ */ React.createElement(Text, { style: styles.waveMetaText }, wave.multiplier < 1 ? "Half points" : `Points \xD7${wave.multiplier}`)), /* @__PURE__ */ React.createElement(View, { style: styles.waveMeta }, /* @__PURE__ */ React.createElement(Feather, { name: "clock", size: 12, color: "#FFFFFF" }), /* @__PURE__ */ React.createElement(Text, { style: styles.waveMetaText }, wave.seconds, "s+ each"))),
+    /* @__PURE__ */ React.createElement(Text, { style: styles.waveMetaLine }, wave.exercises.length, " ", wave.exercises.length === 1 ? "question" : "questions", " \xB7 ", wave.multiplier < 1 ? "Half points" : `Points \xD7${wave.multiplier}`),
     /* @__PURE__ */ React.createElement(
       TouchableOpacity,
       {
@@ -456,6 +457,7 @@ const styles = StyleSheet.create({
   waveKicker: { fontSize: 10, fontWeight: "800", letterSpacing: 1.6, color: "rgba(255,255,255,0.8)", textTransform: "uppercase" },
   waveName: { fontSize: 30, fontWeight: "900", color: "#FFFFFF", letterSpacing: -0.8 },
   waveTagline: { fontSize: 14, color: "rgba(255,255,255,0.9)", textAlign: "center", lineHeight: 20 },
+  waveMetaLine: { fontSize: 13, fontWeight: "700", color: "rgba(255,255,255,0.85)", marginTop: 14, marginBottom: 2, textAlign: "center" },
   waveMetaRow: { flexDirection: "row", flexWrap: "wrap", justifyContent: "center", gap: 8, marginTop: 12 },
   waveMeta: {
     flexDirection: "row",
@@ -471,14 +473,14 @@ const styles = StyleSheet.create({
   replayNote: { marginTop: -4, fontSize: 12, fontWeight: "600", color: tokens.color.textMuted, textAlign: "center" },
   waveBtn: {
     marginTop: 18,
-    backgroundColor: tokens.color.bg,
+    backgroundColor: "#FFFFFF",
     borderRadius: 16,
     paddingVertical: 15,
     paddingHorizontal: 28,
     alignSelf: "stretch",
     alignItems: "center"
   },
-  waveBtnText: { fontSize: 16, fontWeight: "800", color: tokens.color.text },
+  waveBtnText: { fontSize: 16, fontWeight: "800", color: "#14182B" },
   exitBackdrop: { flex: 1, backgroundColor: "rgba(10,12,20,0.6)", justifyContent: "flex-end" },
   exitSheet: {
     backgroundColor: tokens.color.card,

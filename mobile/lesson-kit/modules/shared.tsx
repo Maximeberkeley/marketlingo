@@ -8,9 +8,11 @@ import { shortLabel, shortPrompt } from '../text';
 
 /** Big prompt line used at the top of every game module. */
 export function Prompt({ text, eyebrow }: { text: string; eyebrow?: string }) {
+  // "Match the pairs" above "Match each term..." says the same thing twice.
+  const repeats = !!eyebrow && eyebrow.trim().split(/\s+/)[0].toLowerCase() === text.trim().split(/\s+/)[0].toLowerCase();
   return (
     <View style={styles.promptWrap}>
-      {!!eyebrow && <Text style={styles.eyebrow}>{shortLabel(eyebrow).toUpperCase()}</Text>}
+      {!!eyebrow && !repeats && <Text style={styles.eyebrow}>{shortLabel(eyebrow).toUpperCase()}</Text>}
       <ColorText text={shortPrompt(text)} style={styles.prompt} maxLength={120} />
     </View>
   );

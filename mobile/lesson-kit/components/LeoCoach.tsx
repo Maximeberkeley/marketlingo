@@ -36,6 +36,8 @@ interface Props {
   intro?: boolean;
   /** World/accent color so the scene matches the current market. */
   accent?: string;
+  /** A shorter stage for practice screens, where the question matters more than the mascot. */
+  compact?: boolean;
 }
 
 /** Leo speaks up a beat after the card lands — it feels like him, not a caption. */
@@ -45,7 +47,7 @@ const BUBBLE_DELAY_MS = 900;
  * Leo's in-lesson stage: he stays quietly present on the left.
  * Just under a second into each card his comic bubble pops in with one short line.
  */
-export function LeoCoach({ line, mood = 'idle', intro = false, accent = tokens.color.accent }: Props) {
+export function LeoCoach({ line, mood = 'idle', intro = false, accent = tokens.color.accent, compact = false }: Props) {
   const enter = useRef(new Animated.Value(0)).current;
   const [speaking, setSpeaking] = useState(false);
 
@@ -78,17 +80,17 @@ export function LeoCoach({ line, mood = 'idle', intro = false, accent = tokens.c
   const clip = leoCoachClip(mood, intro);
 
   return (
-    <View style={styles.wrap}>
+    <View style={[styles.wrap, compact && styles.wrapCompact]}>
       {/* A clean, quiet stage: no tint, no aura — Leo and his bubble only. */}
-      <View style={styles.scene}>
+      <View style={[styles.scene, compact && styles.sceneCompact]}>
         {scene ? (
           <Image source={scene} style={StyleSheet.absoluteFill} resizeMode="cover" />
         ) : null}
 
         {/* Leo stays anchored; motion never changes the bubble timing. */}
-        <View style={styles.leo} pointerEvents="none">
+        <View style={[styles.leo, compact && styles.leoCompact]} pointerEvents="none">
           {clip ? (
-            <LeoAnimated key={JSON.stringify([line, mood, intro])} clip={clip} size={80} fallback={ANIM[mood]} />
+            <LeoAnimated key={JSON.stringify([line, mood, intro])} clip={clip} size={compact ? 60 : 80} fallback={ANIM[mood]} />
           ) : <LeoCharacter animation={ANIM[mood]} size="sm" still />}
         </View>
 
@@ -103,7 +105,7 @@ export function LeoCoach({ line, mood = 'idle', intro = false, accent = tokens.c
               { opacity: enter, transform: [{ scale: pop }, { translateY: rise }] },
             ]}
           >
-            <SpeechBubble tail="left" showLabel style={styles.bubble}>
+            <SpeechBubble tail="left" showLabel={!compact} style={styles.bubble}>
               <ColorText text={line} style={styles.text} maxSentences={2} maxLength={110} />
             </SpeechBubble>
           </Animated.View>
@@ -142,6 +144,9 @@ const styles = StyleSheet.create({
     // Always above Leo — even if his artwork overhangs, the words stay readable.
     zIndex: 2,
   },
+  wrapCompact: { marginBottom: 0 },
+  sceneCompact: { minHeight: 76 },
+  leoCompact: { width: 72, height: 76 },
   bubbleWrap: { width: '100%' },
   bubble: { width: '100%' },
   text: {
