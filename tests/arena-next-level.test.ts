@@ -76,7 +76,9 @@ describe('new Arena games come straight from what the lesson wrote', () => {
 
   it('fill the gap blanks a real key term in the rule and offers real terms as decoys', () => {
     const game = fillBlankFrom('In robot design, the actuator decides what the body can do.', [terms[0]], terms.slice(1), 'b')!;
-    expect(game.prompt).toBe('Complete the rule: In robot design, the _____ decides what the body can do.');
+    // The prompt stays one short line; the blanked rule is shown whole in the context card.
+    expect(game.prompt).toBe("Fill the gap in the lesson's rule.");
+    expect(game.context).toBe('In robot design, the _____ decides what the body can do.');
     expect(game.options[game.correctIndex]).toBe('actuator');
     expect(game.options.filter(o => o !== 'actuator').every(o => terms.slice(1).some(t => t.term === o))).toBe(true);
   });

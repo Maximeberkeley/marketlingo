@@ -29,6 +29,11 @@ export function MultipleChoice({ exercise, phase, onChange }: ExerciseProps<Mult
   return (
     <View style={styles.wrap}>
       <ColorText text={exercise.prompt} style={styles.prompt} maxSentences={2} maxLength={120} />
+      {!!exercise.context && (
+        <View style={styles.context}>
+          <ColorText text={exercise.context} style={styles.contextText} maxSentences={3} maxLength={260} />
+        </View>
+      )}
       <View style={styles.options}>
         {order.map(i => exercise.options[i]).map((option, pos) => { const i = order[pos]; return (
           <ChoiceCard
@@ -49,5 +54,15 @@ export function MultipleChoice({ exercise, phase, onChange }: ExerciseProps<Mult
 const styles = StyleSheet.create({
   wrap: { gap: tokens.space.xl },
   prompt: { fontSize: tokens.font.prompt, fontWeight: '800', color: tokens.color.text, lineHeight: 28 },
+  context: {
+    marginTop: -tokens.space.sm,
+    paddingVertical: tokens.space.md,
+    paddingHorizontal: tokens.space.lg,
+    borderLeftWidth: 4,
+    borderLeftColor: tokens.color.accent,
+    borderRadius: tokens.radius.md,
+    backgroundColor: tokens.color.surface,
+  },
+  contextText: { fontSize: 17, lineHeight: 25, fontWeight: '600', color: tokens.color.text },
   options: { gap: tokens.space.md },
 });

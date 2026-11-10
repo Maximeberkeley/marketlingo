@@ -7,7 +7,8 @@ import {
   checkFigure,
   checkTamper,
   isRealTerm,
-  termsFromSlides
+  termsFromSlides,
+  withoutExpansion
 } from "../sequencer/lessonChecks";
 import { reviewCardFor } from "../components/feedbackCopy";
 import { glossaryEntriesFor } from "../glossary";
@@ -36,7 +37,7 @@ function readingWords(exercise) {
       add(o.text ?? o.name ?? o.label ?? o.question);
     }
   };
-  for (const key of ["prompt", "situation", "options", "statements", "steps", "items", "left", "right", "nodes", "buckets"]) add(e[key]);
+  for (const key of ["prompt", "context", "situation", "options", "statements", "steps", "items", "left", "right", "nodes", "buckets"]) add(e[key]);
   if (exercise.kind === "matchPairs") exercise.pairs.forEach((pair) => {
     add(pair.left);
     add(pair.right);
@@ -53,9 +54,60 @@ function beatSeconds(wave, exercise) {
   return Math.max(base, reading, exercise.kind === "buildChain" ? 25 : 0);
 }
 const ARENA_REPLAY_SHARE = 0.25;
-function arenaXp(correct, total, replay = false) {
-  const full = 10 + Math.max(0, correct) * 8 + (total > 0 && correct === total ? 20 : 0);
+const RECOVERY_XP = 3;
+function arenaXp(correct, total, replay = false, recovered = 0) {
+  const full = 10 + Math.max(0, correct) * 8 + (total > 0 && correct === total ? 20 : 0) + Math.max(0, recovered) * RECOVERY_XP;
   return replay ? Math.max(5, Math.round(full * ARENA_REPLAY_SHARE)) : full;
+}
+const DEFINITION_PROMPT = "Which term did the lesson define this way?";
+const LESSON_CAP_PER_RUN = 2;
+const REVIEW_GAPS = [1, 3, 7, 14, 30];
+function spacedReview(newestFirst) {
+  if (newestFirst.length < 2) return [...newestFirst];
+  const [today, ...earlier] = newestFirst;
+  const anchor = today.day ?? 0;
+  const distance = (lesson) => {
+    const gap = Math.max(1, anchor - (lesson.day ?? 0));
+    return Math.min(...REVIEW_GAPS.map((target) => Math.abs(Math.log(gap) - Math.log(target))));
+  };
+  const ranked = earlier.map((lesson, index) => ({ lesson, index, distance: distance(lesson) })).sort((a, b) => a.distance - b.distance || a.index - b.index);
+  return [...ranked.map((entry) => entry.lesson), today];
+}
+const SECOND_CHANCE_LIMIT = 3;
+function secondChanceWave(missed) {
+  const unique = missed.filter((exercise, index, list) => list.findIndex((other) => other.id === exercise.id) === index);
+  const picked = unique.slice(-SECOND_CHANCE_LIMIT);
+  if (!picked.length) return null;
+  return {
+    key: "again",
+    name: "Second chance",
+    tagline: picked.length === 1 ? "The one that got away, one more time." : `The ${picked.length} that got away, one more time.`,
+    seconds: 30,
+    multiplier: 0.5,
+    exercises: picked.map((exercise) => ({ ...exercise, id: `${exercise.id}-again` })),
+    covers: "You saw the answers a moment ago. Lock them in."
+  };
+}
+function sourceDays(exercise) {
+  const source = exercise.source;
+  if (!source || source.type !== "lesson") return [];
+  if (typeof source.day === "number") return [source.day];
+  return /^Days\b/.test(source.title ?? "") ? (source.title ?? "").match(/\d+/g)?.map(Number) ?? [] : [];
+}
+function roundCovers(exercises) {
+  const lessonSources = exercises.map((e) => e.source).filter((s) => s?.type === "lesson");
+  const industry = exercises.some((e) => e.source?.type === "industry");
+  const titles = [...new Set(lessonSources.map((s) => s.title).filter(Boolean))];
+  const days = [...new Set(exercises.flatMap(sourceDays))].sort((a, b) => a - b);
+  const tail = industry ? " and the wider industry" : "";
+  if (!titles.length) return industry ? "From the wider industry" : void 0;
+  if (titles.length === 1 && !/^Days\b/.test(titles[0])) {
+    const only = lessonSources.find((s) => s.title === titles[0]);
+    return `From ${only?.day ? `Day ${only.day} \xB7 ` : ""}${titles[0]}${tail}`;
+  }
+  if (!days.length) return `From your recent lessons${tail}`;
+  const list = days.length === 1 ? `${days[0]}` : `${days.slice(0, -1).join(", ")} and ${days[days.length - 1]}`;
+  return `From day${days.length === 1 ? "" : "s"} ${list}${tail}`;
 }
 function shuffle(arr) {
   const a = [...arr];
@@ -86,7 +138,7 @@ function buildArena(input) {
   const drills = inMarket(input.drills);
   const trainer = inMarket(input.trainer);
   const lessons = [...input.studied ?? []].sort((a, b) => (b.day ?? 0) - (a.day ?? 0));
-  const review = lessons.length > 1 ? [...lessons.slice(1), lessons[0]] : lessons;
+  const review = spacedReview(lessons);
   const starter = lessons.length > 0 && lessons.length <= STARTER_LESSON_LIMIT;
   const used = new Set(input.seenQuestionKeys ?? []);
   const facts = /* @__PURE__ */ new Set();
@@ -103,7 +155,7 @@ function buildArena(input) {
     const prefix = (key) => `${scope}/${key}`;
     const lessonTerms = terms(lesson);
     const termsIn = (text) => lessonTerms.filter((t) => text.includes(norm(t.term)));
-    if (exercise.kind === "multipleChoice" && exercise.prompt.startsWith("This lesson defined")) {
+    if (exercise.kind === "multipleChoice" && exercise.prompt === DEFINITION_PROMPT) {
       return [prefix(`term/${norm(exercise.options[exercise.correctIndex])}`)];
     }
     if (exercise.kind === "multipleChoice") {
@@ -175,7 +227,8 @@ function buildArena(input) {
         return tag(lesson, {
           kind: "multipleChoice",
           id: nextId(),
-          prompt: `This lesson defined it as: "${target.definition}". Which term is that?`,
+          prompt: DEFINITION_PROMPT,
+          context: withoutExpansion(target.term, target.definition),
           options,
           correctIndex: options.indexOf(target.term),
           explanation: `${target.term}: ${target.definition}`
@@ -221,23 +274,35 @@ function buildArena(input) {
   let reserved;
   const ONCE_PER_RUN = /* @__PURE__ */ new Set(["quickFire", "matchPairs"]);
   const runKinds = /* @__PURE__ */ new Set();
+  const perLessonRun = /* @__PURE__ */ new Map();
+  const ownerOf = (exercise) => exercise.source?.type === "lesson" ? exercise.source.title ?? "" : "";
+  const spread = lessons.length >= 3;
   const fill = (pool, fallback, limit) => {
     const selected = [];
     const kinds = /* @__PURE__ */ new Map();
-    const accept = ({ exercise, facts: keys }) => {
+    const perLessonRound = /* @__PURE__ */ new Map();
+    const accept = ({ exercise, facts: keys }, capped = false) => {
       const questionKeys = quizQuestionKeys(exercise);
+      const owner = ownerOf(exercise);
+      if (capped && owner && ((perLessonRun.get(owner) ?? 0) >= LESSON_CAP_PER_RUN || (perLessonRound.get(owner) ?? 0) >= 1)) return false;
       if ((kinds.get(exercise.kind) ?? 0) >= 2 || ONCE_PER_RUN.has(exercise.kind) && runKinds.has(exercise.kind) || questionKeys.some((key) => used.has(key)) || keys.some((key) => facts.has(key))) return false;
       runKinds.add(exercise.kind);
       questionKeys.forEach((key) => used.add(key));
       keys.forEach((key) => facts.add(key));
       kinds.set(exercise.kind, (kinds.get(exercise.kind) ?? 0) + 1);
+      if (owner) {
+        perLessonRun.set(owner, (perLessonRun.get(owner) ?? 0) + 1);
+        perLessonRound.set(owner, (perLessonRound.get(owner) ?? 0) + 1);
+      }
       selected.push({ ...exercise, id: nextId() });
       return true;
     };
-    for (const candidate of pool) {
-      if (selected.length === limit) break;
-      if (reserved && candidate !== reserved && candidate.facts.some((key) => reserved?.facts.includes(key))) continue;
-      accept(candidate);
+    for (const capped of spread ? [true, false] : [false]) {
+      for (const candidate of pool) {
+        if (selected.length === limit) break;
+        if (reserved && candidate !== reserved && candidate.facts.some((key) => reserved?.facts.includes(key))) continue;
+        accept(candidate, capped);
+      }
     }
     if (selected.length < limit && !starter) {
       const parts = [...new Set(lessons.flatMap(lessonKeyParts))];
@@ -399,8 +464,11 @@ function buildArena(input) {
     }
   ];
   const titles = [...new Set(lessons.map((lesson) => lesson.title).filter(Boolean))];
-  const covers = titles.length ? starter ? `Starter round \xB7 from ${titles.join(" and ")}` : `Today's round: ${titles.slice(0, 3).join(", ")}${titles.length > 3 ? " and more" : ""}` : void 0;
-  return waves.filter((w) => w.exercises.length > 0).map((w) => covers ? { ...w, covers } : w);
+  const starterCovers = starter && titles.length ? `Starter round \xB7 from ${titles.join(" and ")}` : void 0;
+  return waves.filter((w) => w.exercises.length > 0).map((w) => {
+    const covers = starterCovers ?? roundCovers(w.exercises);
+    return covers ? { ...w, covers } : w;
+  });
 }
 const ARENA_RANKS = [
   { key: "diamond", label: "Excellent", color: "#38BDF8", min: 900 },
@@ -411,14 +479,35 @@ const ARENA_RANKS = [
 function rankForScore(score) {
   return ARENA_RANKS.find((r) => score >= r.min) || ARENA_RANKS[ARENA_RANKS.length - 1];
 }
+const ACCURACY_RANKS = [
+  { key: "diamond", share: 0.9 },
+  { key: "gold", share: 0.7 },
+  { key: "silver", share: 0.5 },
+  { key: "bronze", share: 0 }
+];
+function rankForAccuracy(correct, total) {
+  const share = total > 0 ? correct / total : 0;
+  const key = ACCURACY_RANKS.find((r) => share >= r.share)?.key ?? "bronze";
+  return ARENA_RANKS.find((r) => r.key === key) ?? ARENA_RANKS[ARENA_RANKS.length - 1];
+}
 export {
+  ACCURACY_RANKS,
   ARENA_RANKS,
   ARENA_REPLAY_SHARE,
+  DEFINITION_PROMPT,
+  LESSON_CAP_PER_RUN,
+  RECOVERY_XP,
+  REVIEW_GAPS,
+  SECOND_CHANCE_LIMIT,
   STARTER_LESSON_LIMIT,
   arenaXp,
   beatSeconds,
   buildArena,
+  rankForAccuracy,
   rankForScore,
   readingWords,
-  shuffleAuthored
+  roundCovers,
+  secondChanceWave,
+  shuffleAuthored,
+  spacedReview
 };

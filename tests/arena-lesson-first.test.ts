@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { execFileSync } from "node:child_process";
 const transformSync = (source: string, options: any) => ({code: execFileSync(process.execPath, ["--input-type=module", "-e", `import {transformSync} from "esbuild"; process.stdout.write(transformSync(${JSON.stringify(source)}, ${JSON.stringify(options)}).code);`], {encoding: "utf8"})});
-import { buildArena, shuffleAuthored } from '../mobile/lesson-kit/arena/buildArena';
+import { buildArena, shuffleAuthored, DEFINITION_PROMPT } from '../mobile/lesson-kit/arena/buildArena';
 import { buildCase } from '../mobile/lesson-kit/case/buildCase';
 import { studiedMaterial } from '../mobile/lesson-kit/practice/studiedMaterial';
 import { quizQuestionKeys, recordQuizQuestion, recentQuizHistory, QUIZ_WINDOW_MS } from '../mobile/lib/quizHistory';
@@ -64,9 +64,9 @@ describe('lesson-first Arena', () => {
   it('reviews earlier written checks first from Day 2 and plays the newest terms first', () => {
     const newer = { ...lesson, stackId: 'day2', day: 2, title: 'Day two', questions: lesson.questions.map(q => ({ ...q, prompt: 'Day two: ' + q.prompt })) };
     const waves = buildArena({ ...input, studied: [newer, lesson] });
-    const written = all(waves).filter(q => q.source?.type === 'lesson' && 'prompt' in q && !q.prompt.startsWith('This lesson defined') && /Which|What share/.test(q.prompt));
+    const written = all(waves).filter(q => q.source?.type === 'lesson' && 'prompt' in q && q.prompt !== DEFINITION_PROMPT && /Which|What share/.test(q.prompt));
     expect(written[0].source).toMatchObject({ day: 1 });
-    const termGame = all(waves).find(q => q.kind === 'matchPairs' || q.kind === 'quickFire' || (q.kind === 'multipleChoice' && q.prompt.includes('defined')));
+    const termGame = all(waves).find(q => q.kind === 'matchPairs' || q.kind === 'quickFire' || (q.kind === 'multipleChoice' && q.prompt === DEFINITION_PROMPT));
     expect(termGame?.source).toMatchObject({ title: expect.stringMatching(/Day two|Days 1 and 2/) });
   });
   it('never re-asks displayed Arena questions inside seven days, including authored questions', () => {

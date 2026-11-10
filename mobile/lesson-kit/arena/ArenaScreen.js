@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   View,
   Text,
@@ -21,13 +21,14 @@ import { feedbackCopy } from "../components/feedbackCopy";
 import { LeoCoach } from "../components/LeoCoach";
 import { leoFeedbackLine } from "../../components/mascot/leoAnimationRules";
 import { renderExerciseByKind, isPassiveKind } from "../components/ExerciseRenderer";
-import { arenaXp, beatSeconds, rankForScore } from "./buildArena";
+import { arenaXp, beatSeconds, rankForAccuracy, RECOVERY_XP, secondChanceWave } from "./buildArena";
+import { reviewAnswer, reviewQuestion } from "./arenaReview";
 import { playSound } from "../../lib/sounds";
 import { trackEvent } from "../../lib/analytics";
 import { getMarketWorld } from "../../data/marketWorlds";
 import { practiceSourceLabel } from "../practice/studiedMaterial";
 const ARENA_IDLE_LINES = {
-  quickFire: "Go with your gut. You read this.",
+  quickFire: "Quick calls. You read all of these.",
   matchPairs: "Start with the one you are sure of.",
   multipleChoice: "Pick the one you could explain.",
   numberSense: "Roughly the right size is enough.",
@@ -37,12 +38,15 @@ const ARENA_IDLE_LINES = {
   faceOff: "Two options. Trust your read.",
   theCall: "Think like you own the decision."
 };
+const AGAIN_KEY = "again";
 function ArenaScreen({ waves, marketId, marketName, bestScore, onExit, onFinish, onQuestionSeen, replay = false }) {
   useEffect(() => {
     trackEvent("quiz_started", { marketId: marketId ?? null });
   }, []);
   const insets = useSafeAreaInsets();
   const world = getMarketWorld(marketId);
+  const [again, setAgain] = useState(null);
+  const runWaves = useMemo(() => again ? [...waves, again] : waves, [waves, again]);
   const [waveIndex, setWaveIndex] = useState(0);
   const [beatIndex, setBeatIndex] = useState(0);
   const [showWaveIntro, setShowWaveIntro] = useState(true);
@@ -60,9 +64,16 @@ function ArenaScreen({ waves, marketId, marketName, bestScore, onExit, onFinish,
   const [ended, setEnded] = useState(null);
   const [showExit, setShowExit] = useState(false);
   const [banking, setBanking] = useState(false);
-  const wave = waves[waveIndex];
+  const [marks, setMarks] = useState([]);
+  const [againMarks, setAgainMarks] = useState([]);
+  const missed = useRef([]);
+  const [recoveredIds, setRecoveredIds] = useState([]);
+  const wave = runWaves[waveIndex];
   const exercise = wave?.exercises[beatIndex];
   const passive = isPassiveKind(exercise?.kind);
+  const inAgain = wave?.key === AGAIN_KEY;
+  const mainTotal = waves.reduce((n, w) => n + w.exercises.length, 0);
+  const mainPosition = inAgain ? mainTotal : waves.slice(0, waveIndex).reduce((n, w) => n + w.exercises.length, 0) + beatIndex;
   useEffect(() => {
     if (exercise && !showWaveIntro && !ended && !passive) onQuestionSeen?.(exercise);
   }, [exercise, showWaveIntro, ended, passive, onQuestionSeen]);
@@ -110,13 +121,28 @@ function ArenaScreen({ waves, marketId, marketName, bestScore, onExit, onFinish,
       clearTick();
       setTimedOut(outOfTime);
       setCoachCorrect(isCorrect);
-      setGraded((g) => g + 1);
+      if (exercise && inAgain) {
+        setAgainMarks((m) => {
+          const next = [...m];
+          next[beatIndex] = isCorrect ? "right" : "wrong";
+          return next;
+        });
+        if (isCorrect) setRecoveredIds((ids) => [...ids, exercise.id.replace(/-again$/, "")]);
+      } else if (exercise) {
+        setGraded((g) => g + 1);
+        setMarks((m) => {
+          const next = [...m];
+          next[mainPosition] = isCorrect ? "right" : "wrong";
+          return next;
+        });
+        if (!isCorrect) missed.current = [...missed.current, exercise];
+      }
       if (isCorrect) {
         const speedBonus = Math.round(secondsRemaining / Math.max(1, beatSecondsFor(wave, exercise)) * 40);
         const comboBonus = Math.round(combo * 15);
         const gain = Math.round((60 + speedBonus + comboBonus) * wave.multiplier);
         setScore((s) => s + gain);
-        setCorrect((c) => c + 1);
+        if (!inAgain) setCorrect((c) => c + 1);
         setCombo((c) => {
           const next = c + 1;
           setBestCombo((b) => Math.max(b, next));
@@ -137,7 +163,7 @@ function ArenaScreen({ waves, marketId, marketName, bestScore, onExit, onFinish,
       });
       setPhase("feedback");
     },
-    [clearTick, combo, popGain, wave, exercise]
+    [clearTick, combo, popGain, wave, exercise, inAgain, beatIndex, mainPosition]
   );
   useEffect(() => {
     if (!wave || !exercise || showWaveIntro || phase === "feedback" || ended) return;
@@ -163,26 +189,36 @@ function ArenaScreen({ waves, marketId, marketName, bestScore, onExit, onFinish,
     }, 1e3);
     return clearTick;
   }, [waveIndex, beatIndex, showWaveIntro, phase, ended, passive]);
+  const nextQuestion = useCallback(() => {
+    setPhase("answering");
+    setTimedOut(false);
+    setState({ canCheck: false, isCorrect: false });
+  }, []);
   const advance = useCallback(() => {
     if (!wave) return;
     if (beatIndex < wave.exercises.length - 1) {
       setBeatIndex((i) => i + 1);
-      setPhase("answering");
-      setTimedOut(false);
-      setState({ canCheck: false, isCorrect: false });
+      nextQuestion();
       return;
     }
-    if (waveIndex < waves.length - 1) {
+    if (waveIndex < runWaves.length - 1) {
       setWaveIndex((i) => i + 1);
       setBeatIndex(0);
-      setPhase("answering");
-      setTimedOut(false);
-      setState({ canCheck: false, isCorrect: false });
+      nextQuestion();
+      setShowWaveIntro(true);
+      return;
+    }
+    const retry = again ? null : secondChanceWave(missed.current);
+    if (retry) {
+      setAgain(retry);
+      setWaveIndex((i) => i + 1);
+      setBeatIndex(0);
+      nextQuestion();
       setShowWaveIntro(true);
       return;
     }
     endRun(true);
-  }, [beatIndex, endRun, wave, waveIndex, waves.length]);
+  }, [beatIndex, endRun, wave, waveIndex, runWaves.length, again, nextQuestion]);
   const onAction = useCallback(() => {
     if (passive) {
       advance();
@@ -197,28 +233,40 @@ function ArenaScreen({ waves, marketId, marketName, bestScore, onExit, onFinish,
   }, [advance, grade, passive, phase, state, timeLeft]);
   const feedback = exercise ? feedbackCopy(exercise, state.isCorrect, state.selectedIndex) : null;
   if (ended) {
-    const rank = rankForScore(score);
-    const xp = arenaXp(correct, graded, replay);
-    const newBest = score > bestScore;
-    return /* @__PURE__ */ React.createElement(View, { style: [styles.root, { paddingTop: insets.top + 16, paddingBottom: insets.bottom + 20 }] }, /* @__PURE__ */ React.createElement(ScrollView, { contentContainerStyle: styles.summaryScroll, showsVerticalScrollIndicator: false }, /* @__PURE__ */ React.createElement(
+    const rank = rankForAccuracy(correct, graded);
+    const recovered = recoveredIds.length;
+    const xp = arenaXp(correct, graded, replay, recovered);
+    const newBest = bestScore > 0 && score > bestScore;
+    const perfect = graded > 0 && correct === graded;
+    const stillMissed = missed.current.filter((e) => !recoveredIds.includes(e.id));
+    const putRight = missed.current.filter((e) => recoveredIds.includes(e.id));
+    const leoLine = graded === 0 ? "Nothing graded this time. Try again soon." : perfect ? `All ${graded} right first time. Full credit.` : !stillMissed.length ? "Every miss put right. Nicely done." : correct / graded >= 0.7 ? "Strong run. Skim the misses below." : "Read the misses below once more.";
+    return /* @__PURE__ */ React.createElement(View, { style: [styles.root, { paddingTop: insets.top + 16, paddingBottom: insets.bottom + 12 }] }, /* @__PURE__ */ React.createElement(ScrollView, { contentContainerStyle: styles.summaryScroll, showsVerticalScrollIndicator: false }, /* @__PURE__ */ React.createElement(
       LinearGradient,
       {
-        colors: [rank.color, world.colors[1]],
+        colors: [world.colors[0] ?? rank.color, world.colors[1] ?? rank.color],
         start: { x: 0, y: 0 },
         end: { x: 1, y: 1 },
         style: styles.summaryHero
       },
-      /* @__PURE__ */ React.createElement(Text, { style: styles.summaryKicker }, "DAILY QUIZ"),
+      /* @__PURE__ */ React.createElement(Text, { style: styles.summaryKicker }, "DAILY ARENA \xB7 ", marketName.toUpperCase()),
       /* @__PURE__ */ React.createElement(Text, { style: styles.summaryScore }, `${correct} of ${graded}`),
-      /* @__PURE__ */ React.createElement(Text, { style: styles.summaryRank }, "right"),
-      newBest && /* @__PURE__ */ React.createElement(View, { style: styles.bestPill }, /* @__PURE__ */ React.createElement(Feather, { name: "trending-up", size: 11, color: "#FFFFFF" }), /* @__PURE__ */ React.createElement(Text, { style: styles.bestPillText }, "NEW PERSONAL BEST"))
-    ), /* @__PURE__ */ React.createElement(View, { style: styles.statGrid }, /* @__PURE__ */ React.createElement(SummaryStat, { icon: "check-circle", label: "Correct", value: `${correct}/${graded}` }), /* @__PURE__ */ React.createElement(SummaryStat, { icon: "star", label: "Score", value: `${score}` }), /* @__PURE__ */ React.createElement(SummaryStat, { icon: "layers", label: "Round", value: `${waveIndex + 1}/${waves.length}` }), /* @__PURE__ */ React.createElement(SummaryStat, { icon: "award", label: "XP earned", value: `+${xp}` })), /* @__PURE__ */ React.createElement(
-      LeoCoach,
-      {
-        line: graded > 0 && correct === graded ? `All ${graded} right. That's full credit.` : `${correct} of ${graded} right. See you tomorrow.`,
-        mood: graded > 0 && correct / graded >= 0.7 ? "celebrate" : "thinking"
-      }
-    ), replay && /* @__PURE__ */ React.createElement(Text, { style: styles.replayNote }, "Today's first run paid full XP. Extra runs pay a quarter."), /* @__PURE__ */ React.createElement(View, { style: { height: 12 } }), /* @__PURE__ */ React.createElement(
+      /* @__PURE__ */ React.createElement(Text, { style: styles.summaryRank }, "right first time"),
+      /* @__PURE__ */ React.createElement(View, { style: styles.pillRow }, /* @__PURE__ */ React.createElement(View, { style: styles.rankPill }, /* @__PURE__ */ React.createElement(View, { style: [styles.rankDot, { backgroundColor: rank.color }] }), /* @__PURE__ */ React.createElement(Text, { style: styles.rankPillText }, rank.label)), newBest && /* @__PURE__ */ React.createElement(View, { style: styles.bestPill }, /* @__PURE__ */ React.createElement(Feather, { name: "trending-up", size: 11, color: "#FFFFFF" }), /* @__PURE__ */ React.createElement(Text, { style: styles.bestPillText }, "NEW BEST")))
+    ), /* @__PURE__ */ React.createElement(View, { style: styles.statRow }, /* @__PURE__ */ React.createElement(SummaryStat, { label: "Score", value: `${score}` }), /* @__PURE__ */ React.createElement(SummaryStat, { label: "Best run", value: `${bestCombo} in a row` }), /* @__PURE__ */ React.createElement(SummaryStat, { label: "XP", value: `+${xp}`, accent: true })), again && /* @__PURE__ */ React.createElement(View, { style: styles.againCard }, /* @__PURE__ */ React.createElement(Feather, { name: "rotate-ccw", size: 16, color: tokens.color.accent }), /* @__PURE__ */ React.createElement(Text, { style: styles.againText }, "Second chance: ", recovered, " of ", again.exercises.length, " put right", recovered > 0 && !replay ? ` (+${recovered * RECOVERY_XP} XP)` : "")), /* @__PURE__ */ React.createElement(LeoCoach, { line: leoLine, mood: graded > 0 && correct / graded >= 0.7 ? "celebrate" : "thinking" }), replay && /* @__PURE__ */ React.createElement(Text, { style: styles.replayNote }, "Today's first run paid full XP. Extra runs pay a quarter."), (stillMissed.length > 0 || putRight.length > 0) && /* @__PURE__ */ React.createElement(View, { style: styles.reviewBlock }, /* @__PURE__ */ React.createElement(Text, { style: styles.reviewTitle }, stillMissed.length ? "Worth another look" : "What you put right"), [...stillMissed, ...putRight].map((item) => {
+      const fixed = recoveredIds.includes(item.id);
+      const answer = reviewAnswer(item);
+      const from = practiceSourceLabel(item);
+      return /* @__PURE__ */ React.createElement(View, { key: item.id, style: styles.reviewRow }, /* @__PURE__ */ React.createElement(
+        Feather,
+        {
+          name: fixed ? "check-circle" : "x-circle",
+          size: 18,
+          color: fixed ? tokens.color.correct : tokens.color.incorrect,
+          style: styles.reviewIcon
+        }
+      ), /* @__PURE__ */ React.createElement(View, { style: styles.reviewBody }, /* @__PURE__ */ React.createElement(Text, { style: styles.reviewQuestion }, reviewQuestion(item)), !!answer && /* @__PURE__ */ React.createElement(Text, { style: styles.reviewAnswer }, answer), /* @__PURE__ */ React.createElement(Text, { style: styles.reviewFrom }, fixed ? `Put right \xB7 ${from}` : from)));
+    }))), /* @__PURE__ */ React.createElement(View, { style: styles.summaryFooter }, /* @__PURE__ */ React.createElement(
       PrimaryButton,
       {
         label: banking ? "Saving\u2026" : `Collect +${xp} XP`,
@@ -232,13 +280,14 @@ function ArenaScreen({ waves, marketId, marketName, bestScore, onExit, onFinish,
             correct,
             total: graded,
             bestCombo,
-            waveReached: waveIndex + 1,
+            waveReached: Math.min(waveIndex + 1, waves.length),
             survived: ended.survived,
-            xp
+            xp,
+            recovered
           });
         }
       }
-    ), /* @__PURE__ */ React.createElement(TouchableOpacity, { style: styles.ghostBtn, onPress: onExit, disabled: banking, activeOpacity: 0.8 }, /* @__PURE__ */ React.createElement(Text, { style: styles.ghostText }, "Back to ", marketName, " practice"))));
+    )));
   }
   if (!wave || !exercise) {
     return /* @__PURE__ */ React.createElement(View, { style: [styles.root, styles.centered] }, /* @__PURE__ */ React.createElement(Text, { style: styles.emptyTitle }, "The arena is resting"), /* @__PURE__ */ React.createElement(Text, { style: styles.emptyBody }, "We need a little more ", marketName, " material before the next run. Try a lesson first."), /* @__PURE__ */ React.createElement(PrimaryButton, { label: "Back to practice", onPress: onExit }));
@@ -247,7 +296,21 @@ function ArenaScreen({ waves, marketId, marketName, bestScore, onExit, onFinish,
   const urgent = timeLeft <= 5 && phase === "answering";
   const buttonVariant = phase === "feedback" ? state.isCorrect ? "correct" : "incorrect" : passive || state.canCheck ? "primary" : "disabled";
   const buttonLabel = passive ? "Continue" : phase === "feedback" ? "Next" : "Lock it in";
-  return /* @__PURE__ */ React.createElement(View, { style: [styles.root, { paddingTop: insets.top + 8 }] }, /* @__PURE__ */ React.createElement(View, { style: styles.hud }, /* @__PURE__ */ React.createElement(TouchableOpacity, { onPress: () => setShowExit(true), style: styles.hudExit, hitSlop: 10 }, /* @__PURE__ */ React.createElement(Feather, { name: "x", size: 20, color: tokens.color.textMuted })), /* @__PURE__ */ React.createElement(View, { style: styles.hudCenter }, /* @__PURE__ */ React.createElement(Text, { style: styles.hudWave }, "ROUND ", waveIndex + 1, " OF ", waves.length), /* @__PURE__ */ React.createElement(Animated.Text, { style: [styles.hudScore, { transform: [{ scale: scoreScale }] }] }, score)), /* @__PURE__ */ React.createElement(View, { style: styles.hudRight })), !showWaveIntro && /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(View, { style: styles.timerTrack }, /* @__PURE__ */ React.createElement(
+  const strip = inAgain ? wave.exercises.map((_, i) => againMarks[i]) : Array.from({ length: mainTotal }, (_, i) => marks[i]);
+  const current = inAgain ? beatIndex : mainPosition;
+  const roundLabel = inAgain ? "SECOND CHANCE" : `ROUND ${waveIndex + 1} OF ${waves.length}`;
+  return /* @__PURE__ */ React.createElement(View, { style: [styles.root, { paddingTop: insets.top + 8 }] }, /* @__PURE__ */ React.createElement(View, { style: styles.hud }, /* @__PURE__ */ React.createElement(TouchableOpacity, { onPress: () => setShowExit(true), style: styles.hudExit, hitSlop: 10, accessibilityLabel: "Leave the run" }, /* @__PURE__ */ React.createElement(Feather, { name: "x", size: 20, color: tokens.color.textMuted })), /* @__PURE__ */ React.createElement(View, { style: styles.hudCenter }, /* @__PURE__ */ React.createElement(Text, { style: styles.hudWave }, roundLabel), /* @__PURE__ */ React.createElement(View, { style: styles.strip, accessibilityLabel: `Question ${current + 1} of ${strip.length}` }, strip.map((mark, i) => /* @__PURE__ */ React.createElement(
+    View,
+    {
+      key: i,
+      style: [
+        styles.segment,
+        mark === "right" && styles.segmentRight,
+        mark === "wrong" && styles.segmentWrong,
+        !mark && i === current && styles.segmentCurrent
+      ]
+    }
+  )))), /* @__PURE__ */ React.createElement(View, { style: styles.hudRight }, /* @__PURE__ */ React.createElement(Animated.Text, { style: [styles.hudScore, { transform: [{ scale: scoreScale }] }] }, score), combo >= 2 ? /* @__PURE__ */ React.createElement(Text, { style: styles.comboText }, combo, " in a row") : /* @__PURE__ */ React.createElement(Text, { style: styles.hudScoreLabel }, "points"))), !showWaveIntro && /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(View, { style: styles.timerTrack }, /* @__PURE__ */ React.createElement(
     Animated.View,
     {
       style: [
@@ -287,7 +350,7 @@ function ArenaScreen({ waves, marketId, marketName, bestScore, onExit, onFinish,
         mood: phase === "feedback" && !isPassiveKind(exercise.kind) ? coachCorrect ? "correct" : "incorrect" : exercise.leo?.mood ?? "idle",
         intro: beatIndex === 0
       }
-    ), /* @__PURE__ */ React.createElement(Text, { style: { color: tokens.color.textSecondary, fontSize: 12, marginBottom: 12 } }, practiceSourceLabel(exercise)), renderExerciseByKind(exercise, phase, setState)) : null
+    ), !!practiceSourceLabel(exercise) && /* @__PURE__ */ React.createElement(View, { style: styles.sourceRow }, /* @__PURE__ */ React.createElement(Feather, { name: "book-open", size: 12, color: tokens.color.textMuted }), /* @__PURE__ */ React.createElement(Text, { style: styles.sourceText, numberOfLines: 1 }, practiceSourceLabel(exercise))), renderExerciseByKind(exercise, phase, setState)) : null
   ), /* @__PURE__ */ React.createElement(View, { style: [styles.footer, { paddingBottom: insets.bottom + 12 }] }, phase === "feedback" && !passive && /* @__PURE__ */ React.createElement(
     FeedbackFooter,
     {
@@ -305,11 +368,12 @@ function ArenaScreen({ waves, marketId, marketName, bestScore, onExit, onFinish,
       end: { x: 1, y: 1 },
       style: styles.waveCard
     },
-    /* @__PURE__ */ React.createElement(Text, { style: styles.waveKicker }, "Round ", waveIndex + 1, " of ", waves.length),
+    !inAgain && /* @__PURE__ */ React.createElement(View, { style: styles.pips }, waves.map((w, i) => /* @__PURE__ */ React.createElement(View, { key: w.key, style: [styles.pip, i < waveIndex && styles.pipDone, i === waveIndex && styles.pipNow] }))),
+    /* @__PURE__ */ React.createElement(Text, { style: styles.waveKicker }, inAgain ? "Bonus round" : `Round ${waveIndex + 1} of ${waves.length}`),
     !!wave.name && /* @__PURE__ */ React.createElement(Text, { style: styles.waveName }, wave.name),
     !!wave.tagline && /* @__PURE__ */ React.createElement(Text, { style: styles.waveTagline }, wave.tagline),
     !!wave.covers && /* @__PURE__ */ React.createElement(Text, { style: styles.waveCovers }, wave.covers),
-    /* @__PURE__ */ React.createElement(View, { style: styles.waveMetaRow }, /* @__PURE__ */ React.createElement(View, { style: styles.waveMeta }, /* @__PURE__ */ React.createElement(Feather, { name: "clock", size: 12, color: "#FFFFFF" }), /* @__PURE__ */ React.createElement(Text, { style: styles.waveMetaText }, wave.seconds, " seconds per question \xB7 more for long ones"))),
+    /* @__PURE__ */ React.createElement(View, { style: styles.waveMetaRow }, /* @__PURE__ */ React.createElement(View, { style: styles.waveMeta }, /* @__PURE__ */ React.createElement(Feather, { name: "list", size: 12, color: "#FFFFFF" }), /* @__PURE__ */ React.createElement(Text, { style: styles.waveMetaText }, wave.exercises.length, " ", wave.exercises.length === 1 ? "question" : "questions")), /* @__PURE__ */ React.createElement(View, { style: styles.waveMeta }, /* @__PURE__ */ React.createElement(Feather, { name: inAgain ? "rotate-ccw" : "zap", size: 12, color: "#FFFFFF" }), /* @__PURE__ */ React.createElement(Text, { style: styles.waveMetaText }, wave.multiplier < 1 ? "Half points" : `Points \xD7${wave.multiplier}`)), /* @__PURE__ */ React.createElement(View, { style: styles.waveMeta }, /* @__PURE__ */ React.createElement(Feather, { name: "clock", size: 12, color: "#FFFFFF" }), /* @__PURE__ */ React.createElement(Text, { style: styles.waveMetaText }, wave.seconds, "s+ each"))),
     /* @__PURE__ */ React.createElement(
       TouchableOpacity,
       {
@@ -321,49 +385,54 @@ function ArenaScreen({ waves, marketId, marketName, bestScore, onExit, onFinish,
           setShowWaveIntro(false);
         }
       },
-      /* @__PURE__ */ React.createElement(Text, { style: styles.waveBtnText }, "Start")
+      /* @__PURE__ */ React.createElement(Text, { style: styles.waveBtnText }, inAgain ? "Try them again" : waveIndex === 0 ? "Start" : "Next round")
     )
   ))), /* @__PURE__ */ React.createElement(Modal, { visible: showExit, transparent: true, animationType: "fade" }, /* @__PURE__ */ React.createElement(View, { style: styles.exitBackdrop }, /* @__PURE__ */ React.createElement(View, { style: styles.exitSheet }, /* @__PURE__ */ React.createElement(Text, { style: styles.exitTitle }, "Leave the run?"), /* @__PURE__ */ React.createElement(Text, { style: styles.exitBody }, "Your score for this run won't be banked."), /* @__PURE__ */ React.createElement(PrimaryButton, { label: "Keep going", onPress: () => setShowExit(false) }), /* @__PURE__ */ React.createElement(TouchableOpacity, { style: styles.ghostBtn, onPress: onExit, activeOpacity: 0.8 }, /* @__PURE__ */ React.createElement(Text, { style: styles.ghostText }, "Leave"))))));
 }
-function SummaryStat({
-  icon,
-  label,
-  value
-}) {
-  return /* @__PURE__ */ React.createElement(View, { style: styles.statCard }, /* @__PURE__ */ React.createElement(Feather, { name: icon, size: 15, color: tokens.color.accent }), /* @__PURE__ */ React.createElement(Text, { style: styles.statValue }, value), /* @__PURE__ */ React.createElement(Text, { style: styles.statLabel }, label));
+function SummaryStat({ label, value, accent = false }) {
+  return /* @__PURE__ */ React.createElement(View, { style: styles.statCard }, /* @__PURE__ */ React.createElement(Text, { style: [styles.statValue, accent && { color: tokens.color.accent }], numberOfLines: 1, adjustsFontSizeToFit: true }, value), /* @__PURE__ */ React.createElement(Text, { style: styles.statLabel }, label));
 }
 const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: tokens.color.bg },
   centered: { alignItems: "center", justifyContent: "center", padding: 24, gap: 12 },
   emptyTitle: { fontSize: 20, fontWeight: "800", color: tokens.color.text },
   emptyBody: { fontSize: 14, lineHeight: 21, color: tokens.color.textSecondary, textAlign: "center" },
-  hud: { flexDirection: "row", alignItems: "center", paddingHorizontal: 16, paddingBottom: 8 },
-  hudExit: { width: 40 },
-  hudCenter: { flex: 1, alignItems: "center" },
+  hud: { flexDirection: "row", alignItems: "center", paddingHorizontal: 16, paddingBottom: 10, gap: 10 },
+  hudExit: { width: 32 },
+  hudCenter: { flex: 1, gap: 6 },
   hudWave: { fontSize: 10, fontWeight: "800", letterSpacing: 1.2, color: tokens.color.textMuted },
-  hudScore: { fontSize: 26, fontWeight: "900", color: tokens.color.text, letterSpacing: -0.6 },
-  hudRight: { width: 62, alignItems: "flex-end", gap: 3 },
-  shieldRow: { flexDirection: "row", gap: 3 },
-  comboText: { fontSize: 10, fontWeight: "800", color: tokens.color.accent },
+  strip: { flexDirection: "row", gap: 4 },
+  segment: { flex: 1, height: 8, borderRadius: 4, backgroundColor: tokens.color.track },
+  segmentRight: { backgroundColor: tokens.color.correct },
+  segmentWrong: { backgroundColor: tokens.color.incorrect },
+  // Ink, not the accent, so "you are here" never reads as the purple timer below.
+  segmentCurrent: { backgroundColor: tokens.color.text },
+  hudRight: { minWidth: 64, alignItems: "flex-end" },
+  hudScore: { fontSize: 22, fontWeight: "900", color: tokens.color.text, letterSpacing: -0.5 },
+  hudScoreLabel: { fontSize: 10, fontWeight: "700", color: tokens.color.textMuted, letterSpacing: 0.4 },
+  comboText: { fontSize: 10, fontWeight: "800", color: tokens.color.correctDark, letterSpacing: 0.4 },
   timerTrack: {
-    height: 6,
+    height: 4,
     marginHorizontal: 16,
-    borderRadius: 4,
+    borderRadius: 2,
     backgroundColor: tokens.color.track,
     overflow: "hidden"
   },
-  timerFill: { height: "100%", borderRadius: 4 },
+  timerFill: { height: "100%", borderRadius: 2 },
   timerLabel: {
     fontSize: 10,
     fontWeight: "700",
     letterSpacing: 0.6,
     color: tokens.color.textMuted,
-    textAlign: "center",
-    marginTop: 5
+    textAlign: "right",
+    marginTop: 4,
+    marginRight: 16
   },
   gain: { position: "absolute", top: 96, alignSelf: "center", zIndex: 40 },
   gainText: { fontSize: 20, fontWeight: "900", color: tokens.color.correctDark },
-  body: { padding: 16, paddingBottom: 28, gap: 14 },
+  body: { padding: 16, paddingTop: 8, paddingBottom: 28, gap: 14 },
+  sourceRow: { flexDirection: "row", alignItems: "center", gap: 6, marginBottom: -4 },
+  sourceText: { flex: 1, fontSize: 12, fontWeight: "600", color: tokens.color.textMuted },
   footer: {
     paddingHorizontal: 16,
     paddingTop: 12,
@@ -379,11 +448,15 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     padding: 24
   },
-  waveCard: { width: "100%", borderRadius: 26, padding: 24, alignItems: "center", gap: 6 },
-  waveKicker: { fontSize: 10, fontWeight: "800", letterSpacing: 1.6, color: "rgba(255,255,255,0.8)" },
+  waveCard: { width: "100%", maxWidth: 440, borderRadius: 26, padding: 24, alignItems: "center", gap: 6 },
+  pips: { flexDirection: "row", gap: 6, marginBottom: 6 },
+  pip: { width: 22, height: 6, borderRadius: 3, backgroundColor: "rgba(255,255,255,0.3)" },
+  pipDone: { backgroundColor: "rgba(255,255,255,0.7)" },
+  pipNow: { backgroundColor: "#FFFFFF", width: 34 },
+  waveKicker: { fontSize: 10, fontWeight: "800", letterSpacing: 1.6, color: "rgba(255,255,255,0.8)", textTransform: "uppercase" },
   waveName: { fontSize: 30, fontWeight: "900", color: "#FFFFFF", letterSpacing: -0.8 },
   waveTagline: { fontSize: 14, color: "rgba(255,255,255,0.9)", textAlign: "center", lineHeight: 20 },
-  waveMetaRow: { flexDirection: "row", gap: 10, marginTop: 12 },
+  waveMetaRow: { flexDirection: "row", flexWrap: "wrap", justifyContent: "center", gap: 8, marginTop: 12 },
   waveMeta: {
     flexDirection: "row",
     alignItems: "center",
@@ -395,7 +468,7 @@ const styles = StyleSheet.create({
   },
   waveMetaText: { fontSize: 11, fontWeight: "700", color: "#FFFFFF" },
   waveCovers: { marginTop: 6, fontSize: 14, fontWeight: "700", color: "#FFFFFF", textAlign: "center" },
-  replayNote: { marginTop: 8, fontSize: 12, fontWeight: "600", color: tokens.color.textMuted, textAlign: "center" },
+  replayNote: { marginTop: -4, fontSize: 12, fontWeight: "600", color: tokens.color.textMuted, textAlign: "center" },
   waveBtn: {
     marginTop: 18,
     backgroundColor: tokens.color.bg,
@@ -419,36 +492,74 @@ const styles = StyleSheet.create({
   exitBody: { fontSize: 14, lineHeight: 21, color: tokens.color.textSecondary },
   ghostBtn: { alignItems: "center", paddingVertical: 14 },
   ghostText: { fontSize: 15, fontWeight: "700", color: tokens.color.textMuted },
-  summaryScroll: { padding: 20, gap: 16 },
-  summaryHero: { borderRadius: 26, padding: 24, alignItems: "center", gap: 2 },
+  summaryScroll: { padding: 20, paddingBottom: 12, gap: 16 },
+  summaryFooter: { paddingHorizontal: 20, paddingTop: 12, borderTopWidth: 1, borderTopColor: tokens.color.border, backgroundColor: tokens.color.bg },
+  summaryHero: { borderRadius: 26, paddingVertical: 26, paddingHorizontal: 24, alignItems: "center", gap: 2 },
   summaryKicker: { fontSize: 10, fontWeight: "800", letterSpacing: 1.6, color: "rgba(255,255,255,0.85)" },
   summaryScore: { fontSize: 52, fontWeight: "900", color: "#FFFFFF", letterSpacing: -1.5 },
   summaryRank: { fontSize: 15, fontWeight: "800", color: "#FFFFFF" },
+  pillRow: { flexDirection: "row", gap: 8, marginTop: 12 },
+  rankPill: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+    backgroundColor: "#FFFFFF",
+    paddingHorizontal: 12,
+    paddingVertical: 5,
+    borderRadius: 20
+  },
+  rankDot: { width: 8, height: 8, borderRadius: 4 },
+  rankPillText: { fontSize: 11, fontWeight: "800", color: "#111827", letterSpacing: 0.4 },
   bestPill: {
     flexDirection: "row",
     alignItems: "center",
     gap: 5,
-    marginTop: 10,
     backgroundColor: "rgba(255,255,255,0.22)",
     paddingHorizontal: 10,
     paddingVertical: 5,
     borderRadius: 20
   },
   bestPillText: { fontSize: 10, fontWeight: "800", color: "#FFFFFF", letterSpacing: 0.8 },
-  statGrid: { flexDirection: "row", flexWrap: "wrap", gap: 10 },
+  statRow: { flexDirection: "row", gap: 10 },
   statCard: {
-    flexGrow: 1,
-    flexBasis: "46%",
+    flex: 1,
     alignItems: "center",
-    gap: 4,
-    paddingVertical: 16,
-    borderRadius: 18,
+    gap: 2,
+    paddingVertical: 14,
+    paddingHorizontal: 6,
+    borderRadius: 16,
     backgroundColor: tokens.color.surface,
     borderWidth: 1,
     borderColor: tokens.color.border
   },
-  statValue: { fontSize: 18, fontWeight: "800", color: tokens.color.text },
-  statLabel: { fontSize: 10, fontWeight: "700", color: tokens.color.textMuted, letterSpacing: 0.4 }
+  statValue: { fontSize: 17, fontWeight: "800", color: tokens.color.text },
+  statLabel: { fontSize: 10, fontWeight: "700", color: tokens.color.textMuted, letterSpacing: 0.4, textTransform: "uppercase" },
+  againCard: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 10,
+    paddingVertical: 12,
+    paddingHorizontal: 14,
+    borderRadius: 14,
+    backgroundColor: tokens.color.accentSoft
+  },
+  againText: { flex: 1, fontSize: 14, fontWeight: "700", color: tokens.color.text },
+  reviewBlock: { gap: 10 },
+  reviewTitle: { fontSize: 13, fontWeight: "800", letterSpacing: 0.6, color: tokens.color.textMuted, textTransform: "uppercase" },
+  reviewRow: {
+    flexDirection: "row",
+    gap: 10,
+    padding: 14,
+    borderRadius: 16,
+    backgroundColor: tokens.color.card,
+    borderWidth: 1,
+    borderColor: tokens.color.border
+  },
+  reviewIcon: { marginTop: 1 },
+  reviewBody: { flex: 1, gap: 4 },
+  reviewQuestion: { fontSize: 15, lineHeight: 21, fontWeight: "700", color: tokens.color.text },
+  reviewAnswer: { fontSize: 14, lineHeight: 20, fontWeight: "600", color: tokens.color.correctDark },
+  reviewFrom: { fontSize: 12, fontWeight: "600", color: tokens.color.textMuted }
 });
 function beatSecondsFor(wave, exercise) {
   return beatSeconds(wave, exercise);

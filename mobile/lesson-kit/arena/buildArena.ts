@@ -5,6 +5,12 @@
  * Round 1 "Quick fire": match the pairs, true-or-false cards, fill the gap.
  * Round 2 "Connect the dots": numbers, groups, order and the odd one out.
  * Round 3 "Your call": the judgment calls the lessons wrote.
+ * Then "Second chance": the questions a learner missed come back once
+ * (secondChanceWave), so every run ends on a retrieval that sticks.
+ *
+ * Earlier lessons come back on a spaced schedule (spacedReview): yesterday's,
+ * then the ones about 3, 7, 14 and 30 days back. One lesson fills at most two
+ * questions of a run, so a run reviews several lessons, not one.
  *
  * Hand-written lessons play only their own material: their checks, terms,
  * rule and takeaway. Sentence-editing games (spot the changed word) run only
@@ -24,6 +30,7 @@ import {
   checkTamper,
   isRealTerm,
   termsFromSlides,
+  withoutExpansion,
 } from '../sequencer/lessonChecks';
 import { reviewCardFor } from '../components/feedbackCopy';
 import { glossaryEntriesFor } from '../glossary';
@@ -69,7 +76,7 @@ export function readingWords(exercise: Exercise): number {
       add(o.text ?? o.name ?? o.label ?? o.question);
     }
   };
-  for (const key of ['prompt', 'situation', 'options', 'statements', 'steps', 'items', 'left', 'right', 'nodes', 'buckets']) add(e[key]);
+  for (const key of ['prompt', 'context', 'situation', 'options', 'statements', 'steps', 'items', 'left', 'right', 'nodes', 'buckets']) add(e[key]);
   if (exercise.kind === 'matchPairs') exercise.pairs.forEach(pair => { add(pair.left); add(pair.right); });
   if (exercise.kind === 'quickFire') exercise.cards.forEach(card => add(card.text));
   return parts.join(' ').split(/\s+/).filter(Boolean).length;
@@ -92,14 +99,92 @@ export function beatSeconds(wave: { seconds: number } | undefined, exercise: Exe
 /** Share of Arena XP a second or later run on the same local day pays. */
 export const ARENA_REPLAY_SHARE = 0.25;
 
+/** XP for a miss put right in the second chance: a little, so the retry is worth playing. */
+export const RECOVERY_XP = 3;
+
 /**
  * Arena XP comes from right answers, plus a bonus for a perfect run, so full
- * credit means getting every question right, not racing a clock. Later runs
- * the same day pay a quarter.
+ * credit means getting every question right, not racing a clock. A miss put
+ * right in the second chance adds RECOVERY_XP and never counts toward the
+ * perfect bonus. Later runs the same day pay a quarter.
  */
-export function arenaXp(correct: number, total: number, replay = false): number {
-  const full = 10 + Math.max(0, correct) * 8 + (total > 0 && correct === total ? 20 : 0);
+export function arenaXp(correct: number, total: number, replay = false, recovered = 0): number {
+  const full = 10 + Math.max(0, correct) * 8 + (total > 0 && correct === total ? 20 : 0) + Math.max(0, recovered) * RECOVERY_XP;
   return replay ? Math.max(5, Math.round(full * ARENA_REPLAY_SHARE)) : full;
+}
+
+/** The prompt of a "name the term" question; the definition goes in its context card. */
+export const DEFINITION_PROMPT = 'Which term did the lesson define this way?';
+
+/** Questions one lesson may fill in a run, when other lessons have material. */
+export const LESSON_CAP_PER_RUN = 2;
+
+/** Review gaps in course days: yesterday's lesson, then about 3, 7, 14 and 30 days back. */
+export const REVIEW_GAPS = [1, 3, 7, 14, 30];
+
+/**
+ * Earlier lessons in review order, today's lesson last (its own checks were
+ * just answered). Lessons whose gap from today sits closest to a review gap
+ * come first; ties go to the more recent lesson.
+ */
+export function spacedReview<T extends { day?: number | null }>(newestFirst: T[]): T[] {
+  if (newestFirst.length < 2) return [...newestFirst];
+  const [today, ...earlier] = newestFirst;
+  const anchor = today.day ?? 0;
+  const distance = (lesson: T) => {
+    const gap = Math.max(1, anchor - (lesson.day ?? 0));
+    return Math.min(...REVIEW_GAPS.map(target => Math.abs(Math.log(gap) - Math.log(target))));
+  };
+  const ranked = earlier.map((lesson, index) => ({ lesson, index, distance: distance(lesson) }))
+    .sort((a, b) => a.distance - b.distance || a.index - b.index);
+  return [...ranked.map(entry => entry.lesson), today];
+}
+
+/** Missed questions a second chance plays, at most. */
+export const SECOND_CHANCE_LIMIT = 3;
+
+/**
+ * The second chance: up to three missed questions, newest miss last, each with
+ * a fresh id so its options come back in a new order. Null when nothing was missed.
+ */
+export function secondChanceWave(missed: Exercise[]): ArenaWave | null {
+  const unique = missed.filter((exercise, index, list) => list.findIndex(other => other.id === exercise.id) === index);
+  const picked = unique.slice(-SECOND_CHANCE_LIMIT);
+  if (!picked.length) return null;
+  return {
+    key: 'again',
+    name: 'Second chance',
+    tagline: picked.length === 1 ? 'The one that got away, one more time.' : `The ${picked.length} that got away, one more time.`,
+    seconds: 30,
+    multiplier: 0.5,
+    exercises: picked.map(exercise => ({ ...exercise, id: `${exercise.id}-again` })),
+    covers: 'You saw the answers a moment ago. Lock them in.',
+  };
+}
+
+/** Days a lesson source names: its own day, or the days in a combined title ("Days 4 and 5"). */
+function sourceDays(exercise: Exercise): number[] {
+  const source = exercise.source;
+  if (!source || source.type !== 'lesson') return [];
+  if (typeof source.day === 'number') return [source.day];
+  return /^Days\b/.test(source.title ?? '') ? (source.title ?? '').match(/\d+/g)?.map(Number) ?? [] : [];
+}
+
+/** What one round draws on, in a line: one lesson by name, several by day. */
+export function roundCovers(exercises: Exercise[]): string | undefined {
+  const lessonSources = exercises.map(e => e.source).filter((s): s is Extract<NonNullable<Exercise['source']>, { type: 'lesson' }> => s?.type === 'lesson');
+  const industry = exercises.some(e => e.source?.type === 'industry');
+  const titles = [...new Set(lessonSources.map(s => s.title).filter(Boolean))];
+  const days = [...new Set(exercises.flatMap(sourceDays))].sort((a, b) => a - b);
+  const tail = industry ? ' and the wider industry' : '';
+  if (!titles.length) return industry ? 'From the wider industry' : undefined;
+  if (titles.length === 1 && !/^Days\b/.test(titles[0])) {
+    const only = lessonSources.find(s => s.title === titles[0]);
+    return `From ${only?.day ? `Day ${only.day} · ` : ''}${titles[0]}${tail}`;
+  }
+  if (!days.length) return `From your recent lessons${tail}`;
+  const list = days.length === 1 ? `${days[0]}` : `${days.slice(0, -1).join(', ')} and ${days[days.length - 1]}`;
+  return `From day${days.length === 1 ? '' : 's'} ${list}${tail}`;
 }
 
 /** A lesson the learner has already read, used as practice material. */
@@ -166,7 +251,7 @@ export function buildArena(input: ArenaInput): ArenaWave[] {
   const drills = inMarket(input.drills);
   const trainer = inMarket(input.trainer);
   const lessons = [...(input.studied ?? [])].sort((a, b) => (b.day ?? 0) - (a.day ?? 0));
-  const review = lessons.length > 1 ? [...lessons.slice(1), lessons[0]] : lessons;
+  const review = spacedReview(lessons);
   // A brand-new learner only gets questions about what they studied.
   const starter = lessons.length > 0 && lessons.length <= STARTER_LESSON_LIMIT;
   const used = new Set(input.seenQuestionKeys ?? []);
@@ -185,7 +270,7 @@ export function buildArena(input: ArenaInput): ArenaWave[] {
     const prefix = (key: string) => `${scope}/${key}`;
     const lessonTerms = terms(lesson);
     const termsIn = (text: string) => lessonTerms.filter(t => text.includes(norm(t.term)));
-    if (exercise.kind === 'multipleChoice' && exercise.prompt.startsWith('This lesson defined')) {
+    if (exercise.kind === 'multipleChoice' && exercise.prompt === DEFINITION_PROMPT) {
       return [prefix(`term/${norm(exercise.options[exercise.correctIndex])}`)];
     }
     if (exercise.kind === 'multipleChoice') {
@@ -271,9 +356,11 @@ export function buildArena(input: ArenaInput): ArenaWave[] {
           .slice(0, 2);
         if (decoys.length < 2) return [];
         const options = shuffle([target.term, ...decoys.map(d => d.term)]);
+        // The definition sits in the context card, shown whole; the prompt stays one short line.
         return tag(lesson, {
           kind: 'multipleChoice', id: nextId(),
-          prompt: `This lesson defined it as: "${target.definition}". Which term is that?`,
+          prompt: DEFINITION_PROMPT,
+          context: withoutExpansion(target.term, target.definition),
           options, correctIndex: options.indexOf(target.term),
           explanation: `${target.term}: ${target.definition}`,
         });
@@ -318,24 +405,39 @@ export function buildArena(input: ArenaInput): ArenaWave[] {
   // The big games appear once per run, so every run mixes formats.
   const ONCE_PER_RUN = new Set<string>(['quickFire', 'matchPairs']);
   const runKinds = new Set<string>();
+  // One lesson fills at most LESSON_CAP_PER_RUN questions of a run, and one
+  // per round, while other lessons still have material to offer.
+  const perLessonRun = new Map<string, number>();
+  const ownerOf = (exercise: Exercise) => (exercise.source?.type === 'lesson' ? exercise.source.title ?? '' : '');
+  const spread = lessons.length >= 3;
   const fill = (pool: Candidate[], fallback: (Exercise | null)[], limit: number) => {
     const selected: Exercise[] = [];
     const kinds = new Map<string, number>();
-    const accept = ({ exercise, facts: keys }: Candidate) => {
+    const perLessonRound = new Map<string, number>();
+    const accept = ({ exercise, facts: keys }: Candidate, capped = false) => {
       const questionKeys = quizQuestionKeys(exercise);
+      const owner = ownerOf(exercise);
+      if (capped && owner && ((perLessonRun.get(owner) ?? 0) >= LESSON_CAP_PER_RUN || (perLessonRound.get(owner) ?? 0) >= 1)) return false;
       if ((kinds.get(exercise.kind) ?? 0) >= 2 || (ONCE_PER_RUN.has(exercise.kind) && runKinds.has(exercise.kind)) ||
         questionKeys.some(key => used.has(key)) || keys.some(key => facts.has(key))) return false;
       runKinds.add(exercise.kind);
       questionKeys.forEach(key => used.add(key));
       keys.forEach(key => facts.add(key));
       kinds.set(exercise.kind, (kinds.get(exercise.kind) ?? 0) + 1);
+      if (owner) {
+        perLessonRun.set(owner, (perLessonRun.get(owner) ?? 0) + 1);
+        perLessonRound.set(owner, (perLessonRound.get(owner) ?? 0) + 1);
+      }
       selected.push({ ...exercise, id: nextId() });
       return true;
     };
-    for (const candidate of pool) {
-      if (selected.length === limit) break;
-      if (reserved && candidate !== reserved && candidate.facts.some(key => reserved?.facts.includes(key))) continue;
-      accept(candidate);
+    // First pass spreads the round across lessons; the second fills any gap from the same pool.
+    for (const capped of spread ? [true, false] : [false]) {
+      for (const candidate of pool) {
+        if (selected.length === limit) break;
+        if (reserved && candidate !== reserved && candidate.facts.some(key => reserved?.facts.includes(key))) continue;
+        accept(candidate, capped);
+      }
     }
     // Fill any gap from the wider industry so a run never shrinks: prefer
     // questions that touch the lessons' own terms and title words, and never
@@ -502,11 +604,13 @@ export function buildArena(input: ArenaInput): ArenaWave[] {
     },
   ];
 
+  // Each round says what it draws on; a starter run names its one or two lessons.
   const titles = [...new Set(lessons.map(lesson => lesson.title).filter(Boolean))];
-  const covers = titles.length
-    ? starter ? `Starter round · from ${titles.join(' and ')}` : `Today's round: ${titles.slice(0, 3).join(', ')}${titles.length > 3 ? ' and more' : ''}`
-    : undefined;
-  return waves.filter(w => w.exercises.length > 0).map(w => (covers ? { ...w, covers } : w));
+  const starterCovers = starter && titles.length ? `Starter round · from ${titles.join(' and ')}` : undefined;
+  return waves.filter(w => w.exercises.length > 0).map(w => {
+    const covers = starterCovers ?? roundCovers(w.exercises);
+    return covers ? { ...w, covers } : w;
+  });
 }
 
 export interface ArenaRank {
@@ -525,4 +629,22 @@ export const ARENA_RANKS: ArenaRank[] = [
 
 export function rankForScore(score: number): ArenaRank {
   return ARENA_RANKS.find(r => score >= r.min) || ARENA_RANKS[ARENA_RANKS.length - 1];
+}
+
+/** Share of questions right first time each rank needs, best first. */
+export const ACCURACY_RANKS: Array<{ key: ArenaRank['key']; share: number }> = [
+  { key: 'diamond', share: 0.9 },
+  { key: 'gold', share: 0.7 },
+  { key: 'silver', share: 0.5 },
+  { key: 'bronze', share: 0 },
+];
+
+/**
+ * The summary's rank, from the share right first time, so a short starter run
+ * and a full run are judged the same way. Score still decides the personal best.
+ */
+export function rankForAccuracy(correct: number, total: number): ArenaRank {
+  const share = total > 0 ? correct / total : 0;
+  const key = ACCURACY_RANKS.find(r => share >= r.share)?.key ?? 'bronze';
+  return ARENA_RANKS.find(r => r.key === key) ?? ARENA_RANKS[ARENA_RANKS.length - 1];
 }

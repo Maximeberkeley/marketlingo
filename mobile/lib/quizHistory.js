@@ -2,7 +2,7 @@ const QUIZ_WINDOW_MS = 7 * 24 * 60 * 60 * 1e3;
 const normalize = (text) => text.normalize("NFKC").toLowerCase().replace(/[^\p{L}\p{N}]+/gu, " ").trim();
 function quizQuestionKeys(exercise) {
   if (exercise.kind === "speedRound") return exercise.rounds.map((round) => normalize(`${round.question} ${round.options[round.correctIndex] || ""}`));
-  if (exercise.kind === "multipleChoice") return [normalize(`${exercise.prompt} ${exercise.options[exercise.correctIndex] || ""}`)];
+  if (exercise.kind === "multipleChoice") return [normalize([exercise.prompt, exercise.context, exercise.options[exercise.correctIndex] || ""].filter((part) => part !== void 0).join(" "))];
   if (exercise.kind === "spotFake") return [normalize(exercise.explanation || [...exercise.statements].sort().join(" "))];
   if (exercise.kind === "buildChain") return [normalize(exercise.steps.join(" "))];
   if (exercise.kind === "numberSense") return [normalize(`${exercise.prompt} ${exercise.value} ${exercise.unit || ""}`)];
