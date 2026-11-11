@@ -3,6 +3,15 @@
     "name": "MarketLingo",
     "slug": "marketlingo",
     "version": "1.2.3",
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/d71827be-8e4e-4959-baa8-94a363c4ff4f",
+      "enabled": true,
+      "checkAutomatically": "ON_LOAD",
+      "fallbackToCacheTimeout": 0
+    },
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "automatic",
