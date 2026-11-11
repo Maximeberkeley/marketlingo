@@ -379,6 +379,13 @@
       "when": 1794500000057,
       "tag": "0057_apply_xp_shop",
       "breakpoints": true
+    },
+    {
+      "idx": 58,
+      "version": "7",
+      "when": 1794500000058,
+      "tag": "0058_shop_catalog_sapphire_tiara",
+      "breakpoints": true
     }
   ]
 }

@@ -55,9 +55,9 @@ export default function WardrobeScreen() {
         <TouchableOpacity onPress={() => router.back()} hitSlop={12} accessibilityRole="button" accessibilityLabel="Back">
           <Feather name="chevron-left" size={26} color={COLORS.textPrimary} />
         </TouchableOpacity>
-        <Text style={styles.title}>Dress Leo</Text>
+        <Text maxFontSizeMultiplier={1.3} style={styles.title}>Dress Leo</Text>
         <TouchableOpacity onPress={() => router.back()} hitSlop={12} accessibilityRole="button">
-          <Text style={styles.done}>Done</Text>
+          <Text maxFontSizeMultiplier={1.3} style={styles.done}>Done</Text>
         </TouchableOpacity>
       </View>
 
@@ -70,8 +70,8 @@ export default function WardrobeScreen() {
 
         <TouchableOpacity onPress={() => router.push('/shop-freeze' as any)} style={styles.freezeRow} accessibilityRole="button" accessibilityLabel={`Streak Freezes: ${freezes} of ${MAX_FREEZES_HELD}`}>
           <ShopIcon id="streak-freeze" size={30} />
-          <Text style={styles.freezeText}>Streak Freeze <Text style={styles.freezeCount}>×{freezes}</Text></Text>
-          <Text style={styles.freezeSub}>Hold up to {MAX_FREEZES_HELD}</Text>
+          <Text maxFontSizeMultiplier={1.3} style={styles.freezeText}>Streak Freeze <Text maxFontSizeMultiplier={1.3} style={styles.freezeCount}>×{freezes}</Text></Text>
+          <Text maxFontSizeMultiplier={1.3} style={styles.freezeSub}>Hold up to {MAX_FREEZES_HELD}</Text>
           <Feather name="chevron-right" size={16} color={COLORS.textMuted} />
         </TouchableOpacity>
 
@@ -87,7 +87,7 @@ export default function WardrobeScreen() {
           })}
         </View>
 
-        <Text style={styles.gridTitle}>{SLOT_LABEL[slot]} · {mine.length} owned</Text>
+        <Text maxFontSizeMultiplier={1.3} style={styles.gridTitle}>{SLOT_LABEL[slot]} · {mine.length} owned</Text>
         <View style={styles.grid}>
           <TouchableOpacity onPress={clear} style={[styles.tile, { width: tile, height: tile }, emptyWorn && styles.worn]} accessibilityRole="button" accessibilityLabel={`No ${SLOT_LABEL[slot].toLowerCase()}`}>
             <Feather name="slash" size={26} color={COLORS.textMuted} />
@@ -101,14 +101,14 @@ export default function WardrobeScreen() {
             <TouchableOpacity key={c.id} onPress={() => router.push(`/shop-item?id=${c.id}` as any)} style={[styles.tile, { width: tile, height: tile }]} accessibilityRole="button" accessibilityLabel={`${c.name}, ${fmt(priceOf(c)!)} XP`}>
               <ItemArt item={c} size={tile - 30} showTag={false} tint="transparent" />
               <View style={styles.price}>
-                <Flask size={11} /><Text style={styles.priceText}>{fmt(priceOf(c)!)}</Text>
+                <Flask size={11} /><Text maxFontSizeMultiplier={1.3} style={styles.priceText}>{fmt(priceOf(c)!)}</Text>
               </View>
             </TouchableOpacity>
           ))}
         </View>
 
         <TouchableOpacity onPress={() => router.push('/(tabs)/shop' as any)} style={styles.more} accessibilityRole="button">
-          <Text style={styles.moreText}>Get more in the Shop</Text>
+          <Text maxFontSizeMultiplier={1.3} style={styles.moreText}>Get more in the Shop</Text>
           <Feather name="chevron-right" size={16} color={COLORS.accent} />
         </TouchableOpacity>
       </ScrollView>

@@ -16,7 +16,7 @@ import { hasArt, todaysPrice, useShop } from '../hooks/useShop';
 import { LeoAvatar } from '../components/shop/LeoAvatar';
 import { ItemArt } from '../components/shop/ItemArt';
 import { PriceButton, XPChip } from '../components/shop/ShopKit';
-import { Float, Pop, Sheen } from '../components/shop/Motion';
+import { Float, Pop, Sheen, useReduceMotion } from '../components/shop/Motion';
 import { FloatIcon, FloorShadow, SCENES, SceneBackdrop, SceneTheme, Sunburst, Twinkles } from '../components/shop/Scene';
 import { ChunkyButton } from '../components/social/ChunkyButton';
 import { ConfettiBurst } from '../components/ui/ConfettiBurst';
@@ -42,8 +42,8 @@ export default function ShopItemScreen() {
   if (!parts.length) {
     return (
       <View style={[styles.root, styles.center]}>
-        <Text style={styles.name}>That item is gone</Text>
-        <Text style={styles.link} onPress={() => router.back()}>Back to the Shop</Text>
+        <Text maxFontSizeMultiplier={1.3} style={styles.name}>That item is gone</Text>
+        <Text maxFontSizeMultiplier={1.3} style={styles.link} onPress={() => router.back()}>Back to the Shop</Text>
       </View>
     );
   }
@@ -95,7 +95,7 @@ export default function ShopItemScreen() {
         <TouchableOpacity onPress={() => router.back()} hitSlop={12} accessibilityRole="button" accessibilityLabel="Close">
           <Feather name="x" size={24} color={COLORS.textPrimary} />
         </TouchableOpacity>
-        <Text style={styles.topCaption} numberOfLines={1}>{collection ? collection.name : SLOT_LABEL[lead.slot]}</Text>
+        <Text maxFontSizeMultiplier={1.3} style={styles.topCaption} numberOfLines={1}>{collection ? collection.name : SLOT_LABEL[lead.slot]}</Text>
         <XPChip value={shop.balance.balance} />
       </View>
 
@@ -113,31 +113,31 @@ export default function ShopItemScreen() {
         <Float distance={6} style={{ position: 'absolute', left: stageW / 2 - LEO_TRY / 2, top: STAGE_H - LEO_TRY * 0.955 + 4 }}>
           <LeoAvatar look={{ ...shop.look, ...wearing }} size={LEO_TRY} crop={false} />
         </Float>
-        <View style={[styles.rarityTag, { backgroundColor: color }]}><Text style={styles.rarityTagText}>{RARITY_LABEL[lead.rarity].toUpperCase()}</Text></View>
+        <View style={[styles.rarityTag, { backgroundColor: color }]}><Text maxFontSizeMultiplier={1.3} style={styles.rarityTagText}>{RARITY_LABEL[lead.rarity].toUpperCase()}</Text></View>
       </View>
 
       <View style={styles.info}>
-        <Text style={[styles.kicker, { color }]}>
+        <Text maxFontSizeMultiplier={1.3} style={[styles.kicker, { color }]}>
           {bundle ? `SET · ${parts.length} PIECES` : `${RARITY_LABEL[lead.rarity].toUpperCase()} · ${SLOT_LABEL[lead.slot].toUpperCase()}`}
         </Text>
-        <Text style={styles.name}>{name}</Text>
+        <Text maxFontSizeMultiplier={1.3} style={styles.name}>{name}</Text>
         {bundle ? (
           <View style={styles.parts}>{parts.map(p => <ItemArt key={p.id} item={p} size={64} showTag={false} />)}</View>
         ) : earnOnly && progress ? (
           <View style={styles.progressCard}>
-            <Text style={styles.progressLabel}>{progress.met ? 'Unlocked' : progress.label}</Text>
+            <Text maxFontSizeMultiplier={1.3} style={styles.progressLabel}>{progress.met ? 'Unlocked' : progress.label}</Text>
             <View style={styles.track}><View style={[styles.fill, { width: `${Math.max(4, (progress.current / progress.target) * 100)}%` }]} /></View>
-            <Text style={styles.progressCount}>{fmt(progress.current)} / {fmt(progress.target)} · Earned, not bought</Text>
+            <Text maxFontSizeMultiplier={1.3} style={styles.progressCount}>{fmt(progress.current)} / {fmt(progress.target)} · Earned, not bought</Text>
           </View>
         ) : collection ? (
-          <Text style={styles.line}>{collection.hook}.</Text>
+          <Text maxFontSizeMultiplier={1.3} style={styles.line}>{collection.hook}.</Text>
         ) : null}
         {goesWith.length > 0 && (
-          <Text style={styles.goes}>
+          <Text maxFontSizeMultiplier={1.3} style={styles.goes}>
             Goes with {goesWith.map((g, i) => (
               <Text key={g.id}>
                 {i > 0 ? ' and ' : ''}
-                <Text style={styles.link} onPress={() => router.replace(`/shop-item?id=${g.id}` as any)}>{g.name}</Text>
+                <Text maxFontSizeMultiplier={1.3} style={styles.link} onPress={() => router.replace(`/shop-item?id=${g.id}` as any)}>{g.name}</Text>
               </Text>
             ))}
           </Text>
@@ -146,19 +146,19 @@ export default function ShopItemScreen() {
       </View>
 
       <View style={styles.footer}>
-        {error ? <Text style={styles.error}>{error}</Text> : null}
+        {error ? <Text maxFontSizeMultiplier={1.3} style={styles.error}>{error}</Text> : null}
         {owned ? (
           <ChunkyButton label={worn ? 'Wearing it' : 'Wear it'} disabled={worn} onPress={() => { triggerHaptic('light'); void wearAll(); }} height={52} />
         ) : block && block !== 'not_enough' ? (
-          <View style={styles.blocked}><Text style={styles.blockedText}>{block === 'earn_only' ? 'Earn it, XP cannot buy it' : BLOCK_LABEL[block]}</Text></View>
+          <View style={styles.blocked}><Text maxFontSizeMultiplier={1.3} style={styles.blockedText}>{block === 'earn_only' ? 'Earn it, XP cannot buy it' : BLOCK_LABEL[block]}</Text></View>
         ) : (
           <PriceButton price={price!} was={bundle || deal ? full : null} label="Buy & equip" onPress={() => { void buy(); }} busy={busy} height={52} />
         )}
         {!owned && !block && price !== null && (
-          <Text style={styles.after}>{fmt(shop.balance.balance)} XP now, {fmt(shop.balance.balance - price)} after</Text>
+          <Text maxFontSizeMultiplier={1.3} style={styles.after}>{fmt(shop.balance.balance)} XP now, {fmt(shop.balance.balance - price)} after</Text>
         )}
         {block === 'not_enough' && price !== null && (
-          <Text style={styles.after}>{fmt(price - shop.balance.balance)} XP to go</Text>
+          <Text maxFontSizeMultiplier={1.3} style={styles.after}>{fmt(price - shop.balance.balance)} XP to go</Text>
         )}
       </View>
 
@@ -182,7 +182,8 @@ function SuccessView({ name, look, rarity, onWear, onKeep, worn }: { name: strin
   const insets = useSafeAreaInsets();
   const { width, height } = useWindowDimensions();
   const color = RARITY_COLOR[rarity];
-  const leo = Math.min(300, width * 0.78);
+  const leo = Math.min(300, width * 0.78, height * 0.4);
+  const reduce = useReduceMotion();
   useEffect(() => { triggerHaptic('success'); }, []);
   return (
     <View style={StyleSheet.absoluteFill}>
@@ -207,18 +208,18 @@ function SuccessView({ name, look, rarity, onWear, onKeep, worn }: { name: strin
               <Polygon points="196,38 186,46 186,38" fill={shade(color, -0.55)} />
               <Rect x="24" y="4" width="172" height="34" rx="6" fill="#FFFFFF" />
             </Svg>
-            <Text style={[styles.ribbonText, { color: shade(color, -0.35) }]}>{RARITY_LABEL[rarity].toUpperCase()}</Text>
+            <Text maxFontSizeMultiplier={1.3} style={[styles.ribbonText, { color: shade(color, -0.35) }]}>{RARITY_LABEL[rarity].toUpperCase()}</Text>
           </View>
         </Pop>
-        <Text style={styles.successTitle}>It's yours!</Text>
-        <Text style={styles.successLine}>{name}</Text>
-        <Text style={styles.successSub}>New in your wardrobe</Text>
+        <Text maxFontSizeMultiplier={1.3} style={styles.successTitle}>It's yours!</Text>
+        <Text maxFontSizeMultiplier={1.3} style={styles.successLine}>{name}</Text>
+        <Text maxFontSizeMultiplier={1.3} style={styles.successSub}>New in your wardrobe</Text>
       </View>
       <View style={{ paddingHorizontal: 20, paddingBottom: insets.bottom + 18 }}>
         <ChunkyButton tone="gold" label={worn ? 'Wearing it' : 'Wear it'} onPress={onWear} height={54} haptic />
-        <TouchableOpacity onPress={onKeep} style={styles.keep} accessibilityRole="button"><Text style={styles.keepText}>Keep shopping</Text></TouchableOpacity>
+        <TouchableOpacity onPress={onKeep} style={styles.keep} accessibilityRole="button"><Text maxFontSizeMultiplier={1.3} style={styles.keepText}>Keep shopping</Text></TouchableOpacity>
       </View>
-      <ConfettiBurst show count={48} />
+      <ConfettiBurst show={!reduce} count={40} />
     </View>
   );
 }
@@ -247,24 +248,24 @@ function NotEnoughSheet({ visible, onClose, name, price, balance, item }: { visi
         <View style={styles.shortHead}>
           <ItemArt item={item} size={58} showTag={false} />
           <View style={{ flex: 1 }}>
-            <Text style={styles.shortTitle}>{fmt(Math.max(0, price - balance))} XP to go</Text>
-            <Text style={styles.shortSub}>{name} costs {fmt(price)}. You have {fmt(balance)}.</Text>
+            <Text maxFontSizeMultiplier={1.3} style={styles.shortTitle}>{fmt(Math.max(0, price - balance))} XP to go</Text>
+            <Text maxFontSizeMultiplier={1.3} style={styles.shortSub}>{name} costs {fmt(price)}. You have {fmt(balance)}.</Text>
           </View>
         </View>
         <View style={styles.track}><View style={[styles.fill, { width: `${Math.max(4, Math.min(100, (balance / Math.max(1, price)) * 100))}%` }]} /></View>
-        <Text style={styles.earnToday}>Earn it today</Text>
+        <Text maxFontSizeMultiplier={1.3} style={styles.earnToday}>Earn it today</Text>
         {rows.map(r => (
           <TouchableOpacity key={r.title} style={styles.earnRow} onPress={() => go(r.path)} activeOpacity={0.85} accessibilityRole="button">
             <View style={styles.earnIcon}><Feather name={r.icon} size={17} color={COLORS.accent} /></View>
             <View style={{ flex: 1 }}>
-              <Text style={styles.earnTitle}>{r.title}</Text>
-              <Text style={styles.earnSub}>{r.sub}</Text>
+              <Text maxFontSizeMultiplier={1.3} style={styles.earnTitle}>{r.title}</Text>
+              <Text maxFontSizeMultiplier={1.3} style={styles.earnSub}>{r.sub}</Text>
             </View>
-            <Text style={styles.earnXp}>{r.xp}</Text>
+            <Text maxFontSizeMultiplier={1.3} style={styles.earnXp}>{r.xp}</Text>
           </TouchableOpacity>
         ))}
         <ChunkyButton label="Start today's lesson" onPress={() => go('/(tabs)/home')} height={50} style={{ marginTop: 10 }} />
-        <TouchableOpacity onPress={onClose} style={styles.keep} accessibilityRole="button"><Text style={[styles.keepText, { color: COLORS.textSecondary }]}>Maybe later</Text></TouchableOpacity>
+        <TouchableOpacity onPress={onClose} style={styles.keep} accessibilityRole="button"><Text maxFontSizeMultiplier={1.3} style={[styles.keepText, { color: COLORS.textSecondary }]}>Maybe later</Text></TouchableOpacity>
       </View>
     </Modal>
   );

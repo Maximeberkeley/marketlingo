@@ -32,7 +32,7 @@ export default function PerkScreen() {
             <TouchableOpacity onPress={() => router.back()} hitSlop={12} style={styles.close} accessibilityRole="button" accessibilityLabel="Close">
               <Feather name="x" size={20} color="#FFFFFF" />
             </TouchableOpacity>
-            <View style={styles.tag}><Text style={styles.tagText}>✦ PERK</Text></View>
+            <View style={styles.tag}><Text maxFontSizeMultiplier={1.3} style={styles.tagText}>✦ PERK</Text></View>
           </View>
           <View style={styles.glow} />
           <Float distance={6}><View style={styles.badge}><Feather name={perk.icon} size={44} color="#FCD34D" /></View></Float>
@@ -40,15 +40,15 @@ export default function PerkScreen() {
         </LinearGradient>
 
         <View style={styles.body}>
-          <Text style={styles.kicker}>{perk.kicker.toUpperCase()} · COMING SOON</Text>
-          <Text style={styles.name}>{perk.name}</Text>
-          <Text style={styles.line}>{perk.line}</Text>
+          <Text maxFontSizeMultiplier={1.3} style={styles.kicker}>{perk.kicker.toUpperCase()} · COMING SOON</Text>
+          <Text maxFontSizeMultiplier={1.3} style={styles.name}>{perk.name}</Text>
+          <Text maxFontSizeMultiplier={1.3} style={styles.line}>{perk.line}</Text>
 
           <View style={styles.steps}>
             {perk.steps.map((s, i) => (
               <View key={s} style={styles.step}>
-                <View style={styles.stepNum}><Text style={styles.stepNumText}>{i + 1}</Text></View>
-                <Text style={styles.stepText}>{s}</Text>
+                <View style={styles.stepNum}><Text maxFontSizeMultiplier={1.3} style={styles.stepNumText}>{i + 1}</Text></View>
+                <Text maxFontSizeMultiplier={1.3} style={styles.stepText}>{s}</Text>
               </View>
             ))}
           </View>
@@ -57,16 +57,16 @@ export default function PerkScreen() {
             {gate && (
               <View style={styles.req}>
                 <View style={styles.reqRow}>
-                  <Text style={styles.reqLabel}>{gate.label}</Text>
-                  <Text style={[styles.reqValue, gate.met && { color: COLORS.success }]}>{gate.met ? '✓' : `${gate.current} / ${gate.target}`}</Text>
+                  <Text maxFontSizeMultiplier={1.3} style={styles.reqLabel}>{gate.label}</Text>
+                  <Text maxFontSizeMultiplier={1.3} style={[styles.reqValue, gate.met && { color: COLORS.success }]}>{gate.met ? '✓' : `${gate.current} / ${gate.target}`}</Text>
                 </View>
                 <View style={styles.track}><View style={[styles.fill, { width: `${Math.max(4, (gate.current / gate.target) * 100)}%`, backgroundColor: gate.met ? COLORS.success : COLORS.accent }]} /></View>
               </View>
             )}
             <View style={styles.req}>
               <View style={styles.reqRow}>
-                <Text style={styles.reqLabel}>Have {fmt(perk.price)} XP</Text>
-                <Text style={[styles.reqValue, enough && { color: COLORS.success }]}>{enough ? `✓ ${fmt(shop.balance.balance)}` : `${fmt(shop.balance.balance)} / ${fmt(perk.price)}`}</Text>
+                <Text maxFontSizeMultiplier={1.3} style={styles.reqLabel}>Have {fmt(perk.price)} XP</Text>
+                <Text maxFontSizeMultiplier={1.3} style={[styles.reqValue, enough && { color: COLORS.success }]}>{enough ? `✓ ${fmt(shop.balance.balance)}` : `${fmt(shop.balance.balance)} / ${fmt(perk.price)}`}</Text>
               </View>
               <View style={styles.track}><View style={[styles.fill, { width: `${Math.max(4, Math.min(100, (shop.balance.balance / perk.price) * 100))}%`, backgroundColor: enough ? COLORS.success : COLORS.accent }]} /></View>
             </View>
@@ -76,11 +76,11 @@ export default function PerkScreen() {
 
       <View style={styles.footer}>
         {wait?.joined ? (
-          <View style={styles.joined}><Feather name="check" size={17} color={COLORS.success} /><Text style={styles.joinedText}>You're on the list</Text></View>
+          <View style={styles.joined}><Feather name="check" size={17} color={COLORS.success} /><Text maxFontSizeMultiplier={1.3} style={styles.joinedText}>You're on the list</Text></View>
         ) : (
           <ChunkyButton label="Join waitlist" onPress={() => { triggerHaptic('success'); void shop.joinWaitlist(perk.id); }} height={52} />
         )}
-        <Text style={styles.after}>
+        <Text maxFontSizeMultiplier={1.3} style={styles.after}>
           {wait && wait.waitlist >= 10 ? `${fmt(wait.waitlist)} on the waitlist · ` : ''}about {fmt(perk.price)} XP when it opens
         </Text>
       </View>

@@ -32,8 +32,8 @@ export default function CollectionScreen() {
             <Feather name="x" size={20} color="#FFFFFF" />
           </TouchableOpacity>
           <LeoAvatar look={look} size={190} bg="rgba(255,255,255,0.22)" />
-          <Text style={styles.name}>{collection.name}</Text>
-          <Text style={styles.hook}>{collection.hook}</Text>
+          <Text maxFontSizeMultiplier={1.3} style={styles.name}>{collection.name}</Text>
+          <Text maxFontSizeMultiplier={1.3} style={styles.hook}>{collection.hook}</Text>
         </LinearGradient>
         <View style={styles.grid}>
           {items.map(c => {
@@ -42,12 +42,12 @@ export default function CollectionScreen() {
             return (
               <TouchableOpacity key={c.id} onPress={() => router.push(`/shop-item?id=${c.id}` as any)} style={[styles.tile, { width: tile }]} accessibilityRole="button">
                 <View style={[styles.art, { backgroundColor: RARITY_COLOR[c.rarity] + '14' }]}><ItemArt item={c} size={tile - 40} tint="transparent" /></View>
-                <Text style={styles.itemName} numberOfLines={1}>{c.name}</Text>
-                <Text style={[styles.rarity, { color: RARITY_COLOR[c.rarity] }]}>{RARITY_LABEL[c.rarity].toUpperCase()}</Text>
+                <Text maxFontSizeMultiplier={1.3} style={styles.itemName} numberOfLines={1}>{c.name}</Text>
+                <Text maxFontSizeMultiplier={1.3} style={[styles.rarity, { color: RARITY_COLOR[c.rarity] }]}>{RARITY_LABEL[c.rarity].toUpperCase()}</Text>
                 <View style={styles.priceRow}>
-                  {owned ? <Text style={[styles.priceText, { color: COLORS.success }]}>Owned</Text>
-                    : price !== null ? <><Flask size={13} /><Text style={styles.priceText}>{fmt(price)}</Text></>
-                    : <Text style={styles.priceText}>Earn it</Text>}
+                  {owned ? <Text maxFontSizeMultiplier={1.3} style={[styles.priceText, { color: COLORS.success }]}>Owned</Text>
+                    : price !== null ? <><Flask size={13} /><Text maxFontSizeMultiplier={1.3} style={styles.priceText}>{fmt(price)}</Text></>
+                    : <Text maxFontSizeMultiplier={1.3} style={styles.priceText}>Earn it</Text>}
                 </View>
               </TouchableOpacity>
             );

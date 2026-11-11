@@ -66,6 +66,7 @@ const COSMETICS = [
   // Colour variants of the same capelet: a cheaper tier than the red royal one.
   { id: "royal-mantle-blue", slot: "outfit", name: "Sapphire mantle", rarity: "rare", acquisition: "purchase", collection: "royal" },
   { id: "royal-mantle-green", slot: "outfit", name: "Emerald mantle", rarity: "rare", acquisition: "purchase", collection: "royal" },
+  { id: "sapphire-tiara", slot: "hat", name: "Sapphire tiara", rarity: "legendary", acquisition: "purchase", collection: "royal", price: 1e4 },
   { id: "coffee-cup", slot: "held", name: "Coffee cup", rarity: "common", acquisition: "purchase", collection: "startup" },
   { id: "magnifier", slot: "held", name: "Magnifying glass", rarity: "common", acquisition: "purchase", collection: "lab" },
   { id: "test-tube", slot: "held", name: "Test tubes", rarity: "uncommon", acquisition: "purchase", collection: "lab" },
@@ -134,7 +135,7 @@ const POWER_UPS = [
 ];
 const BY_ID = new Map(COSMETICS.map((c) => [c.id, c]));
 const cosmetic = (id) => id ? BY_ID.get(id) : void 0;
-const priceOf = (c) => c.acquisition === "purchase" ? RARITY_PRICE[c.rarity] : null;
+const priceOf = (c) => c.acquisition === "purchase" ? c.price ?? RARITY_PRICE[c.rarity] : null;
 const bundleFullPrice = (b) => b.items.reduce((sum, id) => sum + (priceOf(BY_ID.get(id)) ?? 0), 0);
 const collectionOf = (id) => COLLECTIONS.find((c) => c.id === id);
 export {

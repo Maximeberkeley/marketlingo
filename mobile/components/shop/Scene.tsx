@@ -104,7 +104,7 @@ export function Twinkles({ w, h, color, points = DEFAULT_SPARKS }: { w: number; 
     </>
   );
 }
-const DEFAULT_SPARKS: [number, number, number][] = [[0.08, 0.2, 14], [0.9, 0.12, 18], [0.62, 0.08, 10], [0.15, 0.78, 10], [0.94, 0.7, 12], [0.4, 0.9, 9]];
+const DEFAULT_SPARKS: [number, number, number][] = [[0.08, 0.2, 14], [0.9, 0.12, 18], [0.15, 0.78, 10], [0.94, 0.7, 12]];
 
 /** A glossy shop icon bobbing at a depth: far ones are smaller and softer and move less. */
 export function FloatIcon({ id, size, x, y, phase = 0, depth = 1 }: { id: string; size: number; x: number; y: number; phase?: number; depth?: 0 | 1 | 2 }) {

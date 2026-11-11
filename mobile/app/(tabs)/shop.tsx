@@ -17,7 +17,7 @@ import { hasArt, useShop } from '../../hooks/useShop';
 import { LeoAvatar } from '../../components/shop/LeoAvatar';
 import { ItemArt, ShopIcon } from '../../components/shop/ItemArt';
 import { Carousel, Flask, PriceButton, Row, SectionHead, XPChip } from '../../components/shop/ShopKit';
-import { Float, PressScale, Rise, Sheen, useNow } from '../../components/shop/Motion';
+import { Countdown, Float, MotionScope, PressScale, Rise, ScrollWatch, Sheen, useNow, useScrollWatch } from '../../components/shop/Motion';
 import { FloatIcon, FloorShadow, PERK_SCENE, PerkObject, SCENES, SceneBackdrop, SceneTheme, Sunburst, Twinkles } from '../../components/shop/Scene';
 import { SHOP_SCENES } from '../../lib/shopArt';
 import { XPSheet } from '../../components/shop/XPSheet';
@@ -33,13 +33,18 @@ type Feature = { kind: 'bundle'; bundle: Bundle } | { kind: 'item'; item: Cosmet
 export default function ShopScreen() {
   const insets = useSafeAreaInsets();
   const shop = useShop();
-  const now = useNow();
+  // Motion and countdowns rest while another tab is in front.
+  const [focused, setFocused] = useState(true);
+  const now = useNow(focused, 60_000);
+  const watch = useScrollWatch();
   const [xpOpen, setXpOpen] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
 
   useFocusEffect(useCallback(() => {
+    setFocused(true);
     AsyncStorage.setItem(SHOP_SEEN_KEY, '1').catch(() => {});
     void shop.refresh().then(() => shop.checkRewards());
+    return () => setFocused(false);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []));
 
@@ -77,21 +82,26 @@ export default function ShopScreen() {
           <LeoAvatar look={shop.look} crown={shop.wearsCrown} size={40} bg="transparent" />
           <View style={styles.bagTag}><Feather name="shopping-bag" size={10} color="#FFFFFF" /></View>
           {freezes > 0 && (
-            <View style={styles.freezeBadge}><ShopIcon id="streak-freeze" size={14} /><Text style={styles.freezeBadgeText}>{freezes}</Text></View>
+            <View style={styles.freezeBadge}><ShopIcon id="streak-freeze" size={14} /><Text maxFontSizeMultiplier={1.3} style={styles.freezeBadgeText}>{freezes}</Text></View>
           )}
         </PressScale>
-        <Text style={styles.headerTitle}>Shop</Text>
+        <Text maxFontSizeMultiplier={1.3} style={styles.headerTitle}>Shop</Text>
         <XPChip value={shop.balance.balance} onPress={() => setXpOpen(true)} />
       </View>
 
+      <ScrollWatch.Provider value={watch}>
+      <MotionScope active={focused}>
       <ScrollView
+        onScroll={e => watch.onScroll(e.nativeEvent.contentOffset.y)}
+        scrollEventThrottle={120}
+        onLayout={e => watch.onViewport(e.nativeEvent.layout.height)}
         contentContainerStyle={{ paddingBottom: insets.bottom + 110, paddingTop: 6 }}
         showsVerticalScrollIndicator={false}
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={COLORS.accent} />}
       >
         {feature && (
           <Rise index={0} style={styles.pad}>
-            <PromoCard feature={feature} now={now} owned={feature.kind === 'item' ? shop.owns(feature.item.id) : feature.bundle.items.every(shop.owns)} look={shop.look} />
+            <PromoCard feature={feature} owned={feature.kind === 'item' ? shop.owns(feature.item.id) : feature.bundle.items.every(shop.owns)} look={shop.look} />
           </Rise>
         )}
 
@@ -121,8 +131,8 @@ export default function ShopScreen() {
                 <View key={c.id} style={[styles.claimRow, i > 0 && styles.claimBorder]}>
                   <ItemArt item={c} size={48} showTag={false} />
                   <View style={{ flex: 1 }}>
-                    <Text style={styles.claimTitle} numberOfLines={1}>{c.name}</Text>
-                    <Text style={styles.claimSub} numberOfLines={1}>Earned · {c.rule}</Text>
+                    <Text maxFontSizeMultiplier={1.3} style={styles.claimTitle} numberOfLines={1}>{c.name}</Text>
+                    <Text maxFontSizeMultiplier={1.3} style={styles.claimSub} numberOfLines={1}>Earned · {c.rule}</Text>
                   </View>
                   <TouchableOpacity
                     onPress={() => { triggerHaptic('success'); void shop.markSeen([c.id]); open(`/shop-item?id=${c.id}&claimed=1`); }}
@@ -130,7 +140,7 @@ export default function ShopScreen() {
                     accessibilityRole="button"
                     accessibilityLabel={`Claim ${c.name}`}
                   >
-                    <Text style={styles.claim}>CLAIM</Text>
+                    <Text maxFontSizeMultiplier={1.3} style={styles.claim}>CLAIM</Text>
                   </TouchableOpacity>
                 </View>
               ))}
@@ -146,15 +156,15 @@ export default function ShopScreen() {
                 <View style={[styles.powerArt, { backgroundColor: p.live ? (isDark ? 'rgba(56,189,248,0.14)' : '#EAF6FE') : COLORS.bg1 }]}>
                   {p.live && <Sunburst size={220} cx={84} cy={52} color={isDark ? '#7DD3FC' : '#38BDF8'} opacity={0.3} />}
                   <Float distance={4} phase={p.live ? 0 : 700}><View style={{ opacity: p.live ? 1 : 0.55 }}><ShopIcon id={p.icon} size={64} /></View></Float>
-                  {p.id === STREAK_FREEZE_ID && <View style={styles.haveTag}><Text style={styles.haveText}>You have {freezes}</Text></View>}
+                  {p.id === STREAK_FREEZE_ID && <View style={styles.haveTag}><Text maxFontSizeMultiplier={1.3} style={styles.haveText}>You have {freezes}</Text></View>}
                 </View>
                 <View style={styles.tileBody}>
-                  <Text style={styles.tileTitle}>{p.name}</Text>
-                  <Text style={styles.tileSub} numberOfLines={2}>{p.line}</Text>
+                  <Text maxFontSizeMultiplier={1.3} style={styles.tileTitle}>{p.name}</Text>
+                  <Text maxFontSizeMultiplier={1.3} style={styles.tileSub} numberOfLines={2}>{p.line}</Text>
                   {p.live && p.price ? (
                     <PriceButton price={p.price} onPress={() => open('/shop-freeze')} height={40} style={{ marginTop: 10 }} />
                   ) : (
-                    <View style={styles.soonPill}><Text style={styles.soonText}>Coming soon</Text></View>
+                    <View style={styles.soonPill}><Text maxFontSizeMultiplier={1.3} style={styles.soonText}>Coming soon</Text></View>
                   )}
                 </View>
               </PressScale>
@@ -168,7 +178,7 @@ export default function ShopScreen() {
               <SectionHead title="Daily deals" sub="New picks every midnight" />
               <View style={styles.clock}>
                 <Feather name="clock" size={13} color={COLORS.accent} />
-                <Text style={styles.clockText}>{formatCountdown(msUntilLocalMidnight(now))}</Text>
+                <Countdown until={msUntilLocalMidnight} style={styles.clockText} />
               </View>
             </View>
             <Row>
@@ -182,14 +192,14 @@ export default function ShopScreen() {
                     <View style={[styles.dealArt, { backgroundColor: color + (isDark ? '1F' : '14') }]}>
                       <Sunburst size={240} cx={82} cy={62} color={color} opacity={0.28} />
                       <Float distance={3} phase={(c.id.length % 5) * 300}><ItemArt item={c} size={112} tint="transparent" /></Float>
-                      <View style={styles.offBadge}><Text style={styles.offText}>-30%</Text></View>
+                      <View style={styles.offBadge}><Text maxFontSizeMultiplier={1.3} style={styles.offText}>-30%</Text></View>
                       {c.rarity !== 'common' && <Sheen width={168} every={4200} delay={600} />}
                     </View>
                     <View style={styles.tileBody}>
-                      <Text style={styles.tileTitle} numberOfLines={1}>{c.name}</Text>
-                      <Text style={[styles.rarity, { color }]}>{RARITY_LABEL[c.rarity].toUpperCase()}</Text>
+                      <Text maxFontSizeMultiplier={1.3} style={styles.tileTitle} numberOfLines={1}>{c.name}</Text>
+                      <Text maxFontSizeMultiplier={1.3} style={[styles.rarity, { color }]}>{RARITY_LABEL[c.rarity].toUpperCase()}</Text>
                       {owned ? (
-                        <View style={styles.ownedPill}><Feather name="check" size={13} color={COLORS.success} /><Text style={styles.ownedText}>Owned</Text></View>
+                        <View style={styles.ownedPill}><Feather name="check" size={13} color={COLORS.success} /><Text maxFontSizeMultiplier={1.3} style={styles.ownedText}>Owned</Text></View>
                       ) : (
                         <PriceButton price={d.dealPrice} was={d.price} onPress={() => open(`/shop-item?id=${c.id}&deal=1`)} height={40} style={{ marginTop: 10 }} />
                       )}
@@ -224,18 +234,18 @@ export default function ShopScreen() {
                     <Float distance={4} style={{ position: 'absolute', left: 138 - 70, top: 128 - 140 * 0.955 + 4 }}>
                       <LeoAvatar look={{ hat: '', ...wear }} size={140} crop={false} />
                     </Float>
-                    <Text style={styles.bundleCount}>{b.items.length} pieces</Text>
-                    <View style={styles.saveBadge}><Text style={styles.offText}>Save {save}%</Text></View>
+                    <Text maxFontSizeMultiplier={1.3} style={styles.bundleCount}>{b.items.length} pieces</Text>
+                    <View style={styles.saveBadge}><Text maxFontSizeMultiplier={1.3} style={styles.offText}>Save {save}%</Text></View>
                   </View>
                   <View style={styles.tileBody}>
-                    <Text style={styles.tileTitle}>{b.name}</Text>
-                    <Text style={styles.tileSub} numberOfLines={1}>{b.line}</Text>
+                    <Text maxFontSizeMultiplier={1.3} style={styles.tileTitle}>{b.name}</Text>
+                    <Text maxFontSizeMultiplier={1.3} style={styles.tileSub} numberOfLines={1}>{b.line}</Text>
                     {owned ? (
-                      <View style={styles.ownedPill}><Feather name="check" size={13} color={COLORS.success} /><Text style={styles.ownedText}>Owned</Text></View>
+                      <View style={styles.ownedPill}><Feather name="check" size={13} color={COLORS.success} /><Text maxFontSizeMultiplier={1.3} style={styles.ownedText}>Owned</Text></View>
                     ) : ready ? (
                       <PriceButton price={b.price} was={full} onPress={() => open(`/shop-item?bundle=${b.id}`)} height={42} style={{ marginTop: 10 }} />
                     ) : (
-                      <View style={[styles.soonPill, { marginTop: 12 }]}><Text style={styles.soonText}>Art soon · {fmt(b.price)} XP</Text></View>
+                      <View style={[styles.soonPill, { marginTop: 12 }]}><Text maxFontSizeMultiplier={1.3} style={styles.soonText}>Art soon · {fmt(b.price)} XP</Text></View>
                     )}
                   </View>
                 </PressScale>
@@ -248,8 +258,8 @@ export default function ShopScreen() {
           <Rise index={8} style={styles.section}>
             <LinearGradient colors={isDark ? ['#2A1858', '#1B1240'] : ['#5B21B6', '#4C1D95']} style={styles.earnBand}>
               <Twinkles w={390} h={120} color="#FDE68A" points={[[0.62, 0.22, 16], [0.86, 0.5, 12], [0.74, 0.12, 9]]} />
-              <Text style={styles.earnTitle}>Earn these</Text>
-              <Text style={styles.earnSub}>XP can't buy them. Only you can.</Text>
+              <Text maxFontSizeMultiplier={1.3} style={styles.earnTitle}>Earn these</Text>
+              <Text maxFontSizeMultiplier={1.3} style={styles.earnSub}>XP can't buy them. Only you can.</Text>
               <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 12, paddingTop: 14, paddingRight: 20 }}>
                 {earnable.map(({ c, p }) => (
                   <TouchableOpacity key={c.id} activeOpacity={0.9} onPress={() => open(`/shop-item?id=${c.id}`)} style={styles.earnTile} accessibilityRole="button">
@@ -258,10 +268,10 @@ export default function ShopScreen() {
                       <View style={{ opacity: p.met ? 1 : 0.55 }}><ItemArt item={c} size={92} showTag={false} tint="transparent" /></View>
                       <View style={[styles.lock, p.met && { backgroundColor: '#4ADE80' }]}><Feather name={p.met ? 'check' : 'lock'} size={13} color={p.met ? '#052E16' : '#3A2600'} /></View>
                     </View>
-                    <Text style={styles.earnName} numberOfLines={1}>{c.name}</Text>
-                    <Text style={styles.earnRule} numberOfLines={2}>{p.label}</Text>
+                    <Text maxFontSizeMultiplier={1.3} style={styles.earnName} numberOfLines={1}>{c.name}</Text>
+                    <Text maxFontSizeMultiplier={1.3} style={styles.earnRule} numberOfLines={2}>{p.label}</Text>
                     <View style={styles.earnTrack}><View style={[styles.earnFill, { width: `${Math.max(4, (p.current / p.target) * 100)}%` }]} /></View>
-                    <Text style={styles.earnCount}>{p.met ? 'Earned · on its way' : `${fmt(p.current)} / ${fmt(p.target)}`}</Text>
+                    <Text maxFontSizeMultiplier={1.3} style={styles.earnCount}>{p.met ? 'Earned · on its way' : `${fmt(p.current)} / ${fmt(p.target)}`}</Text>
                   </TouchableOpacity>
                 ))}
               </ScrollView>
@@ -270,9 +280,11 @@ export default function ShopScreen() {
         )}
 
         {!shop.available && shop.ready && (
-          <Text style={styles.offline}>Buying opens soon. Your XP is safe and keeps growing.</Text>
+          <Text maxFontSizeMultiplier={1.3} style={styles.offline}>Buying opens soon. Your XP is safe and keeps growing.</Text>
         )}
       </ScrollView>
+      </MotionScope>
+      </ScrollWatch.Provider>
 
       <XPSheet visible={xpOpen} onClose={() => setXpOpen(false)} inShop />
     </View>
@@ -281,7 +293,7 @@ export default function ShopScreen() {
 
 // ── Pieces ───────────────────────────────────────────────────────────────────
 
-function PromoCard({ feature, now, owned, look }: { feature: Feature; now: Date; owned: boolean; look: Record<string, string> }) {
+function PromoCard({ feature, owned, look }: { feature: Feature; owned: boolean; look: Record<string, string> }) {
   const { width: screen } = useWindowDimensions();
   const W = screen - 40;
   const H = 208;
@@ -310,10 +322,10 @@ function PromoCard({ feature, now, owned, look }: { feature: Feature; now: Date;
         <View style={styles.promoText}>
           <View style={styles.promoKicker}>
             <Feather name="clock" size={11} color="#FDE68A" />
-            <Text style={styles.promoKickerText}>NEW · {formatCountdown(msUntilNextMonday(now))}</Text>
+            <Countdown until={msUntilNextMonday} prefix="NEW · " style={styles.promoKickerText} />
           </View>
-          <Text style={styles.promoTitle} numberOfLines={2}>{title}</Text>
-          <Text style={styles.promoLine} numberOfLines={1}>{line}</Text>
+          <Text maxFontSizeMultiplier={1.15} style={styles.promoTitle} numberOfLines={2} adjustsFontSizeToFit minimumFontScale={0.75}>{title}</Text>
+          <Text maxFontSizeMultiplier={1.15} style={styles.promoLine} numberOfLines={1}>{line}</Text>
           <View style={{ flex: 1 }} />
           {owned ? (
             <ChunkyButton label="Owned · Wear it" onPress={() => open(path)} height={44} tone="plain" />
@@ -352,20 +364,20 @@ function PerkCard({ perk, width, waitlist, joined, locked, onJoin }: { perk: Per
         )}
         <FloatIcon id={scene.icons[0]} size={42} x={14} y={H - 66} depth={2} phase={400} />
         <FloatIcon id={scene.icons[1]} size={34} x={width - 54} y={46} depth={0} phase={1100} />
-        <View style={styles.perkTag}><Text style={styles.perkTagText}>✦ PERK</Text></View>
-        <Text style={styles.perkKicker}>{perk.kicker.toUpperCase()}</Text>
+        <View style={styles.perkTag}><Text maxFontSizeMultiplier={1.3} style={styles.perkTagText}>✦ PERK</Text></View>
+        <Text maxFontSizeMultiplier={1.3} style={styles.perkKicker}>{perk.kicker.toUpperCase()}</Text>
         <Sheen width={width} every={5200} delay={1200} />
       </View>
       <View style={styles.perkBody}>
-        <Text style={styles.perkName} numberOfLines={2}>{perk.name}</Text>
+        <Text maxFontSizeMultiplier={1.3} style={styles.perkName} numberOfLines={2}>{perk.name}</Text>
         <View style={styles.perkStatus}>
           {locked ? <Feather name="lock" size={12} color={COLORS.textMuted} /> : <View style={[styles.statusDot, { backgroundColor: COLORS.success }]} />}
-          <Text style={styles.perkStatusText} numberOfLines={1}>{status}</Text>
+          <Text maxFontSizeMultiplier={1.3} style={styles.perkStatusText} numberOfLines={1}>{status}</Text>
         </View>
         <View style={styles.perkActions}>
-          <View style={styles.perkPrice}><Flask size={15} color="#6D28D9" /><Text style={styles.perkPriceText}>{fmt(perk.price)}</Text></View>
+          <View style={styles.perkPrice}><Flask size={15} color="#6D28D9" /><Text maxFontSizeMultiplier={1.3} style={styles.perkPriceText}>{fmt(perk.price)}</Text></View>
           {joined ? (
-            <View style={styles.joined}><Feather name="check" size={15} color={COLORS.success} /><Text style={styles.joinedText}>You're on the list</Text></View>
+            <View style={styles.joined}><Feather name="check" size={15} color={COLORS.success} /><Text maxFontSizeMultiplier={1.3} style={styles.joinedText}>You're on the list</Text></View>
           ) : (
             <ChunkyButton label={locked ? 'Notify me' : 'Join waitlist'} onPress={onJoin} height={42} style={{ flex: 1 }} haptic />
           )}
@@ -400,13 +412,13 @@ function CollectionCard({ collection, width, owned }: { collection: Collection; 
       </Float>
       <FloatIcon id={t.icons[0]} size={50} x={12} y={H - 74} depth={2} phase={200} />
       <FloatIcon id={t.icons[2]} size={44} x={width - 60} y={H - 62} depth={1} phase={1200} />
-      {!drawn.length && <View style={styles.collPill}><Text style={styles.collPillText}>ART SOON</Text></View>}
+      {!drawn.length && <View style={styles.collPill}><Text maxFontSizeMultiplier={1.3} style={styles.collPillText}>ART SOON</Text></View>}
       <View style={styles.collBody}>
         <View style={{ flex: 1 }}>
-          <Text style={styles.collName}>{collection.name}</Text>
-          <Text style={styles.collHook} numberOfLines={1}>{collection.hook}</Text>
+          <Text maxFontSizeMultiplier={1.3} style={styles.collName}>{collection.name}</Text>
+          <Text maxFontSizeMultiplier={1.3} style={styles.collHook} numberOfLines={1}>{collection.hook}</Text>
           <View style={styles.collMeter}><View style={[styles.collFill, { width: `${Math.max(4, (have / Math.max(1, items.length)) * 100)}%` }]} /></View>
-          <Text style={styles.collOwned}>{have} of {items.length} owned</Text>
+          <Text maxFontSizeMultiplier={1.3} style={styles.collOwned}>{have} of {items.length} owned</Text>
         </View>
         <ChunkyButton label="See set" onPress={() => open(`/shop-collection?id=${collection.id}`)} height={42} tone="plain" style={{ width: 110 }} haptic />
       </View>

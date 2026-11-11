@@ -57,7 +57,7 @@ export function ChunkyButton({ label, onPress, tone = 'accent', icon, busy = fal
         {busy ? <ActivityIndicator color={t.text} /> : (
           <>
             {icon}
-            <Text style={[styles.label, { color: t.text }]} numberOfLines={1}>{label}</Text>
+            <Text style={[styles.label, { color: t.text }]} numberOfLines={1} maxFontSizeMultiplier={1.3} adjustsFontSizeToFit minimumFontScale={0.8}>{label}</Text>
           </>
         )}
       </Animated.View>

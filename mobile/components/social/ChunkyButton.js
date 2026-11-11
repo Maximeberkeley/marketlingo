@@ -39,7 +39,7 @@ function ChunkyButton({ label, onPress, tone = "accent", icon, busy = false, dis
       borderWidth: t.border ? 2 : 0,
       borderColor: t.border,
       transform: [{ translateY: press.interpolate({ inputRange: [0, 1], outputRange: [0, LIP] }) }]
-    }] }, busy ? /* @__PURE__ */ React.createElement(ActivityIndicator, { color: t.text }) : /* @__PURE__ */ React.createElement(React.Fragment, null, icon, /* @__PURE__ */ React.createElement(Text, { style: [styles.label, { color: t.text }], numberOfLines: 1 }, label)))
+    }] }, busy ? /* @__PURE__ */ React.createElement(ActivityIndicator, { color: t.text }) : /* @__PURE__ */ React.createElement(React.Fragment, null, icon, /* @__PURE__ */ React.createElement(Text, { style: [styles.label, { color: t.text }], numberOfLines: 1, maxFontSizeMultiplier: 1.3, adjustsFontSizeToFit: true, minimumFontScale: 0.8 }, label)))
   );
 }
 const styles = StyleSheet.create({

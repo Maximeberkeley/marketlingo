@@ -39,7 +39,7 @@ function FloorShadow({ width, cx, y, dark = 0.4 }) {
 function Twinkles({ w, h, color, points = DEFAULT_SPARKS }) {
   return /* @__PURE__ */ React.createElement(React.Fragment, null, points.map(([fx, fy, s], i) => /* @__PURE__ */ React.createElement(Twinkle, { key: i, phase: i * 530 % 1700, period: 1500 + i % 3 * 400, style: { position: "absolute", left: fx * w - s / 2, top: fy * h - s / 2 } }, /* @__PURE__ */ React.createElement(Sparkle, { size: s, color }))));
 }
-const DEFAULT_SPARKS = [[0.08, 0.2, 14], [0.9, 0.12, 18], [0.62, 0.08, 10], [0.15, 0.78, 10], [0.94, 0.7, 12], [0.4, 0.9, 9]];
+const DEFAULT_SPARKS = [[0.08, 0.2, 14], [0.9, 0.12, 18], [0.15, 0.78, 10], [0.94, 0.7, 12]];
 function FloatIcon({ id, size, x, y, phase = 0, depth = 1 }) {
   const s = size * [0.78, 1, 1.12][depth];
   return /* @__PURE__ */ React.createElement(Float, { distance: [3, 5, 8][depth], phase, style: { position: "absolute", left: x, top: y, opacity: [0.85, 1, 1][depth] } }, /* @__PURE__ */ React.createElement(ShopIcon, { id, size: s }));

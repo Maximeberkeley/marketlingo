@@ -11,8 +11,10 @@ import {
 import { ART_READY_IDS, ICON_IDS } from '../mobile/lib/shopArtIds';
 
 const read = (p: string) => readFileSync(p, 'utf8');
+// The shop's schema migration plus the catalog additions that came after it, in order.
 const migrationFile = readdirSync('drizzle/migrations').find(f => f.endsWith('_xp_shop.sql'))!;
-const migration = read(`drizzle/migrations/${migrationFile}`);
+const migration = [migrationFile, ...readdirSync('drizzle/migrations').filter(f => /^\d+_shop_catalog_.*\.sql$/.test(f)).sort()]
+  .map(f => read(`drizzle/migrations/${f}`)).join('\n');
 const stats = { bestStreak: 12, xpEarned: 9120, weeklyCasesSubmitted: 0, lessonsCompleted: 8 };
 
 describe('one XP balance, earned kept apart', () => {
@@ -49,11 +51,15 @@ describe('purchase rules', () => {
   });
   it('prices by rarity tier, freezes at 400, earn-only and default items at no price', () => {
     for (const c of COSMETICS) {
-      if (c.acquisition === 'purchase') expect(priceOf(c), c.id).toBe(RARITY_PRICE[c.rarity]);
+      if (c.acquisition === 'purchase') expect(priceOf(c), c.id).toBe(c.price ?? RARITY_PRICE[c.rarity]);
       else expect(priceOf(c), c.id).toBeNull();
     }
     expect(RARITY_PRICE).toEqual({ common: 300, uncommon: 500, rare: 800, epic: 2000, legendary: 4000 });
     expect(STREAK_FREEZE_PRICE).toBe(400);
+    // a founder-set price overrides the tier, and only on items that are sold
+    expect(COSMETICS.find(c => c.id === 'sapphire-tiara')).toMatchObject({ rarity: 'legendary', acquisition: 'purchase', price: 10000 });
+    expect(priceOf(COSMETICS.find(c => c.id === 'sapphire-tiara')!)).toBe(10000);
+    for (const c of COSMETICS.filter(c => c.price !== undefined)) expect(c.acquisition, c.id).toBe('purchase');
     expect(COSMETICS.find(c => c.id === DEFAULT_HAT)?.acquisition).toBe('default');
   });
   it('makes bundles cheaper than their pieces', () => {

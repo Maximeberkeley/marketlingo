@@ -7,6 +7,7 @@ const SHOP_ART = {
   "grad-cap": require("../assets/shop/hat/grad-cap.png"),
   "monthly-crown": require("../assets/shop/hat/monthly-crown.png"),
   "phoenix-feather": require("../assets/shop/hat/phoenix-feather.png"),
+  "sapphire-tiara": require("../assets/shop/hat/sapphire-tiara.png"),
   "top-hat": require("../assets/shop/hat/top-hat.png"),
   "trader-visor": require("../assets/shop/hat/trader-visor.png"),
   "aviators": require("../assets/shop/glasses/aviators.png"),

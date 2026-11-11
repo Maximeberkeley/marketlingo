@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { readFileSync } from 'node:fs';
+import { readFileSync, readdirSync } from 'node:fs';
 import { execFileSync } from 'node:child_process';
 import { COLLECTIONS, PERKS } from '../mobile/lib/shopCatalog';
 
@@ -38,13 +38,48 @@ describe('shop scenes', () => {
   });
 });
 
+describe('clean on the phone', () => {
+  const pngWidth = (p: string) => readFileSync(p).readUInt32BE(16);
+
+  it('rests looping motion when the tab is behind, a section is off screen, or a carousel card is not in front', () => {
+    for (const fn of ['Sheen', 'Float', 'Spin', 'Twinkle']) {
+      const body = motion.slice(motion.indexOf(`export function ${fn}(`));
+      expect(body.slice(0, 200), fn).toContain('useMotionOff()');
+    }
+    expect(motion).toContain('<MotionScope active={seen}>{children}</MotionScope>');
+    expect(shop).toContain('<MotionScope active={focused}>');
+    expect(shop).toContain('return () => setFocused(false);');
+    expect(shop).toContain('const now = useNow(focused, 60_000);');
+    expect(read('mobile/components/shop/ShopKit.tsx')).toContain('<MotionScope active={i === Math.min(index, items.length - 1)}>');
+    // countdowns re-render only their own text
+    expect(shop).toContain('<Countdown until={msUntilLocalMidnight}');
+    // one reduced-motion subscription for all of them
+    expect((motion.match(/addEventListener\?\.\('reduceMotionChanged'/g) ?? []).length).toBe(1);
+    expect(item).toContain('<ConfettiBurst show={!reduce}');
+  });
+
+  it('ships layers at 512 px, icons at 256 and keeps a script for it', () => {
+    for (const dir of ['base', 'hat', 'glasses', 'outfit']) {
+      for (const f of readdirSync(`mobile/assets/shop/${dir}`)) expect(pngWidth(`mobile/assets/shop/${dir}/${f}`), `${dir}/${f}`).toBeLessThanOrEqual(512);
+    }
+    for (const f of readdirSync('mobile/assets/shop/icons')) expect(pngWidth(`mobile/assets/shop/icons/${f}`), f).toBeLessThanOrEqual(256);
+    expect(read('scripts/shop/resize-art.mjs')).toContain('hat: 512');
+  });
+
+  it('caps text growth so buttons and cards hold at large Dynamic Type sizes', () => {
+    expect(read('mobile/components/social/ChunkyButton.tsx')).toContain('maxFontSizeMultiplier={1.3} adjustsFontSizeToFit');
+    expect(shop).not.toMatch(/<Text style=/);
+    expect(item).not.toMatch(/<Text style=/);
+  });
+});
+
 describe('the Shop page and the celebration', () => {
   it('keeps inventory off the page: a bag button with the freeze count, and "You have" on the freeze card', () => {
     expect(shop).not.toContain('title="Your items"');
     expect(shop).not.toContain('<ItemTile');
     expect(shop).toContain('styles.freezeBadge');
     expect(shop).toContain('You have {freezes}');
-    expect(read('mobile/app/wardrobe.tsx')).toContain('Streak Freeze <Text style={styles.freezeCount}>×{freezes}</Text>');
+    expect(read('mobile/app/wardrobe.tsx')).toContain('Streak Freeze <Text maxFontSizeMultiplier={1.3} style={styles.freezeCount}>×{freezes}</Text>');
   });
 
   it('celebrates in the rarity colour with Wear it first and no XP on screen', () => {
