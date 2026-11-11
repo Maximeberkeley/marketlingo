@@ -433,7 +433,8 @@ export function ArenaScreen({ waves, marketId, marketName, bestScore, onExit, on
   // The strip shows the main run, or the second chance while it plays.
   const strip: Mark[] = inAgain ? wave.exercises.map((_, i) => againMarks[i]) : Array.from({ length: mainTotal }, (_, i) => marks[i]);
   const current = inAgain ? beatIndex : mainPosition;
-  const roundLabel = inAgain ? 'SECOND CHANCE' : `ROUND ${waveIndex + 1} OF ${waves.length}`;
+  // A single-round run (a review) names the round instead of counting it.
+  const roundLabel = inAgain ? 'SECOND CHANCE' : waves.length === 1 && wave?.name ? wave.name.toUpperCase() : `ROUND ${waveIndex + 1} OF ${waves.length}`;
 
   return (
     <View style={[styles.root, { paddingTop: insets.top + 8 }]}>
@@ -568,7 +569,7 @@ export function ArenaScreen({ waves, marketId, marketName, bestScore, onExit, on
                 ))}
               </View>
             )}
-            <Text style={styles.waveKicker}>{inAgain ? 'Bonus round' : `Round ${waveIndex + 1} of ${waves.length}`}</Text>
+            <Text style={styles.waveKicker}>{inAgain ? 'Bonus round' : waves.length === 1 ? 'Review round' : `Round ${waveIndex + 1} of ${waves.length}`}</Text>
             {!!wave.name && <Text style={styles.waveName}>{wave.name}</Text>}
             {!!wave.tagline && <Text style={styles.waveTagline}>{wave.tagline}</Text>}
             {!!wave.covers && <Text style={styles.waveCovers}>{wave.covers}</Text>}

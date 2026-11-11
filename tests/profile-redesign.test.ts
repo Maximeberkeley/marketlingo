@@ -33,8 +33,11 @@ describe('Profile redesign', () => {
     expect(profile).toContain('crown: friendsData.friends.length > 0 ? crownStatus(board) : null,');
     expect(profile).toContain('urgent: social.available ? homeSocialLine(social.social) : null,');
     expect(card).toContain('<LeoAnimated clip="leo-king" size={92} fallback={LEO_KING} />');
-    expect(card).toContain("{info.streaks.active > 0 ? `${info.streaks.lit} of ${info.streaks.active} streaks lit` : 'Start a friend streak'}");
-    expect(card).toContain('label="Open Friends"');
+    expect(card).toContain("parts.push(`${info.streaks.lit} of ${info.streaks.active} streaks lit`)");
+    // Calm: one status line, Add in the header, a row only for something to act on, no button pair.
+    expect(card).toContain('{info.urgent?.actionable && (');
+    expect(card).toContain('accessibilityLabel="Add friends"');
+    expect(card).not.toContain('label="Open Friends"');
   });
 
   it('groups the rest, with Achievements as a real row and no League', () => {
