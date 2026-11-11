@@ -1,0 +1,371 @@
+{
+  "schema_version": 1,
+  "week_start": "2026-11-23",
+  "market_id": "ai",
+  "kind": "original",
+  "presented_by": "MarketLingo",
+  "title": "Duolingo: Users Up 29%, Bookings Up 12%",
+  "topic": "Turning a fast-growing free user base into paying subscribers without hurting the free product",
+  "hook": "Duolingo's daily users grew 29% in a year, but bookings grew 12%. Management says 2027 leans into monetization. Which lever goes first?",
+  "tension": "A much larger free base is a long-term asset only if it converts, yet pushing conversion too hard could damage the free experience that drives the growth.",
+  "as_of": "2026-11-10",
+  "stale_after": "2026-12-07",
+  "disclosure": "Educational case built from public company reports as of November 10, 2026. It is not investment advice, and the ratios in Exhibit 2 are our arithmetic, not figures the company reports.",
+  "brief": [
+    "Duolingo reported third-quarter 2026 results on November 3, 2026. Daily active users reached 64.9M, up 29% from 50.5M a year earlier and faster than the 23% growth of the previous quarter. Paid subscribers reached 13.1M, up 14% from 11.5M. Total bookings, the money customers committed to spend in the quarter, were $316.1M, up 12% from $281.9M.",
+    "Users are growing faster than revenue. Subscription bookings rose 16% to $278.4M. Outside subscriptions the picture is weaker: advertising revenue was roughly flat at $20.8M, down 1%, and in-app purchase revenue fell 38% to $6.9M. Duolingo also accrued $11.4M in the quarter for a company-wide bonus tied to Q4 daily-user growth of 25% or greater.",
+    "Management says 2027 will lean more into monetization after a year focused on teaching quality and user growth, but with a firm internal rule not to make the free experience worse. It says a much larger active base is a long-term asset because some users take years to convert, and it gave no free-to-paid conversion rate. It also says paid subscriber growth is slowing and should bottom within a couple of quarters.",
+    "As of the November 3, 2026 call, the levers management has named are: longer free trials, which it says raise conversion and which it plans to expand; higher-quality advertising in place of low-quality ad networks, which it says will take time; in-app purchases such as avatar suits; Chess, which reached 10M daily users and which it calls under-monetized; a cheaper ad-supported tier, where tests have not been big wins; and the Family plan. Duolingo is also retiring its highest tier, Max, now a single-digit share of paid subscribers and bookings, because AI video calls that once cost about $0.30 each now cost under $0.01 and move into the Super tier.",
+    "Gross margin was 72.9% in the quarter. Duolingo guides to 72.0% for Q4 as video calls roll out to all paid subscribers."
+  ],
+  "exhibits": [
+    {
+      "id": "q3",
+      "title": "Exhibit 1. Third quarter, 2025 and 2026",
+      "note": "Daily and monthly users and subscribers are for the quarter or its end. Advertising and in-app purchases are revenue, not bookings.",
+      "columns": ["Metric", "Q3 2025", "Q3 2026", "Change"],
+      "rows": [
+        ["Daily active users", "50.5M", "64.9M", "29%"],
+        ["Monthly active users", "135.3M", "153.1M", "13%"],
+        ["Paid subscribers", "11.5M", "13.1M", "14%"],
+        ["Total bookings", "$281.9M", "$316.1M", "12%"],
+        ["Subscription bookings", "$240.3M", "$278.4M", "16%"],
+        ["Advertising revenue", "$21.0M", "$20.8M", "-1%"],
+        ["In-app purchase revenue", "$11.1M", "$6.9M", "-38%"]
+      ],
+      "source_ids": ["letter", "tenq"]
+    },
+    {
+      "id": "ratios",
+      "title": "Exhibit 2. Worked ratios (our arithmetic)",
+      "note": "Each ratio divides one reported figure by another for the same quarter. Read them as direction, not as a price or a conversion rate.",
+      "columns": ["Ratio", "Q3 2025", "Q3 2026", "Change"],
+      "rows": [
+        ["Paid subscribers as a share of monthly users", "8.5%", "8.6%", "—"],
+        ["Paid subscribers as a share of daily users", "22.8%", "20.2%", "—"],
+        ["Total bookings per daily user", "$5.58", "$4.87", "-12.7%"],
+        ["Bookings outside subscriptions", "$41.6M", "$37.7M", "-9.4%"]
+      ],
+      "source_ids": ["letter"]
+    }
+  ],
+  "question": {
+    "text": "You lead monetization planning for Duolingo's 2027 plan. Management says it will lean further into monetization but will not make the free experience worse. Choose the one lever you would scale first, and defend the choice with the numbers."
+  },
+  "response": {
+    "parts": [
+      {
+        "id": "read",
+        "label": "Read the numbers",
+        "prompt": "What do the ratios say about the new daily users? Is the gap between user growth and bookings a problem, or a delay?",
+        "max_words": 90,
+        "minutes": 2
+      },
+      {
+        "id": "lever",
+        "label": "Your lever",
+        "prompt": "Pick one lever from the brief, or propose another. Say who it targets, what you expect to change, and why it goes first.",
+        "max_words": 140,
+        "minutes": 2.5
+      },
+      {
+        "id": "test",
+        "label": "Test and guardrail",
+        "prompt": "What would you measure, what protects the free experience, and what result would make you stop?",
+        "max_words": 100,
+        "minutes": 2
+      },
+      {
+        "id": "risk",
+        "label": "Biggest risk",
+        "prompt": "What is the most likely way this goes wrong, and what would you do about it?",
+        "max_words": 60,
+        "minutes": 1.5
+      }
+    ]
+  },
+  "rubric": [
+    {
+      "id": "reading",
+      "name": "Reading the data",
+      "weight": 25,
+      "part_ids": ["read"],
+      "measures": "Whether the answer draws the right implication from user growth outpacing paid growth and bookings.",
+      "excellent": "Notes that bookings per daily user fell, compares the two denominators (daily and monthly users) and explains why they differ, and says whether the gap looks like a delay or a leak and what would tell them apart.",
+      "weak": "Restates the growth rates without saying what they imply, or declares the strategy a failure from one quarter."
+    },
+    {
+      "id": "lever",
+      "name": "Choice and sequencing of one lever",
+      "weight": 25,
+      "part_ids": ["lever"],
+      "measures": "Whether one lever is chosen and ranked against the others using the economics in the case.",
+      "excellent": "Picks one lever, says who it targets and what should change, explains why it beats the others on the evidence, and says what would have to be true for another lever to win.",
+      "weak": "Lists several levers without choosing, or picks one with no link to the numbers."
+    },
+    {
+      "id": "numbers",
+      "name": "Use of the numbers",
+      "weight": 15,
+      "part_ids": ["all"],
+      "measures": "Whether figures are used correctly across all parts, without inventing data.",
+      "excellent": "Uses at least two figures correctly, labels derived ratios as ratios, and does not invent a conversion rate or any figure that is not in the case.",
+      "weak": "Quotes a conversion rate the company has not disclosed, mixes up bookings and revenue, or misreads a ratio."
+    },
+    {
+      "id": "test",
+      "name": "Test design and guardrail",
+      "weight": 20,
+      "part_ids": ["test"],
+      "measures": "Whether the answer defines what is measured, how it is compared, and what protects the free experience.",
+      "excellent": "A comparison group, a primary metric, a retention or growth guardrail for free users, and a clear stop condition.",
+      "weak": "Says to run an A/B test and watch the results, with no metric, guardrail or stop condition."
+    },
+    {
+      "id": "risk",
+      "name": "Risk and second-order effects",
+      "weight": 15,
+      "part_ids": ["risk"],
+      "measures": "Whether the answer finds a plausible way the plan fails and responds to it.",
+      "excellent": "A specific failure such as cannibalising existing payers or margin pressure, with a concrete response.",
+      "weak": "A generic risk such as users may not like it, with no response."
+    }
+  ],
+  "model_answer": {
+    "summary": "Scale longer free trials first: they act on users already here, leave the free product alone, and management says they improve conversion. Test against a holdout with the daily-user growth goal as the guardrail.",
+    "parts": [
+      {
+        "part_id": "read",
+        "text": "Daily users grew 29% while paid subscribers grew 14% and bookings 12%, so bookings per daily user fell 12.7% to $4.87. Paid subscribers as a share of daily users fell from 22.8% to 20.2%, yet against monthly users the share is flat, 8.5% to 8.6%. The two denominators disagree because the growth is in how often existing users show up, not in how many users exist. That reads as a delay, not a failure, since management says some users take years to convert. The risk is that part of the delay is permanent, which is why the response has to be tested."
+      },
+      {
+        "part_id": "lever",
+        "text": "Scale longer free trials. They target users who are already engaged, so they do not touch the free experience. Management says trials of video calls make people more likely to subscribe and that longer trials improved conversion. The other levers are weaker first moves: advertising revenue was roughly flat at $20.8M and the better ad mix will take time, in-app purchases are small and shrinking at $6.9M, the cheaper tier has not been a big win, and Chess is a separate product to build. Trials act on the 64.9M daily users immediately."
+      },
+      {
+        "part_id": "test",
+        "text": "Run it as a holdout by country or cohort. Measure trial-to-paid conversion, retention after the first renewal, and bookings per new user against the holdout. The guardrail protects the free experience: daily-user growth must stay at or above the 25% the company has tied its bonus to, and free-user retention must not fall. Stop if bookings per new user do not beat the holdout once the cost of the trial, including AI usage, is counted."
+      },
+      {
+        "part_id": "risk",
+        "text": "Trial users cancel before paying, or existing payers wait for a trial instead of subscribing, and margin slips: Duolingo already guides to 72.0% for Q4, down from 72.9%, as video calls reach all paid subscribers. Cap the most AI-heavy features inside the trial and watch margin per trial user. If conversion rises but margin falls, shorten the trial for low-intent users."
+      }
+    ],
+    "alternatives": [
+      {
+        "option": "Monetize Chess",
+        "better_when": "The goal is a new revenue line and conversion in the core app is already healthy."
+      },
+      {
+        "option": "Raise the quality of advertising",
+        "better_when": "Willingness to pay is low in the markets that drive growth, so reach matters more than subscriptions."
+      },
+      {
+        "option": "Push the Family plan and tier pricing",
+        "better_when": "Conversion is healthy but revenue per payer is the gap."
+      }
+    ],
+    "key_fact_ids": ["dau_g", "paid_g", "bpd26", "bpd25", "bpd_chg"]
+  },
+  "common_traps": [
+    {
+      "trap": "Quoting a conversion rate",
+      "why": "Duolingo has not disclosed one. Dividing paid subscribers by daily or monthly users gives a ratio, not a conversion rate, and the two denominators tell different stories: 22.8% to 20.2% against 8.5% to 8.6%."
+    },
+    {
+      "trap": "Calling slower paid growth proof the strategy failed",
+      "why": "Management says users can take years to convert, so paid growth lags user growth by design. The better question is whether the gap is a delay or a leak."
+    },
+    {
+      "trap": "Breaking the guardrail",
+      "why": "A paywall on core lessons or other cuts to the free product contradicts management's stated rule and risks the daily-user growth that the company has tied a bonus to."
+    },
+    {
+      "trap": "Listing every lever without choosing",
+      "why": "The task is to sequence. A strong answer says why one lever goes first and what would have to be true for another to win."
+    },
+    {
+      "trap": "Treating the in-app purchase decline as the whole story",
+      "why": "In-app purchase revenue of $6.9M is small next to subscription bookings of $278.4M. It is a signal, not the lever to fix first."
+    }
+  ],
+  "sources": [
+    {
+      "id": "letter",
+      "title": "Duolingo Q3 2026 shareholder letter (Form 8-K exhibit)",
+      "publisher": "U.S. Securities and Exchange Commission, filed by Duolingo, Inc.",
+      "url": "https://www.sec.gov/Archives/edgar/data/1562088/000162828026069474/q3fy26duolingo9-30x26share.htm",
+      "tier": "primary",
+      "published": "2026-11-03",
+      "accessed": "2026-11-10"
+    },
+    {
+      "id": "tenq",
+      "title": "Duolingo Form 10-Q for the quarter ended September 30, 2026",
+      "publisher": "U.S. Securities and Exchange Commission, filed by Duolingo, Inc.",
+      "url": "https://www.sec.gov/Archives/edgar/data/0001562088/000162828026069692/duol-20260930.htm",
+      "tier": "primary",
+      "published": null,
+      "published_note": "The page does not show the filing date; the period ended September 30, 2026.",
+      "accessed": "2026-11-10"
+    },
+    {
+      "id": "yahoo",
+      "title": "Duolingo Inc (DUOL) Q3 2026 Earnings Call Highlights",
+      "publisher": "GuruFocus, syndicated on Yahoo Finance",
+      "url": "https://finance.yahoo.com/markets/stocks/articles/duolingo-inc-duol-q3-2026-050948751.html",
+      "tier": "secondary",
+      "published": null,
+      "published_note": "The page shows no date; it summarises the Q3 2026 earnings call and is a summary, not a transcript.",
+      "accessed": "2026-11-10"
+    },
+    {
+      "id": "investing",
+      "title": "Earnings call transcript: Duolingo Q3 2026 revenue beats as users accelerate",
+      "publisher": "Investing.com",
+      "url": "https://www.investing.com/news/transcripts/earnings-call-transcript-duolingo-q3-2026-revenue-beats-as-users-accelerate-93CH-4996909",
+      "tier": "secondary",
+      "published": null,
+      "published_note": "The page shows no date; it covers the Q3 2026 earnings call.",
+      "accessed": "2026-11-10"
+    },
+    {
+      "id": "aware",
+      "title": "Duolingo Q3 2026: DAUs Surge 29%, Guidance Raised, and Max Tier Sunsets",
+      "publisher": "AWARE",
+      "url": "https://awareinvest.com/terminal/intel/duolingo-q3-2026-daus-surge-29-guidance-raised-and-max-tier-sunsets-2026-11-03-1794c2336c295426f10bdaf6ea9ac27d",
+      "tier": "secondary",
+      "published": "2026-11-03",
+      "accessed": "2026-11-10"
+    }
+  ],
+  "facts": [
+    { "id": "dau26", "label": "Daily active users, Q3 2026", "kind": "reported", "display": "64.9M", "value": 64.9, "as_of": "2026-09-30", "sources": ["letter", "aware"],
+      "verified": [
+        { "pass": 1, "source_id": "letter", "method": "table_row", "checked_on": "2026-11-10", "evidence": "Daily active users (DAUs) (1) | 50.5 | 64.9 | 29%" },
+        { "pass": 2, "source_id": "aware", "method": "second_source", "checked_on": "2026-11-10", "evidence": "Daily active users (DAUs): 64.9 million, up 29% year over year" } ] },
+    { "id": "dau25", "label": "Daily active users, Q3 2025", "kind": "reported", "display": "50.5M", "value": 50.5, "as_of": "2025-09-30", "sources": ["letter"],
+      "verified": [
+        { "pass": 1, "source_id": "letter", "method": "table_row", "checked_on": "2026-11-10", "evidence": "Daily active users (DAUs) (1) | 50.5 | 64.9 | 29%" },
+        { "pass": 2, "source_id": "letter", "method": "verbatim_refetch", "checked_on": "2026-11-10", "evidence": "Key metrics table: Daily active users | Q3 2025 50.5M | Q3 2026 64.9M | 29%" } ] },
+    { "id": "dau_g", "label": "Daily active user growth, Q3 2026 year over year", "kind": "reported", "display": "29%", "value": 29, "as_of": "2026-09-30", "sources": ["letter", "aware"],
+      "verified": [
+        { "pass": 1, "source_id": "letter", "method": "table_row", "checked_on": "2026-11-10", "evidence": "Daily active users (DAUs) (1) | 50.5 | 64.9 | 29%" },
+        { "pass": 2, "source_id": "aware", "method": "second_source", "checked_on": "2026-11-10", "evidence": "Daily active users (DAUs): 64.9 million, up 29% year over year" } ] },
+    { "id": "dau_g_q2", "label": "Daily active user growth, Q2 2026 year over year", "kind": "reported", "display": "23%", "value": 23, "as_of": "2026-06-30", "sources": ["yahoo", "investing"],
+      "verified": [
+        { "pass": 1, "source_id": "yahoo", "method": "quote", "checked_on": "2026-11-10", "evidence": "DAU grew 29% year over year, up from 23% in Q2" },
+        { "pass": 2, "source_id": "investing", "method": "quote", "checked_on": "2026-11-10", "evidence": "DAU growth: 29% YoY (vs. 23% in Q2)" } ] },
+    { "id": "mau26", "label": "Monthly active users, Q3 2026", "kind": "reported", "display": "153.1M", "value": 153.1, "as_of": "2026-09-30", "sources": ["letter"],
+      "verified": [
+        { "pass": 1, "source_id": "letter", "method": "quote", "checked_on": "2026-11-10", "evidence": "MAUs were 135.3 million and 153.1 million for the three months ended September 30, 2025 and 2026" },
+        { "pass": 2, "source_id": "letter", "method": "verbatim_refetch", "checked_on": "2026-11-10", "evidence": "Key metrics table: Monthly active users | Q3 2025 135.3M | Q3 2026 153.1M | 13%" } ] },
+    { "id": "mau25", "label": "Monthly active users, Q3 2025", "kind": "reported", "display": "135.3M", "value": 135.3, "as_of": "2025-09-30", "sources": ["letter"],
+      "verified": [
+        { "pass": 1, "source_id": "letter", "method": "quote", "checked_on": "2026-11-10", "evidence": "MAUs were 135.3 million and 153.1 million for the three months ended September 30, 2025 and 2026" },
+        { "pass": 2, "source_id": "letter", "method": "verbatim_refetch", "checked_on": "2026-11-10", "evidence": "Key metrics table: Monthly active users | Q3 2025 135.3M | Q3 2026 153.1M | 13%" } ] },
+    { "id": "mau_g", "label": "Monthly active user growth", "kind": "derived", "display": "13%", "value": 13, "formula": "mau26 / mau25 - 1", "scale": 100, "inputs": ["mau26", "mau25"], "decimals": 0, "as_of": "2026-09-30" },
+    { "id": "paid26", "label": "Paid subscribers, end of Q3 2026", "kind": "reported", "display": "13.1M", "value": 13.1, "as_of": "2026-09-30", "sources": ["letter", "aware"],
+      "verified": [
+        { "pass": 1, "source_id": "letter", "method": "table_row", "checked_on": "2026-11-10", "evidence": "Paid subscribers (period end) | 11.5 | 13.1 | 14%" },
+        { "pass": 2, "source_id": "aware", "method": "second_source", "checked_on": "2026-11-10", "evidence": "Paid subscribers: 13.1 million, up 14%" } ] },
+    { "id": "paid25", "label": "Paid subscribers, end of Q3 2025", "kind": "reported", "display": "11.5M", "value": 11.5, "as_of": "2025-09-30", "sources": ["letter"],
+      "verified": [
+        { "pass": 1, "source_id": "letter", "method": "table_row", "checked_on": "2026-11-10", "evidence": "Paid subscribers (period end) | 11.5 | 13.1 | 14%" },
+        { "pass": 2, "source_id": "letter", "method": "verbatim_refetch", "checked_on": "2026-11-10", "evidence": "Key metrics table: Paid subscribers (period end) | Q3 2025 11.5M | Q3 2026 13.1M | 14%" } ] },
+    { "id": "paid_g", "label": "Paid subscriber growth", "kind": "reported", "display": "14%", "value": 14, "as_of": "2026-09-30", "sources": ["letter", "aware"],
+      "verified": [
+        { "pass": 1, "source_id": "letter", "method": "table_row", "checked_on": "2026-11-10", "evidence": "Paid subscribers (period end) | 11.5 | 13.1 | 14%" },
+        { "pass": 2, "source_id": "aware", "method": "second_source", "checked_on": "2026-11-10", "evidence": "Paid subscribers: 13.1 million, up 14%" } ] },
+    { "id": "book26", "label": "Total bookings, Q3 2026", "kind": "reported", "display": "$316.1M", "value": 316.1, "as_of": "2026-09-30", "sources": ["letter", "aware"],
+      "verified": [
+        { "pass": 1, "source_id": "letter", "method": "table_row", "checked_on": "2026-11-10", "evidence": "Total bookings | $281.9 | $316.1 | 12%" },
+        { "pass": 2, "source_id": "aware", "method": "second_source", "checked_on": "2026-11-10", "evidence": "Total bookings: $316.1 million, up 12%" } ] },
+    { "id": "book25", "label": "Total bookings, Q3 2025", "kind": "reported", "display": "$281.9M", "value": 281.9, "as_of": "2025-09-30", "sources": ["letter"],
+      "verified": [
+        { "pass": 1, "source_id": "letter", "method": "table_row", "checked_on": "2026-11-10", "evidence": "Total bookings | $281.9 | $316.1 | 12%" },
+        { "pass": 2, "source_id": "letter", "method": "verbatim_refetch", "checked_on": "2026-11-10", "evidence": "Key metrics table: Total bookings | Q3 2025 $281.9M | Q3 2026 $316.1M | 12%" } ] },
+    { "id": "book_g", "label": "Total bookings growth", "kind": "reported", "display": "12%", "value": 12, "as_of": "2026-09-30", "sources": ["letter", "aware"],
+      "verified": [
+        { "pass": 1, "source_id": "letter", "method": "table_row", "checked_on": "2026-11-10", "evidence": "Total bookings | $281.9 | $316.1 | 12%" },
+        { "pass": 2, "source_id": "aware", "method": "second_source", "checked_on": "2026-11-10", "evidence": "Total bookings: $316.1 million, up 12%" } ] },
+    { "id": "subb26", "label": "Subscription bookings, Q3 2026", "kind": "reported", "display": "$278.4M", "value": 278.4, "as_of": "2026-09-30", "sources": ["letter", "aware"],
+      "verified": [
+        { "pass": 1, "source_id": "letter", "method": "table_row", "checked_on": "2026-11-10", "evidence": "Subscription bookings | $240.3 | $278.4 | 16%" },
+        { "pass": 2, "source_id": "aware", "method": "second_source", "checked_on": "2026-11-10", "evidence": "Subscription bookings: $278.4 million, up 16%" } ] },
+    { "id": "subb25", "label": "Subscription bookings, Q3 2025", "kind": "reported", "display": "$240.3M", "value": 240.3, "as_of": "2025-09-30", "sources": ["letter"],
+      "verified": [
+        { "pass": 1, "source_id": "letter", "method": "table_row", "checked_on": "2026-11-10", "evidence": "Subscription bookings | $240.3 | $278.4 | 16%" },
+        { "pass": 2, "source_id": "letter", "method": "verbatim_refetch", "checked_on": "2026-11-10", "evidence": "Key metrics table: Subscription bookings | Q3 2025 $240.3M | Q3 2026 $278.4M | 16%" } ] },
+    { "id": "subb_g", "label": "Subscription bookings growth", "kind": "reported", "display": "16%", "value": 16, "as_of": "2026-09-30", "sources": ["letter", "aware"],
+      "verified": [
+        { "pass": 1, "source_id": "letter", "method": "table_row", "checked_on": "2026-11-10", "evidence": "Subscription bookings | $240.3 | $278.4 | 16%" },
+        { "pass": 2, "source_id": "aware", "method": "second_source", "checked_on": "2026-11-10", "evidence": "Subscription bookings: $278.4 million, up 16%" } ] },
+    { "id": "ad26", "label": "Advertising revenue, Q3 2026", "kind": "reported", "display": "$20.8M", "value": 20.8, "as_of": "2026-09-30", "sources": ["letter", "tenq"],
+      "verified": [
+        { "pass": 1, "source_id": "tenq", "method": "table_row", "checked_on": "2026-11-10", "evidence": "Advertising revenue, 2026-07-01 to 2026-09-30: $20,820 thousand" },
+        { "pass": 2, "source_id": "letter", "method": "table_row", "checked_on": "2026-11-10", "evidence": "Advertising | 21,019 | 20,820 | (199) | (1)%" } ] },
+    { "id": "ad25", "label": "Advertising revenue, Q3 2025", "kind": "reported", "display": "$21.0M", "value": 21.0, "as_of": "2025-09-30", "sources": ["letter", "tenq"],
+      "verified": [
+        { "pass": 1, "source_id": "tenq", "method": "table_row", "checked_on": "2026-11-10", "evidence": "Advertising revenue, 2025-07-01 to 2025-09-30: $21,019 thousand" },
+        { "pass": 2, "source_id": "letter", "method": "table_row", "checked_on": "2026-11-10", "evidence": "Advertising | 21,019 | 20,820 | (199) | (1)%" } ] },
+    { "id": "ad_g", "label": "Advertising revenue change", "kind": "reported", "display": "-1%", "value": -1, "as_of": "2026-09-30", "sources": ["letter", "tenq"],
+      "verified": [
+        { "pass": 1, "source_id": "letter", "method": "table_row", "checked_on": "2026-11-10", "evidence": "Advertising | 21,019 | 20,820 | (199) | (1)%" },
+        { "pass": 2, "source_id": "tenq", "method": "second_source", "checked_on": "2026-11-10", "evidence": "$21,019 thousand to $20,820 thousand is a decline of about 0.9%, which rounds to 1%" } ] },
+    { "id": "iap26", "label": "In-app purchase revenue, Q3 2026", "kind": "reported", "display": "$6.9M", "value": 6.9, "as_of": "2026-09-30", "sources": ["letter", "tenq"],
+      "verified": [
+        { "pass": 1, "source_id": "tenq", "method": "table_row", "checked_on": "2026-11-10", "evidence": "IAPs revenue, 2026-07-01 to 2026-09-30: $6,880 thousand" },
+        { "pass": 2, "source_id": "letter", "method": "table_row", "checked_on": "2026-11-10", "evidence": "In-App Purchases | 11,096 | 6,880 | (4,216) | (38)%" } ] },
+    { "id": "iap25", "label": "In-app purchase revenue, Q3 2025", "kind": "reported", "display": "$11.1M", "value": 11.1, "as_of": "2025-09-30", "sources": ["letter", "tenq"],
+      "verified": [
+        { "pass": 1, "source_id": "tenq", "method": "table_row", "checked_on": "2026-11-10", "evidence": "IAPs revenue, 2025-07-01 to 2025-09-30: $11,096 thousand" },
+        { "pass": 2, "source_id": "letter", "method": "table_row", "checked_on": "2026-11-10", "evidence": "In-App Purchases | 11,096 | 6,880 | (4,216) | (38)%" } ] },
+    { "id": "iap_g", "label": "In-app purchase revenue change", "kind": "reported", "display": "-38%", "value": -38, "as_of": "2026-09-30", "sources": ["letter", "tenq"],
+      "verified": [
+        { "pass": 1, "source_id": "letter", "method": "table_row", "checked_on": "2026-11-10", "evidence": "In-App Purchases | 11,096 | 6,880 | (4,216) | (38)%" },
+        { "pass": 2, "source_id": "tenq", "method": "second_source", "checked_on": "2026-11-10", "evidence": "$11,096 thousand to $6,880 thousand is a decline of about 38.0%" } ] },
+    { "id": "bonus", "label": "Accrual for the company-wide bonus tied to Q4 daily-user growth", "kind": "reported", "display": "$11.4M", "value": 11.4, "as_of": "2026-09-30", "sources": ["letter", "aware"],
+      "verified": [
+        { "pass": 1, "source_id": "letter", "method": "quote", "checked_on": "2026-11-10", "evidence": "included an $11.4 million accrual for a company-wide performance bonus tied to achieving our Q4 DAU growth goal of 25% or greater" },
+        { "pass": 2, "source_id": "aware", "method": "second_source", "checked_on": "2026-11-10", "evidence": "includes an $11.4 million accrual for a company-wide performance bonus tied to a Q4 2026 DAU growth target of at least 25%" } ] },
+    { "id": "q4_goal", "label": "Q4 daily-user growth goal the bonus is tied to", "kind": "reported", "display": "25%", "value": 25, "as_of": "2026-09-30", "sources": ["letter", "aware"],
+      "verified": [
+        { "pass": 1, "source_id": "letter", "method": "quote", "checked_on": "2026-11-10", "evidence": "tied to achieving our Q4 DAU growth goal of 25% or greater" },
+        { "pass": 2, "source_id": "aware", "method": "second_source", "checked_on": "2026-11-10", "evidence": "tied to a Q4 2026 DAU growth target of at least 25%" } ] },
+    { "id": "gm26", "label": "Gross margin, Q3 2026", "kind": "reported", "display": "72.9%", "value": 72.9, "as_of": "2026-09-30", "sources": ["letter", "tenq"],
+      "verified": [
+        { "pass": 1, "source_id": "letter", "method": "table_row", "checked_on": "2026-11-10", "evidence": "Gross margin | 72.5% | 72.9% | +40 bps" },
+        { "pass": 2, "source_id": "tenq", "method": "second_source", "checked_on": "2026-11-10", "evidence": "Gross profit $225,132 thousand divided by revenue $309.0M is about 72.9%" } ] },
+    { "id": "gm_q4g", "label": "Gross margin guidance, Q4 2026", "kind": "reported", "display": "72.0%", "value": 72.0, "as_of": "2026-11-03", "sources": ["letter", "yahoo"],
+      "verified": [
+        { "pass": 1, "source_id": "letter", "method": "table_row", "checked_on": "2026-11-10", "evidence": "Guidance table, Q4 2026: Gross margin 72.0%" },
+        { "pass": 2, "source_id": "yahoo", "method": "second_source", "checked_on": "2026-11-10", "evidence": "Gross margin is expected to fall slightly in Q4, about a point, as Video Call rolls out to all paid subscribers" } ] },
+    { "id": "ai_old", "label": "AI cost of a Video Call when first launched", "kind": "reported", "display": "$0.30", "value": 0.30, "as_of": "2026-11-03", "sources": ["yahoo", "investing"],
+      "verified": [
+        { "pass": 1, "source_id": "yahoo", "method": "quote", "checked_on": "2026-11-10", "evidence": "Video Call AI cost was reduced from $0.30 to under $0.01 per call" },
+        { "pass": 2, "source_id": "investing", "method": "quote", "checked_on": "2026-11-10", "evidence": "Video Call initially cost about $0.30 per call in AI inference" } ] },
+    { "id": "ai_new", "label": "AI cost of a Video Call after moving to open-weight models (upper bound)", "kind": "reported", "display": "$0.01", "value": 0.01, "as_of": "2026-11-03", "sources": ["yahoo", "investing"],
+      "verified": [
+        { "pass": 1, "source_id": "yahoo", "method": "quote", "checked_on": "2026-11-10", "evidence": "Video Call AI cost was reduced from $0.30 to under $0.01 per call, mainly by moving to open-weight models" },
+        { "pass": 2, "source_id": "investing", "method": "quote", "checked_on": "2026-11-10", "evidence": "now well under $0.01 per call, mainly due to open-weight models" } ] },
+    { "id": "chess", "label": "Chess daily active users", "kind": "reported", "display": "10M", "value": 10, "as_of": "2026-11-03", "sources": ["yahoo", "investing"],
+      "verified": [
+        { "pass": 1, "source_id": "yahoo", "method": "quote", "checked_on": "2026-11-10", "evidence": "Chess reached 10 million DAUs, which management called completely under monetized" },
+        { "pass": 2, "source_id": "investing", "method": "quote", "checked_on": "2026-11-10", "evidence": "Chess reached 10 million DAU" } ] },
+    { "id": "paid_mau26", "label": "Paid subscribers as a share of monthly users, Q3 2026", "kind": "derived", "display": "8.6%", "value": 8.6, "formula": "paid26 / mau26", "scale": 100, "inputs": ["paid26", "mau26"], "decimals": 1, "as_of": "2026-09-30" },
+    { "id": "paid_mau25", "label": "Paid subscribers as a share of monthly users, Q3 2025", "kind": "derived", "display": "8.5%", "value": 8.5, "formula": "paid25 / mau25", "scale": 100, "inputs": ["paid25", "mau25"], "decimals": 1, "as_of": "2025-09-30" },
+    { "id": "paid_dau26", "label": "Paid subscribers as a share of daily users, Q3 2026", "kind": "derived", "display": "20.2%", "value": 20.2, "formula": "paid26 / dau26", "scale": 100, "inputs": ["paid26", "dau26"], "decimals": 1, "as_of": "2026-09-30" },
+    { "id": "paid_dau25", "label": "Paid subscribers as a share of daily users, Q3 2025", "kind": "derived", "display": "22.8%", "value": 22.8, "formula": "paid25 / dau25", "scale": 100, "inputs": ["paid25", "dau25"], "decimals": 1, "as_of": "2025-09-30" },
+    { "id": "bpd26", "label": "Total bookings per daily user, Q3 2026", "kind": "derived", "display": "$4.87", "value": 4.87, "formula": "book26 / dau26", "inputs": ["book26", "dau26"], "decimals": 2, "as_of": "2026-09-30" },
+    { "id": "bpd25", "label": "Total bookings per daily user, Q3 2025", "kind": "derived", "display": "$5.58", "value": 5.58, "formula": "book25 / dau25", "inputs": ["book25", "dau25"], "decimals": 2, "as_of": "2025-09-30" },
+    { "id": "bpd_chg", "label": "Change in bookings per daily user", "kind": "derived", "display": "-12.7%", "value": -12.7, "formula": "bpd26 / bpd25 - 1", "scale": 100, "inputs": ["bpd26", "bpd25"], "decimals": 1, "as_of": "2026-09-30" },
+    { "id": "nonsub26", "label": "Bookings outside subscriptions, Q3 2026", "kind": "derived", "display": "$37.7M", "value": 37.7, "formula": "book26 - subb26", "inputs": ["book26", "subb26"], "decimals": 1, "as_of": "2026-09-30" },
+    { "id": "nonsub25", "label": "Bookings outside subscriptions, Q3 2025", "kind": "derived", "display": "$41.6M", "value": 41.6, "formula": "book25 - subb25", "inputs": ["book25", "subb25"], "decimals": 1, "as_of": "2025-09-30" },
+    { "id": "nonsub_chg", "label": "Change in bookings outside subscriptions", "kind": "derived", "display": "-9.4%", "value": -9.4, "formula": "nonsub26 / nonsub25 - 1", "scale": 100, "inputs": ["nonsub26", "nonsub25"], "decimals": 1, "as_of": "2026-09-30" }
+  ],
+  "time_sensitive": [
+    { "claim": "Max is no longer sold to new subscribers and individual Max subscribers move to a Super family plan, per the November 3, 2026 letter; legacy Max family plan decisions were deferred to 2027.", "as_of": "2026-11-10", "check_again_by": "2026-11-23" },
+    { "claim": "Q4 2026 guidance, including gross margin of 72.0%, and the lever list come from the November 3, 2026 call; management said its full 2027 outlook would come later.", "as_of": "2026-11-10", "check_again_by": "2026-11-23" }
+  ]
+}
