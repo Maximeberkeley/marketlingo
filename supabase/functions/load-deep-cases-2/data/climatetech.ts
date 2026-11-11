@@ -6536,6 +6536,6514 @@ const rows: unknown[] = [
    "handwritten-v1",
    "src:8cce23a45e8f"
   ]
+ },
+ {
+  "id": "59a0d038-ef75-50c1-968f-09a1dbc332a0",
+  "market_id": "climatetech",
+  "day": 16,
+  "slot": 1,
+  "content": {
+   "id": "climatetech-d16-c1",
+   "title": "Three numbers for one planet",
+   "lessonTitle": "The warming we are on track for",
+   "slot": 1,
+   "type": "apply",
+   "brief": {
+    "headline": "In November 2025, Climate Action Tracker put warming under current policies at 2.6°C. Full pledges and net zero targets gave 2.2°C. Even the optimistic case, every target met, gave 1.9°C.",
+    "kicker": "Apply the rule: policies, pledges and promises are three numbers.",
+    "fullText": "Climate Action Tracker updates its projections each year at the UN talks. Its current policies number fell from 2.7°C to 2.6°C, mainly because it updated how it models China, not because of new policy.\n\nIts pledges number moved the other way, from 2.1°C to 2.2°C, largely because the US left the Paris Agreement. The optimistic case stayed at 1.9°C, still above the Paris limit.",
+    "sources": [
+     {
+      "url": "https://climateactiontracker.org/press/release-global-update-2025/",
+      "label": "Climate Action Tracker, global update 2025"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "multipleChoice",
+    "prompt": "The current policies estimate fell by 0.1°C. What drove most of that change?",
+    "options": [
+     "A new way of modeling China's emissions",
+     "A wave of new climate laws in 2025",
+     "The US leaving the Paris Agreement"
+    ],
+    "correctIndex": 0,
+    "explanation": "The tracker said the drop came mainly from a methodology update for China. The US exit pushed the pledges number up instead."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "Gap between current policies (2.6°C) and the optimistic case (1.9°C), in tenths of a degree?",
+    "min": 0,
+    "max": 20,
+    "value": 7,
+    "unit": "tenths",
+    "explanation": "Seven tenths of a degree, or 0.7°C, separate what policies deliver from what every promise would deliver."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your manager wants one line on the 2025 tracker update for a client note.",
+      "prompt": "Which line is most accurate?",
+      "options": [
+       "The world is now on track for 1.5°C",
+       "Warming estimates rose because of new laws",
+       "Policies point to 2.6°C; full promises to 1.9°C"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Even the optimistic case is 1.9°C, above 1.5°C.",
+       "The policies number fell, and not because of new laws.",
+       "You give both ends of the range, with what each assumes."
+      ],
+      "explanation": "The tracker gives several scenarios. A good line names what each one assumes."
+     },
+     "proReasoning": "Strong analysts always say which scenario a number comes from.",
+     "commonMistake": "Quoting one warming number as if it were the forecast.",
+     "mentalModel": "Name the scenario behind every number."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You model physical climate risk for a property portfolio.",
+      "prompt": "Which warming case should anchor your base scenario?",
+      "options": [
+       "Current policies, with pledges as an upside case",
+       "The optimistic case, since all targets now exist",
+       "The 1.5°C goal, since it is agreed"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "You plan on what is in law today.",
+       "Targets are not yet backed by policies.",
+       "No scenario puts the world on 1.5°C."
+      ],
+      "explanation": "Current policies show what is actually in place. Pledges are promises that may or may not be kept."
+     },
+     "proReasoning": "Risk teams anchor on enacted policy and treat promises as scenarios.",
+     "commonMistake": "Pricing assets as if every climate target will be met.",
+     "mentalModel": "Base case on policy, upside on pledges."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your startup sells climate adaptation tools to cities.",
+      "prompt": "What does the gap between scenarios mean for your market?",
+      "options": [
+       "Demand only exists above 3°C",
+       "Cities must plan for more warming than goals say",
+       "Adaptation is pointless if targets are met"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Needs rise well before 3°C.",
+       "A 2.6°C path means real adaptation needs.",
+       "Even 1.9°C needs adaptation."
+      ],
+      "explanation": "Under current policies the world heads for 2.6°C, so cities face heat and floods beyond what goals assume."
+     },
+     "proReasoning": "Founders in adaptation sell on the likely path, not the hoped-for one.",
+     "commonMistake": "Building a pitch around the 1.5°C goal as the expected outcome.",
+     "mentalModel": "Sell to the likely path."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend says the world is heading for 1.9°C now.",
+      "prompt": "What is missing from that claim?",
+      "options": [
+       "Nothing, it is the single official UN forecast",
+       "That 1.9°C is below the Paris limit",
+       "That 1.9°C assumes every target is fully met"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "It is the most hopeful of several cases.",
+       "Paris aims for 1.5°C, so 1.9°C is above it.",
+       "Current policies point to 2.6°C instead."
+      ],
+      "explanation": "The 1.9°C figure is the optimistic case. With today's policies, the tracker projects 2.6°C."
+     },
+     "proReasoning": "Ask what a projection assumes before repeating it.",
+     "commonMistake": "Treating the most hopeful scenario as the likely one.",
+     "mentalModel": "Ask what each number assumes."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:74bbe4df1091"
+  ]
+ },
+ {
+  "id": "1fa8ed7f-8816-50be-9760-07f0858462f3",
+  "market_id": "climatetech",
+  "day": 16,
+  "slot": 2,
+  "content": {
+   "id": "climatetech-d16-c2",
+   "title": "New plans, old gap",
+   "lessonTitle": "The warming we are on track for",
+   "slot": 2,
+   "type": "connect",
+   "brief": {
+    "headline": "New national plans would cut emissions about 17% below 2019 by 2035. UNEP says staying near 1.5°C needs about 55% in the same time. Current policies point to about 2.8°C.",
+    "kicker": "Connect day 13 and day 16: the plans and the gap they leave.",
+    "fullText": "Day 13 counted 64 new national plans under the Paris Agreement. Fully carried out, they would cut emissions about 17% below 2019 levels by 2035.\n\nToday's lesson adds the yardstick. UNEP projects about 2.8°C of warming under current policies and 2.3 to 2.5°C if all pledges are met. Staying near 1.5°C needs a cut of about 55% below 2019 by 2035.",
+    "sources": [
+     {
+      "url": "https://news.un.org/en/story/2025/10/1166204",
+      "label": "UN News, 2025 NDC synthesis report"
+     },
+     {
+      "url": "https://unep.org/resources/emissions-gap-report-2025",
+      "label": "UNEP, Emissions Gap Report 2025"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "buildChain",
+    "prompt": "Order these from least to most warming.",
+    "steps": [
+     "A 55% cut by 2035, near 1.5°C",
+     "All pledges met, 2.3 to 2.5°C",
+     "Current policies only, about 2.8°C"
+    ],
+    "explanation": "Deeper cuts mean less warming. Policies alone give the most, pledges less, and the 1.5°C path the least."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "Plans cut about 17%; 1.5°C needs about 55%. How many percentage points short is that?",
+    "min": 0,
+    "max": 60,
+    "value": 38,
+    "unit": "points",
+    "explanation": "55 minus 17 is 38 percentage points, a gap twice the size of the cut itself."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A minister's office asks you to brief on whether new plans close the gap.",
+      "prompt": "What is your headline?",
+      "options": [
+       "They help, but cover under a third of the need",
+       "They fully close the remaining gap to 1.5°C",
+       "They make no difference at all"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "17% of a needed 55% is about 31%.",
+       "The plans fall far short of 55%.",
+       "A 17% cut does reduce warming."
+      ],
+      "explanation": "The new plans cut about 17% where about 55% is needed, so they close only part of the gap."
+     },
+     "proReasoning": "Good briefers turn two percentages into one clear share.",
+     "commonMistake": "Saying plans \"fail\" or \"succeed\" without showing how far they go.",
+     "mentalModel": "Show the share of the gap closed."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You weigh whether climate policy will tighten after 2030.",
+      "prompt": "What does the gap suggest?",
+      "options": [
+       "The gap means policy has stopped",
+       "Pressure for stronger policy should keep rising",
+       "Policy will relax now that new plans are filed"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Plans are updated every five years.",
+       "A 38-point gap keeps pressure on.",
+       "A big gap rarely eases pressure."
+      ],
+      "explanation": "With plans covering only part of the cut needed, each new round faces pressure to go further."
+     },
+     "proReasoning": "Investors treat a large policy gap as a sign of future tightening.",
+     "commonMistake": "Assuming filed plans settle policy for good.",
+     "mentalModel": "Gaps drive the next round."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You pitch an emissions-cutting product to investors.",
+      "prompt": "How do you use these numbers?",
+      "options": [
+       "Claim plans already solve the problem",
+       "Ignore policy, focus only on product",
+       "Show the cut still missing as your market"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "That would weaken your own case.",
+       "Climate buyers respond to policy.",
+       "A 38-point gap is room for solutions."
+      ],
+      "explanation": "The distance between 17% and 55% is the market that new solutions still need to fill."
+     },
+     "proReasoning": "Founders frame the policy gap as demand they can serve.",
+     "commonMistake": "Pitching as if policy alone will cut emissions.",
+     "mentalModel": "The gap is the market."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You read that new plans cut emissions 17% by 2035.",
+      "prompt": "Why does UNEP still project 2.3°C or more?",
+      "options": [
+       "The cut needed for 1.5°C is about 55%",
+       "Plans have no effect on warming",
+       "Warming is fixed whatever we do"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "17% is far below the 55% needed.",
+       "Plans do lower warming somewhat.",
+       "Deeper cuts mean less warming."
+      ],
+      "explanation": "Even with all pledges met, the cut is too small, so warming lands around 2.3 to 2.5°C."
+     },
+     "proReasoning": "Compare a cut with the cut the goal needs.",
+     "commonMistake": "Treating any cut as enough.",
+     "mentalModel": "Compare the cut with the need."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:65f37bd810d9"
+  ]
+ },
+ {
+  "id": "5b45bc64-18d7-5585-b65a-73103e38e7db",
+  "market_id": "climatetech",
+  "day": 16,
+  "slot": 3,
+  "content": {
+   "id": "climatetech-d16-c3",
+   "title": "Choosing a warming scenario",
+   "lessonTitle": "The warming we are on track for",
+   "slot": 3,
+   "type": "decide",
+   "brief": {
+    "headline": "You run strategy at a coastal city utility. Your board asks which warming path to plan new flood defenses around: 1.5°C, pledges, or current policies.",
+    "kicker": "Decide: which path do you design for?",
+    "fullText": "UNEP projects about 2.8°C of warming under current policies and 2.3 to 2.5°C if every pledge is met. Staying near 1.5°C would need a 55% cut in emissions by 2035.\n\nFlood defenses last for decades. Designing too low risks failure; designing too high costs money now. Your board wants a defensible choice.",
+    "sources": [
+     {
+      "url": "https://unep.org/resources/emissions-gap-report-2025",
+      "label": "UNEP, Emissions Gap Report 2025"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "faceOff",
+    "prompt": "Which planning basis is safer for long-lived infrastructure?",
+    "left": {
+     "name": "Current policies, about 2.8°C",
+     "note": "What today's laws deliver"
+    },
+    "right": {
+     "name": "The 1.5°C goal",
+     "note": "Needs a 55% cut by 2035"
+    },
+    "correctIndex": 0,
+    "explanation": "Long-lived assets should plan for the path the world is actually on, not the goal it is missing."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "How far above 1.5°C is the current policies path, in tenths of a degree?",
+    "min": 0,
+    "max": 20,
+    "value": 13,
+    "unit": "tenths",
+    "explanation": "2.8 minus 1.5 is 1.3°C, or 13 tenths."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You present the flood plan options to the board.",
+      "prompt": "How do you frame the choice?",
+      "options": [
+       "Wait for the next UN report",
+       "Design for policies, with room to adapt upward",
+       "Design for 1.5°C, since it is the agreed goal"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Waiting delays defenses for years.",
+       "You plan for the likely path and keep options.",
+       "The world is not on that path."
+      ],
+      "explanation": "Current policies are the realistic base. Designs that can be raised later handle the range."
+     },
+     "proReasoning": "Planners pair a realistic base case with flexibility.",
+     "commonMistake": "Designing long-lived assets for a goal the world is missing.",
+     "mentalModel": "Realistic base, built-in flexibility."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A bond investor asks how the utility handles climate risk.",
+      "prompt": "What answer protects the bond?",
+      "options": [
+       "We assume the 1.5°C goal will be fully met",
+       "Climate risk is not in our plans",
+       "We design for current policies, not goals"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "That understates the risk to the asset.",
+       "That raises the risk premium.",
+       "Investors trust plans built on the likely path."
+      ],
+      "explanation": "Bond buyers want to know assets will survive the realistic warming path."
+     },
+     "proReasoning": "Credit analysts check which scenario a borrower plans for.",
+     "commonMistake": "Lending to projects designed for an optimistic scenario.",
+     "mentalModel": "Ask which path they designed for."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your startup sells flood modeling software to utilities.",
+      "prompt": "What feature matters most here?",
+      "options": [
+       "Run designs against several warming paths",
+       "Model only the 1.5°C goal, as agreed in Paris",
+       "Show one single best guess"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Boards need to compare paths side by side.",
+       "That hides the realistic risk.",
+       "One number hides the range."
+      ],
+      "explanation": "Buyers face a range from 1.5°C to 2.8°C and need to test designs across it."
+     },
+     "proReasoning": "Good climate tools show ranges, not single answers.",
+     "commonMistake": "Building a tool that bakes in one optimistic scenario.",
+     "mentalModel": "Let buyers test the range."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You wonder why a city would plan for 2.8°C if the goal is 1.5°C.",
+      "prompt": "What is the reason?",
+      "options": [
+       "Goals do not matter at all",
+       "Defenses must hold on the path we are actually on",
+       "Cities expect and want warming to keep rising"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Goals still guide cuts in emissions.",
+       "Current policies point to about 2.8°C.",
+       "Planning for risk is not wanting it."
+      ],
+      "explanation": "Infrastructure must survive real conditions. Today's policies point to about 2.8°C."
+     },
+     "proReasoning": "Planning for a risk is not the same as accepting it.",
+     "commonMistake": "Confusing the target with the forecast.",
+     "mentalModel": "Plan for the forecast, aim for the target."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:c014dd061497"
+  ]
+ },
+ {
+  "id": "4ea3fbc5-255f-5c97-a220-b0d378eee18f",
+  "market_id": "climatetech",
+  "day": 17,
+  "slot": 1,
+  "content": {
+   "id": "climatetech-d17-c1",
+   "title": "Europe's 90% with a catch",
+   "lessonTitle": "China's first absolute target",
+   "slot": 1,
+   "type": "apply",
+   "brief": {
+    "headline": "In November 2025, EU ministers agreed a binding target to cut emissions 90% by 2040. Up to 5% can come from international carbon credits, so the domestic cut is about 85%.",
+    "kicker": "Apply the rule: the type of target matters as much as the number.",
+    "fullText": "The deal kept a legally binding 90% headline for 2040. Climate Commissioner Wopke Hoekstra said the domestic target is effectively 85%, because the remaining 5% can come from international carbon credits. Another 5% in credits is allowed if the EU falls behind its path.\n\nMinisters also set a non-binding 2035 goal of 66.25% to 72.5% below 1990, and moved the launch of a second carbon market from 2027 to 2028.",
+    "sources": [
+     {
+      "url": "https://www.jurist.org/news/2025/11/eu-ministers-strike-deal-on-binding-2040-emissions-target/",
+      "label": "JURIST, EU ministers agree a binding 2040 target"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "spotFake",
+    "prompt": "Two statements match the EU deal. Which one does not?",
+    "statements": [
+     "The 2040 headline target is 90%",
+     "Up to 5% may come from international credits",
+     "The 2035 goal is legally binding"
+    ],
+    "fakeIndex": 2,
+    "explanation": "The 2035 goal of 66.25% to 72.5% is non-binding. The 90% headline for 2040 is binding."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "Headline 90%, with 5% from credits. What domestic cut is that?",
+    "min": 0,
+    "max": 100,
+    "value": 85,
+    "unit": "%",
+    "explanation": "About 85% domestic, as the commissioner said, with 5% bought from abroad."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A policy newsletter asks you to sum up the EU 2040 deal.",
+      "prompt": "Which summary is most precise?",
+      "options": [
+       "90% headline, about 85% cut at home",
+       "A full 90% cut inside Europe",
+       "A voluntary target with no force"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "You show the headline and what credits change.",
+       "Up to 5% can come from credits abroad.",
+       "The 90% headline is legally binding."
+      ],
+      "explanation": "The target counts international credits, so the domestic cut is about 85%."
+     },
+     "proReasoning": "Precise writers say what a target counts, not just its size.",
+     "commonMistake": "Repeating a headline number without its fine print.",
+     "mentalModel": "Headline plus what it counts."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You manage a fund exposed to international carbon credit projects.",
+      "prompt": "What does the deal signal?",
+      "options": [
+       "No change, since credits are banned",
+       "A new source of demand for quality credits",
+       "The end of all international credit markets"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Credits are allowed, not banned.",
+       "Up to 5% of a big cut can be credits.",
+       "The deal explicitly allows credits."
+      ],
+      "explanation": "Letting 5% of the target come from international credits creates demand, likely with strict quality rules."
+     },
+     "proReasoning": "Investors read the fine print of targets for new demand.",
+     "commonMistake": "Ignoring how a target is allowed to be met.",
+     "mentalModel": "Read how targets can be met."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your startup verifies carbon removal projects.",
+      "prompt": "How does the deal affect your plan?",
+      "options": [
+       "Stop, since the EU only counts home cuts",
+       "Ignore it, it is only for governments",
+       "Prepare for EU-grade quality checks on credits"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "The deal lets 5% come from credits.",
+       "Government demand shapes the market.",
+       "Credits used for the target will face scrutiny."
+      ],
+      "explanation": "If credits count toward a binding target, buyers will need strong verification."
+     },
+     "proReasoning": "Founders in verification follow where binding demand appears.",
+     "commonMistake": "Treating government targets as irrelevant to private markets.",
+     "mentalModel": "Follow binding demand."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You read \"EU commits to 90% cuts by 2040.\"",
+      "prompt": "What should you check?",
+      "options": [
+       "Whether some of the 90% is bought abroad",
+       "Whether 90% means a cut of 90 million tonnes",
+       "Whether Europe already hit 90%"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Up to 5% can be international credits.",
+       "It is a percentage cut from 1990.",
+       "2040 is the target year."
+      ],
+      "explanation": "The headline includes credits from abroad, so the cut at home is closer to 85%."
+     },
+     "proReasoning": "Ask how a target is counted before judging it.",
+     "commonMistake": "Taking a headline percentage at face value.",
+     "mentalModel": "Ask how it is counted."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:b6b1c684f5bd"
+  ]
+ },
+ {
+  "id": "40a45624-5da4-5196-aa99-2edc655fad6b",
+  "market_id": "climatetech",
+  "day": 17,
+  "slot": 2,
+  "content": {
+   "id": "climatetech-d17-c2",
+   "title": "Peak cuts against a budget",
+   "lessonTitle": "China's first absolute target",
+   "slot": 2,
+   "type": "connect",
+   "brief": {
+    "headline": "China pledged to cut net emissions 7 to 10% below peak by 2035. Experts said 1.5°C needs at least 30%. UNEP says the world needs about 55% below 2019 by then.",
+    "kicker": "Connect day 16 and day 17: one country's target against the global gap.",
+    "fullText": "In 2025 China set its first absolute target: net emissions 7 to 10% below peak by 2035. Before, its goals were about intensity, emissions per unit of economic output.\n\nExperts said a target consistent with 1.5°C would need cuts of at least 30% from peak or recent levels. Day 16 gave the global yardstick: about 55% below 2019 by 2035.",
+    "sources": [
+     {
+      "url": "https://www.carbonbrief.org/qa-what-does-chinas-new-paris-agreement-pledge-mean-for-climate-action/",
+      "label": "Carbon Brief, what China's new Paris pledge means"
+     },
+     {
+      "url": "https://unep.org/resources/emissions-gap-report-2025",
+      "label": "UNEP, Emissions Gap Report 2025"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "sortSignal",
+    "prompt": "Is each a feature of China's new pledge, or not?",
+    "buckets": [
+     "Feature of the pledge",
+     "Not part of it"
+    ],
+    "items": [
+     {
+      "text": "Cuts measured from peak emissions",
+      "bucket": 0
+     },
+     {
+      "text": "A 7 to 10% range by 2035",
+      "bucket": 0
+     },
+     {
+      "text": "Its first absolute target",
+      "bucket": 0
+     },
+     {
+      "text": "A 30% cut by 2035",
+      "bucket": 1
+     },
+     {
+      "text": "A target per unit of GDP only",
+      "bucket": 1
+     }
+    ],
+    "explanation": "The pledge is 7 to 10% below peak, absolute rather than per unit of GDP. 30% is what experts said 1.5°C would need."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "Experts said at least 30%; China pledged up to 10%. How many points short at best?",
+    "min": 0,
+    "max": 50,
+    "value": 20,
+    "unit": "points",
+    "explanation": "At the top of its range, 10%, China is 20 points short of the 30% experts named."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A journalist asks if China's pledge is a big deal.",
+      "prompt": "What is the balanced answer?",
+      "options": [
+       "It changes nothing, since the wording is vague",
+       "A real shift in type, too small in size for 1.5°C",
+       "It puts China on a 1.5°C path"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "An absolute cap is a real change.",
+       "You credit the shift and name the gap.",
+       "Experts said 30% would be needed."
+      ],
+      "explanation": "Moving from intensity to an absolute cut matters, but 7 to 10% is well short of 30%."
+     },
+     "proReasoning": "Good analysts judge both the form and the size of a target.",
+     "commonMistake": "Judging a target only by its headline number.",
+     "mentalModel": "Judge form and size."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You invest in Chinese clean energy suppliers.",
+      "prompt": "What does an absolute target add?",
+      "options": [
+       "Nothing beyond the old intensity goals",
+       "A ban on new coal plants",
+       "A cap that growth must now fit under"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Intensity goals allow total growth.",
+       "The pledge does not ban coal.",
+       "Absolute cuts constrain total emissions."
+      ],
+      "explanation": "An absolute target limits total emissions, so new demand must come from clean sources."
+     },
+     "proReasoning": "Investors notice when a target shifts from intensity to absolute.",
+     "commonMistake": "Treating all targets as the same kind of promise.",
+     "mentalModel": "Absolute caps change demand."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your startup tracks factory emissions for exporters.",
+      "prompt": "What does China's shift mean for you?",
+      "options": [
+       "Firms will need total emissions data, not ratios",
+       "Data needs will shrink as the target gets set",
+       "Only power plants will be affected"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Absolute caps need total numbers.",
+       "A tighter target raises data needs.",
+       "Economy-wide targets reach industry."
+      ],
+      "explanation": "Measuring cuts below peak needs total emissions, which raises demand for accurate tracking."
+     },
+     "proReasoning": "Founders follow changes in what must be measured.",
+     "commonMistake": "Missing that a new target type changes the data required.",
+     "mentalModel": "New targets, new data."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You wonder why experts are not impressed by China's first cap.",
+      "prompt": "What is their point?",
+      "options": [
+       "Caps never work",
+       "It is a cap, but far from the 30% needed",
+       "China still has no absolute cap at all"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Caps can work if strong enough.",
+       "7 to 10% sits well below 30%.",
+       "It is China's first absolute target."
+      ],
+      "explanation": "The form is new, but the size falls short of what 1.5°C would require."
+     },
+     "proReasoning": "A step can be real and still too small.",
+     "commonMistake": "Thinking any first step must be enough.",
+     "mentalModel": "Real can still be too small."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:50628c74a489"
+  ]
+ },
+ {
+  "id": "98f2d204-0da3-59f3-b808-adb705859bb4",
+  "market_id": "climatetech",
+  "day": 17,
+  "slot": 3,
+  "content": {
+   "id": "climatetech-d17-c3",
+   "title": "Picking a target type",
+   "lessonTitle": "China's first absolute target",
+   "slot": 3,
+   "type": "decide",
+   "brief": {
+    "headline": "You advise a fast-growing country on its first climate pledge. Officials can promise a cut per unit of GDP, or an absolute cut from their peak, as China did in 2025.",
+    "kicker": "Decide: intensity or absolute?",
+    "fullText": "China's 2025 pledge was its first absolute target: 7 to 10% below peak by 2035. An intensity target counts emissions per unit of economic output, so total emissions can still rise as the economy grows.\n\nThe officials want a pledge that is credible with investors and partners, and that they can actually meet.",
+    "sources": [
+     {
+      "url": "https://www.carbonbrief.org/qa-what-does-chinas-new-paris-agreement-pledge-mean-for-climate-action/",
+      "label": "Carbon Brief, what China's new Paris pledge means"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "faceOff",
+    "prompt": "Which target guarantees total emissions fall?",
+    "left": {
+     "name": "An absolute cut from peak",
+     "note": "Limits the total"
+    },
+    "right": {
+     "name": "A cut per unit of GDP",
+     "note": "Total can still rise"
+    },
+    "correctIndex": 0,
+    "explanation": "Only an absolute target limits the total. An intensity target allows growth in total emissions."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "China's range is 7 to 10% below peak. What is its midpoint?",
+    "min": 0,
+    "max": 20,
+    "value": 8.5,
+    "unit": "%",
+    "explanation": "The midpoint of 7 and 10 is 8.5%."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "The officials ask which target signals more ambition.",
+      "prompt": "What do you advise?",
+      "options": [
+       "An intensity target with a big number",
+       "No target until growth slows",
+       "An absolute cut, even a modest one"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Big ratios can hide rising totals.",
+       "Delay weakens credibility.",
+       "A cap on the total is the clearer signal."
+      ],
+      "explanation": "Absolute targets show total emissions will fall, which partners read as more credible."
+     },
+     "proReasoning": "Advisers explain what a target type allows, not just its number.",
+     "commonMistake": "Recommending a large intensity number as if it limited totals.",
+     "mentalModel": "Explain what each type allows."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A sovereign fund asks how to read the country's pledge.",
+      "prompt": "What matters most?",
+      "options": [
+       "Whether total emissions are capped",
+       "Only the size of the percentage",
+       "Whether the pledge mentions GDP"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Caps change long-run energy demand.",
+       "Size alone can mislead.",
+       "GDP links make totals flexible."
+      ],
+      "explanation": "A cap on total emissions forces new demand toward clean energy."
+     },
+     "proReasoning": "Investors look at whether a pledge binds the total.",
+     "commonMistake": "Comparing percentages across different target types.",
+     "mentalModel": "Check whether the total is capped."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your startup builds national emissions inventories.",
+      "prompt": "Which target creates more work for you?",
+      "options": [
+       "Neither, targets need no data",
+       "An absolute target, measured against a peak",
+       "An intensity target, since GDP is known"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Every target needs measurement.",
+       "Peaks and totals need careful tracking.",
+       "Ratios still need emissions data."
+      ],
+      "explanation": "Measuring against a peak requires reliable totals over many years."
+     },
+     "proReasoning": "Founders match products to what targets require.",
+     "commonMistake": "Assuming targets come without measurement needs.",
+     "mentalModel": "Targets create measurement needs."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You wonder why the type of target matters.",
+      "prompt": "What is the key difference?",
+      "options": [
+       "They are the same thing",
+       "Intensity targets are always stricter",
+       "Only an absolute cut makes the total fall"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "They measure different things.",
+       "It depends on growth and the number.",
+       "Intensity lets totals rise with growth."
+      ],
+      "explanation": "An intensity target can be met while total emissions still grow."
+     },
+     "proReasoning": "Always ask what a target measures.",
+     "commonMistake": "Comparing two targets without checking their type.",
+     "mentalModel": "Ask what it measures."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:85faecd70e18"
+  ]
+ },
+ {
+  "id": "0e616467-705e-5ece-b7ff-7cdae815a1bf",
+  "market_id": "climatetech",
+  "day": 18,
+  "slot": 1,
+  "content": {
+   "id": "climatetech-d18-c1",
+   "title": "The plastics talks that stalled",
+   "lessonTitle": "The COP that skipped fossil fuels",
+   "slot": 1,
+   "type": "apply",
+   "brief": {
+    "headline": "In August 2025, plastics treaty talks in Geneva ended without a deal. 184 countries took part. Every nation must agree for text to enter the treaty, and oil producers opposed production limits.",
+    "kicker": "Apply the rule: consensus lets the most reluctant set the limit.",
+    "fullText": "Negotiators split over whether a treaty should cap new plastic production or focus on design, recycling and reuse. Saudi Arabia, Kuwait and the US opposed cutting production or banning chemical additives.\n\nThe session was adjourned with no date set. Some countries now want to allow votes when needed. UNEP's Inger Andersen said it was too soon to say how long a treaty would take.",
+    "sources": [
+     {
+      "url": "https://www.pbs.org/newshour/world/plastic-pollution-treaty-talks-in-geneva-end-without-an-agreement",
+      "label": "PBS NewsHour, plastic treaty talks in Geneva end without an agreement"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "buildChain",
+    "prompt": "Put the logic of the stalled talks in order.",
+    "steps": [
+     "Most countries back production limits",
+     "A few producers object",
+     "Consensus means every nation must agree",
+     "No text can be adopted",
+     "The session ends with no deal"
+    ],
+    "explanation": "Under consensus, a few objections are enough to block a text that most countries support."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "How many countries took part in the Geneva talks?",
+    "min": 0,
+    "max": 250,
+    "value": 184,
+    "unit": "countries",
+    "explanation": "184 countries took part, and the talks still ended without agreement."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "An NGO asks why the plastics talks failed.",
+      "prompt": "What is the core reason?",
+      "options": [
+       "Nobody wanted any treaty",
+       "Consensus let a few producers block limits",
+       "Too few countries attended the Geneva talks"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Most backed some form of treaty.",
+       "You name the rule that shaped the outcome.",
+       "184 countries took part."
+      ],
+      "explanation": "Every nation must agree, so producers opposed to production limits could stop the text."
+     },
+     "proReasoning": "Analysts explain outcomes through decision rules, not just politics.",
+     "commonMistake": "Blaming lack of interest when the rule allowed a veto.",
+     "mentalModel": "Explain outcomes by the rules."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You hold shares in a plastics producer.",
+      "prompt": "What does the stalled treaty mean for your thesis?",
+      "options": [
+       "Production limits are now impossible",
+       "A treaty was signed in Geneva",
+       "Global limits are delayed, not ruled out"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "The process is still alive.",
+       "The session ended without a deal.",
+       "Talks continue, and votes may be proposed."
+      ],
+      "explanation": "Talks were adjourned, not ended, and some countries want to move to votes."
+     },
+     "proReasoning": "Investors treat a stalled negotiation as a delay, not a verdict.",
+     "commonMistake": "Reading one failed session as the end of regulation.",
+     "mentalModel": "Delay is not a verdict."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your startup makes reusable packaging.",
+      "prompt": "How do you plan after Geneva?",
+      "options": [
+       "Sell to firms and cities acting without a treaty",
+       "Wait for the global treaty to be signed first",
+       "Pivot away from packaging"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Demand can come from national rules and buyers.",
+       "There is no date for a deal.",
+       "The problem has not gone away."
+      ],
+      "explanation": "With no treaty date, national rules and corporate buyers are the nearer market."
+     },
+     "proReasoning": "Founders do not wait for global deals that may stall.",
+     "commonMistake": "Making your plan depend on one treaty.",
+     "mentalModel": "Do not wait for the treaty."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You wonder how 184 countries failed to agree.",
+      "prompt": "What explains it?",
+      "options": [
+       "The talks ran out of money",
+       "Consensus means a few can block the rest",
+       "Most countries there opposed having a treaty"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "The rule, not money, was the barrier.",
+       "Every nation must agree on the text.",
+       "Many backed limits on production."
+      ],
+      "explanation": "When every nation must agree, a handful of objections can stop a deal."
+     },
+     "proReasoning": "Ask how a group decides before judging its result.",
+     "commonMistake": "Assuming a failed deal means most opposed it.",
+     "mentalModel": "Ask how the group decides."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:6de402dda0ea"
+  ]
+ },
+ {
+  "id": "54ba3a06-32f1-558e-8c0e-78f647397e5e",
+  "market_id": "climatetech",
+  "day": 18,
+  "slot": 2,
+  "content": {
+   "id": "climatetech-d18-c2",
+   "title": "Two rooms, one veto",
+   "lessonTitle": "The COP that skipped fossil fuels",
+   "slot": 2,
+   "type": "connect",
+   "brief": {
+    "headline": "COP30 ended in November 2025 without explicit fossil fuel language, despite more than 80 countries backing a roadmap. Brazil launched voluntary roadmaps outside the UN text.",
+    "kicker": "Connect day 13 and day 18: universal deals, consensus limits.",
+    "fullText": "Day 13 showed how Paris works: almost every country signed, and each writes its own plan. Universal membership has a cost. Decisions at the annual talks need consensus.\n\nAt COP30, more than 80 countries backed a roadmap away from fossil fuels, but the final text left it out. It did call for tripling adaptation finance. Brazil's presidency then launched voluntary roadmaps on fossil fuels and deforestation, backed by countries such as Colombia.",
+    "sources": [
+     {
+      "url": "https://www.climatechangenews.com/2025/11/22/cop30-brazil-deal-fossil-fuel-transition-fails-triples-finance-climate-adaptation-what-happened/",
+      "label": "Climate Home News, what happened at COP30"
+     },
+     {
+      "url": "https://www.unfccc.int/process-and-meetings/the-paris-agreement",
+      "label": "UNFCCC, The Paris Agreement"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "multipleChoice",
+    "prompt": "Why did a roadmap backed by 80+ countries miss the final COP30 text?",
+    "options": [
+     "Fewer than 20 countries attended the talks",
+     "The roadmap had already been adopted",
+     "Decisions need consensus, so a few can block"
+    ],
+    "correctIndex": 2,
+    "explanation": "UN climate decisions need consensus, so the most reluctant countries set the limit."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "COP30 called for tripling adaptation finance. Tripling a fund of 10 gives what?",
+    "min": 0,
+    "max": 50,
+    "value": 30,
+    "unit": "units",
+    "explanation": "Tripling means three times as much: 10 becomes 30."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your think tank asks what COP30 means for future talks.",
+      "prompt": "What is your read?",
+      "options": [
+       "A fossil fuel phaseout is now agreed by all",
+       "UN talks have formally ended",
+       "Ambitious groups will act in coalitions outside"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "The final text left it out.",
+       "The talks continue every year.",
+       "Brazil already launched voluntary roadmaps."
+      ],
+      "explanation": "When consensus blocks a step, willing countries move it to voluntary coalitions."
+     },
+     "proReasoning": "Analysts watch where action moves when consensus blocks it.",
+     "commonMistake": "Expecting the most ambitious idea to survive a consensus room.",
+     "mentalModel": "Watch where action moves."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You manage an oil and gas portfolio.",
+      "prompt": "What does COP30's text mean for you?",
+      "options": [
+       "No global phaseout deal, but coalitions rising",
+       "A binding global phaseout starts next year",
+       "Climate policy has ended"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "80+ countries still back a roadmap.",
+       "The text has no fossil language.",
+       "Talks and coalitions continue."
+      ],
+      "explanation": "The UN text avoided fossil fuels, but voluntary roadmaps and national policies still move."
+     },
+     "proReasoning": "Investors separate the consensus text from where policy is heading.",
+     "commonMistake": "Treating a weak final text as a green light forever.",
+     "mentalModel": "Text is not trajectory."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your startup sells clean energy finance tools.",
+      "prompt": "Where do you look for early customers after COP30?",
+      "options": [
+       "Nowhere until a UN deal passes",
+       "Countries in the voluntary roadmap coalitions",
+       "Only the countries that blocked the final text"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Waiting could take years.",
+       "Willing countries are the first movers.",
+       "They are the least likely buyers."
+      ],
+      "explanation": "Countries that backed the roadmap are likely to act first, with or without consensus."
+     },
+     "proReasoning": "Founders sell to the coalition of the willing.",
+     "commonMistake": "Waiting for unanimous agreement before selling.",
+     "mentalModel": "Sell to the willing first."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You wonder why COP30 skipped fossil fuels.",
+      "prompt": "What is the best explanation?",
+      "options": [
+       "Nobody supported the idea",
+       "Fossil fuels are not linked to warming",
+       "Consensus lets a few countries say no"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Support was wide but not total.",
+       "They are the main source of CO2.",
+       "80+ countries backed a roadmap."
+      ],
+      "explanation": "With universal membership and consensus rules, a few objectors can block wide support."
+     },
+     "proReasoning": "Universal deals trade speed for breadth.",
+     "commonMistake": "Thinking a missing clause means nobody wanted it.",
+     "mentalModel": "Breadth costs speed."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:a0dd607cdf67"
+  ]
+ },
+ {
+  "id": "911b514c-ccfd-5045-a55b-afa590000c3c",
+  "market_id": "climatetech",
+  "day": 18,
+  "slot": 3,
+  "content": {
+   "id": "climatetech-d18-c3",
+   "title": "Inside or outside the room",
+   "lessonTitle": "The COP that skipped fossil fuels",
+   "slot": 3,
+   "type": "decide",
+   "brief": {
+    "headline": "You lead climate policy for a mid-sized country that backed a fossil fuel roadmap at COP30. It was left out of the final text. Your minister asks where to spend effort next.",
+    "kicker": "Decide: push at the UN, or join a coalition?",
+    "fullText": "COP30 ended in November 2025 without explicit fossil fuel language, despite more than 80 countries backing a roadmap. Brazil's presidency launched voluntary roadmaps on fossil fuels and deforestation outside the UN text.\n\nThe next UN talks are a year away, and decisions there still need consensus.",
+    "sources": [
+     {
+      "url": "https://www.climatechangenews.com/2025/11/22/cop30-brazil-deal-fossil-fuel-transition-fails-triples-finance-climate-adaptation-what-happened/",
+      "label": "Climate Home News, what happened at COP30"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "faceOff",
+    "prompt": "Where can your country move faster on fossil fuels?",
+    "left": {
+     "name": "A voluntary coalition",
+     "note": "Acts without consensus"
+    },
+    "right": {
+     "name": "Next year's UN text",
+     "note": "Needs every country to agree"
+    },
+    "correctIndex": 0,
+    "explanation": "Coalitions can act now. UN text still needs consensus, so the most reluctant country sets the pace."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "More than 80 countries backed the roadmap. About how many Paris parties are there?",
+    "min": 0,
+    "max": 300,
+    "value": 194,
+    "unit": "parties",
+    "explanation": "About 194 parties. 80 is well under half, and consensus needs all of them."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your minister wants a one-line strategy.",
+      "prompt": "What do you recommend?",
+      "options": [
+       "Join the coalition now, keep pushing at the UN",
+       "Leave the UN climate process entirely now",
+       "Wait a year for the next COP"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "You act now without giving up the UN.",
+       "That loses a seat at the main table.",
+       "Waiting wastes a year."
+      ],
+      "explanation": "Coalitions move faster, and staying in the UN keeps pressure for consensus later."
+     },
+     "proReasoning": "Diplomats work several channels at once.",
+     "commonMistake": "Betting everything on one consensus forum.",
+     "mentalModel": "Use both channels."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A development bank asks where to put fossil transition money.",
+      "prompt": "What do you suggest?",
+      "options": [
+       "Nowhere until there is a UN deal",
+       "Countries in the coalition with clear plans",
+       "Only the countries that blocked the final text"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "That could mean years of delay.",
+       "Willing countries offer clearer policy.",
+       "They signaled the least appetite."
+      ],
+      "explanation": "Coalition members have shown intent, which lowers policy risk for investors."
+     },
+     "proReasoning": "Capital follows clear political commitment.",
+     "commonMistake": "Waiting for unanimity before funding transitions.",
+     "mentalModel": "Fund the committed."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A startup asks your ministry which partners to approach.",
+      "prompt": "What do you tell them?",
+      "options": [
+       "Only UN agencies",
+       "Countries that opposed the roadmap",
+       "Fellow coalition members acting now"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "UN text has no fossil roadmap.",
+       "They are least likely to buy.",
+       "They want projects to show results."
+      ],
+      "explanation": "Coalition members want early projects to prove their roadmaps work."
+     },
+     "proReasoning": "Founders find buyers who need quick proof.",
+     "commonMistake": "Pitching to those who blocked the change.",
+     "mentalModel": "Find those who need proof."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You wonder why countries form coalitions outside the UN.",
+      "prompt": "What is the reason?",
+      "options": [
+       "To act without waiting for every country",
+       "To replace the UN climate talks completely",
+       "Because the UN banned the topic"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Consensus blocked the roadmap.",
+       "Most still take part in UN talks.",
+       "The topic was debated, not banned."
+      ],
+      "explanation": "Coalitions let willing countries move when consensus is out of reach."
+     },
+     "proReasoning": "When one room stalls, action moves to another.",
+     "commonMistake": "Thinking coalitions mean the UN is abandoned.",
+     "mentalModel": "Stalls move action elsewhere."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:a427121a834d"
+  ]
+ },
+ {
+  "id": "a98b1113-199d-50fc-b321-4abae019f77c",
+  "market_id": "climatetech",
+  "day": 19,
+  "slot": 1,
+  "content": {
+   "id": "climatetech-d19-c1",
+   "title": "Singapore fixes the price",
+   "lessonTitle": "Putting a price on carbon",
+   "slot": 1,
+   "type": "apply",
+   "brief": {
+    "headline": "Singapore's carbon tax rose five-fold to S$25 a tonne in 2024. It rises to S$45 in 2026 and 2027, aiming for S$50 to 80 by 2030. Companies may cover up to 5% with international credits.",
+    "kicker": "Apply the rule: fix the price, and the amount floats.",
+    "fullText": "A carbon tax sets the price of each tonne and lets companies decide how much to cut. Singapore chose this route. Its rate rose to S$25 per tonne in 2024 and will reach S$45 in 2026 and 2027.\n\nTax-liable companies can use international carbon credits to meet up to 5% of their taxable emissions, if the credits meet the government's criteria and date from 2021 to 2030.",
+    "sources": [
+     {
+      "url": "https://climateimpactx.com/perspectives/singapores-carbon-tax-has-risen-what-does-this-mean-for-you/",
+      "label": "Climate Impact X, Singapore's carbon tax has risen"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "spotFake",
+    "prompt": "Two statements match Singapore's tax. Which one does not?",
+    "statements": [
+     "The rate is S$45 a tonne in 2026",
+     "Credits can cover up to 5% of emissions",
+     "The tax caps total emissions each year"
+    ],
+    "fakeIndex": 2,
+    "explanation": "A tax fixes the price, not the amount. Total emissions are free to move."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "From S$25 in 2024 to S$45 in 2026: by what percent does the rate rise?",
+    "min": 0,
+    "max": 150,
+    "value": 80,
+    "unit": "%",
+    "explanation": "S$20 more on a base of S$25 is an 80% rise."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A consulting client asks what Singapore's tax guarantees.",
+      "prompt": "What is accurate?",
+      "options": [
+       "A fixed cap on total emissions each year",
+       "Zero emissions by 2030",
+       "A known price per tonne, not a known total"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Caps come from trading systems, not taxes.",
+       "The tax sets a price, not a total.",
+       "You state what a tax fixes and what it leaves open."
+      ],
+      "explanation": "A tax sets the price; companies choose how much to cut, so the total is uncertain."
+     },
+     "proReasoning": "Consultants explain what each policy tool fixes.",
+     "commonMistake": "Saying a carbon tax guarantees a set amount of cuts.",
+     "mentalModel": "Say what the tool fixes."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You model a Singapore refinery's costs to 2030.",
+      "prompt": "What is the key advantage of a tax here?",
+      "options": [
+       "A clear price path you can plan around",
+       "Prices that change sharply from day to day",
+       "No cost if emissions are small"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "The schedule is published years ahead.",
+       "Trading systems move daily, taxes do not.",
+       "Covered firms pay on every taxed tonne."
+      ],
+      "explanation": "A published tax path gives cost certainty, which helps with investment decisions."
+     },
+     "proReasoning": "Investors value price predictability in carbon costs.",
+     "commonMistake": "Treating a scheduled tax like a volatile market.",
+     "mentalModel": "Taxes give price certainty."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your startup sells energy efficiency upgrades in Singapore.",
+      "prompt": "How do you use the tax in your pitch?",
+      "options": [
+       "Ignore it, since credits cover all",
+       "Show savings rising with each tax step",
+       "Promise the tax will be scrapped"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Credits cover at most 5%.",
+       "A rising price makes each cut worth more.",
+       "There is no sign of that."
+      ],
+      "explanation": "As the price climbs from S$25 to S$45, each tonne avoided saves more."
+     },
+     "proReasoning": "Founders turn a known carbon price into a clear payback.",
+     "commonMistake": "Assuming credits let firms avoid the tax.",
+     "mentalModel": "Price steps sell upgrades."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You wonder whether a carbon tax or a cap cuts more.",
+      "prompt": "What is the honest answer?",
+      "options": [
+       "A tax always cuts more emissions than a cap",
+       "They do exactly the same thing",
+       "A tax fixes cost; a cap fixes the amount"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "It depends on the price level.",
+       "They fix different things.",
+       "Each locks in one side, never both."
+      ],
+      "explanation": "A tax makes the cost certain, a cap makes the amount certain. You cannot fix both."
+     },
+     "proReasoning": "Every carbon price is a choice between two certainties.",
+     "commonMistake": "Expecting one tool to guarantee both price and amount.",
+     "mentalModel": "Price or amount, not both."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:7a0185b1c3f0"
+  ]
+ },
+ {
+  "id": "dc0e187c-4e1a-57ae-89e3-b7e263911bc9",
+  "market_id": "climatetech",
+  "day": 19,
+  "slot": 2,
+  "content": {
+   "id": "climatetech-d19-c2",
+   "title": "A tax and a cap side by side",
+   "lessonTitle": "Putting a price on carbon",
+   "slot": 2,
+   "type": "connect",
+   "brief": {
+    "headline": "Carbon pricing raised over $100 billion in 2024. In 2025, 80 instruments covered about 28% of global emissions. Some fix the price, like a tax; others fix the amount, like a cap.",
+    "kicker": "Connect day 17 and day 19: targets set the goal, prices do the work.",
+    "fullText": "Day 17 showed how countries set targets. Today's lesson shows a tool to reach them. A carbon tax fixes the price and lets the amount move. A cap-and-trade system fixes the total and lets the price move.\n\nThe World Bank counted 80 carbon pricing instruments in 2025, covering about 28% of global emissions. Just over half of the money raised went to environment and development projects.",
+    "sources": [
+     {
+      "url": "https://www.worldbank.org/en/news/press-release/2025/06/10/global-carbon-pricing-mobilizes-over-100-billion-for-public-budgets",
+      "label": "World Bank, global carbon pricing mobilizes over $100 billion"
+     },
+     {
+      "url": "https://www.carbonbrief.org/qa-what-does-chinas-new-paris-agreement-pledge-mean-for-climate-action/",
+      "label": "Carbon Brief, what China's new Paris pledge means"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "sortSignal",
+    "prompt": "Does each describe a tax or a cap?",
+    "buckets": [
+     "Fixes the price (tax)",
+     "Fixes the amount (cap)"
+    ],
+    "items": [
+     {
+      "text": "A set charge per tonne",
+      "bucket": 0
+     },
+     {
+      "text": "Cost is known in advance",
+      "bucket": 0
+     },
+     {
+      "text": "A limit on total allowances",
+      "bucket": 1
+     },
+     {
+      "text": "Price moves with demand",
+      "bucket": 1
+     },
+     {
+      "text": "Amount cut is uncertain",
+      "bucket": 0
+     }
+    ],
+    "explanation": "Taxes fix the price, so the amount is uncertain. Caps fix the amount, so the price moves."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "Pricing covered about 28% of emissions. What share was not covered?",
+    "min": 0,
+    "max": 100,
+    "value": 72,
+    "unit": "%",
+    "explanation": "About 72% of global emissions faced no carbon price in 2025."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "An energy ministry asks which tool fits a strict national target.",
+      "prompt": "What do you advise?",
+      "options": [
+       "A cap, since it locks in the amount",
+       "A tax, since it locks in the amount",
+       "Neither, targets need no tools"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "A cap matches a fixed emissions goal.",
+       "Taxes fix price, not amount.",
+       "Targets need tools to be met."
+      ],
+      "explanation": "If the goal is a set amount of emissions, a cap delivers it directly; the price then floats."
+     },
+     "proReasoning": "Advisers match the tool to what the government must guarantee.",
+     "commonMistake": "Recommending a tax to hit an exact tonnage.",
+     "mentalModel": "Match tool to guarantee."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You compare carbon cost risk in two countries.",
+      "prompt": "Which has more price uncertainty?",
+      "options": [
+       "Neither has any uncertainty",
+       "The one with a cap-and-trade system",
+       "The one with a fixed carbon tax"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Caps leave prices free to move.",
+       "Market prices move with demand.",
+       "A tax rate is set in advance."
+      ],
+      "explanation": "A cap fixes the amount, so prices swing with the economy."
+     },
+     "proReasoning": "Investors price volatility differently under taxes and caps.",
+     "commonMistake": "Assuming all carbon prices are equally stable.",
+     "mentalModel": "Caps move, taxes hold."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your startup helps firms forecast carbon costs.",
+      "prompt": "What do clients under a cap need most?",
+      "options": [
+       "Nothing, since the price is fixed by law",
+       "Only last year's tax rate",
+       "Price scenarios, since the price moves"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Under a cap the price floats.",
+       "Caps have market prices, not rates.",
+       "Volatile prices need forecasts."
+      ],
+      "explanation": "Under a cap, the price follows demand, so clients need scenarios to plan."
+     },
+     "proReasoning": "Founders build for the uncertainty a policy creates.",
+     "commonMistake": "Selling one forecast where prices swing.",
+     "mentalModel": "Build for the uncertainty."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You read that carbon prices cover 28% of emissions.",
+      "prompt": "What does that tell you?",
+      "options": [
+       "Most emissions still carry no price",
+       "Most emissions are now priced",
+       "Pricing has ended"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "About 72% face no carbon price.",
+       "28% is well under half.",
+       "Pricing raised over $100 billion."
+      ],
+      "explanation": "Pricing is growing, but most of the world's emissions are still free to release."
+     },
+     "proReasoning": "Check coverage before judging a policy's reach.",
+     "commonMistake": "Assuming a big revenue figure means wide coverage.",
+     "mentalModel": "Check the coverage."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:b78614c0c7dc"
+  ]
+ },
+ {
+  "id": "f525639f-438c-5294-8be4-e93b1f09cc97",
+  "market_id": "climatetech",
+  "day": 19,
+  "slot": 3,
+  "content": {
+   "id": "climatetech-d19-c3",
+   "title": "Designing a first carbon price",
+   "lessonTitle": "Putting a price on carbon",
+   "slot": 3,
+   "type": "decide",
+   "brief": {
+    "headline": "You advise a government designing its first carbon price. Industry wants a predictable cost. Environmental groups want a guaranteed cut. The finance ministry wants revenue.",
+    "kicker": "Decide: fix the price or the amount?",
+    "fullText": "In 2025, 80 carbon pricing instruments covered about 28% of global emissions and raised over $100 billion in 2024. Each design chooses to fix either the price, like a tax, or the amount, like a cap.\n\nYou cannot give industry a fixed cost and environmental groups a fixed cut at the same time.",
+    "sources": [
+     {
+      "url": "https://www.worldbank.org/en/news/press-release/2025/06/10/global-carbon-pricing-mobilizes-over-100-billion-for-public-budgets",
+      "label": "World Bank, global carbon pricing mobilizes over $100 billion"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "multipleChoice",
+    "prompt": "Which group's wish does a carbon tax meet directly?",
+    "options": [
+     "Groups who want a guaranteed cut",
+     "Both groups equally",
+     "Industry, who want a predictable cost"
+    ],
+    "correctIndex": 2,
+    "explanation": "A tax fixes the price, which gives industry predictability. The amount cut stays uncertain."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "Over $100 billion raised; just over half went to environment and development. Roughly how much, in billions?",
+    "min": 0,
+    "max": 80,
+    "value": 51,
+    "unit": "B$",
+    "explanation": "Just over half of $100 billion is a little over $50 billion."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "The finance minister asks for your recommendation.",
+      "prompt": "What do you say?",
+      "options": [
+       "Avoid pricing to keep everyone happy",
+       "Pick one certainty and explain the trade-off",
+       "Promise both a fixed price and fixed cut"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "That gives up a major tool.",
+       "You are honest about what each design gives.",
+       "No design can lock in both."
+      ],
+      "explanation": "Every design fixes price or amount. Naming the trade-off builds trust."
+     },
+     "proReasoning": "Good advisers make trade-offs explicit.",
+     "commonMistake": "Promising every group what it wants.",
+     "mentalModel": "Name the trade-off."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Investors ask how the new price will affect power plants.",
+      "prompt": "What matters most to them?",
+      "options": [
+       "Only the price in the very first year",
+       "Whether the scheme has a name",
+       "Whether the price path is predictable"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "One year says little about the path.",
+       "Design, not branding, drives cost.",
+       "Plants last decades."
+      ],
+      "explanation": "Long-lived assets need a view of the price path, which a tax gives more clearly."
+     },
+     "proReasoning": "Investors care about the path, not the starting point.",
+     "commonMistake": "Judging a carbon price by its launch level.",
+     "mentalModel": "The path matters most."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A startup asks how the design affects their product.",
+      "prompt": "What do you tell them?",
+      "options": [
+       "A tax favors steady cost-saving tools",
+       "Design will not affect any product",
+       "Only caps create markets"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Known prices make savings easy to calculate.",
+       "Design shapes what buyers need.",
+       "Taxes create demand too."
+      ],
+      "explanation": "Under a tax, every tonne saved has a known value, which makes payback simple."
+     },
+     "proReasoning": "Founders read policy design to see what buyers will pay for.",
+     "commonMistake": "Ignoring how pricing design shapes demand.",
+     "mentalModel": "Design shapes demand."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You wonder why governments cannot fix price and amount.",
+      "prompt": "What is the reason?",
+      "options": [
+       "Carbon has no real price",
+       "Fixing one leaves the other to the market",
+       "Laws in most countries forbid fixing both"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Pricing gives carbon a price.",
+       "Supply and demand set the other side.",
+       "It is economics, not law."
+      ],
+      "explanation": "If you fix the price, firms decide how much to cut; fix the amount, and the market sets the price."
+     },
+     "proReasoning": "In any market, you can set price or quantity, not both.",
+     "commonMistake": "Thinking smart design can lock in both.",
+     "mentalModel": "Price or quantity."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:f613e79306c9"
+  ]
+ },
+ {
+  "id": "87fb0361-f61e-58e0-bff2-b7480de05f2f",
+  "market_id": "climatetech",
+  "day": 20,
+  "slot": 1,
+  "content": {
+   "id": "climatetech-d20-c1",
+   "title": "Britain's cheaper carbon",
+   "lessonTitle": "Europe's carbon revenue",
+   "slot": 1,
+   "type": "apply",
+   "brief": {
+    "headline": "IEEFA said in March 2025 that the EU carbon price traded almost 50% above the UK's over two fiscal years. Matching EU prices would have earned the UK about £2.9 billion more.",
+    "kicker": "Apply the rule: revenue is price times volume.",
+    "fullText": "The UK set up its own emissions trading system after leaving the EU. IEEFA, an energy finance think tank, compared the two markets.\n\nIt found the EU price had traded almost 50% higher than the UK price in the last two fiscal years. Had the UK matched EU prices over fiscal years 2024-25 and 2025-26, it would have received about £2.9 billion more in revenue.",
+    "sources": [
+     {
+      "url": "https://ieefa.org/articles/low-uk-carbon-pricing-causes-ps29-billion-lost-revenues-over-two-years",
+      "label": "IEEFA, low UK carbon prices cost £2.9 billion in revenue"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "multipleChoice",
+    "prompt": "Both markets sell allowances. Why does a lower UK price cut its revenue?",
+    "options": [
+     "Lower prices mean more allowances sold",
+     "Revenue does not depend on price",
+     "Revenue equals price times volume sold"
+    ],
+    "correctIndex": 2,
+    "explanation": "Each allowance sold at a lower price brings in less money, so revenue falls with the price."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "IEEFA's estimate of the UK's lost revenue over two years, in billions of pounds?",
+    "min": 0,
+    "max": 10,
+    "value": 2.9,
+    "unit": "B£",
+    "explanation": "About £2.9 billion over fiscal years 2024-25 and 2025-26."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A Treasury team asks why carbon revenue came in low.",
+      "prompt": "What is your one-line answer?",
+      "options": [
+       "The UK price ran far below the EU price",
+       "The UK sold no allowances in those years",
+       "Revenue was never expected"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Lower price times similar volume means less money.",
+       "The UK runs auctions every year.",
+       "Budgets counted on carbon money."
+      ],
+      "explanation": "Revenue is price times volume. A price almost 50% lower means much less money."
+     },
+     "proReasoning": "Analysts break revenue into price and volume.",
+     "commonMistake": "Blaming one factor without splitting revenue into parts.",
+     "mentalModel": "Split revenue into price and volume."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You trade UK and EU carbon allowances.",
+      "prompt": "What could close the price gap?",
+      "options": [
+       "Raising UK free allocation",
+       "Linking the two markets",
+       "Ending all UK auctions"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "More free allowances lower prices.",
+       "Linked markets tend toward one price.",
+       "That ends the market, not the gap."
+      ],
+      "explanation": "If the markets link, buyers and sellers move between them and prices converge."
+     },
+     "proReasoning": "Traders watch market links because they move prices.",
+     "commonMistake": "Ignoring policy moves that can merge two markets.",
+     "mentalModel": "Watch for market links."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your startup helps UK firms cut emissions.",
+      "prompt": "How does a low UK price affect your sales?",
+      "options": [
+       "Low carbon prices always boost demand for cuts",
+       "Price has no effect on cuts",
+       "Each tonne saved is worth less, so payback slows"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Low prices weaken the incentive.",
+       "Price drives the value of a cut.",
+       "A cheaper allowance lowers the reward for cutting."
+      ],
+      "explanation": "When allowances are cheap, cutting a tonne saves less money, so buyers wait."
+     },
+     "proReasoning": "Founders track the carbon price that sets their customers' payback.",
+     "commonMistake": "Pitching savings at a price that no longer holds.",
+     "mentalModel": "Price sets payback."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You wonder how two carbon markets can have different prices.",
+      "prompt": "What allows it?",
+      "options": [
+       "They are separate markets with own supply",
+       "Prices are set by law each and every day",
+       "They always share one price"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Separate caps and demand set each price.",
+       "Market prices are not set by law.",
+       "The EU traded almost 50% higher."
+      ],
+      "explanation": "Each market has its own cap and buyers, so prices can drift apart."
+     },
+     "proReasoning": "Separate markets can price the same thing differently.",
+     "commonMistake": "Assuming all carbon costs the same everywhere.",
+     "mentalModel": "Separate markets, separate prices."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:f754ae822228"
+  ]
+ },
+ {
+  "id": "b3a119d6-db65-5efe-a3cd-ce7ef23d9694",
+  "market_id": "climatetech",
+  "day": 20,
+  "slot": 2,
+  "content": {
+   "id": "climatetech-d20-c2",
+   "title": "When the price follows the economy",
+   "lessonTitle": "Europe's carbon revenue",
+   "slot": 2,
+   "type": "connect",
+   "brief": {
+    "headline": "EU carbon auctions raised about €39 billion in 2024, down from €44 billion, as the average price fell to €64.76 a tonne. Slower manufacturing and more renewables cut demand.",
+    "kicker": "Connect day 19 and day 20: a cap fixes the amount, so the price moves.",
+    "fullText": "Day 19 showed the choice: fix the price or the amount. The EU system fixes the amount, so the price moves with demand.\n\nIn 2024 manufacturing slowed and renewables cut power emissions, so companies needed fewer allowances. The average price fell to €64.76 a tonne and auction revenue fell to about €39 billion from €44 billion.",
+    "sources": [
+     {
+      "url": "https://www.argusmedia.com/en/news-and-insights/latest-market-news/2641480-eu-ets-auction-revenue-decreases-in-2024",
+      "label": "Argus, EU ETS auction revenue decreases in 2024"
+     },
+     {
+      "url": "https://www.worldbank.org/en/news/press-release/2025/06/10/global-carbon-pricing-mobilizes-over-100-billion-for-public-budgets",
+      "label": "World Bank, global carbon pricing mobilizes over $100 billion"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "buildChain",
+    "prompt": "Put the chain from economy to revenue in order.",
+    "steps": [
+     "Manufacturing slows and renewables grow",
+     "Companies need fewer allowances",
+     "Demand for allowances falls",
+     "The average price drops",
+     "Auction revenue falls"
+    ],
+    "explanation": "Under a cap, lower demand means a lower price, and price times volume means less revenue."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "Revenue fell from about €44 billion to €39 billion. By roughly what percent?",
+    "min": 0,
+    "max": 50,
+    "value": 11,
+    "unit": "%",
+    "explanation": "A €5 billion drop on €44 billion is about 11%."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "An EU budget office asks why carbon revenue fell.",
+      "prompt": "What is the clearest answer?",
+      "options": [
+       "The cap was abolished",
+       "Lower demand pushed down the price",
+       "The EU stopped selling allowances"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "The cap still applies.",
+       "Price times volume fell with demand.",
+       "Auctions continued in 2024."
+      ],
+      "explanation": "With the amount fixed, slower industry and more renewables cut demand and the price."
+     },
+     "proReasoning": "Analysts trace revenue changes back to the economy.",
+     "commonMistake": "Treating carbon revenue as a fixed budget line.",
+     "mentalModel": "Trace revenue to demand."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You forecast EU carbon prices.",
+      "prompt": "Which signal should you watch most?",
+      "options": [
+       "Only the price from last year's auctions",
+       "The number of auctions held",
+       "Industrial output and renewable growth"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Past prices miss shifts in demand.",
+       "The number matters less than demand.",
+       "They drive demand for allowances."
+      ],
+      "explanation": "Under a cap, demand sets the price, and demand follows the economy and clean power."
+     },
+     "proReasoning": "Carbon traders watch the real economy.",
+     "commonMistake": "Forecasting carbon prices from price history alone.",
+     "mentalModel": "Watch the economy."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your startup's business case uses the EU carbon price.",
+      "prompt": "How should you present it?",
+      "options": [
+       "As a range that moves with demand",
+       "As a fixed €65 forever",
+       "Ignore it, since prices fall"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "A cap means the price varies.",
+       "The price fell in 2024 and can move again.",
+       "It still drives many decisions."
+      ],
+      "explanation": "Because the price follows the economy, a range gives buyers a fair picture."
+     },
+     "proReasoning": "Founders show carbon price ranges, not single points.",
+     "commonMistake": "Pitching on one carbon price as if it were fixed.",
+     "mentalModel": "Show a range."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You read that EU carbon revenue fell in 2024.",
+      "prompt": "Does that mean climate policy weakened?",
+      "options": [
+       "Yes, auctions were cancelled",
+       "Not necessarily, demand fell with the economy",
+       "Yes, the EU dropped its cap on emissions"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Auctions went ahead.",
+       "Lower demand lowered the price.",
+       "The cap still applies."
+      ],
+      "explanation": "The cap stayed. The price fell because companies needed fewer allowances."
+     },
+     "proReasoning": "A falling price under a cap can mean less demand, not weaker rules.",
+     "commonMistake": "Reading a price drop as a policy retreat.",
+     "mentalModel": "Price drops can mean less demand."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:b82a3ffc021a"
+  ]
+ },
+ {
+  "id": "9ead8f4f-3517-54db-830f-f2f853086bed",
+  "market_id": "climatetech",
+  "day": 20,
+  "slot": 3,
+  "content": {
+   "id": "climatetech-d20-c3",
+   "title": "Budgeting on carbon money",
+   "lessonTitle": "Europe's carbon revenue",
+   "slot": 3,
+   "type": "decide",
+   "brief": {
+    "headline": "You run the budget for a state that funds clean transit with carbon auction money. Last year's price was high. Your team wants to plan next year's spending at that same price.",
+    "kicker": "Decide: how do you budget money that follows the economy?",
+    "fullText": "In 2024, EU auction revenue fell to about €39 billion from €44 billion, as the average price dropped to €64.76 a tonne. Under a cap, revenue is price times volume, and the price follows the economy.\n\nIf you plan spending at last year's price and demand falls, you will face a shortfall.",
+    "sources": [
+     {
+      "url": "https://www.argusmedia.com/en/news-and-insights/latest-market-news/2641480-eu-ets-auction-revenue-decreases-in-2024",
+      "label": "Argus, EU ETS auction revenue decreases in 2024"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "faceOff",
+    "prompt": "Which budgeting approach is safer?",
+    "left": {
+     "name": "Plan at a cautious price",
+     "note": "Keep a reserve"
+    },
+    "right": {
+     "name": "Plan at last year's high price",
+     "note": "Spend it all"
+    },
+    "correctIndex": 0,
+    "explanation": "Carbon prices move with demand. A cautious base and a reserve absorb a downturn."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "If revenue falls 11% on a €100 million plan, how big is the gap, in millions?",
+    "min": 0,
+    "max": 50,
+    "value": 11,
+    "unit": "M€",
+    "explanation": "11% of €100 million is €11 million."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your governor asks why you will not spend all of last year's receipts.",
+      "prompt": "What do you explain?",
+      "options": [
+       "Carbon money is illegal to spend",
+       "Revenue is guaranteed to rise",
+       "Carbon revenue moves with the economy"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "It funds programs every year.",
+       "It can fall as easily as rise.",
+       "The EU saw an 11% fall in one year."
+      ],
+      "explanation": "Revenue is price times volume, and the price can drop when the economy slows."
+     },
+     "proReasoning": "Finance leads explain volatility before it hits.",
+     "commonMistake": "Promising programs on peak-year revenue.",
+     "mentalModel": "Explain volatility early."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A rating agency asks how carbon revenue affects your credit.",
+      "prompt": "What reassures them?",
+      "options": [
+       "A reserve and cautious price assumptions",
+       "Spending every euro as soon as it arrives",
+       "Assuming prices always rise"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Buffers show you can absorb a drop.",
+       "That leaves no cushion.",
+       "Prices fell in 2024."
+      ],
+      "explanation": "Agencies reward budgets that plan for volatile revenue."
+     },
+     "proReasoning": "Credit analysts check how volatile revenue is handled.",
+     "commonMistake": "Building fixed costs on a volatile revenue stream.",
+     "mentalModel": "Buffer volatile revenue."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A transit tech startup depends on your carbon-funded grants.",
+      "prompt": "What should they plan for?",
+      "options": [
+       "Grants that end next year",
+       "Grant sizes that can vary year to year",
+       "Grants that grow a little every single year"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "The program continues.",
+       "Funding follows carbon prices.",
+       "Revenue can fall."
+      ],
+      "explanation": "Grants funded by carbon auctions rise and fall with the price."
+     },
+     "proReasoning": "Founders who depend on public money plan for its swings.",
+     "commonMistake": "Treating carbon-funded grants as guaranteed.",
+     "mentalModel": "Plan for funding swings."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You wonder why carbon revenue is hard to predict.",
+      "prompt": "What makes it uncertain?",
+      "options": [
+       "The amount sold changes by law daily",
+       "Revenue is set in advance",
+       "The price moves with demand for allowances"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "The cap changes slowly, not daily.",
+       "Only a tax sets the price in advance.",
+       "Slower industry means lower prices."
+      ],
+      "explanation": "Under a cap, the amount is fixed, so the price, and revenue, follow the economy."
+     },
+     "proReasoning": "Fixing the amount makes the money uncertain.",
+     "commonMistake": "Expecting a cap to bring steady revenue.",
+     "mentalModel": "Fixed amount, uncertain money."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:a2933b18b196"
+  ]
+ },
+ {
+  "id": "993150c6-96d3-54ad-9b66-cb8f0fbd7802",
+  "market_id": "climatetech",
+  "day": 21,
+  "slot": 1,
+  "content": {
+   "id": "climatetech-d21-c1",
+   "title": "India's targets per tonne of output",
+   "lessonTitle": "China's carbon market grows",
+   "slot": 1,
+   "type": "apply",
+   "brief": {
+    "headline": "In October 2025, India set binding targets for 282 plants in aluminium, cement, chlor-alkali and pulp and paper. Each target is emissions per unit of output. Beat it, and you earn credits to sell.",
+    "kicker": "Apply the rule: how allowances are handed out shapes the market.",
+    "fullText": "India's carbon credit trading scheme sets emission intensity targets, measured in tonnes of CO2 equivalent per unit of product. They cover the compliance years 2025-26 and 2026-27, against a 2023-24 baseline.\n\nPlants that cut intensity beyond their target earn Carbon Credit Certificates, which trade on power exchanges. Plants that miss must buy and surrender certificates. Once all nine planned sectors are set, about 740 entities would have binding targets.",
+    "sources": [
+     {
+      "url": "https://icapcarbonaction.com/en/news/india-notifies-emission-intensity-targets-nine-sectors-under-carbon-credit-trading-scheme",
+      "label": "ICAP, India notifies emission intensity targets"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "spotFake",
+    "prompt": "Two statements match India's scheme. Which one does not?",
+    "statements": [
+     "Targets are set per unit of product",
+     "Beating a target earns tradable certificates",
+     "Each plant gets a fixed cap on total tonnes"
+    ],
+    "fakeIndex": 2,
+    "explanation": "India sets intensity targets per unit of output, not a fixed total for each plant."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "How many plants got targets in the first four sectors?",
+    "min": 0,
+    "max": 400,
+    "value": 282,
+    "unit": "plants",
+    "explanation": "282 plants in aluminium, cement, chlor-alkali and pulp and paper."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A consulting partner asks how India's scheme differs from Europe's.",
+      "prompt": "What is the key difference?",
+      "options": [
+       "India has no trading at all in its scheme",
+       "Targets per unit of output, not a fixed cap",
+       "India auctions every allowance it issues"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Certificates trade on power exchanges.",
+       "You name the allocation design.",
+       "Plants earn certificates by beating targets."
+      ],
+      "explanation": "India sets intensity targets, so a plant can grow output as long as each unit gets cleaner."
+     },
+     "proReasoning": "Consultants compare schemes by how allowances are handed out.",
+     "commonMistake": "Assuming every carbon market works like Europe's cap.",
+     "mentalModel": "Compare how allowances are set."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You hold shares in an Indian cement maker.",
+      "prompt": "What could turn the scheme into profit?",
+      "options": [
+       "Producing less to stay under a total cap",
+       "Avoiding all reporting under the scheme",
+       "Cutting intensity below target to sell credits"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "There is no fixed total cap per plant.",
+       "Covered plants must comply.",
+       "Beating targets earns certificates."
+      ],
+      "explanation": "Plants that beat their intensity target earn certificates they can sell."
+     },
+     "proReasoning": "Investors look for firms that can earn credits, not just pay.",
+     "commonMistake": "Treating every carbon rule purely as a cost.",
+     "mentalModel": "Look for credit earners."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your startup sells kiln efficiency upgrades.",
+      "prompt": "Which Indian buyers are most promising?",
+      "options": [
+       "Plants close to missing their intensity target",
+       "Plants outside the nine sectors planned so far",
+       "Plants that have stopped producing"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "They must buy credits if they miss.",
+       "They face no target yet.",
+       "They have no emissions to cut."
+      ],
+      "explanation": "A plant that misses must buy certificates, so cutting intensity saves real money."
+     },
+     "proReasoning": "Founders target buyers with the most to lose under new rules.",
+     "commonMistake": "Selling to firms the rule does not yet cover.",
+     "mentalModel": "Sell where the rule bites."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You wonder how a plant can grow and still meet India's target.",
+      "prompt": "What makes that possible?",
+      "options": [
+       "Targets only apply to new plants built",
+       "The target is per unit, not a total cap",
+       "Growth is not allowed under the scheme"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Existing plants have targets.",
+       "Cleaner units let output grow.",
+       "Plants can grow if each unit is cleaner."
+      ],
+      "explanation": "An intensity target lets total output rise if each unit emits less."
+     },
+     "proReasoning": "Ask whether a target limits the total or the rate.",
+     "commonMistake": "Assuming all carbon targets cap total emissions.",
+     "mentalModel": "Total or rate?"
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:ddeb980108af"
+  ]
+ },
+ {
+  "id": "2164c38c-a10c-56a6-981f-69a84f7b1d0a",
+  "market_id": "climatetech",
+  "day": 21,
+  "slot": 2,
+  "content": {
+   "id": "climatetech-d21-c2",
+   "title": "Auction or benchmark",
+   "lessonTitle": "China's carbon market grows",
+   "slot": 2,
+   "type": "connect",
+   "brief": {
+    "headline": "EU carbon auctions raised about €39 billion in 2024. China's expanded market covers about 8 billion tonnes, and from 2027 allocation is benchmarked against advanced intensity in each sector.",
+    "kicker": "Connect day 20 and day 21: who pays at the start shapes the market.",
+    "fullText": "Day 20 showed Europe selling allowances at auction, raising about €39 billion in 2024 at an average price of €64.76 a tonne.\n\nChina expanded its national market in 2025 to steel, cement and aluminum, covering about 8 billion tonnes, roughly 15% of global emissions. From 2027, allocation will be benchmarked against advanced intensity levels in each sector, so cleaner plants need to buy less.",
+    "sources": [
+     {
+      "url": "https://www.argusmedia.com/en/news-and-insights/latest-market-news/2641480-eu-ets-auction-revenue-decreases-in-2024",
+      "label": "Argus, EU ETS auction revenue decreases in 2024"
+     },
+     {
+      "url": "https://icapcarbonaction.com/en/news/china-officially-expands-national-ets-cement-steel-and-aluminum-sectors",
+      "label": "ICAP, China expands its national ETS to cement, steel and aluminum"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "faceOff",
+    "prompt": "Which design raises more public revenue up front?",
+    "left": {
+     "name": "Selling allowances at auction",
+     "note": "As in the EU"
+    },
+    "right": {
+     "name": "Allocating against benchmarks",
+     "note": "As in China from 2027"
+    },
+    "correctIndex": 0,
+    "explanation": "Auctions make companies pay for allowances, which raised about €39 billion in the EU in 2024."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "China's market covers about what share of global emissions?",
+    "min": 0,
+    "max": 50,
+    "value": 15,
+    "unit": "%",
+    "explanation": "About 15%, roughly 8 billion tonnes."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A ministry asks you to compare the EU and Chinese designs.",
+      "prompt": "What is the core contrast?",
+      "options": [
+       "Both designs raise the same revenue every year",
+       "Neither design affects plant behavior",
+       "Auctions raise money; benchmarks reward clean plants"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Benchmarks raise far less up front.",
+       "Both push plants to cut.",
+       "You name what each design does best."
+      ],
+      "explanation": "The EU sells allowances; China sets them against sector benchmarks that favor cleaner plants."
+     },
+     "proReasoning": "Policy analysts compare who pays and who benefits.",
+     "commonMistake": "Comparing markets only by their size.",
+     "mentalModel": "Ask who pays and who benefits."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You compare two steelmakers, one in the EU, one in China.",
+      "prompt": "What should you check for the Chinese one?",
+      "options": [
+       "How its intensity compares with the benchmark",
+       "Only the EU carbon price for this coming year",
+       "Nothing, China has no carbon cost"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Above-benchmark plants must buy more.",
+       "Its market has its own design.",
+       "Steel joined China's market in 2025."
+      ],
+      "explanation": "Under benchmark allocation, a plant's cost depends on how clean it is versus its sector."
+     },
+     "proReasoning": "Investors check where a plant sits against its benchmark.",
+     "commonMistake": "Assuming a big market means the same cost for everyone.",
+     "mentalModel": "Check the benchmark gap."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your startup sells emissions data tools.",
+      "prompt": "What do Chinese plants need from 2027?",
+      "options": [
+       "Nothing, since allowances are free",
+       "Intensity data to compare with sector benchmarks",
+       "Auction price alerts from the EU carbon market"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Plants above benchmark must buy.",
+       "Benchmarks need precise intensity data.",
+       "China does not use EU auctions."
+      ],
+      "explanation": "Benchmark allocation makes each plant's intensity a cost driver, so data matters."
+     },
+     "proReasoning": "Founders build for the metric a rule turns into money.",
+     "commonMistake": "Thinking free allocation means no cost.",
+     "mentalModel": "Follow the metric that costs money."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You wonder why China does not simply auction allowances.",
+      "prompt": "What is one reason a benchmark design appeals?",
+      "options": [
+       "It raises more money than selling at auction",
+       "It removes the need to cut emissions",
+       "It eases costs while rewarding cleaner plants"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Auctions raise more up front.",
+       "Plants above benchmark still pay.",
+       "Plants pay less at the start."
+      ],
+      "explanation": "Benchmarks let industry adjust while still rewarding cleaner producers."
+     },
+     "proReasoning": "Every allocation design balances cost and pressure.",
+     "commonMistake": "Thinking free allocation means no pressure to cut.",
+     "mentalModel": "Design balances cost and pressure."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:458232999242"
+  ]
+ },
+ {
+  "id": "78e2e904-a22c-5b94-ab6a-fec215d40045",
+  "market_id": "climatetech",
+  "day": 21,
+  "slot": 3,
+  "content": {
+   "id": "climatetech-d21-c3",
+   "title": "A cement plant meets its benchmark",
+   "lessonTitle": "China's carbon market grows",
+   "slot": 3,
+   "type": "decide",
+   "brief": {
+    "headline": "You run a Chinese cement plant that emits more per tonne than its sector's advanced level. From 2027, allocation will be benchmarked against that level. You can upgrade now or buy allowances later.",
+    "kicker": "Decide: upgrade or pay?",
+    "fullText": "China expanded its carbon market to steel, cement and aluminum in 2025, covering about 8 billion tonnes. From 2027, allocation will be benchmarked against advanced intensity levels in each sector.\n\nA plant above the benchmark will need to buy allowances to cover the gap. A plant below it may have allowances to spare.",
+    "sources": [
+     {
+      "url": "https://icapcarbonaction.com/en/news/china-officially-expands-national-ets-cement-steel-and-aluminum-sectors",
+      "label": "ICAP, China expands its national ETS to cement, steel and aluminum"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "buildChain",
+    "prompt": "Order the logic for an above-benchmark plant.",
+    "steps": [
+     "The plant emits more per tonne than the benchmark",
+     "Its allocation covers only benchmark emissions",
+     "It faces a shortfall of allowances",
+     "It must buy allowances or cut intensity",
+     "Upgrading shrinks the shortfall"
+    ],
+    "explanation": "Allocation is set at the benchmark, so the gap above it must be bought or cut."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "China's market covers about 8 billion tonnes. Write that in billions.",
+    "min": 0,
+    "max": 20,
+    "value": 8,
+    "unit": "B t",
+    "explanation": "About 8 billion tonnes, roughly 15% of global emissions."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your board asks for a recommendation on the 2027 rule.",
+      "prompt": "What do you propose?",
+      "options": [
+       "Compare upgrade cost with the allowances needed",
+       "Ignore it until the first carbon bill arrives",
+       "Cut output, whatever the cost"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "You put both options in the same units.",
+       "Waiting leaves no time to upgrade.",
+       "Output cuts may cost more than upgrades."
+      ],
+      "explanation": "The right choice depends on whether upgrading costs less than buying the shortfall."
+     },
+     "proReasoning": "Managers compare abatement cost with allowance cost.",
+     "commonMistake": "Deciding before pricing both options.",
+     "mentalModel": "Price both options."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A lender asks if the plant is a risk.",
+      "prompt": "What matters most?",
+      "options": [
+       "The EU carbon price",
+       "Its gap to the sector benchmark",
+       "Its size compared with rivals"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "It sits in China's market.",
+       "The gap sets future allowance needs.",
+       "Size alone does not set the cost."
+      ],
+      "explanation": "A large gap above the benchmark means rising costs from 2027."
+     },
+     "proReasoning": "Lenders check benchmark gaps for carbon cost risk.",
+     "commonMistake": "Judging risk by plant size, not intensity.",
+     "mentalModel": "Check the gap."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your startup sells low-carbon cement additives.",
+      "prompt": "Why is this plant a good prospect?",
+      "options": [
+       "It is already the cleanest in its sector",
+       "It is outside China's carbon market",
+       "It is above benchmark and faces a shortfall"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "It has little to gain.",
+       "Cement joined in 2025.",
+       "Your product shrinks its gap."
+      ],
+      "explanation": "Plants above benchmark save money for every point of intensity they cut."
+     },
+     "proReasoning": "Founders sell to buyers facing a shortfall.",
+     "commonMistake": "Pitching to firms that already beat the rule.",
+     "mentalModel": "Find the shortfall."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You wonder why a benchmark pushes plants to clean up.",
+      "prompt": "How does it work?",
+      "options": [
+       "Cleaner plants need to buy fewer allowances",
+       "Dirtier plants receive extra allowances",
+       "It sets one fixed price for all plants"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Being below the line saves money.",
+       "Allocation stops at the benchmark.",
+       "Prices are set in the market."
+      ],
+      "explanation": "Allocation stops at the benchmark, so plants pay for anything above it."
+     },
+     "proReasoning": "Benchmarks reward the leaders and charge the laggards.",
+     "commonMistake": "Thinking free allowances remove the incentive to cut.",
+     "mentalModel": "Leaders gain, laggards pay."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:2c9ddbdbe6b2"
+  ]
+ },
+ {
+  "id": "1bb73b59-bcc2-55bb-b1c4-3e15df46a2f6",
+  "market_id": "climatetech",
+  "day": 22,
+  "slot": 1,
+  "content": {
+   "id": "climatetech-d22-c1",
+   "title": "India's steel meets the border tax",
+   "lessonTitle": "The carbon border tax, trimmed",
+   "slot": 1,
+   "type": "apply",
+   "brief": {
+    "headline": "The EU imported €3.9 billion of iron and steel from India in 2024, its largest source. CBAM entered its definitive phase on January 1, 2026, and first declarations are due by September 30, 2027.",
+    "kicker": "Apply the rule: big exporters carry most of the exposure.",
+    "fullText": "The EU's carbon border adjustment covers iron and steel, aluminium, cement, fertilisers, electricity and hydrogen. After a reporting-only phase from October 2023, the definitive phase began on January 1, 2026.\n\nCertificates for 2026 imports go on sale in February 2027, with the first declarations due by September 30, 2027. India and the EU concluded free trade talks on January 27, 2026.",
+    "sources": [
+     {
+      "url": "https://www.downtoearth.org.in/economy/eus-carbon-rules-enter-implementation-phase-putting-indian-msmes-under-pressure",
+      "label": "Down To Earth, EU carbon rules enter implementation phase"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "buildChain",
+    "prompt": "Put the CBAM timeline in order.",
+    "steps": [
+     "Reporting-only phase starts in October 2023",
+     "Definitive phase starts January 1, 2026",
+     "Certificates go on sale in February 2027",
+     "First declarations due September 30, 2027"
+    ],
+    "explanation": "Report first, then pay: the costs for 2026 imports are settled in 2027."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "EU imports of iron and steel from India in 2024, in billions of euros?",
+    "min": 0,
+    "max": 10,
+    "value": 3.9,
+    "unit": "B€",
+    "explanation": "€3.9 billion, making India the EU's largest source that year."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "An Indian trade body asks what CBAM means now.",
+      "prompt": "What is your summary?",
+      "options": [
+       "CBAM was scrapped before it started",
+       "It only covers cars and phones",
+       "Costs for 2026 imports are paid in 2027"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Its definitive phase began in 2026.",
+       "It covers steel, cement and more.",
+       "You give the timing exporters need."
+      ],
+      "explanation": "Imports from 2026 carry a carbon cost, settled through certificates from 2027."
+     },
+     "proReasoning": "Trade advisers lead with when costs actually land.",
+     "commonMistake": "Thinking a later payment date means no cost now.",
+     "mentalModel": "Lead with timing."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You hold shares in an Indian steel exporter.",
+      "prompt": "What should you watch?",
+      "options": [
+       "The emissions per tonne of its exports",
+       "Only its domestic sales in India",
+       "Nothing until the FTA is signed"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Higher intensity means higher border costs.",
+       "EU sales carry the new cost.",
+       "CBAM applies regardless."
+      ],
+      "explanation": "The border cost depends on the carbon in each tonne shipped to the EU."
+     },
+     "proReasoning": "Investors check export intensity once border prices start.",
+     "commonMistake": "Assuming a trade deal removes carbon costs.",
+     "mentalModel": "Check carbon per tonne exported."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your startup measures embedded emissions for exporters.",
+      "prompt": "Why is now a good time to sell in India?",
+      "options": [
+       "Only firms inside the EU need emissions data",
+       "Exporters must back declarations with data",
+       "CBAM has been delayed for years"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Exporters supply the data.",
+       "Declarations need verified numbers.",
+       "The definitive phase began in 2026."
+      ],
+      "explanation": "Importers must declare embedded emissions, so they ask exporters for credible numbers."
+     },
+     "proReasoning": "Founders sell when a reporting rule turns into a payment.",
+     "commonMistake": "Missing that importers push data duties onto suppliers.",
+     "mentalModel": "Payment makes data urgent."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You wonder why the EU taxes the carbon in imported steel.",
+      "prompt": "What is the idea?",
+      "options": [
+       "To ban all steel from India",
+       "To raise prices for EU makers only",
+       "To charge imports like EU-made goods"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Imports continue, with a carbon cost.",
+       "It applies to imports too.",
+       "EU producers already pay a carbon price."
+      ],
+      "explanation": "CBAM puts a similar carbon cost on imports as on EU producers."
+     },
+     "proReasoning": "Border carbon taxes aim to level the field.",
+     "commonMistake": "Thinking a border tax is simply a trade ban.",
+     "mentalModel": "Level the field."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:370b9ccee242"
+  ]
+ },
+ {
+  "id": "b4a5bc20-949f-5bbe-a235-f31352e53d9a",
+  "market_id": "climatetech",
+  "day": 22,
+  "slot": 2,
+  "content": {
+   "id": "climatetech-d22-c2",
+   "title": "A price that follows the goods",
+   "lessonTitle": "The carbon border tax, trimmed",
+   "slot": 2,
+   "type": "connect",
+   "brief": {
+    "headline": "The EU's 2025 CBAM simplification exempts about 90% of importers while keeping about 99% of embedded emissions covered. A few large importers carry almost all the carbon.",
+    "kicker": "Connect day 19 and day 22: a carbon price that crosses borders.",
+    "fullText": "Day 19 showed carbon pricing at home: in 2025, 80 instruments covered about 28% of global emissions. A carbon price at home can push production abroad, so the EU added a border adjustment for imports.\n\nThe 2025 simplification exempts about 90% of importers while keeping about 99% of embedded emissions covered. Certificates for 2026 imports go on sale in February 2027.",
+    "sources": [
+     {
+      "url": "https://icapcarbonaction.com/en/news/eu-adopts-simplifications-cbam-rules-ahead-compliance-phase-starting-2026",
+      "label": "ICAP, EU adopts simplified CBAM rules"
+     },
+     {
+      "url": "https://www.worldbank.org/en/news/press-release/2025/06/10/global-carbon-pricing-mobilizes-over-100-billion-for-public-budgets",
+      "label": "World Bank, global carbon pricing mobilizes over $100 billion"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "multipleChoice",
+    "prompt": "How can exempting 90% of importers keep 99% of emissions covered?",
+    "options": [
+     "Emissions are counted twice for big firms",
+     "A few large importers bring in most of the carbon",
+     "The exempt importers bring in no goods at all"
+    ],
+    "correctIndex": 1,
+    "explanation": "Small importers carry little carbon. The few large ones bring in almost all of it."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "About 90% of importers are exempt. What share still must comply?",
+    "min": 0,
+    "max": 100,
+    "value": 10,
+    "unit": "%",
+    "tolerance": 0.05,
+    "explanation": "About 10% of importers, carrying about 99% of the embedded emissions."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A trade ministry asks if the simplification weakens CBAM.",
+      "prompt": "What is your answer?",
+      "options": [
+       "Barely: 99% of the carbon stays covered",
+       "Yes, 90% of the carbon is now exempt",
+       "It ends CBAM for all importers"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "You separate firm count from carbon count.",
+       "It is 90% of importers, not of carbon.",
+       "Large importers still comply."
+      ],
+      "explanation": "Fewer firms must report, but almost all embedded emissions remain covered."
+     },
+     "proReasoning": "Analysts check what share of the problem a rule still covers.",
+     "commonMistake": "Reading \"90% exempt\" as a 90% weaker rule.",
+     "mentalModel": "Count the carbon, not the firms."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You look at EU importers of steel and aluminium.",
+      "prompt": "Who carries the cost?",
+      "options": [
+       "Nobody, since most are exempt",
+       "The large importers bringing in most carbon",
+       "Every small importer, in equal shares"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "The big ones still pay.",
+       "They hold about 99% of the emissions.",
+       "Most small importers are exempt."
+      ],
+      "explanation": "The cost sits with the few large importers that bring in almost all the carbon."
+     },
+     "proReasoning": "Investors find where a rule's cost concentrates.",
+     "commonMistake": "Assuming an exemption for most firms means low impact.",
+     "mentalModel": "Find where cost concentrates."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your startup sells CBAM compliance software.",
+      "prompt": "Who should you target after the simplification?",
+      "options": [
+       "Every small importer across the EU",
+       "Exporters outside the EU only",
+       "The few large importers still covered"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Most are now exempt.",
+       "Importers file the declarations.",
+       "They hold nearly all the obligation."
+      ],
+      "explanation": "With 90% of importers exempt, your buyers are the large importers carrying 99% of emissions."
+     },
+     "proReasoning": "Founders re-target when a rule narrows its scope.",
+     "commonMistake": "Chasing many small buyers a rule no longer covers.",
+     "mentalModel": "Follow the remaining scope."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You read that CBAM now exempts 90% of importers.",
+      "prompt": "Does that mean little carbon is covered?",
+      "options": [
+       "No, about 99% of emissions stay covered",
+       "Yes, only 10% of carbon is covered",
+       "Yes, CBAM no longer exists at all"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "A few big importers hold most carbon.",
+       "It is 10% of firms, not of carbon.",
+       "It still applies to large importers."
+      ],
+      "explanation": "Emissions are concentrated in a few large importers, which remain covered."
+     },
+     "proReasoning": "A small share of players can hold most of a total.",
+     "commonMistake": "Confusing share of firms with share of emissions.",
+     "mentalModel": "Firms are not tonnes."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:1642dd0b534f"
+  ]
+ },
+ {
+  "id": "7b206648-2023-594f-bad7-561c342d6419",
+  "market_id": "climatetech",
+  "day": 22,
+  "slot": 3,
+  "content": {
+   "id": "climatetech-d22-c3",
+   "title": "A small importer's choice",
+   "lessonTitle": "The carbon border tax, trimmed",
+   "slot": 3,
+   "type": "decide",
+   "brief": {
+    "headline": "You run a small EU firm importing aluminium parts. After the 2025 simplification, you fall under the exemption. A supplier offers lower-carbon parts at a premium.",
+    "kicker": "Decide: pay for lower carbon if you are exempt?",
+    "fullText": "The EU's 2025 CBAM simplification exempts about 90% of importers while keeping about 99% of embedded emissions covered. Certificates for 2026 imports go on sale in February 2027.\n\nYour firm is exempt today. Your largest customer is a big manufacturer that does fall under CBAM and is asking suppliers for emissions data.",
+    "sources": [
+     {
+      "url": "https://icapcarbonaction.com/en/news/eu-adopts-simplifications-cbam-rules-ahead-compliance-phase-starting-2026",
+      "label": "ICAP, EU adopts simplified CBAM rules"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "sortSignal",
+    "prompt": "Is each a reason to consider lower-carbon parts, or not?",
+    "buckets": [
+     "A reason to consider",
+     "Not a reason"
+    ],
+    "items": [
+     {
+      "text": "Your big customer asks for emissions data",
+      "bucket": 0
+     },
+     {
+      "text": "Rules may change as you grow",
+      "bucket": 0
+     },
+     {
+      "text": "Lower-carbon parts can win new buyers",
+      "bucket": 0
+     },
+     {
+      "text": "You owe CBAM certificates today",
+      "bucket": 1
+     },
+     {
+      "text": "Exempt firms are banned from buying them",
+      "bucket": 1
+     }
+    ],
+    "explanation": "You are exempt today, but customers and growth can still make lower carbon pay."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "What share of embedded emissions stays covered after the simplification?",
+    "min": 0,
+    "max": 100,
+    "value": 99,
+    "unit": "%",
+    "explanation": "About 99%, held by the large importers that remain covered."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your CEO asks if the premium is worth it.",
+      "prompt": "What do you recommend?",
+      "options": [
+       "Switch all parts now, whatever the cost",
+       "Weigh it against what the big customer needs",
+       "Never pay extra while you are exempt"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "That may cost more than it earns.",
+       "Customer demand can matter more than rules.",
+       "That may lose the main customer."
+      ],
+      "explanation": "Even exempt, you sell into a covered customer who cares about embedded carbon."
+     },
+     "proReasoning": "Managers look past their own exemption to their customers' rules.",
+     "commonMistake": "Ignoring rules that bind your customers.",
+     "mentalModel": "Your customer's rules are yours."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "An investor asks about your carbon risk.",
+      "prompt": "What is the honest answer?",
+      "options": [
+       "No risk at all, since we are fully exempt",
+       "High direct cost from CBAM today",
+       "Low direct cost, but real customer pressure"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Customers can still push.",
+       "You owe no certificates now.",
+       "You show both sides."
+      ],
+      "explanation": "Your direct cost is low, but covered customers may favor lower-carbon suppliers."
+     },
+     "proReasoning": "Investors look for indirect carbon pressure through customers.",
+     "commonMistake": "Treating an exemption as zero exposure.",
+     "mentalModel": "Exempt is not immune."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A startup offers to measure your parts' emissions.",
+      "prompt": "Why might you buy it?",
+      "options": [
+       "Your big customer needs credible numbers",
+       "CBAM fines you directly today",
+       "Measurement is required for exempt firms"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Data keeps you on the supplier list.",
+       "Exempt firms owe nothing now.",
+       "Exempt firms have no such duty."
+      ],
+      "explanation": "Large covered buyers need supplier data for their declarations."
+     },
+     "proReasoning": "Founders sell to suppliers through their big customers' duties.",
+     "commonMistake": "Pitching a legal duty that does not apply.",
+     "mentalModel": "Sell through the customer's duty."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You wonder why an exempt firm would care about CBAM.",
+      "prompt": "What is the reason?",
+      "options": [
+       "CBAM covers every product sold",
+       "Its customers may be covered and need data",
+       "Exempt firms still pay the full CBAM cost"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "It covers six product groups.",
+       "Buyers pass requirements down the chain.",
+       "Exempt firms pay nothing directly."
+      ],
+      "explanation": "Rules on large buyers flow down to their suppliers."
+     },
+     "proReasoning": "Rules travel along supply chains.",
+     "commonMistake": "Thinking an exemption ends the story.",
+     "mentalModel": "Rules travel the chain."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:276714346d91"
+  ]
+ },
+ {
+  "id": "aab1b704-4677-5d46-8ef5-55667d1925a7",
+  "market_id": "climatetech",
+  "day": 23,
+  "slot": 1,
+  "content": {
+   "id": "climatetech-d23-c1",
+   "title": "Washington keeps its carbon market",
+   "lessonTitle": "Canada drops its consumer carbon price",
+   "slot": 1,
+   "type": "apply",
+   "brief": {
+    "headline": "In November 2024, Washington voters rejected a measure to repeal the state's cap-and-invest law, about 62% to 38%. The program, started in 2023, had raised $2.3 billion.",
+    "kicker": "Apply the rule: visible prices face votes; visible benefits help.",
+    "fullText": "Initiative 2117 would have repealed the 2021 Climate Commitment Act and barred any carbon trading program. It was losing 61.7% to 38.3% when the AP called the result.\n\nThe program started on January 1, 2023, and had raised $2.3 billion. The largest share went to transportation, including electric school buses and free transit for youth. About $150 million paid for one-time $200 credits on electricity bills for nearly 700,000 households.",
+    "sources": [
+     {
+      "url": "https://washingtonstatestandard.com/2024/11/05/voters-rejecting-measure-to-repeal-landmark-washington-climate-law/",
+      "label": "Washington State Standard, voters reject the climate law repeal"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "spotFake",
+    "prompt": "Two statements match Washington's vote. Which one does not?",
+    "statements": [
+     "The repeal trailed 61.7% to 38.3% when called",
+     "The program had raised $2.3 billion",
+     "Voters ended carbon trading in the state"
+    ],
+    "fakeIndex": 2,
+    "explanation": "Voters rejected the repeal, so the cap-and-invest program stayed in place."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "One-time bill credits went to nearly how many households, in thousands?",
+    "min": 0,
+    "max": 1000,
+    "value": 700,
+    "unit": "K",
+    "explanation": "Nearly 700,000 households got $200 credits, a benefit voters could see."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A campaign group asks why the repeal failed.",
+      "prompt": "What is one lesson?",
+      "options": [
+       "Visible benefits helped defend a visible price",
+       "Voters did not notice the program existed",
+       "The vote was very close"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Bill credits and transit were easy to see.",
+       "It raised $2.3 billion and drew a vote.",
+       "It was about 62% to 38%."
+      ],
+      "explanation": "Spending on buses, transit and bill credits gave voters benefits to weigh against costs."
+     },
+     "proReasoning": "Strategists pair a visible cost with visible benefits.",
+     "commonMistake": "Assuming carbon prices always lose at the ballot box.",
+     "mentalModel": "Pair cost with benefit."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You invest in Washington electric bus makers.",
+      "prompt": "What did the vote do for your thesis?",
+      "options": [
+       "Had no link to bus funding",
+       "Kept the revenue that funds bus purchases",
+       "Ended all state funding for electric buses"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Buses are a stated use of funds.",
+       "Program money pays for electric buses.",
+       "The program survived."
+      ],
+      "explanation": "The program's revenue funds electric school buses, so its survival protects demand."
+     },
+     "proReasoning": "Investors track the ballot fate of programs that fund their buyers.",
+     "commonMistake": "Ignoring political risk in policy-funded demand.",
+     "mentalModel": "Track policy-funded demand."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your startup sells EV chargers.",
+      "prompt": "How do you use the program in sales?",
+      "options": [
+       "Avoid mentioning a disputed state program",
+       "Wait for another vote first",
+       "Point buyers to state-funded charger programs"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "It survived a public vote.",
+       "Waiting loses customers.",
+       "The program funds EV chargers."
+      ],
+      "explanation": "The program pays for EV chargers, which lowers costs for your buyers."
+     },
+     "proReasoning": "Founders help buyers tap public money.",
+     "commonMistake": "Treating a program that won a vote as too risky to use.",
+     "mentalModel": "Help buyers tap funds."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You read that carbon prices are unpopular.",
+      "prompt": "What does Washington add to that view?",
+      "options": [
+       "A price can survive when benefits are visible",
+       "All carbon prices are popular",
+       "Voters never get to decide carbon prices"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "It won about 62% to 38%.",
+       "Canada's consumer price ended.",
+       "Washington voters did decide."
+      ],
+      "explanation": "Washington's market survived a vote, helped by spending people could see."
+     },
+     "proReasoning": "Popularity depends on what people see on both sides.",
+     "commonMistake": "Generalizing from one country's experience.",
+     "mentalModel": "Look at both sides of the ledger."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:760eb9510bfc"
+  ]
+ },
+ {
+  "id": "a079c9f2-700e-5fcc-900e-5da4863ff38d",
+  "market_id": "climatetech",
+  "day": 23,
+  "slot": 2,
+  "content": {
+   "id": "climatetech-d23-c2",
+   "title": "Two prices, two fates",
+   "lessonTitle": "Canada drops its consumer carbon price",
+   "slot": 2,
+   "type": "connect",
+   "brief": {
+    "headline": "Canada ended its consumer carbon price, then $80 a tonne, in March 2025, while keeping its industrial price. Washington's cap-and-invest program survived a 2024 repeal vote.",
+    "kicker": "Connect day 19 and day 23: the design is economics, the fate is politics.",
+    "fullText": "Day 19 showed the two ways to price carbon: fix the price or fix the amount. Canada used a consumer price on fuel, which people saw at the pump. It ended that price in March 2025 and said it would strengthen the industrial price instead.\n\nWashington caps major emitters, such as oil refiners and utilities, and spends the revenue on visible programs. Voters kept it in 2024.",
+    "sources": [
+     {
+      "url": "https://globalnews.ca/news/11082822/mark-carney-consumer-carbon-price-terminated-immediately",
+      "label": "Global News, Carney ends the consumer carbon price"
+     },
+     {
+      "url": "https://washingtonstatestandard.com/2024/11/05/voters-rejecting-measure-to-repeal-landmark-washington-climate-law/",
+      "label": "Washington State Standard, voters reject the climate law repeal"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "faceOff",
+    "prompt": "Which carbon price did people see most directly?",
+    "left": {
+     "name": "Canada's consumer price",
+     "note": "Seen at the pump"
+    },
+    "right": {
+     "name": "Canada's industrial price",
+     "note": "Paid by big emitters"
+    },
+    "correctIndex": 0,
+    "explanation": "The consumer price showed up in everyday costs, which made it a political target."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "Canada's consumer carbon price when it ended, in dollars per tonne?",
+    "min": 0,
+    "max": 150,
+    "value": 80,
+    "unit": "$/t",
+    "explanation": "$80 a tonne in March 2025, when it was ended."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A provincial premier asks how to price carbon that lasts.",
+      "prompt": "What do you advise?",
+      "options": [
+       "Keep the revenue hidden from voters",
+       "Price large emitters and show the benefits",
+       "Put the price on every single gas receipt"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Hidden benefits win no support.",
+       "Less visible costs and clear benefits help.",
+       "Visible costs drew backlash in Canada."
+      ],
+      "explanation": "Canada kept its industrial price; Washington's visible spending helped it survive."
+     },
+     "proReasoning": "Advisers design for both economics and politics.",
+     "commonMistake": "Designing a carbon price that ignores public opinion.",
+     "mentalModel": "Design for politics too."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You hold Canadian heavy industry stocks.",
+      "prompt": "What does the March 2025 change mean for them?",
+      "options": [
+       "All carbon pricing in Canada has now ended",
+       "Their price is now zero",
+       "Their carbon price stays and may get stronger"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Only the consumer price ended.",
+       "Industrial pricing continues.",
+       "The industrial price was kept."
+      ],
+      "explanation": "Canada dropped the consumer price but said it would bolster the industrial one."
+     },
+     "proReasoning": "Investors separate consumer and industrial carbon policy.",
+     "commonMistake": "Reading the end of one price as the end of all.",
+     "mentalModel": "Separate the two prices."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your startup sells efficiency tools to Canadian factories.",
+      "prompt": "How does the change affect you?",
+      "options": [
+       "Factories still face a price, maybe higher",
+       "Demand ends since carbon pricing ended",
+       "Only households pay for carbon now"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Industrial pricing stays.",
+       "Only the consumer price ended.",
+       "Households no longer pay it."
+      ],
+      "explanation": "Industrial buyers still pay for carbon, so cutting emissions still saves money."
+     },
+     "proReasoning": "Founders check which price their buyers actually pay.",
+     "commonMistake": "Assuming a headline change hits every buyer.",
+     "mentalModel": "Check which price your buyer pays."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You wonder why one carbon price ended and the other did not.",
+      "prompt": "What explains it?",
+      "options": [
+       "Canada banned carbon pricing",
+       "The consumer price was the one people saw",
+       "The industrial price raised nothing"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Industrial pricing continues.",
+       "Visible costs drew political pressure.",
+       "It still applies to big emitters."
+      ],
+      "explanation": "Costs people see every day are easier to campaign against than costs paid by industry."
+     },
+     "proReasoning": "Visibility shapes the politics of any price.",
+     "commonMistake": "Thinking economics alone decides policy.",
+     "mentalModel": "Visibility drives politics."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:45b0cc718e34"
+  ]
+ },
+ {
+  "id": "3399b573-f173-5af2-887a-01a0011ddf2c",
+  "market_id": "climatetech",
+  "day": 23,
+  "slot": 3,
+  "content": {
+   "id": "climatetech-d23-c3",
+   "title": "Spending carbon money",
+   "lessonTitle": "Canada drops its consumer carbon price",
+   "slot": 3,
+   "type": "decide",
+   "brief": {
+    "headline": "You advise a state with a new cap on large emitters. It will raise about $1 billion a year. Lawmakers want to know how to spend it so the program survives a repeal vote.",
+    "kicker": "Decide: where should the money go?",
+    "fullText": "Washington's program raised $2.3 billion from 2023, with the largest share spent on transportation, electric school buses and free transit for youth. About $150 million paid for $200 bill credits for nearly 700,000 households. Voters rejected a repeal in 2024.\n\nCanada's consumer carbon price, a cost people saw at the pump, ended in March 2025 even though households got rebates.",
+    "sources": [
+     {
+      "url": "https://washingtonstatestandard.com/2024/11/05/voters-rejecting-measure-to-repeal-landmark-washington-climate-law/",
+      "label": "Washington State Standard, voters reject the climate law repeal"
+     },
+     {
+      "url": "https://globalnews.ca/news/11082822/mark-carney-consumer-carbon-price-terminated-immediately",
+      "label": "Global News, Carney ends the consumer carbon price"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "multipleChoice",
+    "prompt": "Which use of funds gives voters the clearest benefit?",
+    "options": [
+     "Paying down unrelated state debt",
+     "Bill credits and free youth transit",
+     "An unnamed reserve in the general budget"
+    ],
+    "correctIndex": 1,
+    "explanation": "People see credits on their bills and buses on their streets. Hidden uses build no support."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "Washington paid $200 credits to nearly 700,000 households. About how many millions is that?",
+    "min": 0,
+    "max": 300,
+    "value": 140,
+    "unit": "M$",
+    "explanation": "700,000 times $200 is $140 million, close to the reported $150 million."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Lawmakers ask for your top recommendation.",
+      "prompt": "What do you say?",
+      "options": [
+       "Hide the revenue in the general fund",
+       "Return nothing and cut no costs",
+       "Fund benefits people can see and use"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Hidden money wins no defenders.",
+       "That leaves only costs visible.",
+       "Visible benefits build a constituency."
+      ],
+      "explanation": "Spending on visible programs gave Washington voters reasons to keep the cap."
+     },
+     "proReasoning": "Policy designers build support into the spending plan.",
+     "commonMistake": "Treating revenue use as an afterthought.",
+     "mentalModel": "Spend where people see it."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A bond investor asks if the program is durable.",
+      "prompt": "What makes it more durable?",
+      "options": [
+       "Broad, visible benefits for many voters",
+       "Keeping the price high and very quiet",
+       "Spending only on large firms"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Beneficiaries defend programs.",
+       "Quiet costs still face votes.",
+       "Few voters feel those benefits."
+      ],
+      "explanation": "Programs with many visible beneficiaries tend to survive political challenges."
+     },
+     "proReasoning": "Investors judge policy durability by who benefits.",
+     "commonMistake": "Assuming a law lasts just because it passed.",
+     "mentalModel": "Count the beneficiaries."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A transit startup wants a share of the money.",
+      "prompt": "What pitch fits the lawmakers' goal?",
+      "options": [
+       "A product built for one large company",
+       "A visible service riders use every day",
+       "A back-office tool nobody sees"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Narrow benefits help few voters.",
+       "Visible use builds support.",
+       "Hidden tools win no voters."
+      ],
+      "explanation": "Lawmakers want spending that voters notice and value."
+     },
+     "proReasoning": "Founders align pitches with what decision makers need.",
+     "commonMistake": "Pitching on product merit alone in a political program.",
+     "mentalModel": "Match the buyer's goal."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You wonder why spending choices affect a carbon price's survival.",
+      "prompt": "Why do they?",
+      "options": [
+       "Spending has no effect at all on how people vote",
+       "Prices are never put to a vote",
+       "Visible benefits give voters a reason to keep it"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Benefits shape opinion.",
+       "Washington held a vote in 2024.",
+       "Washington's program survived a vote."
+      ],
+      "explanation": "When people see what the money does, the cost feels like a trade, not a loss."
+     },
+     "proReasoning": "People judge costs against benefits they can see.",
+     "commonMistake": "Thinking only the price level matters to voters.",
+     "mentalModel": "Costs feel smaller next to benefits."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:17c15be5ca76"
+  ]
+ },
+ {
+  "id": "ddc4df02-7d40-52d8-b195-16b7a39d4237",
+  "market_id": "climatetech",
+  "day": 24,
+  "slot": 1,
+  "content": {
+   "id": "climatetech-d24-c1",
+   "title": "Kariba's excess credits",
+   "lessonTitle": "The shrinking offset market",
+   "slot": 1,
+   "type": "apply",
+   "brief": {
+    "headline": "In September 2025, Verra found that 15.2 million of the 26.8 million credits issued to the Kariba forest project were excess. It moved to cancel credits and remove 10 million unissued ones.",
+    "kicker": "Apply the rule: trust is the product.",
+    "fullText": "Kariba, a REDD+ project meant to avoid deforestation, issued 26,822,953 credits. Verra, the registry that certifies such projects, identified 15,220,520 as excess.\n\nBecause the project had withdrawn from the registry, Verra said it would seek compensation, permanently remove 10,083,263 verified but unissued units and cancel all 5,049,473 credits in its buffer pool. It said it would track deforestation at the site in the years ahead.",
+    "sources": [
+     {
+      "url": "https://verra.org/verra-acts-on-kariba-project-cancels-excess-credits-advances-independent-review/",
+      "label": "Verra, action on the Kariba project"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "multipleChoice",
+    "prompt": "Why did Verra cancel buffer credits instead of waiting for later checks?",
+    "options": [
+     "The project itself asked Verra to cancel them",
+     "The project had left, so no later checks remained",
+     "Buffer credits had already expired"
+    ],
+    "correctIndex": 1,
+    "explanation": "With the project withdrawn, there were no later monitoring periods in which to make up the gap."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "15.2 million excess out of 26.8 million issued. About what share was excess?",
+    "min": 0,
+    "max": 100,
+    "value": 57,
+    "unit": "%",
+    "explanation": "About 57%, more than half of all credits issued."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A corporate client used Kariba credits and asks what to say.",
+      "prompt": "What do you advise?",
+      "options": [
+       "Claim the credits are all still fully valid today",
+       "Disclose it and explain how you will replace them",
+       "Say nothing and hope it passes quietly"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "The registry found most were excess.",
+       "Openness protects trust.",
+       "Silence risks a worse story later."
+      ],
+      "explanation": "When the credits behind a claim are found excess, honest disclosure limits damage."
+     },
+     "proReasoning": "Advisers lead with disclosure when a claim breaks.",
+     "commonMistake": "Defending credits a registry has called excess.",
+     "mentalModel": "Disclose and replace."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You hold a portfolio of forest carbon credits.",
+      "prompt": "What does Kariba teach you?",
+      "options": [
+       "All forest credits are now worthless",
+       "Registry checks guarantee every credit",
+       "Check how each project measures its baseline"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Quality varies by project.",
+       "Kariba shows checks can miss.",
+       "Excess credits came from measurement gaps."
+      ],
+      "explanation": "More than half of Kariba's credits were excess, so measurement quality matters project by project."
+     },
+     "proReasoning": "Investors judge credits by their methods, not their labels.",
+     "commonMistake": "Assuming a registry stamp settles quality.",
+     "mentalModel": "Judge the method."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your startup monitors forests by satellite.",
+      "prompt": "How does Kariba help your pitch?",
+      "options": [
+       "Buyers need independent checks on credits",
+       "Registries no longer need any data",
+       "Forest credits have stopped trading"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Excess credits show the risk of weak data.",
+       "Verra now uses long-term monitoring.",
+       "Trading continues at lower value."
+      ],
+      "explanation": "Verra said it will monitor deforestation, showing demand for independent monitoring."
+     },
+     "proReasoning": "Founders sell verification when trust breaks.",
+     "commonMistake": "Pitching growth without addressing trust.",
+     "mentalModel": "Sell what restores trust."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You wonder how a project can issue too many credits.",
+      "prompt": "What is the likely cause?",
+      "options": [
+       "Forests grow back every year",
+       "Its estimate of avoided loss was too high",
+       "Credits print themselves as time goes by"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Growth does not create credits here.",
+       "Credits rest on estimates of what would happen.",
+       "A registry issues each one."
+      ],
+      "explanation": "Forest credits depend on estimating what would have been lost; a high estimate means excess credits."
+     },
+     "proReasoning": "Credits are only as good as the estimate behind them.",
+     "commonMistake": "Thinking a credit is a direct measurement of carbon.",
+     "mentalModel": "Credits rest on estimates."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:5015611416bb"
+  ]
+ },
+ {
+  "id": "4c76441f-318e-5c1c-bb2e-c9068f7f568a",
+  "market_id": "climatetech",
+  "day": 24,
+  "slot": 2,
+  "content": {
+   "id": "climatetech-d24-c2",
+   "title": "Credits in a binding target",
+   "lessonTitle": "The shrinking offset market",
+   "slot": 2,
+   "type": "connect",
+   "brief": {
+    "headline": "The voluntary carbon market fell 29% to $535 million in 2024, even as retirements stayed near 182 million tonnes. Meanwhile the EU will let international credits cover up to 5% of its 2040 target.",
+    "kicker": "Connect day 17 and day 24: weak trust meets new demand.",
+    "fullText": "Day 17 showed the EU's 2040 deal: a 90% headline cut, with up to 5% from international credits. Today's lesson shows the market those credits come from.\n\nIn 2024 the voluntary carbon market fell 29% to $535 million, and average prices fell 5.5%, while retirements stayed near 182 million tonnes. Buyers kept using credits but paid less for them.",
+    "sources": [
+     {
+      "url": "https://www.reccessary.com/en/news/voluntary-carbon-market-hits-6-year-low",
+      "label": "Reccessary, voluntary carbon market hits a six-year low"
+     },
+     {
+      "url": "https://www.jurist.org/news/2025/11/eu-ministers-strike-deal-on-binding-2040-emissions-target/",
+      "label": "JURIST, EU ministers agree a binding 2040 target"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "sortSignal",
+    "prompt": "Does each point to weak trust or new demand?",
+    "buckets": [
+     "Weak trust",
+     "New demand"
+    ],
+    "items": [
+     {
+      "text": "Market value fell 29% in 2024",
+      "bucket": 0
+     },
+     {
+      "text": "Buyers paid less per credit",
+      "bucket": 0
+     },
+     {
+      "text": "EU lets credits cover 5% of 2040 target",
+      "bucket": 1
+     },
+     {
+      "text": "Retirements stayed near 182 million tonnes",
+      "bucket": 1
+     },
+     {
+      "text": "Average prices fell 5.5%",
+      "bucket": 0
+     }
+    ],
+    "explanation": "Falling value shows weak trust, while steady use and the EU rule show demand."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "By about what percent did average credit prices fall in 2024?",
+    "min": 0,
+    "max": 30,
+    "value": 5.5,
+    "unit": "%",
+    "explanation": "Average prices fell 5.5%, while transaction volume fell 25%."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A policy team asks what the EU rule means for offsets.",
+      "prompt": "What is your view?",
+      "options": [
+       "A revival of all the cheapest credits",
+       "No effect on any credit market",
+       "Demand for strict, high-quality credits"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Quality doubts already cut prices.",
+       "Up to 5% creates real demand.",
+       "A binding target needs credible credits."
+      ],
+      "explanation": "Counting credits toward a binding target raises the bar for which credits qualify."
+     },
+     "proReasoning": "Analysts link new demand to quality rules.",
+     "commonMistake": "Expecting any demand to lift all credits.",
+     "mentalModel": "Demand meets quality rules."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You consider buying a carbon credit developer.",
+      "prompt": "What is the key question?",
+      "options": [
+       "Whether its credits meet strict quality rules",
+       "Only how many credits it has issued so far",
+       "Whether credit prices always rise"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Quality decides who gets the new demand.",
+       "Volume without trust lost value.",
+       "Prices fell 29% in value terms."
+      ],
+      "explanation": "Value fell on quality doubts, so only credible credits will capture new demand."
+     },
+     "proReasoning": "Investors buy quality in a market short on trust.",
+     "commonMistake": "Valuing credits by volume alone.",
+     "mentalModel": "Buy quality."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your startup rates carbon credits.",
+      "prompt": "Why is this a good moment?",
+      "options": [
+       "Prices are rising fast",
+       "New binding demand needs trusted ratings",
+       "Buyers have stopped using credits entirely"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Value fell in 2024.",
+       "The EU rule raises the stakes.",
+       "Retirements stayed near 182M tonnes."
+      ],
+      "explanation": "If credits count toward the EU target, buyers need to know which ones are credible."
+     },
+     "proReasoning": "Founders build trust tools where stakes rise.",
+     "commonMistake": "Selling ratings without a reason buyers must care.",
+     "mentalModel": "Rise with the stakes."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You wonder why the offset market shrank while use held.",
+      "prompt": "What happened?",
+      "options": [
+       "People retired far fewer credits that year",
+       "Credits became illegal",
+       "Buyers paid less because they trusted less"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Retirements stayed near 182M tonnes.",
+       "They remain legal.",
+       "Doubts lowered the price per credit."
+      ],
+      "explanation": "Use held steady, but doubts about quality lowered what buyers would pay."
+     },
+     "proReasoning": "Price falls can reflect trust, not demand.",
+     "commonMistake": "Thinking a smaller market means less use.",
+     "mentalModel": "Value falls with trust."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:cef25fee4f6a"
+  ]
+ },
+ {
+  "id": "39e8b450-8cd9-5992-8d36-6ac16a7c1f75",
+  "market_id": "climatetech",
+  "day": 24,
+  "slot": 3,
+  "content": {
+   "id": "climatetech-d24-c3",
+   "title": "Buying credits after Kariba",
+   "lessonTitle": "The shrinking offset market",
+   "slot": 3,
+   "type": "decide",
+   "brief": {
+    "headline": "You run sustainability at a consumer brand that buys carbon credits for a climate claim. After Kariba, your board asks whether to keep buying, switch credits, or drop the claim.",
+    "kicker": "Decide: what do you do with your credits?",
+    "fullText": "Verra found 15.2 million of Kariba's 26.8 million credits were excess. The voluntary market fell 29% to $535 million in 2024, and average prices fell 5.5%.\n\nYour brand's claim rests on credits. Your board wants a choice that protects the brand and keeps doing real climate work.",
+    "sources": [
+     {
+      "url": "https://verra.org/verra-acts-on-kariba-project-cancels-excess-credits-advances-independent-review/",
+      "label": "Verra, action on the Kariba project"
+     },
+     {
+      "url": "https://www.reccessary.com/en/news/voluntary-carbon-market-hits-6-year-low",
+      "label": "Reccessary, voluntary carbon market hits a six-year low"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "faceOff",
+    "prompt": "Which approach better protects the brand?",
+    "left": {
+     "name": "Cut own emissions first",
+     "note": "Use credits only for the rest"
+    },
+    "right": {
+     "name": "Keep buying cheap credits",
+     "note": "Lead with an offset claim"
+    },
+    "correctIndex": 0,
+    "explanation": "Claims built on your own cuts survive credit scandals; claims built on cheap credits do not."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "The market fell 29% to $535 million. About what was it in 2023, in millions?",
+    "min": 0,
+    "max": 1200,
+    "value": 754,
+    "unit": "M$",
+    "explanation": "$535 million is 71% of the 2023 value, so 2023 was about $754 million."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your board wants one recommendation.",
+      "prompt": "What do you propose?",
+      "options": [
+       "Cut first, then buy fewer, better credits",
+       "Keep the claim and buy more credits",
+       "Drop all climate work entirely"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Own cuts carry the claim.",
+       "Volume without trust adds risk.",
+       "That throws away real progress."
+      ],
+      "explanation": "Lead with your own reductions and use only high-quality credits for what remains."
+     },
+     "proReasoning": "Sustainability leads build claims that survive scrutiny.",
+     "commonMistake": "Resting a brand claim on credits alone.",
+     "mentalModel": "Cut first, credit last."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "An investor asks about greenwashing risk.",
+      "prompt": "What answer lowers their concern?",
+      "options": [
+       "We do not track any emissions",
+       "Our claims rest on our own measured cuts",
+       "We buy the cheapest credits on offer"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "No data means no defense.",
+       "Measured cuts are hard to challenge.",
+       "Cheap credits carry the most doubt."
+      ],
+      "explanation": "Claims based on measured cuts carry less risk than those based on credits."
+     },
+     "proReasoning": "Investors probe what a climate claim rests on.",
+     "commonMistake": "Assuming credits remove all reputational risk.",
+     "mentalModel": "Ask what the claim rests on."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A startup offers your brand removal credits with satellite checks.",
+      "prompt": "What should you ask first?",
+      "options": [
+       "Only how cheap each one of their credits is",
+       "Whether you can skip own cuts",
+       "How their measurement is independently checked"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Cheap credits lost value.",
+       "Credits work best after cuts.",
+       "Independent checks build trust."
+      ],
+      "explanation": "After Kariba, the key question for any credit is how its claims are verified."
+     },
+     "proReasoning": "Buyers ask about verification before price.",
+     "commonMistake": "Choosing credits on price after a trust crisis.",
+     "mentalModel": "Ask about verification first."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You wonder whether companies should still buy credits.",
+      "prompt": "What is a balanced view?",
+      "options": [
+       "Yes, but only good ones after own cuts",
+       "No, every credit sold is simply fake",
+       "Yes, credits replace all cuts"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Credits can help with what is left.",
+       "Quality varies by project.",
+       "Cuts should come first."
+      ],
+      "explanation": "Credits can support climate goals, but only quality ones, and only after real cuts."
+     },
+     "proReasoning": "A tool can be useful and still need care.",
+     "commonMistake": "Calling all credits good or all credits fake.",
+     "mentalModel": "Useful, with care."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:68a13cd20032"
+  ]
+ },
+ {
+  "id": "bf1594e2-3adf-55d4-884a-121770295d84",
+  "market_id": "climatetech",
+  "day": 25,
+  "slot": 1,
+  "content": {
+   "id": "climatetech-d25-c1",
+   "title": "Japan writes its own version",
+   "lessonTitle": "One global language for climate reporting",
+   "slot": 1,
+   "type": "apply",
+   "brief": {
+    "headline": "In March 2025, Japan's sustainability standards board issued standards that closely mirror the ISSB's IFRS S1 and S2. Use is voluntary for now; Prime Market firms are expected to follow later.",
+    "kicker": "Apply the rule: a shared standard lets investors compare.",
+    "fullText": "The Sustainability Standards Board of Japan, or SSBJ, rolled out its standards in March 2025. They closely mirror the two ISSB standards, IFRS S1 for sustainability in general and S2 for climate.\n\nAdoption is voluntary for now. Companies on the Prime Market of the Tokyo Stock Exchange are expected to face mandatory adoption later, but no official date had been announced.",
+    "sources": [
+     {
+      "url": "https://www.xbrl.org/news/japan-publishes-ifrs-aligned-sustainability-standards/",
+      "label": "XBRL International, Japan publishes IFRS-aligned sustainability standards"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "spotFake",
+    "prompt": "Two statements match Japan's standards. Which one does not?",
+    "statements": [
+     "They closely mirror IFRS S1 and S2",
+     "Use is voluntary for now",
+     "All Japanese firms must report from 2025"
+    ],
+    "fakeIndex": 2,
+    "explanation": "Use is voluntary for now. Prime Market firms are expected to be required later."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "How many ISSB standards do Japan's standards mirror?",
+    "min": 0,
+    "max": 6,
+    "value": 2,
+    "unit": "standards",
+    "explanation": "Two: IFRS S1 for general sustainability and IFRS S2 for climate."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "An investor client asks what Japan's step means.",
+      "prompt": "What is your summary?",
+      "options": [
+       "Japan created a rival standard of its own",
+       "Japan banned climate reporting",
+       "Japanese reports will compare with global ones"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "It closely follows the ISSB.",
+       "It created voluntary standards.",
+       "It mirrors the ISSB standards."
+      ],
+      "explanation": "Mirroring IFRS S1 and S2 means investors can compare Japanese firms with others."
+     },
+     "proReasoning": "Analysts value comparability across markets.",
+     "commonMistake": "Treating each national standard as unrelated.",
+     "mentalModel": "Comparability is the point."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You run a global equity fund.",
+      "prompt": "What does Japan's move help you do?",
+      "options": [
+       "Compare climate data across countries",
+       "Ignore climate risk in Japan for now",
+       "Skip reading company reports"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Shared standards make data comparable.",
+       "Better data makes risk visible.",
+       "Reports become more useful."
+      ],
+      "explanation": "A common base lets you compare climate risk across companies and countries."
+     },
+     "proReasoning": "Investors push for common standards to compare.",
+     "commonMistake": "Comparing firms that report under different rules.",
+     "mentalModel": "Compare like with like."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your startup sells sustainability reporting software.",
+      "prompt": "How do you approach Japan?",
+      "options": [
+       "Wait until reporting is mandatory",
+       "Build on the ISSB base, add local tweaks",
+       "Build a separate tool from scratch"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Early adopters buy now.",
+       "It closely mirrors the ISSB.",
+       "A shared base saves work."
+      ],
+      "explanation": "Because Japan mirrors the ISSB, one core product can serve many markets."
+     },
+     "proReasoning": "Founders build once on a shared standard.",
+     "commonMistake": "Building a new product for every country.",
+     "mentalModel": "Build once, adapt locally."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You wonder why Japan wrote standards so close to the ISSB's.",
+      "prompt": "What is the likely reason?",
+      "options": [
+       "To make comparison with others harder",
+       "Because the ISSB forces every country",
+       "So its firms report like firms elsewhere"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Mirroring makes comparison easier.",
+       "Japan's use is voluntary for now.",
+       "Investors can compare across markets."
+      ],
+      "explanation": "Mirroring IFRS S1 and S2 lets Japanese reports line up with those of other markets."
+     },
+     "proReasoning": "Countries align with a global base so their firms' data travels.",
+     "commonMistake": "Thinking a national standard must be unique to be useful.",
+     "mentalModel": "Align to be compared."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:2f45895d292a"
+  ]
+ },
+ {
+  "id": "04e86f9a-2b17-522e-b432-0a7a5511e291",
+  "market_id": "climatetech",
+  "day": 25,
+  "slot": 2,
+  "content": {
+   "id": "climatetech-d25-c2",
+   "title": "Trust needs a common language",
+   "lessonTitle": "One global language for climate reporting",
+   "slot": 2,
+   "type": "connect",
+   "brief": {
+    "headline": "By June 2025, 36 jurisdictions had adopted or were moving to adopt ISSB standards. Day 24 showed what happens when buyers cannot trust a claim: the offset market lost 29% of its value.",
+    "kicker": "Connect day 24 and day 25: comparable data builds trust.",
+    "fullText": "Day 24 showed trust as the product: the voluntary carbon market fell 29% to $535 million in 2024 as quality doubts grew.\n\nToday's lesson shows one fix for corporate climate data: a shared standard. By June 2025, 36 jurisdictions had adopted or were moving to adopt ISSB standards.",
+    "sources": [
+     {
+      "url": "https://www.ifrs.org/news-and-events/news/2025/06/ifrs-foundation-publishes-jurisdictional-profiles-issb-standards/",
+      "label": "IFRS Foundation, jurisdictional profiles for ISSB Standards"
+     },
+     {
+      "url": "https://www.reccessary.com/en/news/voluntary-carbon-market-hits-6-year-low",
+      "label": "Reccessary, voluntary carbon market hits a six-year low"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "buildChain",
+    "prompt": "Order how a shared standard builds trust.",
+    "steps": [
+     "Companies report on the same basis",
+     "Investors can compare their numbers",
+     "Weak or vague claims stand out",
+     "Trust in the data grows"
+    ],
+    "explanation": "A common standard makes data comparable, which exposes weak claims and builds trust."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "How many jurisdictions had adopted or were moving to adopt ISSB standards by June 2025?",
+    "min": 0,
+    "max": 100,
+    "value": 36,
+    "unit": "places",
+    "explanation": "36 jurisdictions, as of June 2025."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A regulator asks why common standards matter.",
+      "prompt": "What is your answer?",
+      "options": [
+       "They let investors compare and spot weak claims",
+       "They make every company look exactly the same",
+       "They replace the need for any audits"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Comparability exposes outliers.",
+       "They standardize format, not results.",
+       "Checks still matter."
+      ],
+      "explanation": "Comparable data lets investors see who is ahead and who is vague."
+     },
+     "proReasoning": "Policy advisers tie standards to trust.",
+     "commonMistake": "Thinking a standard guarantees good data.",
+     "mentalModel": "Standards enable comparison."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You compare two companies' climate claims.",
+      "prompt": "What makes the comparison fair?",
+      "options": [
+       "Both have green logos",
+       "Both report under the same standard",
+       "Both use the word \"sustainable\""
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Branding is not evidence.",
+       "Same basis, fair comparison.",
+       "Words are not data."
+      ],
+      "explanation": "Only data reported on the same basis can be compared fairly."
+     },
+     "proReasoning": "Investors compare claims built on the same rules.",
+     "commonMistake": "Comparing claims made under different methods.",
+     "mentalModel": "Same rules, fair compare."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your startup audits climate claims.",
+      "prompt": "How do ISSB standards help you?",
+      "options": [
+       "They remove the need for any outside audits",
+       "They apply only in one country",
+       "They give a common yardstick to check against"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Data still needs checking.",
+       "36 jurisdictions are moving in.",
+       "A yardstick makes checks consistent."
+      ],
+      "explanation": "A shared standard gives auditors a consistent basis across markets."
+     },
+     "proReasoning": "Founders in assurance build on common standards.",
+     "commonMistake": "Building checks around one-off company methods.",
+     "mentalModel": "Check against a yardstick."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You wonder what climate reporting and offsets have in common.",
+      "prompt": "What links them?",
+      "options": [
+       "Both depend on whether people trust the data",
+       "Both are run by one and the same company",
+       "Neither involves any numbers"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Trust drives value in both.",
+       "They are separate systems.",
+       "Both rest on measurements."
+      ],
+      "explanation": "Offsets lost value when trust fell; reporting standards aim to build trust."
+     },
+     "proReasoning": "Data is only useful if people trust it.",
+     "commonMistake": "Treating data as useful whether trusted or not.",
+     "mentalModel": "Trust makes data valuable."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:d305c21044f3"
+  ]
+ },
+ {
+  "id": "3ee07e2e-59bb-52e7-82c5-1ef4c9a494f1",
+  "market_id": "climatetech",
+  "day": 25,
+  "slot": 3,
+  "content": {
+   "id": "climatetech-d25-c3",
+   "title": "One report, many markets",
+   "lessonTitle": "One global language for climate reporting",
+   "slot": 3,
+   "type": "decide",
+   "brief": {
+    "headline": "You are the CFO of a company listed in two countries, both moving toward ISSB-based rules. Your team could write one report on the ISSB base or two reports to each local rule.",
+    "kicker": "Decide: one base report or two?",
+    "fullText": "By June 2025, 36 jurisdictions had adopted or were moving to adopt ISSB standards. Japan, for example, closely mirrors IFRS S1 and S2.\n\nA single ISSB-based report with local additions could save effort, but each country may differ in details and timing.",
+    "sources": [
+     {
+      "url": "https://www.ifrs.org/news-and-events/news/2025/06/ifrs-foundation-publishes-jurisdictional-profiles-issb-standards/",
+      "label": "IFRS Foundation, jurisdictional profiles for ISSB Standards"
+     },
+     {
+      "url": "https://www.xbrl.org/news/japan-publishes-ifrs-aligned-sustainability-standards/",
+      "label": "XBRL International, Japan publishes IFRS-aligned sustainability standards"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "faceOff",
+    "prompt": "Which approach saves effort while staying compliant?",
+    "left": {
+     "name": "One ISSB base plus local additions",
+     "note": "Shared core"
+    },
+    "right": {
+     "name": "Two separate reports",
+     "note": "Duplicate work"
+    },
+    "correctIndex": 0,
+    "explanation": "When both rules build on the ISSB, a shared core with local additions avoids duplicate work."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "If 36 jurisdictions build on one base, how many core standards does a global firm learn?",
+    "min": 0,
+    "max": 40,
+    "value": 1,
+    "unit": "base",
+    "tolerance": 0.01,
+    "explanation": "One shared base, with local differences on top."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your CEO asks for your plan.",
+      "prompt": "What do you propose?",
+      "options": [
+       "Wait until both rules are final",
+       "One ISSB core, with local additions",
+       "Two separate teams and two reports"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Waiting risks missing deadlines.",
+       "A shared core saves effort.",
+       "That duplicates most of the work."
+      ],
+      "explanation": "Both rules build on the ISSB, so a shared core cuts cost and keeps reports consistent."
+     },
+     "proReasoning": "Finance leads design reporting once for many markets.",
+     "commonMistake": "Building separate systems for similar rules.",
+     "mentalModel": "Design once, adapt locally."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Investors ask if your reports will be comparable.",
+      "prompt": "What reassures them?",
+      "options": [
+       "Different methods in each country",
+       "Reporting only the good news",
+       "Reports built on the same ISSB base"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Different methods confuse.",
+       "Selective data erodes trust.",
+       "A shared base makes them comparable."
+      ],
+      "explanation": "A common ISSB base lets investors compare your numbers across markets."
+     },
+     "proReasoning": "Investors reward consistent reporting.",
+     "commonMistake": "Changing methods from one market to the next.",
+     "mentalModel": "Be consistent."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A software startup pitches you a reporting tool.",
+      "prompt": "What feature matters most?",
+      "options": [
+       "ISSB core with local rule modules",
+       "One fixed template for one country",
+       "No support for audits"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "That matches your two-market need.",
+       "It will not cover both markets.",
+       "Reports need assurance."
+      ],
+      "explanation": "A tool built on the ISSB base with local modules fits multi-market firms."
+     },
+     "proReasoning": "Buyers pick tools that match how rules are layered.",
+     "commonMistake": "Choosing a tool locked to one market.",
+     "mentalModel": "Match the rule structure."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You wonder why companies like one global standard.",
+      "prompt": "Why do they?",
+      "options": [
+       "It removes local rules entirely",
+       "It saves work and makes data comparable",
+       "It hides their real emissions from view"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Local details still apply.",
+       "One base serves many markets.",
+       "It makes data clearer."
+      ],
+      "explanation": "One base cuts duplicate work and gives investors comparable data."
+     },
+     "proReasoning": "Shared rules lower costs for everyone.",
+     "commonMistake": "Thinking global standards erase local rules.",
+     "mentalModel": "Shared rules, lower costs."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:68b7f387930a"
+  ]
+ },
+ {
+  "id": "2e628926-bcbd-5227-8094-bd211dbbcac4",
+  "market_id": "climatetech",
+  "day": 26,
+  "slot": 1,
+  "content": {
+   "id": "climatetech-d26-c1",
+   "title": "Walmart's gigaton ask",
+   "lessonTitle": "Disclosure investors ask for",
+   "slot": 1,
+   "type": "apply",
+   "brief": {
+    "headline": "In 2017, Walmart asked suppliers to help reduce, avoid or sequester 1 billion metric tons of emissions by 2030. In February 2024, it said suppliers had reported projects expected to pass that goal, more than six years early.",
+    "kicker": "Apply the rule: customers ask for data before the law does.",
+    "fullText": "Project Gigaton covers Walmart's product value chains. Over 5,900 suppliers have signed up since 2017. They set reduction targets and report results from improvement projects, and Walmart has more recently asked them to report their full operational footprint.\n\nThe milestone rests on projects suppliers reported and expect to deliver. The announcement does not describe how those reductions were verified.",
+    "sources": [
+     {
+      "url": "https://corporate.walmart.com/news/2024/02/21/walmart-suppliers-lead-the-charge-help-deliver-project-gigaton-goal-more-than-six-years-early",
+      "label": "Walmart, suppliers deliver the Project Gigaton goal early"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "spotFake",
+    "prompt": "Two statements match Walmart's announcement. Which one does not?",
+    "statements": [
+     "Walmart set the goal in 2017",
+     "Over 5,900 suppliers signed up",
+     "An auditor confirmed a full gigaton cut"
+    ],
+    "fakeIndex": 2,
+    "explanation": "Suppliers reported projects expected to pass the goal. The announcement describes no audit."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "About how many suppliers have signed up to Project Gigaton, in thousands?",
+    "min": 0,
+    "max": 10,
+    "value": 5.9,
+    "unit": "K",
+    "explanation": "Over 5,900 suppliers since 2017."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A supplier's CEO asks why Walmart wants their emissions data.",
+      "prompt": "What is the best answer?",
+      "options": [
+       "A big customer is tracking its value chain",
+       "A new federal law requires it of all firms",
+       "Walmart sells the data to outside investors"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "You explain demand that comes from a customer.",
+       "The request comes from the customer, not a law.",
+       "There is no sign the data is sold."
+      ],
+      "explanation": "Walmart asks suppliers to set targets, report projects and, more recently, report their full operational footprint."
+     },
+     "proReasoning": "Sustainability leads treat big customers as a reporting driver, alongside investors.",
+     "commonMistake": "Assuming only laws make companies disclose.",
+     "mentalModel": "Customers ask first."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You hold shares in a large Walmart supplier.",
+      "prompt": "What does Project Gigaton signal?",
+      "options": [
+       "Climate data no longer matters to retailers",
+       "Big buyers now ask suppliers for climate data",
+       "Suppliers must cut output to keep selling"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Walmart asked for more data, not less.",
+       "Reporting becomes part of keeping the customer.",
+       "The goal is about emissions, not output."
+      ],
+      "explanation": "With over 5,900 suppliers signed up, climate reporting is part of selling to Walmart."
+     },
+     "proReasoning": "Investors watch what big customers ask of their suppliers.",
+     "commonMistake": "Ignoring customer demands because no law requires them.",
+     "mentalModel": "Watch the big customer."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your startup helps small suppliers measure emissions.",
+      "prompt": "Why is Walmart's program useful to your pitch?",
+      "options": [
+       "Walmart now refuses suppliers without data",
+       "Suppliers can skip measuring entirely",
+       "Thousands of suppliers are asked to report"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "No such refusal is described.",
+       "Reporting projects needs measurement.",
+       "Over 5,900 suppliers have signed up."
+      ],
+      "explanation": "Thousands of suppliers have been asked to set targets and report, which takes measurement."
+     },
+     "proReasoning": "Founders point to large buyer programs as proof of demand.",
+     "commonMistake": "Pitching a legal duty when the demand comes from customers.",
+     "mentalModel": "Point to buyer demand."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You read that Walmart hit its gigaton goal six years early.",
+      "prompt": "What should you notice?",
+      "options": [
+       "It rests on projects suppliers reported",
+       "It was confirmed by a court ruling",
+       "It means Walmart has zero emissions"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Suppliers reported projects expected to pass it.",
+       "No court was involved.",
+       "It is about reductions, not zero."
+      ],
+      "explanation": "Walmart said suppliers reported projects expected to exceed the goal; it does not describe how they were verified."
+     },
+     "proReasoning": "Ask whether a milestone is measured, projected or verified.",
+     "commonMistake": "Reading \"expected to exceed\" as a verified result.",
+     "mentalModel": "Reported is not verified."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:9188e102d3f3"
+  ]
+ },
+ {
+  "id": "76b323a0-451a-5c1c-ba75-408fa7b92d9f",
+  "market_id": "climatetech",
+  "day": 26,
+  "slot": 2,
+  "content": {
+   "id": "climatetech-d26-c2",
+   "title": "Investors ask before laws do",
+   "lessonTitle": "Disclosure investors ask for",
+   "slot": 2,
+   "type": "connect",
+   "brief": {
+    "headline": "In 2023, more than 23,000 companies worth $67 trillion reported environmental data through CDP, up 24%. By June 2025, 36 jurisdictions had adopted or were moving to adopt ISSB standards.",
+    "kicker": "Connect day 25 and day 26: demand comes before the mandate.",
+    "fullText": "Day 25 showed governments moving toward a common reporting standard, with each jurisdiction deciding which companies must apply it.\n\nDay 26 shows the voluntary side. Companies worth over two-thirds of global market value already report through CDP, which collects data on behalf of investors and big customers. Disclosure is often requested before it is required.",
+    "sources": [
+     {
+      "url": "https://trellis.net/article/cdp-secures-environmental-disclosures-record-23000-companies/",
+      "label": "Trellis, CDP secures disclosures from a record 23,000 companies"
+     },
+     {
+      "url": "https://www.ifrs.org/news-and-events/news/2025/06/ifrs-foundation-publishes-jurisdictional-profiles-issb-standards/",
+      "label": "IFRS Foundation, jurisdictional profiles for ISSB Standards"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "faceOff",
+    "prompt": "Which kind of reporting is voluntary for companies?",
+    "left": {
+     "name": "Reporting through CDP",
+     "note": "Asked by investors and customers"
+    },
+    "right": {
+     "name": "Rules a jurisdiction adopts",
+     "note": "Required for firms in scope"
+    },
+    "correctIndex": 0,
+    "explanation": "CDP disclosure is voluntary. Each jurisdiction decides who must apply ISSB standards."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "Companies reporting through CDP were worth about how many trillion dollars?",
+    "min": 0,
+    "max": 100,
+    "value": 67,
+    "unit": "T$",
+    "explanation": "$67 trillion, over two-thirds of global market value."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your firm's country has not yet required ISSB reporting.",
+      "prompt": "Should your firm still report?",
+      "options": [
+       "No, voluntary reports are not allowed",
+       "Yes, investors and customers already ask",
+       "No, data matters only once required"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Nothing stops voluntary reports.",
+       "Firms worth $67 trillion already report through CDP.",
+       "Demand often comes before the law."
+      ],
+      "explanation": "Investors and big customers ask for data through CDP whether or not a law requires it."
+     },
+     "proReasoning": "Advisers look at who is asking, not only at what is required.",
+     "commonMistake": "Waiting for a mandate while investors are already asking.",
+     "mentalModel": "Who is asking?"
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A large listed company has never reported climate data.",
+      "prompt": "How should you read that?",
+      "options": [
+       "As normal, since few firms report data",
+       "As proof its emissions must be zero",
+       "As a gap when most value already reports"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Over 23,000 companies report.",
+       "Silence says nothing about emissions.",
+       "Over two-thirds of market value reports."
+      ],
+      "explanation": "When companies worth two-thirds of market value disclose, silence stands out."
+     },
+     "proReasoning": "Investors treat missing disclosure as a signal to ask questions.",
+     "commonMistake": "Assuming no report means no problem.",
+     "mentalModel": "Silence stands out."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your startup turns CDP answers into ISSB-ready reports.",
+      "prompt": "Who is your best first customer?",
+      "options": [
+       "Firms already reporting to CDP",
+       "Firms that report no data at all",
+       "Firms with no investors to answer"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "They have data to reuse.",
+       "They start from nothing.",
+       "They have little reason to report."
+      ],
+      "explanation": "Firms that already answer CDP have data you can map to ISSB standards."
+     },
+     "proReasoning": "Founders start with buyers who already hold the raw material.",
+     "commonMistake": "Selling to firms that have no data and no demand.",
+     "mentalModel": "Start where data exists."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You wonder why 23,000 companies report without a law.",
+      "prompt": "What is the main reason?",
+      "options": [
+       "Reporting is required in every country",
+       "Investors and big customers ask for it",
+       "CDP fines companies that stay silent"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Each jurisdiction decides.",
+       "CDP collects data on their behalf.",
+       "CDP is a nonprofit, not a regulator."
+      ],
+      "explanation": "CDP collects data for investors and customers, who expect companies to disclose."
+     },
+     "proReasoning": "Markets can demand information before governments do.",
+     "commonMistake": "Thinking only laws make companies share data.",
+     "mentalModel": "Markets ask first."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:f812373e4c08"
+  ]
+ },
+ {
+  "id": "89a5cf34-5937-58f1-bff7-4a7685e895cf",
+  "market_id": "climatetech",
+  "day": 26,
+  "slot": 3,
+  "content": {
+   "id": "climatetech-d26-c3",
+   "title": "A supplier gets the data request",
+   "lessonTitle": "Disclosure investors ask for",
+   "slot": 3,
+   "type": "decide",
+   "brief": {
+    "headline": "You run a 300-person parts supplier. Your largest customer asks you to report your emissions through CDP within a year. You have never measured them.",
+    "kicker": "Decide: how do you answer a customer's data request?",
+    "fullText": "Over 23,000 companies reported through CDP in 2023, and big buyers ask suppliers to report too: the BBC asked its top 450 suppliers to disclose. Walmart has over 5,900 suppliers signed up to Project Gigaton.\n\nMeasuring takes time and money. Your largest customer accounts for a big share of your sales.",
+    "sources": [
+     {
+      "url": "https://trellis.net/article/cdp-secures-environmental-disclosures-record-23000-companies/",
+      "label": "Trellis, CDP secures disclosures from a record 23,000 companies"
+     },
+     {
+      "url": "https://corporate.walmart.com/news/2024/02/21/walmart-suppliers-lead-the-charge-help-deliver-project-gigaton-goal-more-than-six-years-early",
+      "label": "Walmart, suppliers deliver the Project Gigaton goal early"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "buildChain",
+    "prompt": "Order the steps to a first emissions report.",
+    "steps": [
+     "Gather energy and fuel bills",
+     "Calculate direct and energy emissions",
+     "Have a second person check the numbers",
+     "Submit the report to the customer"
+    ],
+    "explanation": "Start with records you already have, calculate, check, then submit."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "The BBC asked how many of its top suppliers to disclose?",
+    "min": 0,
+    "max": 800,
+    "value": 450,
+    "unit": "suppliers",
+    "explanation": "Its top 450 suppliers."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your CEO asks how to respond.",
+      "prompt": "What do you recommend?",
+      "options": [
+       "Refuse until a law requires it of us",
+       "Send rough guesses to save time",
+       "Start with direct and energy emissions"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "You risk losing a key customer.",
+       "Weak numbers can hurt trust later.",
+       "A first report builds from bills you already have."
+      ],
+      "explanation": "Starting with the emissions you can measure from your own bills meets the request credibly."
+     },
+     "proReasoning": "Managers answer data requests with a credible first step.",
+     "commonMistake": "Treating a customer request as optional because no law applies.",
+     "mentalModel": "Start with what you can measure."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "An investor in your firm asks about the request.",
+      "prompt": "What is the business case for answering?",
+      "options": [
+       "It protects sales to a key customer",
+       "It earns a government tax credit",
+       "It has no link to revenue at all"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "The customer is a big share of sales.",
+       "No such credit is described.",
+       "The request comes from a buyer."
+      ],
+      "explanation": "The request comes from your largest customer, so answering protects revenue."
+     },
+     "proReasoning": "Investors see customer data requests as a sales issue.",
+     "commonMistake": "Treating reporting as pure cost with no revenue link.",
+     "mentalModel": "Reporting protects sales."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A startup offers to measure your emissions for a fee.",
+      "prompt": "What should you check first?",
+      "options": [
+       "That it can skip your real data",
+       "That its method fits the request",
+       "That it is the cheapest option"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Reports need real data.",
+       "The customer needs usable numbers.",
+       "Cheap but unusable data wastes money."
+      ],
+      "explanation": "The tool is only useful if its output fits what the customer asked for."
+     },
+     "proReasoning": "Buyers check fit before price.",
+     "commonMistake": "Choosing a tool on price alone.",
+     "mentalModel": "Fit before price."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You wonder why customers push suppliers to report.",
+      "prompt": "What is the main reason?",
+      "options": [
+       "Suppliers must report to the UN",
+       "Customers resell the data for profit",
+       "Their own footprint includes suppliers"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "No UN rule requires it.",
+       "There is no sign of that.",
+       "Supplier emissions are part of their value chain."
+      ],
+      "explanation": "A company's value chain emissions include its suppliers, so it needs their data."
+     },
+     "proReasoning": "A buyer's climate goals reach into its suppliers.",
+     "commonMistake": "Thinking a company's emissions stop at its own walls.",
+     "mentalModel": "Footprints reach suppliers."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:028aae303a33"
+  ]
+ },
+ {
+  "id": "61877163-b4c9-546c-9def-b20f5e0be13c",
+  "market_id": "climatetech",
+  "day": 27,
+  "slot": 1,
+  "content": {
+   "id": "climatetech-d27-c1",
+   "title": "The EPA drops its endangerment finding",
+   "lessonTitle": "The SEC walks away from its climate rule",
+   "slot": 1,
+   "type": "apply",
+   "brief": {
+    "headline": "On February 12, 2026, the EPA finalized rescinding its 2009 greenhouse gas endangerment finding and repealing all vehicle greenhouse gas standards issued since.",
+    "kicker": "Apply the rule: who leads the agency decides whether a rule lives.",
+    "fullText": "The rule was published on February 18, 2026. The EPA says the repeal will save over $1.3 trillion.\n\nThe agency adopted the finding in 2009. Seventeen years later, under new leadership, it reversed it, much as the SEC dropped its climate disclosure rules in 2025.",
+    "sources": [
+     {
+      "url": "https://www.epa.gov/regulations-emissions-vehicles-and-engines/final-rule-rescission-greenhouse-gas-endangerment",
+      "label": "EPA, final rule rescinding the greenhouse gas endangerment finding"
+     },
+     {
+      "url": "https://sec.gov/newsroom/press-releases/2025-58",
+      "label": "SEC, votes to end defense of climate disclosure rules"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "multipleChoice",
+    "prompt": "What did the February 2026 rule repeal along with the finding?",
+    "options": [
+     "The US decision to leave the Paris Agreement",
+     "All vehicle greenhouse gas standards issued since",
+     "Every state climate law in the country"
+    ],
+    "correctIndex": 1,
+    "explanation": "It rescinded the 2009 finding and repealed all later vehicle greenhouse gas standards."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "How many years passed between the 2009 finding and its 2026 rescission?",
+    "min": 0,
+    "max": 40,
+    "value": 17,
+    "unit": "years",
+    "explanation": "From 2009 to 2026 is 17 years."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "An automaker's board asks what the EPA rule changes.",
+      "prompt": "What is your summary?",
+      "options": [
+       "Nothing changes for vehicles at all",
+       "Federal vehicle GHG standards are repealed",
+       "All emissions rules worldwide are gone"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "The vehicle standards were repealed.",
+       "You name the exact federal change.",
+       "Other countries set their own rules."
+      ],
+      "explanation": "The rule rescinded the finding and repealed all later vehicle greenhouse gas standards."
+     },
+     "proReasoning": "Advisers state exactly what a rule changed and where.",
+     "commonMistake": "Treating one federal repeal as the end of all climate rules.",
+     "mentalModel": "Name the exact change."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You hold shares in an electric vehicle maker.",
+      "prompt": "What does the repeal change for your thesis?",
+      "options": [
+       "EVs are now banned in the United States",
+       "Nothing, since rules never shape sales",
+       "A federal rule driver for EVs is removed"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "No ban was made.",
+       "Rules shape what automakers sell.",
+       "Demand must rest on other drivers."
+      ],
+      "explanation": "Repealing federal vehicle greenhouse gas standards removes one push behind cleaner vehicles."
+     },
+     "proReasoning": "Investors separate demand from rules and demand from buyers.",
+     "commonMistake": "Assuming a thesis built on a rule survives its repeal.",
+     "mentalModel": "Check what still drives demand."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your startup sells emissions tracking for vehicle fleets.",
+      "prompt": "How do you respond to the repeal?",
+      "options": [
+       "Sell to buyers driven by other demands",
+       "Shut down, since the rules are gone",
+       "Promise clients the rule returns soon"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Customers and investors still ask for data.",
+       "Other demand still exists.",
+       "You cannot know that."
+      ],
+      "explanation": "Federal vehicle rules are gone, but customers and investors still ask for emissions data."
+     },
+     "proReasoning": "Founders find demand that does not depend on one rule.",
+     "commonMistake": "Building a business on a single regulation.",
+     "mentalModel": "Do not rest on one rule."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You wonder how a 2009 finding can be undone in 2026.",
+      "prompt": "What makes it possible?",
+      "options": [
+       "Findings expire after ten years",
+       "New agency leaders can reverse old rules",
+       "Courts must approve every EPA rule"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "There is no ten-year expiry.",
+       "Who leads the agency can decide a rule's fate.",
+       "The EPA finalized the rescission itself."
+      ],
+      "explanation": "An agency can rescind its own findings and rules, as the EPA did in 2026."
+     },
+     "proReasoning": "Agency rules last only as long as leaders keep them.",
+     "commonMistake": "Thinking an agency rule is as fixed as a law.",
+     "mentalModel": "Leaders decide."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:fed172e62cb3"
+  ]
+ },
+ {
+  "id": "2d559160-3cb0-56e4-b508-e732f4443943",
+  "market_id": "climatetech",
+  "day": 27,
+  "slot": 2,
+  "content": {
+   "id": "climatetech-d27-c2",
+   "title": "Two federal retreats",
+   "lessonTitle": "The SEC walks away from its climate rule",
+   "slot": 2,
+   "type": "connect",
+   "brief": {
+    "headline": "The US announced its Paris exit on January 20, 2025, and the exit took effect on January 27, 2026. On March 27, 2025, the SEC voted to stop defending its climate disclosure rules.",
+    "kicker": "Connect day 15 and day 27: one government, two retreats.",
+    "fullText": "Day 15 showed the US leaving the Paris Agreement, which counted 194 parties once the exit took effect.\n\nDay 27 shows a second retreat at home. The SEC had adopted climate disclosure rules in March 2024 and paused them during lawsuits. In 2025 it voted to stop defending them, so they never took effect.",
+    "sources": [
+     {
+      "url": "https://www.eenews.net/articles/so-long-paris-us-officially-leaves-landmark-climate-pact/",
+      "label": "E&E News, US officially leaves the Paris pact"
+     },
+     {
+      "url": "https://www.unfccc.int/process-and-meetings/the-paris-agreement",
+      "label": "UNFCCC, The Paris Agreement"
+     },
+     {
+      "url": "https://sec.gov/newsroom/press-releases/2025-58",
+      "label": "SEC, votes to end defense of climate disclosure rules"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "sortSignal",
+    "prompt": "Is each part of the international retreat or the domestic one?",
+    "buckets": [
+     "International",
+     "Domestic"
+    ],
+    "items": [
+     {
+      "text": "Announcing the Paris exit",
+      "bucket": 0
+     },
+     {
+      "text": "The exit taking effect in 2026",
+      "bucket": 0
+     },
+     {
+      "text": "Dropping the SEC disclosure rules",
+      "bucket": 1
+     },
+     {
+      "text": "Ending the court defense of a rule",
+      "bucket": 1
+     }
+    ],
+    "explanation": "Paris is an international pact; the SEC rules applied to US public companies."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "How many days passed between the Paris announcement and the SEC vote?",
+    "min": 0,
+    "max": 180,
+    "value": 66,
+    "unit": "days",
+    "explanation": "From January 20 to March 27, 2025, is 66 days."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A client asks if US climate reporting is over.",
+      "prompt": "What do you say?",
+      "options": [
+       "Yes, there are no rules left anywhere",
+       "Yes, but only until the next election",
+       "No, state and foreign rules still apply"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "State and foreign rules remain.",
+       "No one can promise that.",
+       "California and the EU set their own rules."
+      ],
+      "explanation": "US companies can still face climate reporting rules from states and other countries."
+     },
+     "proReasoning": "Advisers map every rule that applies, not just federal ones.",
+     "commonMistake": "Reading a federal retreat as the end of all reporting.",
+     "mentalModel": "Map every rule."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You compare US and EU firms' climate data.",
+      "prompt": "What should you expect?",
+      "options": [
+       "Less federal data on US firms",
+       "Identical data from both markets",
+       "No data at all from EU firms"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "The SEC rules never took effect.",
+       "Rules differ by market.",
+       "EU firms in scope still report."
+      ],
+      "explanation": "Without the SEC rules, US firms face no federal climate disclosure requirement."
+     },
+     "proReasoning": "Investors adjust for gaps in each market's data.",
+     "commonMistake": "Assuming every market produces the same data.",
+     "mentalModel": "Adjust for gaps."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "US buyers lost interest in your reporting tool after the SEC vote.",
+      "prompt": "Where do you look next?",
+      "options": [
+       "Only US federal agencies",
+       "Firms facing state or foreign rules",
+       "Firms that want no data at all"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "They dropped the rule.",
+       "They still have deadlines.",
+       "They will not buy."
+      ],
+      "explanation": "Firms facing California or foreign rules still need to report."
+     },
+     "proReasoning": "Founders follow the rules that still have deadlines.",
+     "commonMistake": "Chasing buyers whose rule was dropped.",
+     "mentalModel": "Follow live deadlines."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You notice both retreats began early in 2025.",
+      "prompt": "What links them?",
+      "options": [
+       "A new UN rule against climate pacts",
+       "One court order covering both moves",
+       "A change in who led the government"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "No such UN rule exists.",
+       "The SEC chose to stop defending.",
+       "New leaders reversed both positions."
+      ],
+      "explanation": "Both followed a change in leadership: the Paris exit on day one and the SEC vote two months later."
+     },
+     "proReasoning": "Leadership changes can move many policies at once.",
+     "commonMistake": "Treating each retreat as unrelated.",
+     "mentalModel": "Look for the common cause."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:b4f92173aa36"
+  ]
+ },
+ {
+  "id": "45f9bfa0-b73d-51af-acb9-706ea47cbfcb",
+  "market_id": "climatetech",
+  "day": 27,
+  "slot": 3,
+  "content": {
+   "id": "climatetech-d27-c3",
+   "title": "Keep reporting or stop?",
+   "lessonTitle": "The SEC walks away from its climate rule",
+   "slot": 3,
+   "type": "decide",
+   "brief": {
+    "headline": "You are CFO of a US-listed company that prepared for the SEC climate rules. After the SEC dropped them, your board asks whether to stop climate reporting. You sell in California and Europe.",
+    "kicker": "Decide: stop, keep, or scale back?",
+    "fullText": "The SEC voted on March 27, 2025, to stop defending its 2024 climate disclosure rules. US companies can still face climate reporting rules from states and other countries.\n\nCalifornia set August 10, 2026, as the first deadline for large companies to report Scope 1 and 2 emissions, and over 23,000 companies report to investors through CDP.",
+    "sources": [
+     {
+      "url": "https://sec.gov/newsroom/press-releases/2025-58",
+      "label": "SEC, votes to end defense of climate disclosure rules"
+     },
+     {
+      "url": "https://www.millernash.com/industry-news/carb-adopts-initial-regulations-for-sb-253-and-sb-261-what-businesses-need-to-know-now",
+      "label": "Miller Nash, CARB adopts initial SB 253 and SB 261 regulations"
+     },
+     {
+      "url": "https://trellis.net/article/cdp-secures-environmental-disclosures-record-23000-companies/",
+      "label": "Trellis, CDP secures disclosures from a record 23,000 companies"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "sortSignal",
+    "prompt": "Is each a reason to keep reporting, or not?",
+    "buckets": [
+     "Keep reporting",
+     "Not a reason"
+    ],
+    "items": [
+     {
+      "text": "California requires large firms to report",
+      "bucket": 0
+     },
+     {
+      "text": "Investors ask through CDP",
+      "bucket": 0
+     },
+     {
+      "text": "You may face foreign rules",
+      "bucket": 0
+     },
+     {
+      "text": "The SEC rules took effect in 2024",
+      "bucket": 1
+     },
+     {
+      "text": "Federal law bans voluntary reports",
+      "bucket": 1
+     }
+    ],
+    "explanation": "State rules, foreign rules and investors still ask. The SEC rules never took effect."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "How many companies reported through CDP in 2023, in thousands?",
+    "min": 0,
+    "max": 40,
+    "value": 23,
+    "unit": "K",
+    "explanation": "More than 23,000 companies."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your board wants one recommendation.",
+      "prompt": "What do you propose?",
+      "options": [
+       "Keep reporting for state and investor needs",
+       "Stop all reporting to save costs right now",
+       "Wait for the SEC to reverse itself again"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "California and investors still ask for data.",
+       "You may miss the California deadline.",
+       "You cannot plan on that."
+      ],
+      "explanation": "The SEC rule is gone, but California, foreign rules and investors still need your data."
+     },
+     "proReasoning": "Finance leads plan around every rule that applies.",
+     "commonMistake": "Cutting reporting because one rule went away.",
+     "mentalModel": "Plan for every rule."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "An investor asks why you still report.",
+      "prompt": "What is the honest answer?",
+      "options": [
+       "We report only to look good",
+       "Our buyers, investors and states ask",
+       "The SEC still requires the reports"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "That invites greenwashing questions.",
+       "Demand did not end with the SEC vote.",
+       "The SEC dropped its rules."
+      ],
+      "explanation": "Reporting answers real requirements and requests that remain."
+     },
+     "proReasoning": "Investors want reporting tied to real needs.",
+     "commonMistake": "Claiming a rule that no longer applies.",
+     "mentalModel": "Tie it to real needs."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A vendor pitches an SEC-only reporting tool.",
+      "prompt": "What do you do?",
+      "options": [
+       "Buy it, since the SEC rule may return",
+       "Build nothing and use spreadsheets",
+       "Pick a tool that covers state rules"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "The SEC rule is not in force.",
+       "That may not meet the deadline.",
+       "California is the rule you face now."
+      ],
+      "explanation": "Your live obligations come from California and abroad, so the tool must cover them."
+     },
+     "proReasoning": "Buyers match tools to the rules in force.",
+     "commonMistake": "Buying for a rule that is not in force.",
+     "mentalModel": "Match the rules in force."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You wonder why a company would report without a federal rule.",
+      "prompt": "What is the reason?",
+      "options": [
+       "States, buyers and investors still ask",
+       "Federal law still requires it today",
+       "Reports cost nothing to prepare"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "California set an August 2026 deadline.",
+       "The SEC rules never took effect.",
+       "Reports take time and money."
+      ],
+      "explanation": "Climate data is still required by some states and asked for by investors and customers."
+     },
+     "proReasoning": "Demand for data has many sources.",
+     "commonMistake": "Thinking federal rules are the only reason to report.",
+     "mentalModel": "Many sources of demand."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:d82cbd8959b4"
+  ]
+ },
+ {
+  "id": "6f85c2e1-8f6a-5965-8854-b94aa41828cf",
+  "market_id": "climatetech",
+  "day": 28,
+  "slot": 1,
+  "content": {
+   "id": "climatetech-d28-c1",
+   "title": "Australia phases in by size",
+   "lessonTitle": "Europe cuts who must report",
+   "slot": 1,
+   "type": "apply",
+   "brief": {
+    "headline": "Australia's climate reporting law sorts companies into three groups by size. The largest started with periods from January 1, 2025. Smaller groups follow from July 1, 2026, and July 1, 2027.",
+    "kicker": "Apply the rule: thresholds decide who carries the burden.",
+    "fullText": "A company falls in a group if it meets at least two of three tests.\n\nGroup 1, from January 1, 2025: revenue of A$500 million, assets of A$1 billion, 500 employees. Group 2, from July 1, 2026: A$200 million, A$500 million, 250 employees. Group 3, from July 1, 2027: A$50 million, A$25 million, 100 employees.",
+    "sources": [
+     {
+      "url": "https://www.allens.com.au/insights-news/insights/2024/09/mandatory-climate-related-financial-reporting-legislation/",
+      "label": "Allens, Australia passes mandatory climate reporting"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "multipleChoice",
+    "prompt": "A firm has A$300 million revenue, A$600 million assets and 150 staff. Where does it start?",
+    "options": [
+     "Group 2, from July 2026",
+     "Group 1, from January 2025",
+     "Outside all three groups"
+    ],
+    "correctIndex": 0,
+    "explanation": "It meets two of the three Group 2 tests, revenue and assets, but only one Group 1 test."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "What is the employee test for Group 3?",
+    "min": 0,
+    "max": 500,
+    "value": 100,
+    "unit": "staff",
+    "explanation": "100 employees, alongside A$50 million revenue and A$25 million assets."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "An Australian firm with 300 staff and A$250 million revenue asks when it must report.",
+      "prompt": "What do you tell it?",
+      "options": [
+       "Group 1: periods from January 1, 2025",
+       "Never, since it is not a large firm",
+       "Group 2: periods from July 1, 2026"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "It misses two of the Group 1 tests.",
+       "Group 2 covers firms of its size.",
+       "It meets the Group 2 revenue and staff tests."
+      ],
+      "explanation": "With A$250 million revenue and 300 staff, it meets two Group 2 tests."
+     },
+     "proReasoning": "Advisers check each threshold, not a firm's sense of its size.",
+     "commonMistake": "Assuming a mid-sized firm is outside the rules.",
+     "mentalModel": "Check the thresholds."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You invest in mid-sized Australian companies.",
+      "prompt": "What changes for them in 2026 and 2027?",
+      "options": [
+       "More of them start climate reporting",
+       "All of them stop climate reporting",
+       "Only foreign firms must report"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Groups 2 and 3 begin in 2026 and 2027.",
+       "Coverage grows, not shrinks.",
+       "Australian firms are covered."
+      ],
+      "explanation": "Groups 2 and 3 bring smaller companies into reporting from July 2026 and July 2027."
+     },
+     "proReasoning": "Investors track when new data will arrive.",
+     "commonMistake": "Assuming only the largest firms will ever report.",
+     "mentalModel": "Track when data arrives."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your startup sells simple climate reporting tools.",
+      "prompt": "Which Australian firms are your best target?",
+      "options": [
+       "Firms below every group threshold",
+       "Group 2 and 3 firms starting soon",
+       "Group 1 firms that began in 2025"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "They have no duty to report.",
+       "They start in July 2026 and July 2027.",
+       "They started reporting in 2025."
+      ],
+      "explanation": "Firms joining in 2026 and 2027 are setting up reporting now."
+     },
+     "proReasoning": "Founders target firms just about to face a rule.",
+     "commonMistake": "Selling to firms that already built their systems.",
+     "mentalModel": "Target the next wave."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You wonder why Australia did not start everyone in 2025.",
+      "prompt": "What is a likely reason?",
+      "options": [
+       "Small firms are banned from reporting",
+       "Large firms asked to go last",
+       "Phasing gives smaller firms time"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Smaller firms are covered later.",
+       "Group 1 started first.",
+       "Groups 2 and 3 start later."
+      ],
+      "explanation": "Starting with the largest firms gives smaller ones until 2026 or 2027."
+     },
+     "proReasoning": "Phased rules start where capacity is greatest.",
+     "commonMistake": "Thinking a phased rule means smaller firms are exempt.",
+     "mentalModel": "Largest first."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:7adbca715a56"
+  ]
+ },
+ {
+  "id": "0b0e1428-45f5-5e59-9a32-112d88323a6f",
+  "market_id": "climatetech",
+  "day": 28,
+  "slot": 2,
+  "content": {
+   "id": "climatetech-d28-c2",
+   "title": "Data requests meet a ceiling",
+   "lessonTitle": "Europe cuts who must report",
+   "slot": 2,
+   "type": "connect",
+   "brief": {
+    "headline": "Big customers ask suppliers for climate data through CDP. Under the EU's December 2025 deal, companies with up to 1,000 employees can refuse requests beyond a voluntary standard.",
+    "kicker": "Connect day 26 and day 28: customer demand meets a legal limit.",
+    "fullText": "Day 26 showed demand without a mandate: over 23,000 companies reported through CDP in 2023, and the BBC asked its top 450 suppliers to disclose.\n\nDay 28 shows the EU narrowing its reporting law to firms with more than 1,000 employees and over €450 million in turnover, removing about 90% of companies. Firms with up to 1,000 employees can limit what bigger partners get to a voluntary standard.",
+    "sources": [
+     {
+      "url": "https://trellis.net/article/cdp-secures-environmental-disclosures-record-23000-companies/",
+      "label": "Trellis, CDP secures disclosures from a record 23,000 companies"
+     },
+     {
+      "url": "https://www.roedl.com/en/insights/eu-reaches-agreement-on-omnibus-procedure-for-sustainability-reporting/",
+      "label": "Rödl & Partner, EU agreement on the sustainability reporting omnibus"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "faceOff",
+    "prompt": "A 600-person EU supplier gets a long data request. What may it do?",
+    "left": {
+     "name": "Limit data to the voluntary standard",
+     "note": "Under the December 2025 deal"
+    },
+    "right": {
+     "name": "Answer every question asked",
+     "note": "With no limit at all"
+    },
+    "correctIndex": 0,
+    "explanation": "Firms with up to 1,000 employees can refuse requests beyond the voluntary standard."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "The new EU scope removes about what share of companies?",
+    "min": 0,
+    "max": 100,
+    "value": 90,
+    "unit": "%",
+    "tolerance": 0.05,
+    "explanation": "About 90% of the companies previously in scope."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A large EU customer asks your 800-person firm for 200 data points.",
+      "prompt": "What do you advise?",
+      "options": [
+       "Share what the voluntary standard covers",
+       "Refuse to share any data whatsoever",
+       "File a full CSRD report as required"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "You meet the request within the voluntary limit.",
+       "You risk the relationship for nothing.",
+       "At 800 staff you are outside the new scope."
+      ],
+      "explanation": "Your firm can limit data to the voluntary standard and still help the customer."
+     },
+     "proReasoning": "Advisers know both the customer's ask and the firm's rights.",
+     "commonMistake": "Answering all or nothing when a middle path exists.",
+     "mentalModel": "Know your rights."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You analyze mid-sized EU companies.",
+      "prompt": "What does the deal mean for data on them?",
+      "options": [
+       "No change from the old rules",
+       "Less required data, some voluntary",
+       "Far more detailed data than before"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "The scope changed sharply.",
+       "About 90% left the mandatory scope.",
+       "Scope was cut, not widened."
+      ],
+      "explanation": "Most mid-sized firms left mandatory reporting, so expect thinner, voluntary data."
+     },
+     "proReasoning": "Investors plan for data gaps after a rule narrows.",
+     "commonMistake": "Expecting the same data after 90% of firms left scope.",
+     "mentalModel": "Plan for thinner data."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your startup built tools for full CSRD reports.",
+      "prompt": "How should you adapt?",
+      "options": [
+       "Keep selling full reports to small firms",
+       "Drop the EU market entirely",
+       "Add a simple voluntary-standard version"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "They no longer need full reports.",
+       "Large firms still report.",
+       "Smaller firms still answer customer requests."
+      ],
+      "explanation": "Smaller firms still get data requests, but only up to the voluntary standard."
+     },
+     "proReasoning": "Founders reshape products when scope changes.",
+     "commonMistake": "Selling a full product to firms the rule no longer covers.",
+     "mentalModel": "Reshape to the new scope."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You wonder why the EU let small firms refuse data requests.",
+      "prompt": "What is the aim?",
+      "options": [
+       "To stop big firms passing on the burden",
+       "To let small firms hide their pollution",
+       "Because CDP asked the EU to do it"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "It limits trickle-down reporting.",
+       "It caps requests, not honesty.",
+       "No such request is described."
+      ],
+      "explanation": "Without a cap, big firms could push their reporting load onto small suppliers."
+     },
+     "proReasoning": "Rules can protect smaller firms from indirect burdens.",
+     "commonMistake": "Thinking only direct rules shape who does the work.",
+     "mentalModel": "Burdens trickle down."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:78c9a53ae78e"
+  ]
+ },
+ {
+  "id": "e646d7db-b354-534f-b667-738c84de3ab4",
+  "market_id": "climatetech",
+  "day": 28,
+  "slot": 3,
+  "content": {
+   "id": "climatetech-d28-c3",
+   "title": "Still in scope",
+   "lessonTitle": "Europe cuts who must report",
+   "slot": 3,
+   "type": "decide",
+   "brief": {
+    "headline": "You are CFO of an EU firm with 1,500 employees and €600 million in turnover. You stay in scope under the December 2025 deal and report on financial year 2027, in 2028. Your board asks when to start.",
+    "kicker": "Decide: build reporting now or later?",
+    "fullText": "The EU agreed in December 2025 to limit sustainability reporting to companies with more than 1,000 employees and over €450 million in turnover. Firms in the new scope report on financial year 2027, in 2028.\n\nSuppliers with up to 1,000 employees can refuse data requests beyond a voluntary standard. Data for financial year 2027 starts on its first day.",
+    "sources": [
+     {
+      "url": "https://www.roedl.com/en/insights/eu-reaches-agreement-on-omnibus-procedure-for-sustainability-reporting/",
+      "label": "Rödl & Partner, EU agreement on the sustainability reporting omnibus"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "buildChain",
+    "prompt": "Order the path to your first report.",
+    "steps": [
+     "Confirm you are in the new scope",
+     "Set up data collection before 2027",
+     "Collect data through financial year 2027",
+     "Publish the report in 2028"
+    ],
+    "explanation": "The report covers all of 2027, so collection must be ready when the year starts."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "Your turnover is €600 million. By how much does it exceed the threshold?",
+    "min": 0,
+    "max": 500,
+    "value": 150,
+    "unit": "M€",
+    "explanation": "€600 million minus the €450 million threshold is €150 million."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your board asks when to start.",
+      "prompt": "What do you recommend?",
+      "options": [
+       "Never, since 90% of firms are out",
+       "Now, so data covers all of 2027",
+       "In 2028, when the report is due"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Your firm stays in scope.",
+       "Data must cover the full financial year.",
+       "By then the year to report is over."
+      ],
+      "explanation": "The first report covers financial year 2027, so data collection must start before it."
+     },
+     "proReasoning": "Finance leads work back from the period a report covers.",
+     "commonMistake": "Planning from the filing date, not the reporting period.",
+     "mentalModel": "Work back from the period."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "An investor asks how the deal affects you.",
+      "prompt": "What is accurate?",
+      "options": [
+       "We are exempt like most firms",
+       "We report fully on 2025 data",
+       "We still report, from FY2027 data"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "You are above the thresholds.",
+       "In-scope firms start with FY2027.",
+       "You exceed both thresholds."
+      ],
+      "explanation": "With 1,500 staff and €600 million turnover, you exceed both thresholds."
+     },
+     "proReasoning": "Investors want firms to know exactly where they stand.",
+     "commonMistake": "Assuming the cut applies to everyone.",
+     "mentalModel": "Know where you stand."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A startup offers supplier data tools.",
+      "prompt": "What feature matters most after the deal?",
+      "options": [
+       "Working with voluntary-standard data",
+       "Forcing suppliers to answer all asks",
+       "Ignoring suppliers altogether"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Small suppliers can limit what they share.",
+       "Suppliers with up to 1,000 staff can refuse.",
+       "You lose data you could get."
+      ],
+      "explanation": "Smaller suppliers can cap data at the voluntary standard, so the tool must work with that."
+     },
+     "proReasoning": "Buyers pick tools that fit the new rules.",
+     "commonMistake": "Expecting suppliers to answer everything.",
+     "mentalModel": "Fit the new rules."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You wonder why big firms still report when 90% are out.",
+      "prompt": "Why do they?",
+      "options": [
+       "The deal ended EU reporting",
+       "The rule now targets the largest firms",
+       "Big firms asked to stay in the rules"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Firms over the thresholds still report.",
+       "Thresholds put the burden on large firms.",
+       "They are in scope by size."
+      ],
+      "explanation": "The deal kept reporting for firms with over 1,000 staff and €450 million turnover."
+     },
+     "proReasoning": "Thresholds concentrate a rule on the biggest players.",
+     "commonMistake": "Reading \"90% removed\" as \"rule removed\".",
+     "mentalModel": "Thresholds concentrate."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:8dab377f0af5"
+  ]
+ },
+ {
+  "id": "34a25952-45d1-5489-ab79-2fd623fbff04",
+  "market_id": "climatetech",
+  "day": 29,
+  "slot": 1,
+  "content": {
+   "id": "climatetech-d29-c1",
+   "title": "New York bills past emissions",
+   "lessonTitle": "California's climate reports",
+   "slot": 1,
+   "type": "apply",
+   "brief": {
+    "headline": "On December 26, 2024, New York enacted a Climate Change Superfund Act. It seeks $75 billion over 25 years from companies with over 1 billion tons of emissions from 2000 to 2018.",
+    "kicker": "Apply the rule: states act on climate where federal rules do not.",
+    "fullText": "Payments are collected at $3 billion a year for 25 years, starting in 2026. The money is meant to pay for infrastructure that protects against climate change.\n\nNew York is the second state with such a law, after Vermont. Like California's reporting laws, it is state action rather than federal.",
+    "sources": [
+     {
+      "url": "https://bsk.com/news-events-videos/new-york-becomes-second-state-to-enact-climate-change-superfund-act",
+      "label": "Bond, Schoeneck & King, New York enacts a Climate Change Superfund Act"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "spotFake",
+    "prompt": "Two statements match New York's law. Which one does not?",
+    "statements": [
+     "It was enacted on December 26, 2024",
+     "New York was the first state to pass one",
+     "It covers emissions from 2000 to 2018"
+    ],
+    "fakeIndex": 1,
+    "explanation": "Vermont came first. New York was the second state."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "$75 billion over 25 years is how many billion dollars a year?",
+    "min": 0,
+    "max": 10,
+    "value": 3,
+    "unit": "B$",
+    "explanation": "$75 billion divided by 25 years is $3 billion a year."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "An energy company's counsel asks what the law means for them.",
+      "prompt": "What is the key question?",
+      "options": [
+       "Exposure turns on 2000 to 2018 emissions",
+       "Only emissions after 2026 count",
+       "Only residents of New York must pay for it"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Covered firms passed 1 billion tons in that period.",
+       "The law looks back, not forward.",
+       "It targets large emitters."
+      ],
+      "explanation": "The law applies to companies with over 1 billion tons of emissions from 2000 to 2018."
+     },
+     "proReasoning": "Counsel starts with the covered period and threshold.",
+     "commonMistake": "Assuming a new law can only cover future emissions.",
+     "mentalModel": "Check the period and threshold."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You hold shares in a large oil producer.",
+      "prompt": "What should you check?",
+      "options": [
+       "Its plans for 2040 emissions",
+       "Whether it passes the 1-billion-ton bar",
+       "Only its gasoline sales inside New York"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "The law covers 2000 to 2018.",
+       "That decides whether it must pay.",
+       "The test is past emissions, not sales."
+      ],
+      "explanation": "Liability depends on emissions above 1 billion tons in the covered period."
+     },
+     "proReasoning": "Investors check exposure to backward-looking climate laws.",
+     "commonMistake": "Focusing on future plans when the law looks back.",
+     "mentalModel": "Look back, not forward."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your startup builds flood defenses.",
+      "prompt": "What does the law mean for your market?",
+      "options": [
+       "Funding that goes only to oil companies",
+       "A ban on new flood projects",
+       "Up to $3 billion a year for protection"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "It is collected from them, not paid to them.",
+       "It funds protection, not bans.",
+       "The money funds protective infrastructure."
+      ],
+      "explanation": "The law raises money to pay for infrastructure that protects against climate change."
+     },
+     "proReasoning": "Founders follow where new public money will flow.",
+     "commonMistake": "Missing a state fund aimed at your product.",
+     "mentalModel": "Follow the fund."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You wonder why the law looks back to 2000.",
+      "prompt": "What is the idea?",
+      "options": [
+       "It charges for emissions already made",
+       "Emissions before 2000 were zero",
+       "The law starts charging in 2000"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "It covers 2000 to 2018.",
+       "Emissions existed before 2000.",
+       "Payments start in 2026."
+      ],
+      "explanation": "The law charges companies now for emissions made between 2000 and 2018."
+     },
+     "proReasoning": "Some climate laws assign costs for past emissions.",
+     "commonMistake": "Assuming laws can only price future pollution.",
+     "mentalModel": "Some laws look back."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:ac2125719d10"
+  ]
+ },
+ {
+  "id": "f6aea66e-8368-5503-b59b-ce9c9f989ca0",
+  "market_id": "climatetech",
+  "day": 29,
+  "slot": 2,
+  "content": {
+   "id": "climatetech-d29-c2",
+   "title": "A state fills the gap",
+   "lessonTitle": "California's climate reports",
+   "slot": 2,
+   "type": "connect",
+   "brief": {
+    "headline": "The SEC voted on March 27, 2025, to stop defending its climate disclosure rules. California later set August 10, 2026, as the first deadline for large companies to report Scope 1 and 2 emissions under SB 253.",
+    "kicker": "Connect day 27 and day 29: who sets the rule shifts.",
+    "fullText": "Day 27 showed a federal rule dropped before it took effect. Day 29 shows a state stepping in.\n\nSB 253 applies to large companies doing business in California. It requires Scope 1 and 2 emissions from 2026 and Scope 3 from 2027. A companion law on climate risk reports, SB 261, is blocked by a federal appeals court injunction.",
+    "sources": [
+     {
+      "url": "https://sec.gov/newsroom/press-releases/2025-58",
+      "label": "SEC, votes to end defense of climate disclosure rules"
+     },
+     {
+      "url": "https://www.millernash.com/industry-news/carb-adopts-initial-regulations-for-sb-253-and-sb-261-what-businesses-need-to-know-now",
+      "label": "Miller Nash, CARB adopts initial SB 253 and SB 261 regulations"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "buildChain",
+    "prompt": "Put the events in order.",
+    "steps": [
+     "The SEC adopts climate disclosure rules",
+     "The SEC pauses them during lawsuits",
+     "The SEC votes to stop defending them",
+     "California's first SB 253 deadline arrives"
+    ],
+    "explanation": "March 2024, then the pause, then March 2025, then August 2026."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "How many months from the SEC vote (March 2025) to California's first deadline (August 2026)?",
+    "min": 0,
+    "max": 30,
+    "value": 17,
+    "unit": "months",
+    "explanation": "From March 2025 to August 2026 is 17 months."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A US client asks which climate reporting rule to plan around.",
+      "prompt": "What do you say?",
+      "options": [
+       "SB 261, the climate risk report law",
+       "California's SB 253 for Scopes 1 and 2",
+       "The SEC rules, as adopted in 2024"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "SB 261 is blocked in court.",
+       "Its first deadline is August 10, 2026.",
+       "The SEC stopped defending them."
+      ],
+      "explanation": "SB 253 is the rule in force, with Scope 1 and 2 reports due from August 2026."
+     },
+     "proReasoning": "Advisers plan around rules in force, not rules on paper.",
+     "commonMistake": "Planning around a rule that was dropped or blocked.",
+     "mentalModel": "Plan around rules in force."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You compare emissions data across US companies.",
+      "prompt": "Where will new data come from?",
+      "options": [
+       "SEC filings under the 2024 rules",
+       "SB 261 climate risk reports",
+       "California SB 253 reports from 2026"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Those rules never took effect.",
+       "SB 261 is blocked.",
+       "Large firms report Scopes 1 and 2."
+      ],
+      "explanation": "SB 253 reports will add emissions data for large companies from 2026."
+     },
+     "proReasoning": "Investors find which rule actually produces data.",
+     "commonMistake": "Waiting for data from a rule that was dropped.",
+     "mentalModel": "Find the rule that produces data."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your startup tracks supplier emissions.",
+      "prompt": "When does California make your product urgent?",
+      "options": [
+       "From 2027, when Scope 3 reports start",
+       "Only once the SEC rule returns",
+       "In August 2026, for Scope 3 data"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Scope 3 covers the value chain, from 2027.",
+       "The SEC rule is not in force.",
+       "August 2026 covers Scopes 1 and 2."
+      ],
+      "explanation": "Supplier emissions are Scope 3, which California requires from 2027."
+     },
+     "proReasoning": "Founders time their push to the deadline that needs their product.",
+     "commonMistake": "Mixing up which scope is due when.",
+     "mentalModel": "Match product to deadline."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You wonder how a state rule reaches national companies.",
+      "prompt": "How does it?",
+      "options": [
+       "Federal law makes every state copy it",
+       "It covers large firms doing business there",
+       "It applies only to firms based in California"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "States choose their own rules.",
+       "Doing business in the state is enough.",
+       "It reaches firms based elsewhere too."
+      ],
+      "explanation": "SB 253 applies to large companies doing business in California, wherever they are based."
+     },
+     "proReasoning": "A big state's rules can reach far beyond its borders.",
+     "commonMistake": "Thinking state rules only affect local companies.",
+     "mentalModel": "Big states reach far."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:483b87fd0534"
+  ]
+ },
+ {
+  "id": "b27e1b17-aa72-5a7b-950c-33efc4e7d71c",
+  "market_id": "climatetech",
+  "day": 29,
+  "slot": 3,
+  "content": {
+   "id": "climatetech-d29-c3",
+   "title": "Getting ready for Scope 3",
+   "lessonTitle": "California's climate reports",
+   "slot": 3,
+   "type": "decide",
+   "brief": {
+    "headline": "You lead sustainability at a large company doing business in California. Your first SB 253 deadline, for Scope 1 and 2, was August 10, 2026. Scope 3 is required from 2027.",
+    "kicker": "Decide: how do you prepare for Scope 3?",
+    "fullText": "SB 253 requires Scope 1 and 2 emissions first, then Scope 3 value chain emissions from 2027. Covered companies pay flat fees to fund the program, assessed from September 2026.\n\nScope 3 covers emissions from suppliers to customers. Many of your suppliers have never measured their emissions.",
+    "sources": [
+     {
+      "url": "https://www.millernash.com/industry-news/carb-adopts-initial-regulations-for-sb-253-and-sb-261-what-businesses-need-to-know-now",
+      "label": "Miller Nash, CARB adopts initial SB 253 and SB 261 regulations"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "sortSignal",
+    "prompt": "Is each Scope 3, or Scope 1 or 2?",
+    "buckets": [
+     "Scope 3",
+     "Scope 1 or 2"
+    ],
+    "items": [
+     {
+      "text": "A supplier's factory emissions",
+      "bucket": 0
+     },
+     {
+      "text": "Emissions when customers use your product",
+      "bucket": 0
+     },
+     {
+      "text": "Fuel burned in your own trucks",
+      "bucket": 1
+     },
+     {
+      "text": "Electricity your offices buy",
+      "bucket": 1
+     },
+     {
+      "text": "Your own boilers",
+      "bucket": 1
+     }
+    ],
+    "explanation": "Scope 1 is direct, Scope 2 is purchased energy, Scope 3 is the value chain."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "In which month of 2026 are SB 253 fees first assessed?",
+    "min": 1,
+    "max": 12,
+    "value": 9,
+    "unit": "month",
+    "explanation": "From September, the ninth month."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your CEO asks what to do now about Scope 3.",
+      "prompt": "What do you recommend?",
+      "options": [
+       "Wait until the 2027 deadline arrives",
+       "Report only Scopes 1 and 2 forever",
+       "Start collecting supplier data now"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Late data means a weak first report.",
+       "Scope 3 is required from 2027.",
+       "Suppliers need time to measure."
+      ],
+      "explanation": "Scope 3 depends on suppliers who may never have measured, so start early."
+     },
+     "proReasoning": "Sustainability leads start the slowest data first.",
+     "commonMistake": "Waiting for the deadline when data depends on others.",
+     "mentalModel": "Start the slow data first."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "An investor asks about your California exposure.",
+      "prompt": "What is accurate?",
+      "options": [
+       "We filed Scopes 1 and 2; Scope 3 is next",
+       "We are exempt from California rules",
+       "SB 261 requires our risk report now"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "You give status and what is next.",
+       "You do business there and are covered.",
+       "SB 261 is blocked in court."
+      ],
+      "explanation": "You are covered by SB 253, with Scope 3 due from 2027; SB 261 is enjoined."
+     },
+     "proReasoning": "Investors want status and the next obligation.",
+     "commonMistake": "Citing a blocked law as if it were in force.",
+     "mentalModel": "Status, then next step."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A startup offers to estimate your Scope 3 from spending data.",
+      "prompt": "How should you use it?",
+      "options": [
+       "Not at all, since Scope 3 is optional",
+       "As a start, then improve with supplier data",
+       "As final numbers you never revisit"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Scope 3 is required from 2027.",
+       "Estimates fill gaps while data improves.",
+       "Estimates can be far off real emissions."
+      ],
+      "explanation": "Estimates help you start, but supplier data makes the numbers more accurate."
+     },
+     "proReasoning": "Teams start with estimates and replace them with real data.",
+     "commonMistake": "Treating estimates as final numbers.",
+     "mentalModel": "Estimate, then improve."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You wonder why Scope 3 comes a year after Scopes 1 and 2.",
+      "prompt": "What is a likely reason?",
+      "options": [
+       "Scope 3 emissions are always tiny",
+       "Courts blocked Scope 3 for good",
+       "Value chain data is harder to gather"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Value chains can be large.",
+       "Scope 3 starts in 2027.",
+       "It needs data from suppliers and customers."
+      ],
+      "explanation": "Scope 3 needs data from other companies, so it takes longer to collect."
+     },
+     "proReasoning": "Rules often start with what firms control directly.",
+     "commonMistake": "Thinking the later start means Scope 3 matters less.",
+     "mentalModel": "Own data first, chain later."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:743953e9f59c"
+  ]
+ },
+ {
+  "id": "95b067e9-3794-5c7b-8d62-2f2bb4a339e7",
+  "market_id": "climatetech",
+  "day": 30,
+  "slot": 1,
+  "content": {
+   "id": "climatetech-d30-c1",
+   "title": "KLM's ads ruled misleading",
+   "lessonTitle": "The green claims law that died",
+   "slot": 1,
+   "type": "apply",
+   "brief": {
+    "headline": "On March 20, 2024, an Amsterdam court ruled that KLM's \"Fly Responsibly\" ads were misleading and illegal. It said the airline painted an \"overly rosy picture\" of its climate efforts.",
+    "kicker": "Apply the rule: build claims on evidence, not on one law.",
+    "fullText": "The case was brought by Fossielvrij NL with support from ClientEarth. The court found claims such as calling sustainable aviation fuel a \"promising solution\" misleading.\n\nThe court imposed no punishment, but said KLM must be honest and concrete in future. The Green Claims Directive was never adopted, so the case rested on rules already in place.",
+    "sources": [
+     {
+      "url": "https://www.aljazeera.com/news/2024/3/20/dutch-court-finds-airline-guilty-of-greenwashing",
+      "label": "Al Jazeera, Dutch court finds KLM guilty of greenwashing"
+     },
+     {
+      "url": "https://www.clientearth.org/latest/press-office/press/historic-win-against-greenwashing-as-klm-s-advertising-ruled-illegal/",
+      "label": "ClientEarth, KLM's advertising ruled illegal"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "spotFake",
+    "prompt": "Two statements match the KLM ruling. Which one does not?",
+    "statements": [
+     "The court ruled the ads misleading",
+     "The court fined KLM heavily",
+     "Fossielvrij NL brought the case"
+    ],
+    "fakeIndex": 1,
+    "explanation": "The court imposed no punishment but said KLM must be honest and concrete in future."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "About how many months passed between the KLM ruling and the Green Claims withdrawal?",
+    "min": 0,
+    "max": 50,
+    "value": 32,
+    "unit": "months",
+    "explanation": "From March 2024 to November 2026 is about 32 months."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "An airline's marketing head asks what KLM's case means.",
+      "prompt": "What do you advise?",
+      "options": [
+       "Green claims are now legal everywhere",
+       "Make claims specific and backed by data",
+       "Avoid only the words \"Fly Responsibly\""
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "The court ruled the claims illegal.",
+       "Specific, proven claims hold up.",
+       "The problem was the picture, not one phrase."
+      ],
+      "explanation": "The court objected to an overly rosy picture, so claims must be concrete and supported."
+     },
+     "proReasoning": "Marketing leads test every claim against the evidence.",
+     "commonMistake": "Fixing the words instead of the substance.",
+     "mentalModel": "Claim what you can prove."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You hold shares in a consumer brand with big green claims.",
+      "prompt": "What does the KLM case show?",
+      "options": [
+       "Courts never rule on advertising",
+       "Green ads always lift the share price",
+       "Vague claims carry legal and brand risk"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "This court did rule on ads.",
+       "Misleading ads can backfire.",
+       "A court ruled KLM's ads illegal."
+      ],
+      "explanation": "KLM's ads were ruled misleading and illegal, even without a new green claims law."
+     },
+     "proReasoning": "Investors check whether a company's claims can survive scrutiny.",
+     "commonMistake": "Treating green marketing as risk-free.",
+     "mentalModel": "Claims can be tested."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your startup checks the evidence behind green ads.",
+      "prompt": "How does KLM help your pitch?",
+      "options": [
+       "Courts ruled vague claims illegal",
+       "The EU now requires your product",
+       "Airlines are banned from advertising"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Brands want to avoid the same outcome.",
+       "No such EU rule exists.",
+       "They can still advertise."
+      ],
+      "explanation": "A court found KLM's claims misleading, showing the cost of unchecked claims."
+     },
+     "proReasoning": "Founders use real cases to show the risk they reduce.",
+     "commonMistake": "Pitching a mandate that does not exist.",
+     "mentalModel": "Show the real risk."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You wonder why mentioning sustainable fuel was ruled misleading.",
+      "prompt": "What is the likely reason?",
+      "options": [
+       "Courts ban any mention of fuel",
+       "It implied more progress than was real",
+       "Sustainable fuel does not exist at all"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "The ruling was about this claim.",
+       "The court saw an overly rosy picture.",
+       "The issue was the claim, not the fuel."
+      ],
+      "explanation": "The court said the ads painted an overly rosy picture of KLM's climate efforts."
+     },
+     "proReasoning": "A true fact can still mislead if it overstates progress.",
+     "commonMistake": "Thinking a claim is fine just because each word is true.",
+     "mentalModel": "True can still mislead."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:edd251c42a3a"
+  ]
+ },
+ {
+  "id": "c636322a-499b-558b-8f46-732f3ca1ba8f",
+  "market_id": "climatetech",
+  "day": 30,
+  "slot": 2,
+  "content": {
+   "id": "climatetech-d30-c2",
+   "title": "Claims without a new law",
+   "lessonTitle": "The green claims law that died",
+   "slot": 2,
+   "type": "connect",
+   "brief": {
+    "headline": "Verra found 15.2 million of Kariba's 26.8 million credits were excess. In November 2026, the EU withdrew its Green Claims Directive, though a separate law on deceptive sustainability marketing remains in force.",
+    "kicker": "Connect day 24 and day 30: a claim is only as good as its proof.",
+    "fullText": "Day 24 showed that credits behind a climate claim can turn out to be excess. Day 30 shows the EU dropping a law meant to require proof behind green claims, after more than three years.\n\nA separate EU directive targeting deceptive sustainability marketing remains in force, and courts can still rule claims misleading, as an Amsterdam court did with KLM in 2024.",
+    "sources": [
+     {
+      "url": "https://verra.org/verra-acts-on-kariba-project-cancels-excess-credits-advances-independent-review/",
+      "label": "Verra, action on the Kariba project"
+     },
+     {
+      "url": "https://www.esgtoday.com/?p=26702",
+      "label": "ESG Today, EU Commission scraps the Green Claims Directive"
+     },
+     {
+      "url": "https://www.aljazeera.com/news/2024/3/20/dutch-court-finds-airline-guilty-of-greenwashing",
+      "label": "Al Jazeera, Dutch court finds KLM guilty of greenwashing"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "sortSignal",
+    "prompt": "Is each still a risk after the withdrawal, or not?",
+    "buckets": [
+     "Still a risk",
+     "Not a risk"
+    ],
+    "items": [
+     {
+      "text": "A claim resting on excess credits",
+      "bucket": 0
+     },
+     {
+      "text": "A vague \"climate friendly\" label",
+      "bucket": 0
+     },
+     {
+      "text": "A court case over misleading ads",
+      "bucket": 0
+     },
+     {
+      "text": "A specific claim with clear evidence",
+      "bucket": 1
+     }
+    ],
+    "explanation": "Rules on deception and the courts remain. Specific, proven claims are the safe ground."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "The directive had been pending for more than how many years?",
+    "min": 0,
+    "max": 10,
+    "value": 3,
+    "unit": "years",
+    "explanation": "More than three years before it was withdrawn."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A brand asks if it can now say \"carbon neutral\" using credits.",
+      "prompt": "What do you advise?",
+      "options": [
+       "Yes, since the Green Claims law is gone",
+       "Yes, any credits make it true",
+       "Only with strong proof, as rules remain"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Other rules on deception remain.",
+       "Credits can turn out to be excess.",
+       "Deceptive marketing rules still apply."
+      ],
+      "explanation": "The withdrawal removed one proposal, not the rules against deceptive claims."
+     },
+     "proReasoning": "Advisers check what rules remain after one is dropped.",
+     "commonMistake": "Reading a withdrawn proposal as permission.",
+     "mentalModel": "Check what remains."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You review a company's offset-based climate claims.",
+      "prompt": "What still matters?",
+      "options": [
+       "Whether the credits hold up",
+       "Nothing, since the law was withdrawn",
+       "Only the size of the ad budget"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Excess credits weaken the claim.",
+       "Courts and other rules remain.",
+       "Budget says nothing about proof."
+      ],
+      "explanation": "If the credits behind a claim are excess, the claim is exposed whatever the law says."
+     },
+     "proReasoning": "Investors judge a claim by the proof behind it.",
+     "commonMistake": "Judging a claim by the law instead of the evidence.",
+     "mentalModel": "Judge the proof."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your startup verifies green claims for brands.",
+      "prompt": "Is the withdrawal bad for you?",
+      "options": [
+       "No, the EU now mandates your tool",
+       "Not entirely; proof still protects brands",
+       "Yes, all demand for proof is now gone"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "No such mandate exists.",
+       "Courts and remaining rules still punish weak claims.",
+       "Brands still face scrutiny."
+      ],
+      "explanation": "Brands still face courts and remaining rules, so proof keeps its value."
+     },
+     "proReasoning": "Founders sell on trust when a mandate disappears.",
+     "commonMistake": "Assuming demand ends when one law is dropped.",
+     "mentalModel": "Sell on trust."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You wonder if greenwashing is now legal in the EU.",
+      "prompt": "Is it?",
+      "options": [
+       "Yes, the only law was withdrawn",
+       "Yes, but only for airlines",
+       "No, other rules on deception remain"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "It was not the only law.",
+       "Rules apply across sectors.",
+       "A separate directive remains in force."
+      ],
+      "explanation": "A separate EU directive targeting deceptive sustainability marketing remains in force."
+     },
+     "proReasoning": "One withdrawn law rarely leaves no rules at all.",
+     "commonMistake": "Thinking one withdrawal makes greenwashing legal.",
+     "mentalModel": "Other rules remain."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:3ca57dd4b9be"
+  ]
+ },
+ {
+  "id": "0dc73086-7fbc-518c-aa7b-8d3138495f41",
+  "market_id": "climatetech",
+  "day": 30,
+  "slot": 3,
+  "content": {
+   "id": "climatetech-d30-c3",
+   "title": "A green claim on the pack",
+   "lessonTitle": "The green claims law that died",
+   "slot": 3,
+   "type": "decide",
+   "brief": {
+    "headline": "You lead marketing for a European snack brand. The team wants a \"climate neutral\" label backed by offset credits. The Green Claims Directive was withdrawn in November 2026.",
+    "kicker": "Decide: what claim goes on the pack?",
+    "fullText": "The European Commission withdrew the Green Claims Directive on November 4, 2026. A separate EU directive targeting deceptive sustainability marketing remains in force.\n\nAn Amsterdam court ruled KLM's green ads misleading in 2024, and in 2025 Verra found that more than half of Kariba's credits were excess.",
+    "sources": [
+     {
+      "url": "https://www.esgtoday.com/?p=26702",
+      "label": "ESG Today, EU Commission scraps the Green Claims Directive"
+     },
+     {
+      "url": "https://www.aljazeera.com/news/2024/3/20/dutch-court-finds-airline-guilty-of-greenwashing",
+      "label": "Al Jazeera, Dutch court finds KLM guilty of greenwashing"
+     },
+     {
+      "url": "https://verra.org/verra-acts-on-kariba-project-cancels-excess-credits-advances-independent-review/",
+      "label": "Verra, action on the Kariba project"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "faceOff",
+    "prompt": "Which claim is safer to put on the pack?",
+    "left": {
+     "name": "A specific cut, with data",
+     "note": "Shows what you did"
+    },
+    "right": {
+     "name": "\"Climate neutral\" via credits",
+     "note": "Rests on offsets"
+    },
+    "correctIndex": 0,
+    "explanation": "Specific, proven cuts hold up. Offset-based neutrality rests on credits that can fail."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "About what share of Kariba's issued credits did Verra find excess?",
+    "min": 0,
+    "max": 100,
+    "value": 57,
+    "unit": "%",
+    "explanation": "15.2 million of 26.8 million, about 57%."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your CEO asks for a recommendation.",
+      "prompt": "What do you propose?",
+      "options": [
+       "Claim specific cuts you can prove",
+       "Use \"climate neutral\" since the law died",
+       "Drop every mention of climate"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Proven claims hold up to scrutiny.",
+       "Deceptive marketing rules still apply.",
+       "You give up honest claims that help sales."
+      ],
+      "explanation": "Specific, evidenced claims stay safe under the rules that remain."
+     },
+     "proReasoning": "Marketing leads choose claims that survive a court test.",
+     "commonMistake": "Using a broad claim because one law was dropped.",
+     "mentalModel": "Prove it, then claim it."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "An investor asks about the label.",
+      "prompt": "What reassures them?",
+      "options": [
+       "We hide our emissions data",
+       "We claim only what we can prove",
+       "We will say \"climate neutral\" anyway"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Hiding data erodes trust.",
+       "Evidence limits legal and brand risk.",
+       "That invites the KLM outcome."
+      ],
+      "explanation": "Claims grounded in evidence carry less legal and reputational risk."
+     },
+     "proReasoning": "Investors prefer claims that cannot be easily challenged.",
+     "commonMistake": "Treating a label as marketing, not a statement of fact.",
+     "mentalModel": "Claims are facts."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A startup offers cheap credits to back the label.",
+      "prompt": "What do you ask?",
+      "options": [
+       "Only the lowest price per tonne",
+       "Whether you can skip any data",
+       "How the credits are verified"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Cheap credits can be excess.",
+       "The claim needs data.",
+       "Verification protects the claim."
+      ],
+      "explanation": "After Kariba, the key question for any credit is how it was verified."
+     },
+     "proReasoning": "Buyers ask about verification before price.",
+     "commonMistake": "Buying credits on price alone.",
+     "mentalModel": "Verification first."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You wonder why brands still care after the withdrawal.",
+      "prompt": "Why do they?",
+      "options": [
+       "Courts and other laws still apply",
+       "Customers never read labels at all",
+       "The directive returns next year"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "KLM's ads were ruled misleading.",
+       "Labels shape what people buy.",
+       "Nothing says it will return."
+      ],
+      "explanation": "Courts and the remaining EU rules still police misleading green claims."
+     },
+     "proReasoning": "Accountability comes from many places, not one law.",
+     "commonMistake": "Thinking accountability ends with one withdrawn law.",
+     "mentalModel": "Many sources of accountability."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:b54ebcb19474"
+  ]
  }
 ];
 
