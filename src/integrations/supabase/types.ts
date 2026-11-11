@@ -2962,6 +2962,171 @@ export type Database = {
         }
         Relationships: []
       }
+      weekly_case_scoring: {
+        Row: {
+          case_id: string
+          common_traps: Json
+          facts: Json
+          model_answer: Json
+          rubric: Json
+          stale_after: string | null
+          time_sensitive: Json
+        }
+        Insert: {
+          case_id: string
+          common_traps?: Json
+          facts?: Json
+          model_answer: Json
+          rubric: Json
+          stale_after?: string | null
+          time_sensitive?: Json
+        }
+        Update: {
+          case_id?: string
+          common_traps?: Json
+          facts?: Json
+          model_answer?: Json
+          rubric?: Json
+          stale_after?: string | null
+          time_sensitive?: Json
+        }
+        Relationships: [
+          {
+            foreignKeyName: "weekly_case_scoring_case_id_fkey"
+            columns: ["case_id"]
+            isOneToOne: true
+            referencedRelation: "weekly_cases"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      weekly_case_submissions: {
+        Row: {
+          answers: Json
+          breakdown: Json | null
+          case_id: string
+          expert_flag: boolean
+          id: string
+          released_at: string | null
+          score: number | null
+          score_attempts: number
+          score_error: string | null
+          scored_at: string | null
+          scoring_started_at: string | null
+          seconds_spent: number | null
+          sharpen: string | null
+          status: string
+          strongest_move: string | null
+          submitted_at: string
+          user_id: string
+          word_count: number
+        }
+        Insert: {
+          answers: Json
+          breakdown?: Json | null
+          case_id: string
+          expert_flag?: boolean
+          id?: string
+          released_at?: string | null
+          score?: number | null
+          score_attempts?: number
+          score_error?: string | null
+          scored_at?: string | null
+          scoring_started_at?: string | null
+          seconds_spent?: number | null
+          sharpen?: string | null
+          status?: string
+          strongest_move?: string | null
+          submitted_at?: string
+          user_id: string
+          word_count: number
+        }
+        Update: {
+          answers?: Json
+          breakdown?: Json | null
+          case_id?: string
+          expert_flag?: boolean
+          id?: string
+          released_at?: string | null
+          score?: number | null
+          score_attempts?: number
+          score_error?: string | null
+          scored_at?: string | null
+          scoring_started_at?: string | null
+          seconds_spent?: number | null
+          sharpen?: string | null
+          status?: string
+          strongest_move?: string | null
+          submitted_at?: string
+          user_id?: string
+          word_count?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "weekly_case_submissions_case_id_fkey"
+            columns: ["case_id"]
+            isOneToOne: false
+            referencedRelation: "weekly_cases"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      weekly_cases: {
+        Row: {
+          closes_at: string
+          content: Json
+          created_at: string
+          id: string
+          kind: string
+          market_id: string | null
+          opens_at: string
+          presented_by: string
+          status: string
+          title: string
+          topic: string
+          updated_at: string
+          week_start: string
+        }
+        Insert: {
+          closes_at: string
+          content: Json
+          created_at?: string
+          id: string
+          kind?: string
+          market_id?: string | null
+          opens_at: string
+          presented_by?: string
+          status?: string
+          title: string
+          topic: string
+          updated_at?: string
+          week_start: string
+        }
+        Update: {
+          closes_at?: string
+          content?: Json
+          created_at?: string
+          id?: string
+          kind?: string
+          market_id?: string | null
+          opens_at?: string
+          presented_by?: string
+          status?: string
+          title?: string
+          topic?: string
+          updated_at?: string
+          week_start?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "weekly_cases_market_id_fkey"
+            columns: ["market_id"]
+            isOneToOne: false
+            referencedRelation: "markets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       xp_transactions: {
         Row: {
           created_at: string
@@ -3275,6 +3440,7 @@ export type Database = {
         }
         Returns: Json
       }
+      finalize_weekly_case: { Args: { p_case_id: string }; Returns: number }
       friend_quest_progress: {
         Args: {
           p_key: string
@@ -3324,6 +3490,19 @@ export type Database = {
           user_id: string
         }[]
       }
+      get_weekly_case_board: {
+        Args: { p_case_id: string }
+        Returns: {
+          display_name: string
+          friend_code: string
+          is_me: boolean
+          rank: number
+          score: number
+          user_id: string
+        }[]
+      }
+      get_weekly_case_result: { Args: { p_case_id: string }; Returns: Json }
+      get_weekly_case_reveal: { Args: { p_case_id: string }; Returns: Json }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -3446,6 +3625,10 @@ export type Database = {
           p_selected_option: number
           p_time_spent?: number
         }
+        Returns: Json
+      }
+      submit_weekly_case: {
+        Args: { p_answers: Json; p_case_id: string; p_seconds?: number }
         Returns: Json
       }
       sync_friend_quests: { Args: { p_market_id: string }; Returns: number }
