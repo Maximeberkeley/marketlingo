@@ -41,13 +41,13 @@ export default function StreakFreezeScreen() {
           <Feather name="x" size={22} color={COLORS.textPrimary} />
         </TouchableOpacity>
         <Float distance={6}><ShopIcon id="streak-freeze" size={128} /></Float>
-        <Text style={styles.title}>Streak Freeze</Text>
-        <Text style={styles.sub}>Miss a day. Keep the streak.</Text>
+        <Text maxFontSizeMultiplier={1.3} style={styles.title}>Streak Freeze</Text>
+        <Text maxFontSizeMultiplier={1.3} style={styles.sub}>Miss a day. Keep the streak.</Text>
       </LinearGradient>
 
       <View style={styles.body}>
         <View style={styles.holdCard}>
-          <Text style={styles.holdLabel}>You hold</Text>
+          <Text maxFontSizeMultiplier={1.3} style={styles.holdLabel}>You hold</Text>
           <View style={styles.slots}>
             {Array.from({ length: MAX_FREEZES_HELD }, (_, i) => (
               <View key={i} style={[styles.slot, i < held ? styles.slotFull : styles.slotEmpty]}>
@@ -55,31 +55,31 @@ export default function StreakFreezeScreen() {
               </View>
             ))}
           </View>
-          <Text style={styles.holdCount}>{held} of {MAX_FREEZES_HELD}</Text>
+          <Text maxFontSizeMultiplier={1.3} style={styles.holdCount}>{held} of {MAX_FREEZES_HELD}</Text>
         </View>
 
         <View style={styles.week}>
           {[['Mon', 'You learn', 'done'], ['Tue', 'Freeze used', 'ice'], ['Wed', 'Streak safe', 'done']].map(([d, l, kind]) => (
             <View key={d} style={styles.day}>
               <View style={[styles.dayDot, kind === 'ice' ? styles.dayIce : styles.dayDone]}>
-                <Text style={[styles.dayText, kind === 'ice' && { color: '#0369A1' }]}>{d}</Text>
+                <Text maxFontSizeMultiplier={1.3} style={[styles.dayText, kind === 'ice' && { color: '#0369A1' }]}>{d}</Text>
               </View>
-              <Text style={styles.dayLabel}>{l}</Text>
+              <Text maxFontSizeMultiplier={1.3} style={styles.dayLabel}>{l}</Text>
             </View>
           ))}
         </View>
-        <Text style={styles.rule}>You get one free every week. Bought freezes cover any extra missed day, and you choose when to use one.</Text>
-        <Text style={styles.repair}>Already lost it? Streak Repair is coming soon.</Text>
+        <Text maxFontSizeMultiplier={1.3} style={styles.rule}>You get one free every week. Bought freezes cover any extra missed day, and you choose when to use one.</Text>
+        <Text maxFontSizeMultiplier={1.3} style={styles.repair}>Already lost it? Streak Repair is coming soon.</Text>
       </View>
 
       <View style={styles.footer}>
-        {note ? <Text style={styles.note}>{note}</Text> : null}
+        {note ? <Text maxFontSizeMultiplier={1.3} style={styles.note}>{note}</Text> : null}
         {block && block !== 'not_enough' ? (
-          <View style={styles.blocked}><Text style={styles.blockedText}>{BLOCK_LABEL[block]}</Text></View>
+          <View style={styles.blocked}><Text maxFontSizeMultiplier={1.3} style={styles.blockedText}>{BLOCK_LABEL[block]}</Text></View>
         ) : (
           <PriceButton price={STREAK_FREEZE_PRICE} label="Buy a freeze" onPress={() => { void buy(); }} busy={busy} disabled={block === 'not_enough'} height={52} />
         )}
-        <Text style={styles.after}>
+        <Text maxFontSizeMultiplier={1.3} style={styles.after}>
           {block === 'not_enough' ? `${fmt(STREAK_FREEZE_PRICE - shop.balance.balance)} XP to go` : `${fmt(shop.balance.balance)} XP now, ${fmt(Math.max(0, shop.balance.balance - STREAK_FREEZE_PRICE))} after`}
         </Text>
       </View>

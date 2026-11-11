@@ -6,7 +6,7 @@ import { ScrollView, StyleSheet, Text, TouchableOpacity, View, ViewStyle, useWin
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { COLORS } from '../../lib/constants';
 import { ChunkyButton } from '../social/ChunkyButton';
-import { Dots, useReduceMotion } from './Motion';
+import { Dots, useReduceMotion, MotionScope } from './Motion';
 
 const FLASK_ON_GOLD = '#6D28D9';
 const fmt = (n: number) => n.toLocaleString('en-US');
@@ -26,7 +26,7 @@ export function XPChip({ value, onPress, label }: { value: number; onPress?: () 
   const body = (
     <View style={styles.chip}>
       <Flask size={18} />
-      <Text style={styles.chipText}>{fmt(value)}</Text>
+      <Text maxFontSizeMultiplier={1.3} style={styles.chipText}>{fmt(value)}</Text>
     </View>
   );
   return onPress ? (
@@ -41,6 +41,7 @@ export function PriceButton({ price, was, label, onPress, disabled, busy, height
   return (
     <ChunkyButton
       tone="gold"
+      haptic
       height={height}
       onPress={onPress}
       disabled={disabled}
@@ -50,7 +51,7 @@ export function PriceButton({ price, was, label, onPress, disabled, busy, height
       icon={(
         <View style={styles.priceIcon}>
           <Flask size={17} color={FLASK_ON_GOLD} />
-          {was ? <Text style={styles.was}>{fmt(was)}</Text> : null}
+          {was ? <Text maxFontSizeMultiplier={1.3} style={styles.was}>{fmt(was)}</Text> : null}
         </View>
       )}
       label={label ? `${fmt(price)} · ${label}` : fmt(price)}
@@ -63,13 +64,13 @@ export function SectionHead({ title, sub, action, onAction, tag }: { title: stri
     <View style={styles.head}>
       <View style={{ flex: 1 }}>
         <View style={styles.titleRow}>
-          <Text style={styles.title}>{title}</Text>
-          {tag ? <View style={styles.tag}><Text style={styles.tagText}>{tag}</Text></View> : null}
+          <Text maxFontSizeMultiplier={1.3} style={styles.title}>{title}</Text>
+          {tag ? <View style={styles.tag}><Text maxFontSizeMultiplier={1.3} style={styles.tagText}>{tag}</Text></View> : null}
         </View>
-        {sub ? <Text style={styles.sub}>{sub}</Text> : null}
+        {sub ? <Text maxFontSizeMultiplier={1.3} style={styles.sub}>{sub}</Text> : null}
       </View>
       {action && onAction ? (
-        <TouchableOpacity onPress={onAction} hitSlop={10} accessibilityRole="button"><Text style={styles.action}>{action}</Text></TouchableOpacity>
+        <TouchableOpacity onPress={onAction} hitSlop={10} accessibilityRole="button"><Text maxFontSizeMultiplier={1.3} style={styles.action}>{action}</Text></TouchableOpacity>
       ) : null}
     </View>
   );
@@ -79,8 +80,10 @@ export function SectionHead({ title, sub, action, onAction, tag }: { title: stri
  * Big swipe cards like the Intel news cards: one card per page with the next one peeking, snapping, page dots,
  * and a gentle auto-advance every few seconds that pauses once the learner swipes.
  */
-export function Carousel<T>({ items, render, keyOf, autoMs = 4000, cardWidth: forced }: {
+export function Carousel<T>({ items, render, keyOf, autoMs = 4000, cardWidth: forced, padTop = 0 }: {
   items: T[]; render: (item: T, width: number) => React.ReactNode; keyOf: (item: T) => string; autoMs?: number; cardWidth?: number;
+  /** Room above the cards, so art can break out of their top edge. */
+  padTop?: number;
 }) {
   const { width } = useWindowDimensions();
   const cardWidth = forced ?? Math.min(340, width - 52);
@@ -109,11 +112,16 @@ export function Carousel<T>({ items, render, keyOf, autoMs = 4000, cardWidth: fo
         showsHorizontalScrollIndicator={false}
         snapToInterval={cardWidth + gap}
         decelerationRate="fast"
-        contentContainerStyle={{ paddingHorizontal: 20, gap }}
+        contentContainerStyle={{ paddingHorizontal: 20, gap, paddingTop: padTop }}
         onScrollBeginDrag={() => { touched.current = true; }}
         onMomentumScrollEnd={e => setIndex(Math.round(e.nativeEvent.contentOffset.x / (cardWidth + gap)))}
       >
-        {items.map(item => <View key={keyOf(item)} style={{ width: cardWidth }}>{render(item, cardWidth)}</View>)}
+        {items.map((item, i) => (
+          <View key={keyOf(item)} style={{ width: cardWidth }}>
+            {/* Only the card in front animates. */}
+            <MotionScope active={i === Math.min(index, items.length - 1)}>{render(item, cardWidth)}</MotionScope>
+          </View>
+        ))}
       </ScrollView>
       <Dots count={items.length} index={Math.min(index, items.length - 1)} color={COLORS.accent} idle={COLORS.border} />
     </View>

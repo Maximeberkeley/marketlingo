@@ -25,32 +25,32 @@ export function XPSheet({ visible, onClose, inShop = false }: { visible: boolean
       <Pressable style={styles.scrim} onPress={onClose} accessibilityLabel="Close" />
       <View style={[styles.sheet, { paddingBottom: insets.bottom + 18 }]}>
         <View style={styles.grip} />
-        <Text style={styles.kicker}>XP TO SPEND</Text>
+        <Text maxFontSizeMultiplier={1.3} style={styles.kicker}>XP TO SPEND</Text>
         <View style={styles.big}>
           <Flask size={30} />
-          <Text style={styles.bigText}>{fmt(balance.balance)}</Text>
+          <Text maxFontSizeMultiplier={1.3} style={styles.bigText}>{fmt(balance.balance)}</Text>
         </View>
-        <Text style={styles.note}>Spending never lowers your friend ranking.</Text>
+        <Text maxFontSizeMultiplier={1.3} style={styles.note}>Spending never lowers your friend ranking.</Text>
 
         <View style={styles.card}>
           <View style={styles.row}>
-            <Text style={styles.label}>XP earned ever</Text>
-            <Text style={styles.value}>{fmt(balance.earned)}</Text>
+            <Text maxFontSizeMultiplier={1.3} style={styles.label}>XP earned ever</Text>
+            <Text maxFontSizeMultiplier={1.3} style={styles.value}>{fmt(balance.earned)}</Text>
           </View>
           {m.next !== null ? (
             <>
               <View style={styles.track}><View style={[styles.fill, { width: `${Math.max(3, m.progress * 100)}%` }]} /></View>
-              <Text style={styles.toGo}>{fmt(m.toGo)} to {fmt(m.next)}</Text>
+              <Text maxFontSizeMultiplier={1.3} style={styles.toGo}>{fmt(m.toGo)} to {fmt(m.next)}</Text>
             </>
           ) : (
-            <Text style={styles.toGo}>Every milestone reached.</Text>
+            <Text maxFontSizeMultiplier={1.3} style={styles.toGo}>Every milestone reached.</Text>
           )}
           {m.reached.length > 0 && (
             <View style={styles.reached}>
               {m.reached.map(r => (
                 <View key={r} style={styles.badge}>
                   <Feather name="check" size={12} color={COLORS.success} />
-                  <Text style={styles.badgeText}>{short(r)}</Text>
+                  <Text maxFontSizeMultiplier={1.3} style={styles.badgeText}>{short(r)}</Text>
                 </View>
               ))}
             </View>

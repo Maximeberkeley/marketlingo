@@ -1,9 +1,10 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { Animated, Easing, Modal, Pressable, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { Modal, Pressable, StyleSheet, Text, TouchableOpacity, View, useWindowDimensions } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Feather } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
+import Svg, { Polygon, Rect } from 'react-native-svg';
 import { COLORS } from '../lib/constants';
 import { triggerHaptic } from '../lib/haptics';
 import { playSound } from '../lib/sounds';
@@ -14,31 +15,35 @@ import { BLOCK_LABEL, buyBlock, requirementProgress } from '../lib/shopEconomy';
 import { hasArt, todaysPrice, useShop } from '../hooks/useShop';
 import { LeoAvatar } from '../components/shop/LeoAvatar';
 import { ItemArt } from '../components/shop/ItemArt';
-import { Flask, PriceButton, XPChip } from '../components/shop/ShopKit';
-import { Float, useReduceMotion } from '../components/shop/Motion';
+import { PriceButton, XPChip } from '../components/shop/ShopKit';
+import { Float, Pop, Sheen, useReduceMotion } from '../components/shop/Motion';
+import { FloatIcon, FloorShadow, SCENES, SceneBackdrop, SceneTheme, Sunburst, Twinkles } from '../components/shop/Scene';
 import { ChunkyButton } from '../components/social/ChunkyButton';
 import { ConfettiBurst } from '../components/ui/ConfettiBurst';
 
 const fmt = (n: number) => n.toLocaleString('en-US');
+const STAGE_H = 256;
+const LEO_TRY = 336;
 
 /** Try an item (or a full set) on Leo, then buy and wear it. Also the "It's yours" moment and the not-enough-XP sheet. */
 export default function ShopItemScreen() {
   const insets = useSafeAreaInsets();
   const params = useLocalSearchParams<{ id?: string; bundle?: string; deal?: string; claimed?: string }>();
   const shop = useShop();
+  const { width } = useWindowDimensions();
   const bundle = params.bundle ? BUNDLES.find(b => b.id === params.bundle) : undefined;
   const item = params.id ? cosmetic(params.id) : undefined;
   const parts: Cosmetic[] = bundle ? bundle.items.map(id => cosmetic(id)!).filter(Boolean) : item ? [item] : [];
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState<{ from: number; to: number } | null>(params.claimed ? { from: shop.balance.balance, to: shop.balance.balance } : null);
+  const [success, setSuccess] = useState(!!params.claimed);
   const [short, setShort] = useState(false);
 
   if (!parts.length) {
     return (
       <View style={[styles.root, styles.center]}>
-        <Text style={styles.name}>That item is gone</Text>
-        <Text style={styles.link} onPress={() => router.back()}>Back to the Shop</Text>
+        <Text maxFontSizeMultiplier={1.3} style={styles.name}>That item is gone</Text>
+        <Text maxFontSizeMultiplier={1.3} style={styles.link} onPress={() => router.back()}>Back to the Shop</Text>
       </View>
     );
   }
@@ -48,6 +53,9 @@ export default function ShopItemScreen() {
   const color = RARITY_COLOR[lead.rarity];
   const collection = (bundle?.collection ?? lead.collection) ? collectionOf((bundle?.collection ?? lead.collection)!) : null;
   const wearing = Object.fromEntries(parts.map(p => [p.slot, p.id]));
+  const sceneKey = (bundle?.collection ?? lead.collection) ?? 'promo';
+  const theme = (sceneKey in SCENES ? sceneKey : 'promo') as SceneTheme;
+  const stageW = width - 40;
   const owned = parts.every(p => shop.owns(p.id));
   const worn = parts.every(p => (shop.look[p.slot] ?? (p.id === 'grad-cap' ? 'grad-cap' : undefined)) === p.id);
   const art = parts.every(p => hasArt(p.id));
@@ -70,7 +78,6 @@ export default function ShopItemScreen() {
     if (block) return;
     setBusy(true);
     setError(null);
-    const from = shop.balance.balance;
     const r = await shop.purchase(bundle ? bundle.id : lead.id, { dealDate: deal ? shop.dealDate : undefined });
     setBusy(false);
     if (r.ok === false) {
@@ -78,9 +85,8 @@ export default function ShopItemScreen() {
       setError(r.error === 'requirement_not_met' ? 'Finish its requirement first.' : r.error === 'owned' ? 'You already own this.' : 'That did not go through. Try again.');
       return;
     }
-    triggerHaptic('success');
     playSound('lessonComplete').catch(() => {});
-    setSuccess({ from, to: r.balance });
+    setSuccess(true);
   };
 
   return (
@@ -89,39 +95,49 @@ export default function ShopItemScreen() {
         <TouchableOpacity onPress={() => router.back()} hitSlop={12} accessibilityRole="button" accessibilityLabel="Close">
           <Feather name="x" size={24} color={COLORS.textPrimary} />
         </TouchableOpacity>
-        <Text style={styles.topCaption} numberOfLines={1}>{collection ? collection.name : SLOT_LABEL[lead.slot]}</Text>
+        <Text maxFontSizeMultiplier={1.3} style={styles.topCaption} numberOfLines={1}>{collection ? collection.name : SLOT_LABEL[lead.slot]}</Text>
         <XPChip value={shop.balance.balance} />
       </View>
 
       <View style={styles.middle}>
-      <View style={styles.stage}>
-        <Float distance={4}>
-          <LeoAvatar look={{ ...shop.look, ...wearing }} size={250} bg={color + '1A'} />
+      <View style={[styles.stage, { width: stageW }]}>
+        <View style={styles.stageCard}>
+          <SceneBackdrop theme={theme} sceneId={sceneKey} />
+          <Sunburst size={520} cx={stageW / 2} cy={STAGE_H * 0.6} color={SCENES[theme].ray} opacity={SCENES[theme].rayOpacity} />
+          <Twinkles w={stageW} h={STAGE_H} color={SCENES[theme].spark} />
+          <FloorShadow width={260} cx={stageW / 2} y={STAGE_H - 4} dark={0.45} />
+          {(lead.rarity === 'epic' || lead.rarity === 'legendary') && <Sheen width={stageW} every={3600} />}
+        </View>
+        <FloatIcon id={SCENES[theme].icons[0]} size={50} x={10} y={STAGE_H - 78} depth={2} phase={200} />
+        <FloatIcon id={SCENES[theme].icons[1]} size={40} x={stageW - 58} y={22} depth={0} phase={900} />
+        <Float distance={6} style={{ position: 'absolute', left: stageW / 2 - LEO_TRY / 2, top: STAGE_H - LEO_TRY * 0.955 + 4 }}>
+          <LeoAvatar look={{ ...shop.look, ...wearing }} size={LEO_TRY} crop={false} />
         </Float>
+        <View style={[styles.rarityTag, { backgroundColor: color }]}><Text maxFontSizeMultiplier={1.3} style={styles.rarityTagText}>{RARITY_LABEL[lead.rarity].toUpperCase()}</Text></View>
       </View>
 
       <View style={styles.info}>
-        <Text style={[styles.kicker, { color }]}>
+        <Text maxFontSizeMultiplier={1.3} style={[styles.kicker, { color }]}>
           {bundle ? `SET · ${parts.length} PIECES` : `${RARITY_LABEL[lead.rarity].toUpperCase()} · ${SLOT_LABEL[lead.slot].toUpperCase()}`}
         </Text>
-        <Text style={styles.name}>{name}</Text>
+        <Text maxFontSizeMultiplier={1.3} style={styles.name}>{name}</Text>
         {bundle ? (
           <View style={styles.parts}>{parts.map(p => <ItemArt key={p.id} item={p} size={64} showTag={false} />)}</View>
         ) : earnOnly && progress ? (
           <View style={styles.progressCard}>
-            <Text style={styles.progressLabel}>{progress.met ? 'Unlocked' : progress.label}</Text>
+            <Text maxFontSizeMultiplier={1.3} style={styles.progressLabel}>{progress.met ? 'Unlocked' : progress.label}</Text>
             <View style={styles.track}><View style={[styles.fill, { width: `${Math.max(4, (progress.current / progress.target) * 100)}%` }]} /></View>
-            <Text style={styles.progressCount}>{fmt(progress.current)} / {fmt(progress.target)} · Earned, not bought</Text>
+            <Text maxFontSizeMultiplier={1.3} style={styles.progressCount}>{fmt(progress.current)} / {fmt(progress.target)} · Earned, not bought</Text>
           </View>
         ) : collection ? (
-          <Text style={styles.line}>{collection.hook}.</Text>
+          <Text maxFontSizeMultiplier={1.3} style={styles.line}>{collection.hook}.</Text>
         ) : null}
         {goesWith.length > 0 && (
-          <Text style={styles.goes}>
+          <Text maxFontSizeMultiplier={1.3} style={styles.goes}>
             Goes with {goesWith.map((g, i) => (
               <Text key={g.id}>
                 {i > 0 ? ' and ' : ''}
-                <Text style={styles.link} onPress={() => router.replace(`/shop-item?id=${g.id}` as any)}>{g.name}</Text>
+                <Text maxFontSizeMultiplier={1.3} style={styles.link} onPress={() => router.replace(`/shop-item?id=${g.id}` as any)}>{g.name}</Text>
               </Text>
             ))}
           </Text>
@@ -130,19 +146,19 @@ export default function ShopItemScreen() {
       </View>
 
       <View style={styles.footer}>
-        {error ? <Text style={styles.error}>{error}</Text> : null}
+        {error ? <Text maxFontSizeMultiplier={1.3} style={styles.error}>{error}</Text> : null}
         {owned ? (
           <ChunkyButton label={worn ? 'Wearing it' : 'Wear it'} disabled={worn} onPress={() => { triggerHaptic('light'); void wearAll(); }} height={52} />
         ) : block && block !== 'not_enough' ? (
-          <View style={styles.blocked}><Text style={styles.blockedText}>{block === 'earn_only' ? 'Earn it, XP cannot buy it' : BLOCK_LABEL[block]}</Text></View>
+          <View style={styles.blocked}><Text maxFontSizeMultiplier={1.3} style={styles.blockedText}>{block === 'earn_only' ? 'Earn it, XP cannot buy it' : BLOCK_LABEL[block]}</Text></View>
         ) : (
           <PriceButton price={price!} was={bundle || deal ? full : null} label="Buy & equip" onPress={() => { void buy(); }} busy={busy} height={52} />
         )}
         {!owned && !block && price !== null && (
-          <Text style={styles.after}>{fmt(shop.balance.balance)} XP now, {fmt(shop.balance.balance - price)} after</Text>
+          <Text maxFontSizeMultiplier={1.3} style={styles.after}>{fmt(shop.balance.balance)} XP now, {fmt(shop.balance.balance - price)} after</Text>
         )}
         {block === 'not_enough' && price !== null && (
-          <Text style={styles.after}>{fmt(price - shop.balance.balance)} XP to go</Text>
+          <Text maxFontSizeMultiplier={1.3} style={styles.after}>{fmt(price - shop.balance.balance)} XP to go</Text>
         )}
       </View>
 
@@ -151,9 +167,9 @@ export default function ShopItemScreen() {
         <SuccessView
           name={name}
           look={{ ...shop.look, ...wearing }}
-          from={success.from}
-          to={success.to}
-          onEquip={async () => { await wearAll(); router.back(); }}
+          rarity={lead.rarity}
+          worn={worn}
+          onWear={async () => { await wearAll(); router.back(); }}
           onKeep={() => router.back()}
         />
       )}
@@ -161,38 +177,59 @@ export default function ShopItemScreen() {
   );
 }
 
-function SuccessView({ name, look, from, to, onEquip, onKeep }: { name: string; look: Record<string, string>; from: number; to: number; onEquip: () => void; onKeep: () => void }) {
+/** "It's yours!": a burst of the item's rarity colour, turning rays, Leo popping in wearing it, confetti. No XP here. */
+function SuccessView({ name, look, rarity, onWear, onKeep, worn }: { name: string; look: Record<string, string>; rarity: Cosmetic['rarity']; onWear: () => void; onKeep: () => void; worn: boolean }) {
   const insets = useSafeAreaInsets();
+  const { width, height } = useWindowDimensions();
+  const color = RARITY_COLOR[rarity];
+  const leo = Math.min(300, width * 0.78, height * 0.4);
   const reduce = useReduceMotion();
-  const pop = useRef(new Animated.Value(reduce ? 1 : 0.6)).current;
-  const roll = useRef(new Animated.Value(from)).current;
-  const [shown, setShown] = useState(from);
-  useEffect(() => {
-    if (reduce) { setShown(to); return; }
-    Animated.spring(pop, { toValue: 1, friction: 5, tension: 120, useNativeDriver: true }).start();
-    const id = roll.addListener(({ value }) => setShown(Math.round(value)));
-    Animated.timing(roll, { toValue: to, duration: 900, delay: 250, easing: Easing.out(Easing.cubic), useNativeDriver: false }).start();
-    return () => roll.removeListener(id);
-  }, [reduce, to, pop, roll]);
+  useEffect(() => { triggerHaptic('success'); }, []);
   return (
     <View style={StyleSheet.absoluteFill}>
-      <LinearGradient colors={['#6D28D9', '#8B5CF6']} style={[StyleSheet.absoluteFill, { paddingTop: insets.top + 10, paddingBottom: insets.bottom + 18, paddingHorizontal: 20 }]}>
-        <View style={{ alignItems: 'flex-end' }}>
-          <View style={styles.successChip}><Flask size={16} color="#6D28D9" /><Text style={styles.successChipText}>{fmt(shown)}</Text></View>
+      <LinearGradient colors={[shade(color, 0.35), color, shade(color, -0.45)]} start={{ x: 0.5, y: 0 }} end={{ x: 0.5, y: 1 }} style={StyleSheet.absoluteFill} />
+      <Sunburst size={Math.max(width, height) * 1.5} cx={width / 2} cy={height * 0.38} color="#FFFFFF" opacity={0.32} rays={20} period={22000} />
+      <Twinkles w={width} h={height} color="#FFFFFF" points={[[0.12, 0.16, 20], [0.86, 0.12, 24], [0.2, 0.5, 14], [0.84, 0.46, 16], [0.5, 0.08, 12], [0.1, 0.66, 10], [0.9, 0.62, 12]]} />
+      <View style={[styles.successBody, { paddingTop: insets.top + 24 }]}>
+        <View style={{ width: leo, height: leo }}>
+          <FloorShadow width={leo * 0.8} cx={leo / 2} y={leo * 0.95} dark={0.4} />
+          <Pop delay={120}>
+            <Float distance={6}>
+              <LeoAvatar look={look} size={leo} crop={false} />
+            </Float>
+          </Pop>
         </View>
-        <View style={styles.successBody}>
-          <Animated.View style={{ transform: [{ scale: pop }] }}>
-            <LeoAvatar look={look} size={230} ring="#FCD34D" ringWidth={5} bg="rgba(255,255,255,0.16)" />
-          </Animated.View>
-          <Text style={styles.successTitle}>It's yours!</Text>
-          <Text style={styles.successLine}>{name} joined your wardrobe.</Text>
-        </View>
-        <ChunkyButton tone="gold" label="Equip" onPress={onEquip} height={52} />
-        <TouchableOpacity onPress={onKeep} style={styles.keep} accessibilityRole="button"><Text style={styles.keepText}>Keep shopping</Text></TouchableOpacity>
-      </LinearGradient>
-      <ConfettiBurst show count={36} />
+        <Pop delay={380}>
+          <View style={styles.ribbon}>
+            <Svg width={220} height={50} viewBox="0 0 220 50" style={StyleSheet.absoluteFill}>
+              <Polygon points="0,14 34,14 34,46 0,46 12,30" fill={shade(color, -0.3)} />
+              <Polygon points="220,14 186,14 186,46 220,46 208,30" fill={shade(color, -0.3)} />
+              <Polygon points="24,38 34,46 34,38" fill={shade(color, -0.55)} />
+              <Polygon points="196,38 186,46 186,38" fill={shade(color, -0.55)} />
+              <Rect x="24" y="4" width="172" height="34" rx="6" fill="#FFFFFF" />
+            </Svg>
+            <Text maxFontSizeMultiplier={1.3} style={[styles.ribbonText, { color: shade(color, -0.35) }]}>{RARITY_LABEL[rarity].toUpperCase()}</Text>
+          </View>
+        </Pop>
+        <Text maxFontSizeMultiplier={1.3} style={styles.successTitle}>It's yours!</Text>
+        <Text maxFontSizeMultiplier={1.3} style={styles.successLine}>{name}</Text>
+        <Text maxFontSizeMultiplier={1.3} style={styles.successSub}>New in your wardrobe</Text>
+      </View>
+      <View style={{ paddingHorizontal: 20, paddingBottom: insets.bottom + 18 }}>
+        <ChunkyButton tone="gold" label={worn ? 'Wearing it' : 'Wear it'} onPress={onWear} height={54} haptic />
+        <TouchableOpacity onPress={onKeep} style={styles.keep} accessibilityRole="button"><Text maxFontSizeMultiplier={1.3} style={styles.keepText}>Keep shopping</Text></TouchableOpacity>
+      </View>
+      <ConfettiBurst show={!reduce} count={40} />
     </View>
   );
+}
+
+/** Lighten (amount > 0) or darken (amount < 0) a #RRGGBB colour. */
+function shade(hex: string, amount: number): string {
+  const n = parseInt(hex.slice(1), 16);
+  const ch = (v: number) => Math.round(amount >= 0 ? v + (255 - v) * amount : v * (1 + amount));
+  const [r, g, b] = [(n >> 16) & 255, (n >> 8) & 255, n & 255].map(ch);
+  return `#${((1 << 24) | (r << 16) | (g << 8) | b).toString(16).slice(1)}`;
 }
 
 function NotEnoughSheet({ visible, onClose, name, price, balance, item }: { visible: boolean; onClose: () => void; name: string; price: number; balance: number; item: Cosmetic }) {
@@ -211,24 +248,24 @@ function NotEnoughSheet({ visible, onClose, name, price, balance, item }: { visi
         <View style={styles.shortHead}>
           <ItemArt item={item} size={58} showTag={false} />
           <View style={{ flex: 1 }}>
-            <Text style={styles.shortTitle}>{fmt(Math.max(0, price - balance))} XP to go</Text>
-            <Text style={styles.shortSub}>{name} costs {fmt(price)}. You have {fmt(balance)}.</Text>
+            <Text maxFontSizeMultiplier={1.3} style={styles.shortTitle}>{fmt(Math.max(0, price - balance))} XP to go</Text>
+            <Text maxFontSizeMultiplier={1.3} style={styles.shortSub}>{name} costs {fmt(price)}. You have {fmt(balance)}.</Text>
           </View>
         </View>
         <View style={styles.track}><View style={[styles.fill, { width: `${Math.max(4, Math.min(100, (balance / Math.max(1, price)) * 100))}%` }]} /></View>
-        <Text style={styles.earnToday}>Earn it today</Text>
+        <Text maxFontSizeMultiplier={1.3} style={styles.earnToday}>Earn it today</Text>
         {rows.map(r => (
           <TouchableOpacity key={r.title} style={styles.earnRow} onPress={() => go(r.path)} activeOpacity={0.85} accessibilityRole="button">
             <View style={styles.earnIcon}><Feather name={r.icon} size={17} color={COLORS.accent} /></View>
             <View style={{ flex: 1 }}>
-              <Text style={styles.earnTitle}>{r.title}</Text>
-              <Text style={styles.earnSub}>{r.sub}</Text>
+              <Text maxFontSizeMultiplier={1.3} style={styles.earnTitle}>{r.title}</Text>
+              <Text maxFontSizeMultiplier={1.3} style={styles.earnSub}>{r.sub}</Text>
             </View>
-            <Text style={styles.earnXp}>{r.xp}</Text>
+            <Text maxFontSizeMultiplier={1.3} style={styles.earnXp}>{r.xp}</Text>
           </TouchableOpacity>
         ))}
         <ChunkyButton label="Start today's lesson" onPress={() => go('/(tabs)/home')} height={50} style={{ marginTop: 10 }} />
-        <TouchableOpacity onPress={onClose} style={styles.keep} accessibilityRole="button"><Text style={[styles.keepText, { color: COLORS.textSecondary }]}>Maybe later</Text></TouchableOpacity>
+        <TouchableOpacity onPress={onClose} style={styles.keep} accessibilityRole="button"><Text maxFontSizeMultiplier={1.3} style={[styles.keepText, { color: COLORS.textSecondary }]}>Maybe later</Text></TouchableOpacity>
       </View>
     </Modal>
   );
@@ -240,7 +277,10 @@ const styles = StyleSheet.create({
   top: { flexDirection: 'row', alignItems: 'center', gap: 12, height: 44 },
   topCaption: { flex: 1, textAlign: 'center', fontSize: 13, fontWeight: '700', color: COLORS.textMuted },
   middle: { flex: 1, justifyContent: 'center', paddingBottom: 24 },
-  stage: { alignItems: 'center', justifyContent: 'center' },
+  stage: { alignSelf: 'center', height: STAGE_H, marginTop: 50 },
+  stageCard: { ...StyleSheet.absoluteFillObject, borderRadius: 26, overflow: 'hidden', borderBottomWidth: 5, borderColor: 'rgba(0,0,0,0.18)' },
+  rarityTag: { position: 'absolute', left: 14, top: 14, paddingHorizontal: 10, height: 24, borderRadius: 12, justifyContent: 'center' },
+  rarityTagText: { fontSize: 11, fontWeight: '900', letterSpacing: 1, color: '#FFFFFF' },
   info: { alignItems: 'center', marginTop: 22, gap: 6 },
   kicker: { fontSize: 11.5, fontWeight: '900', letterSpacing: 1 },
   name: { fontSize: 28, fontWeight: '900', color: COLORS.textPrimary, textAlign: 'center', letterSpacing: -0.4 },
@@ -259,11 +299,12 @@ const styles = StyleSheet.create({
   blockedText: { fontSize: 15, fontWeight: '800', color: COLORS.textMuted },
   after: { fontSize: 12.5, fontWeight: '600', color: COLORS.textMuted, textAlign: 'center' },
 
-  successBody: { flex: 1, alignItems: 'center', justifyContent: 'center', gap: 10 },
-  successChip: { flexDirection: 'row', alignItems: 'center', gap: 6, height: 36, paddingHorizontal: 12, borderRadius: 18, backgroundColor: '#FFFFFF' },
-  successChipText: { fontSize: 16, fontWeight: '900', color: '#6D28D9', fontVariant: ['tabular-nums'] },
-  successTitle: { fontSize: 34, fontWeight: '900', color: '#FFFFFF', marginTop: 18 },
-  successLine: { fontSize: 15, fontWeight: '600', color: '#EDE9FE', textAlign: 'center' },
+  successBody: { flex: 1, alignItems: 'center', justifyContent: 'center' },
+  successTitle: { fontSize: 40, fontWeight: '900', color: '#FFFFFF', marginTop: 14, letterSpacing: -0.6, textShadowColor: 'rgba(0,0,0,0.18)', textShadowOffset: { width: 0, height: 3 }, textShadowRadius: 0 },
+  successLine: { fontSize: 18, fontWeight: '800', color: '#FFFFFF', opacity: 0.92, textAlign: 'center', marginTop: 4 },
+  ribbon: { width: 220, height: 50, marginTop: -4, alignItems: 'center', paddingTop: 11 },
+  ribbonText: { fontSize: 15, fontWeight: '900', letterSpacing: 2.5 },
+  successSub: { fontSize: 14, fontWeight: '700', color: '#FFFFFF', opacity: 0.75, marginTop: 6 },
   keep: { alignItems: 'center', paddingVertical: 14 },
   keepText: { fontSize: 15, fontWeight: '800', color: '#FFFFFF' },
 

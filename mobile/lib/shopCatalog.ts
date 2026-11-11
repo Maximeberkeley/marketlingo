@@ -35,6 +35,8 @@ export interface Cosmetic {
   rule?: string;
   /** Never listed in the shop grid (the live crown and its keepsake). */
   hidden?: boolean;
+  /** A founder-set price that overrides the rarity tier (purchase items only). */
+  price?: number;
 }
 
 /** Bottom to top: the order layers are stacked. The base Leo sits between the cape and the outfit. */
@@ -101,6 +103,7 @@ export const COSMETICS: Cosmetic[] = [
   // Colour variants of the same capelet: a cheaper tier than the red royal one.
   { id: 'royal-mantle-blue', slot: 'outfit', name: 'Sapphire mantle', rarity: 'rare', acquisition: 'purchase', collection: 'royal' },
   { id: 'royal-mantle-green', slot: 'outfit', name: 'Emerald mantle', rarity: 'rare', acquisition: 'purchase', collection: 'royal' },
+  { id: 'sapphire-tiara', slot: 'hat', name: 'Sapphire tiara', rarity: 'legendary', acquisition: 'purchase', collection: 'royal', price: 10000 },
   { id: 'coffee-cup', slot: 'held', name: 'Coffee cup', rarity: 'common', acquisition: 'purchase', collection: 'startup' },
   { id: 'magnifier', slot: 'held', name: 'Magnifying glass', rarity: 'common', acquisition: 'purchase', collection: 'lab' },
   { id: 'test-tube', slot: 'held', name: 'Test tubes', rarity: 'uncommon', acquisition: 'purchase', collection: 'lab' },
@@ -192,6 +195,7 @@ export const POWER_UPS: PowerUp[] = [
 const BY_ID = new Map(COSMETICS.map(c => [c.id, c]));
 export const cosmetic = (id: string | null | undefined): Cosmetic | undefined => (id ? BY_ID.get(id) : undefined);
 /** Price in XP, or null for items that are earned or free. */
-export const priceOf = (c: Cosmetic): number | null => (c.acquisition === 'purchase' ? RARITY_PRICE[c.rarity] : null);
+/** The tier price, or the item's own price when the founder set one; earn-only and free items have none. */
+export const priceOf = (c: Cosmetic): number | null => (c.acquisition === 'purchase' ? c.price ?? RARITY_PRICE[c.rarity] : null);
 export const bundleFullPrice = (b: Bundle): number => b.items.reduce((sum, id) => sum + (priceOf(BY_ID.get(id)!) ?? 0), 0);
 export const collectionOf = (id: CollectionId) => COLLECTIONS.find(c => c.id === id)!;

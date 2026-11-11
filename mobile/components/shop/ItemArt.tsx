@@ -40,7 +40,7 @@ export function ItemArt({ item, size, tint, style, showTag = true }: { item: Cos
     <View style={[styles.placeholder, { width: size, height: size, borderRadius: size * 0.22, backgroundColor: color + (isDark ? '22' : '14') }, style]}>
       <MaterialCommunityIcons name={SLOT_ICON[item.slot]} size={Math.round(size * 0.42)} color={color + (isDark ? 'AA' : '88')} />
       {showTag && size >= 64 && (
-        <View style={styles.tag}><Text style={styles.tagText}>Art soon</Text></View>
+        <View style={styles.tag}><Text maxFontSizeMultiplier={1.3} style={styles.tagText}>Art soon</Text></View>
       )}
     </View>
   );

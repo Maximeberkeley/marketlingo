@@ -13,6 +13,7 @@ export const SHOP_ART: Record<string, ImageSourcePropType> = {
   'grad-cap': require('../assets/shop/hat/grad-cap.png'),
   'monthly-crown': require('../assets/shop/hat/monthly-crown.png'),
   'phoenix-feather': require('../assets/shop/hat/phoenix-feather.png'),
+  'sapphire-tiara': require('../assets/shop/hat/sapphire-tiara.png'),
   'top-hat': require('../assets/shop/hat/top-hat.png'),
   'trader-visor': require('../assets/shop/hat/trader-visor.png'),
   'aviators': require('../assets/shop/glasses/aviators.png'),
@@ -38,3 +39,6 @@ export const SHOP_ICONS: Record<string, ImageSourcePropType> = {
   'xp-crate': require('../assets/shop/icons/xp-crate.png'),
   'xp-flask': require('../assets/shop/icons/xp-flask.png'),
 };
+
+/** Illustrated scene backdrops by collection / perk id ("promo" for the featured card); none means the coded scene. */
+export const SHOP_SCENES: Record<string, ImageSourcePropType> = {};

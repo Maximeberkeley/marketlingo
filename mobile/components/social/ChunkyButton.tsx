@@ -1,6 +1,7 @@
 import React, { useRef } from 'react';
 import { ActivityIndicator, Animated, Pressable, StyleSheet, Text, View, ViewStyle } from 'react-native';
 import { COLORS } from '../../lib/constants';
+import { triggerHaptic } from '../../lib/haptics';
 
 export type ChunkyTone = 'accent' | 'streak' | 'success' | 'plain' | 'gold';
 
@@ -19,7 +20,7 @@ const LIP = 4;
  * A button with a thick darker lip under it that presses down when tapped,
  * the chunky feel of Duolingo's buttons.
  */
-export function ChunkyButton({ label, onPress, tone = 'accent', icon, busy = false, disabled = false, style, height = 52, accessibilityLabel }: {
+export function ChunkyButton({ label, onPress, tone = 'accent', icon, busy = false, disabled = false, style, height = 52, accessibilityLabel, haptic = false }: {
   label: string;
   onPress: () => void;
   tone?: ChunkyTone;
@@ -29,6 +30,8 @@ export function ChunkyButton({ label, onPress, tone = 'accent', icon, busy = fal
   style?: ViewStyle;
   height?: number;
   accessibilityLabel?: string;
+  /** A light haptic tap as the button presses down. */
+  haptic?: boolean;
 }) {
   const press = useRef(new Animated.Value(0)).current;
   const t = TONES[tone];
@@ -37,7 +40,7 @@ export function ChunkyButton({ label, onPress, tone = 'accent', icon, busy = fal
   return (
     <Pressable
       onPress={onPress}
-      onPressIn={() => !off && to(1)}
+      onPressIn={() => { if (off) return; to(1); if (haptic) triggerHaptic('light'); }}
       onPressOut={() => to(0)}
       disabled={off}
       accessibilityRole="button"
@@ -54,7 +57,7 @@ export function ChunkyButton({ label, onPress, tone = 'accent', icon, busy = fal
         {busy ? <ActivityIndicator color={t.text} /> : (
           <>
             {icon}
-            <Text style={[styles.label, { color: t.text }]} numberOfLines={1}>{label}</Text>
+            <Text style={[styles.label, { color: t.text }]} numberOfLines={1} maxFontSizeMultiplier={1.3} adjustsFontSizeToFit minimumFontScale={0.8}>{label}</Text>
           </>
         )}
       </Animated.View>
