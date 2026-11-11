@@ -1,4 +1,4 @@
-/** Pure planning for load-deep-cases, kept free of Deno APIs so tests can run it. */
+/** Pure planning for the load-deep-cases functions, kept free of Deno APIs so tests can run it. */
 
 export interface CaseRow {
   id: string;
