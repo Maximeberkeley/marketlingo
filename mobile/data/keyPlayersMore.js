@@ -1009,6 +1009,76 @@ export const moreCompanies = {
      "type": "investment"
     }
    ]
+  },
+  {
+   "id": "sila",
+   "name": "Sila Nanotechnologies",
+   "logoUrl": "https://img.logo.dev/silanano.com?token=pk_X-1ZO13GSgeOoUrIuJ6GMQ",
+   "segment": "suppliers",
+   "description": "Startup making silicon battery materials that store more energy than graphite.",
+   "industryRole": "Sila's material can let batteries hold more charge in the same space.",
+   "ceo": "Gene Berdichevsky",
+   "founded": "2011",
+   "headquarters": "Alameda, CA",
+   "employees": "500+",
+   "keyProducts": [
+    "Titan Silicon"
+   ],
+   "slides": [
+    {
+     "title": "Better Anodes",
+     "content": "Silicon replaces some graphite to pack in more energy.",
+     "highlight": "More range",
+     "type": "insight"
+    },
+    {
+     "title": "Competitive Position",
+     "content": "It competes with Group14 and graphite makers.",
+     "highlight": "Materials race",
+     "type": "competitive"
+    },
+    {
+     "title": "Investment Thesis",
+     "content": "Private; its Moses Lake plant is the scale test.",
+     "highlight": "Startup to watch",
+     "type": "investment"
+    }
+   ]
+  },
+  {
+   "id": "electric_era",
+   "name": "Electric Era",
+   "logoUrl": "https://img.logo.dev/electricera.tech?token=pk_X-1ZO13GSgeOoUrIuJ6GMQ",
+   "segment": "charging",
+   "description": "Startup building battery-backed fast chargers at gas stations.",
+   "industryRole": "Electric Era adds batteries to chargers so sites avoid costly grid upgrades.",
+   "ceo": "Quincy Lee",
+   "founded": "2019",
+   "headquarters": "Seattle, WA",
+   "employees": "100+",
+   "keyProducts": [
+    "Battery-backed fast chargers"
+   ],
+   "slides": [
+    {
+     "title": "Battery Buffer",
+     "content": "On-site batteries let chargers run fast even on weak grid lines.",
+     "highlight": "Grid-light charging",
+     "type": "insight"
+    },
+    {
+     "title": "Competitive Position",
+     "content": "It competes with Tesla, EVgo and IONNA.",
+     "highlight": "Charging race",
+     "type": "competitive"
+    },
+    {
+     "title": "Investment Thesis",
+     "content": "Private; known for high charger uptime.",
+     "highlight": "Startup to watch",
+     "type": "investment"
+    }
+   ]
   }
  ],
  "ai": [
@@ -3839,6 +3909,114 @@ export const moreCompanies = {
     {
      "title": "Investment Thesis",
      "content": "Private startup; its Utah project is the scale test.",
+     "highlight": "Startup to watch",
+     "type": "investment"
+    }
+   ]
+  },
+  {
+   "id": "helion",
+   "name": "Helion Energy",
+   "logoUrl": "https://img.logo.dev/helionenergy.com?token=pk_X-1ZO13GSgeOoUrIuJ6GMQ",
+   "segment": "fusion",
+   "description": "Fusion startup that has agreed to sell power to Microsoft.",
+   "industryRole": "Helion aims to make electricity directly from fusion pulses.",
+   "ceo": "David Kirtley",
+   "founded": "2013",
+   "headquarters": "Everett, WA",
+   "employees": "500+",
+   "keyProducts": [
+    "Polaris",
+    "Orion plant"
+   ],
+   "slides": [
+    {
+     "title": "Pulsed Fusion",
+     "content": "It fires plasma together in pulses and captures electricity directly.",
+     "highlight": "Direct power",
+     "type": "insight"
+    },
+    {
+     "title": "Competitive Position",
+     "content": "It competes with CFS, TAE and others.",
+     "highlight": "Fusion race",
+     "type": "competitive"
+    },
+    {
+     "title": "Investment Thesis",
+     "content": "Private; promised to deliver power by 2028.",
+     "highlight": "Startup to watch",
+     "type": "investment"
+    }
+   ]
+  },
+  {
+   "id": "kairos",
+   "name": "Kairos Power",
+   "logoUrl": "https://img.logo.dev/kairospower.com?token=pk_X-1ZO13GSgeOoUrIuJ6GMQ",
+   "segment": "nuclear",
+   "description": "Startup building small nuclear reactors cooled by molten salt.",
+   "industryRole": "Kairos has a deal to supply nuclear power to Google.",
+   "ceo": "Mike Laufer",
+   "founded": "2016",
+   "headquarters": "Alameda, CA",
+   "employees": "500+",
+   "keyProducts": [
+    "Hermes test reactor",
+    "KP-FHR"
+   ],
+   "slides": [
+    {
+     "title": "Advanced Nuclear",
+     "content": "Molten salt cooling runs at low pressure, which can be safer.",
+     "highlight": "Small reactor",
+     "type": "insight"
+    },
+    {
+     "title": "Competitive Position",
+     "content": "It competes with X-energy, TerraPower and NuScale.",
+     "highlight": "Nuclear race",
+     "type": "competitive"
+    },
+    {
+     "title": "Investment Thesis",
+     "content": "Private; first test reactor is under construction.",
+     "highlight": "Startup to watch",
+     "type": "investment"
+    }
+   ]
+  },
+  {
+   "id": "base_power",
+   "name": "Base Power",
+   "logoUrl": "https://img.logo.dev/basepowercompany.com?token=pk_X-1ZO13GSgeOoUrIuJ6GMQ",
+   "segment": "storage",
+   "description": "Startup putting batteries in homes and running them as a power plant.",
+   "industryRole": "Base Power gives Texas homes backup power and sells grid services.",
+   "ceo": "Zach Dell",
+   "founded": "2023",
+   "headquarters": "Austin, TX",
+   "employees": "300+",
+   "keyProducts": [
+    "Home batteries",
+    "Virtual power plant"
+   ],
+   "slides": [
+    {
+     "title": "Home Batteries",
+     "content": "Many home batteries act together like one power plant.",
+     "highlight": "Virtual power plant",
+     "type": "insight"
+    },
+    {
+     "title": "Competitive Position",
+     "content": "It competes with Tesla Powerwall and Sunrun.",
+     "highlight": "Storage race",
+     "type": "competitive"
+    },
+    {
+     "title": "Investment Thesis",
+     "content": "Private and growing fast in Texas.",
      "highlight": "Startup to watch",
      "type": "investment"
     }
