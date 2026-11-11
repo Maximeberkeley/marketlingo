@@ -30,8 +30,10 @@ const SHOP_ICONS = {
   "xp-crate": require("../assets/shop/icons/xp-crate.png"),
   "xp-flask": require("../assets/shop/icons/xp-flask.png")
 };
+const SHOP_SCENES = {};
 export {
   LEO_BASE,
   SHOP_ART,
-  SHOP_ICONS
+  SHOP_ICONS,
+  SHOP_SCENES
 };

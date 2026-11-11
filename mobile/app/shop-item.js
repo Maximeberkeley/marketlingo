@@ -1,9 +1,10 @@
-import React, { useEffect, useRef, useState } from "react";
-import { Animated, Easing, Modal, Pressable, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import React, { useEffect, useState } from "react";
+import { Modal, Pressable, StyleSheet, Text, TouchableOpacity, View, useWindowDimensions } from "react-native";
 import { router, useLocalSearchParams } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Feather } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
+import Svg, { Polygon, Rect } from "react-native-svg";
 import { COLORS } from "../lib/constants";
 import { triggerHaptic } from "../lib/haptics";
 import { playSound } from "../lib/sounds";
@@ -22,21 +23,25 @@ import { BLOCK_LABEL, buyBlock, requirementProgress } from "../lib/shopEconomy";
 import { hasArt, todaysPrice, useShop } from "../hooks/useShop";
 import { LeoAvatar } from "../components/shop/LeoAvatar";
 import { ItemArt } from "../components/shop/ItemArt";
-import { Flask, PriceButton, XPChip } from "../components/shop/ShopKit";
-import { Float, useReduceMotion } from "../components/shop/Motion";
+import { PriceButton, XPChip } from "../components/shop/ShopKit";
+import { Float, Pop, Sheen } from "../components/shop/Motion";
+import { FloatIcon, FloorShadow, SCENES, SceneBackdrop, Sunburst, Twinkles } from "../components/shop/Scene";
 import { ChunkyButton } from "../components/social/ChunkyButton";
 import { ConfettiBurst } from "../components/ui/ConfettiBurst";
 const fmt = (n) => n.toLocaleString("en-US");
+const STAGE_H = 256;
+const LEO_TRY = 336;
 function ShopItemScreen() {
   const insets = useSafeAreaInsets();
   const params = useLocalSearchParams();
   const shop = useShop();
+  const { width } = useWindowDimensions();
   const bundle = params.bundle ? BUNDLES.find((b) => b.id === params.bundle) : void 0;
   const item = params.id ? cosmetic(params.id) : void 0;
   const parts = bundle ? bundle.items.map((id) => cosmetic(id)).filter(Boolean) : item ? [item] : [];
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState(null);
-  const [success, setSuccess] = useState(params.claimed ? { from: shop.balance.balance, to: shop.balance.balance } : null);
+  const [success, setSuccess] = useState(!!params.claimed);
   const [short, setShort] = useState(false);
   if (!parts.length) {
     return /* @__PURE__ */ React.createElement(View, { style: [styles.root, styles.center] }, /* @__PURE__ */ React.createElement(Text, { style: styles.name }, "That item is gone"), /* @__PURE__ */ React.createElement(Text, { style: styles.link, onPress: () => router.back() }, "Back to the Shop"));
@@ -46,6 +51,9 @@ function ShopItemScreen() {
   const color = RARITY_COLOR[lead.rarity];
   const collection = bundle?.collection ?? lead.collection ? collectionOf(bundle?.collection ?? lead.collection) : null;
   const wearing = Object.fromEntries(parts.map((p) => [p.slot, p.id]));
+  const sceneKey = bundle?.collection ?? lead.collection ?? "promo";
+  const theme = sceneKey in SCENES ? sceneKey : "promo";
+  const stageW = width - 40;
   const owned = parts.every((p) => shop.owns(p.id));
   const worn = parts.every((p) => (shop.look[p.slot] ?? (p.id === "grad-cap" ? "grad-cap" : void 0)) === p.id);
   const art = parts.every((p) => hasArt(p.id));
@@ -67,7 +75,6 @@ function ShopItemScreen() {
     if (block) return;
     setBusy(true);
     setError(null);
-    const from = shop.balance.balance;
     const r = await shop.purchase(bundle ? bundle.id : lead.id, { dealDate: deal ? shop.dealDate : void 0 });
     setBusy(false);
     if (r.ok === false) {
@@ -78,12 +85,11 @@ function ShopItemScreen() {
       setError(r.error === "requirement_not_met" ? "Finish its requirement first." : r.error === "owned" ? "You already own this." : "That did not go through. Try again.");
       return;
     }
-    triggerHaptic("success");
     playSound("lessonComplete").catch(() => {
     });
-    setSuccess({ from, to: r.balance });
+    setSuccess(true);
   };
-  return /* @__PURE__ */ React.createElement(View, { style: [styles.root, { paddingTop: insets.top + 6, paddingBottom: insets.bottom + 14 }] }, /* @__PURE__ */ React.createElement(View, { style: styles.top }, /* @__PURE__ */ React.createElement(TouchableOpacity, { onPress: () => router.back(), hitSlop: 12, accessibilityRole: "button", accessibilityLabel: "Close" }, /* @__PURE__ */ React.createElement(Feather, { name: "x", size: 24, color: COLORS.textPrimary })), /* @__PURE__ */ React.createElement(Text, { style: styles.topCaption, numberOfLines: 1 }, collection ? collection.name : SLOT_LABEL[lead.slot]), /* @__PURE__ */ React.createElement(XPChip, { value: shop.balance.balance })), /* @__PURE__ */ React.createElement(View, { style: styles.middle }, /* @__PURE__ */ React.createElement(View, { style: styles.stage }, /* @__PURE__ */ React.createElement(Float, { distance: 4 }, /* @__PURE__ */ React.createElement(LeoAvatar, { look: { ...shop.look, ...wearing }, size: 250, bg: color + "1A" }))), /* @__PURE__ */ React.createElement(View, { style: styles.info }, /* @__PURE__ */ React.createElement(Text, { style: [styles.kicker, { color }] }, bundle ? `SET \xB7 ${parts.length} PIECES` : `${RARITY_LABEL[lead.rarity].toUpperCase()} \xB7 ${SLOT_LABEL[lead.slot].toUpperCase()}`), /* @__PURE__ */ React.createElement(Text, { style: styles.name }, name), bundle ? /* @__PURE__ */ React.createElement(View, { style: styles.parts }, parts.map((p) => /* @__PURE__ */ React.createElement(ItemArt, { key: p.id, item: p, size: 64, showTag: false }))) : earnOnly && progress ? /* @__PURE__ */ React.createElement(View, { style: styles.progressCard }, /* @__PURE__ */ React.createElement(Text, { style: styles.progressLabel }, progress.met ? "Unlocked" : progress.label), /* @__PURE__ */ React.createElement(View, { style: styles.track }, /* @__PURE__ */ React.createElement(View, { style: [styles.fill, { width: `${Math.max(4, progress.current / progress.target * 100)}%` }] })), /* @__PURE__ */ React.createElement(Text, { style: styles.progressCount }, fmt(progress.current), " / ", fmt(progress.target), " \xB7 Earned, not bought")) : collection ? /* @__PURE__ */ React.createElement(Text, { style: styles.line }, collection.hook, ".") : null, goesWith.length > 0 && /* @__PURE__ */ React.createElement(Text, { style: styles.goes }, "Goes with ", goesWith.map((g, i) => /* @__PURE__ */ React.createElement(Text, { key: g.id }, i > 0 ? " and " : "", /* @__PURE__ */ React.createElement(Text, { style: styles.link, onPress: () => router.replace(`/shop-item?id=${g.id}`) }, g.name)))))), /* @__PURE__ */ React.createElement(View, { style: styles.footer }, error ? /* @__PURE__ */ React.createElement(Text, { style: styles.error }, error) : null, owned ? /* @__PURE__ */ React.createElement(ChunkyButton, { label: worn ? "Wearing it" : "Wear it", disabled: worn, onPress: () => {
+  return /* @__PURE__ */ React.createElement(View, { style: [styles.root, { paddingTop: insets.top + 6, paddingBottom: insets.bottom + 14 }] }, /* @__PURE__ */ React.createElement(View, { style: styles.top }, /* @__PURE__ */ React.createElement(TouchableOpacity, { onPress: () => router.back(), hitSlop: 12, accessibilityRole: "button", accessibilityLabel: "Close" }, /* @__PURE__ */ React.createElement(Feather, { name: "x", size: 24, color: COLORS.textPrimary })), /* @__PURE__ */ React.createElement(Text, { style: styles.topCaption, numberOfLines: 1 }, collection ? collection.name : SLOT_LABEL[lead.slot]), /* @__PURE__ */ React.createElement(XPChip, { value: shop.balance.balance })), /* @__PURE__ */ React.createElement(View, { style: styles.middle }, /* @__PURE__ */ React.createElement(View, { style: [styles.stage, { width: stageW }] }, /* @__PURE__ */ React.createElement(View, { style: styles.stageCard }, /* @__PURE__ */ React.createElement(SceneBackdrop, { theme, sceneId: sceneKey }), /* @__PURE__ */ React.createElement(Sunburst, { size: 520, cx: stageW / 2, cy: STAGE_H * 0.6, color: SCENES[theme].ray, opacity: SCENES[theme].rayOpacity }), /* @__PURE__ */ React.createElement(Twinkles, { w: stageW, h: STAGE_H, color: SCENES[theme].spark }), /* @__PURE__ */ React.createElement(FloorShadow, { width: 260, cx: stageW / 2, y: STAGE_H - 4, dark: 0.45 }), (lead.rarity === "epic" || lead.rarity === "legendary") && /* @__PURE__ */ React.createElement(Sheen, { width: stageW, every: 3600 })), /* @__PURE__ */ React.createElement(FloatIcon, { id: SCENES[theme].icons[0], size: 50, x: 10, y: STAGE_H - 78, depth: 2, phase: 200 }), /* @__PURE__ */ React.createElement(FloatIcon, { id: SCENES[theme].icons[1], size: 40, x: stageW - 58, y: 22, depth: 0, phase: 900 }), /* @__PURE__ */ React.createElement(Float, { distance: 6, style: { position: "absolute", left: stageW / 2 - LEO_TRY / 2, top: STAGE_H - LEO_TRY * 0.955 + 4 } }, /* @__PURE__ */ React.createElement(LeoAvatar, { look: { ...shop.look, ...wearing }, size: LEO_TRY, crop: false })), /* @__PURE__ */ React.createElement(View, { style: [styles.rarityTag, { backgroundColor: color }] }, /* @__PURE__ */ React.createElement(Text, { style: styles.rarityTagText }, RARITY_LABEL[lead.rarity].toUpperCase()))), /* @__PURE__ */ React.createElement(View, { style: styles.info }, /* @__PURE__ */ React.createElement(Text, { style: [styles.kicker, { color }] }, bundle ? `SET \xB7 ${parts.length} PIECES` : `${RARITY_LABEL[lead.rarity].toUpperCase()} \xB7 ${SLOT_LABEL[lead.slot].toUpperCase()}`), /* @__PURE__ */ React.createElement(Text, { style: styles.name }, name), bundle ? /* @__PURE__ */ React.createElement(View, { style: styles.parts }, parts.map((p) => /* @__PURE__ */ React.createElement(ItemArt, { key: p.id, item: p, size: 64, showTag: false }))) : earnOnly && progress ? /* @__PURE__ */ React.createElement(View, { style: styles.progressCard }, /* @__PURE__ */ React.createElement(Text, { style: styles.progressLabel }, progress.met ? "Unlocked" : progress.label), /* @__PURE__ */ React.createElement(View, { style: styles.track }, /* @__PURE__ */ React.createElement(View, { style: [styles.fill, { width: `${Math.max(4, progress.current / progress.target * 100)}%` }] })), /* @__PURE__ */ React.createElement(Text, { style: styles.progressCount }, fmt(progress.current), " / ", fmt(progress.target), " \xB7 Earned, not bought")) : collection ? /* @__PURE__ */ React.createElement(Text, { style: styles.line }, collection.hook, ".") : null, goesWith.length > 0 && /* @__PURE__ */ React.createElement(Text, { style: styles.goes }, "Goes with ", goesWith.map((g, i) => /* @__PURE__ */ React.createElement(Text, { key: g.id }, i > 0 ? " and " : "", /* @__PURE__ */ React.createElement(Text, { style: styles.link, onPress: () => router.replace(`/shop-item?id=${g.id}`) }, g.name)))))), /* @__PURE__ */ React.createElement(View, { style: styles.footer }, error ? /* @__PURE__ */ React.createElement(Text, { style: styles.error }, error) : null, owned ? /* @__PURE__ */ React.createElement(ChunkyButton, { label: worn ? "Wearing it" : "Wear it", disabled: worn, onPress: () => {
     triggerHaptic("light");
     void wearAll();
   }, height: 52 }) : block && block !== "not_enough" ? /* @__PURE__ */ React.createElement(View, { style: styles.blocked }, /* @__PURE__ */ React.createElement(Text, { style: styles.blockedText }, block === "earn_only" ? "Earn it, XP cannot buy it" : BLOCK_LABEL[block])) : /* @__PURE__ */ React.createElement(PriceButton, { price, was: bundle || deal ? full : null, label: "Buy & equip", onPress: () => {
@@ -93,9 +99,9 @@ function ShopItemScreen() {
     {
       name,
       look: { ...shop.look, ...wearing },
-      from: success.from,
-      to: success.to,
-      onEquip: async () => {
+      rarity: lead.rarity,
+      worn,
+      onWear: async () => {
         await wearAll();
         router.back();
       },
@@ -103,23 +109,21 @@ function ShopItemScreen() {
     }
   ));
 }
-function SuccessView({ name, look, from, to, onEquip, onKeep }) {
+function SuccessView({ name, look, rarity, onWear, onKeep, worn }) {
   const insets = useSafeAreaInsets();
-  const reduce = useReduceMotion();
-  const pop = useRef(new Animated.Value(reduce ? 1 : 0.6)).current;
-  const roll = useRef(new Animated.Value(from)).current;
-  const [shown, setShown] = useState(from);
+  const { width, height } = useWindowDimensions();
+  const color = RARITY_COLOR[rarity];
+  const leo = Math.min(300, width * 0.78);
   useEffect(() => {
-    if (reduce) {
-      setShown(to);
-      return;
-    }
-    Animated.spring(pop, { toValue: 1, friction: 5, tension: 120, useNativeDriver: true }).start();
-    const id = roll.addListener(({ value }) => setShown(Math.round(value)));
-    Animated.timing(roll, { toValue: to, duration: 900, delay: 250, easing: Easing.out(Easing.cubic), useNativeDriver: false }).start();
-    return () => roll.removeListener(id);
-  }, [reduce, to, pop, roll]);
-  return /* @__PURE__ */ React.createElement(View, { style: StyleSheet.absoluteFill }, /* @__PURE__ */ React.createElement(LinearGradient, { colors: ["#6D28D9", "#8B5CF6"], style: [StyleSheet.absoluteFill, { paddingTop: insets.top + 10, paddingBottom: insets.bottom + 18, paddingHorizontal: 20 }] }, /* @__PURE__ */ React.createElement(View, { style: { alignItems: "flex-end" } }, /* @__PURE__ */ React.createElement(View, { style: styles.successChip }, /* @__PURE__ */ React.createElement(Flask, { size: 16, color: "#6D28D9" }), /* @__PURE__ */ React.createElement(Text, { style: styles.successChipText }, fmt(shown)))), /* @__PURE__ */ React.createElement(View, { style: styles.successBody }, /* @__PURE__ */ React.createElement(Animated.View, { style: { transform: [{ scale: pop }] } }, /* @__PURE__ */ React.createElement(LeoAvatar, { look, size: 230, ring: "#FCD34D", ringWidth: 5, bg: "rgba(255,255,255,0.16)" })), /* @__PURE__ */ React.createElement(Text, { style: styles.successTitle }, "It's yours!"), /* @__PURE__ */ React.createElement(Text, { style: styles.successLine }, name, " joined your wardrobe.")), /* @__PURE__ */ React.createElement(ChunkyButton, { tone: "gold", label: "Equip", onPress: onEquip, height: 52 }), /* @__PURE__ */ React.createElement(TouchableOpacity, { onPress: onKeep, style: styles.keep, accessibilityRole: "button" }, /* @__PURE__ */ React.createElement(Text, { style: styles.keepText }, "Keep shopping"))), /* @__PURE__ */ React.createElement(ConfettiBurst, { show: true, count: 36 }));
+    triggerHaptic("success");
+  }, []);
+  return /* @__PURE__ */ React.createElement(View, { style: StyleSheet.absoluteFill }, /* @__PURE__ */ React.createElement(LinearGradient, { colors: [shade(color, 0.35), color, shade(color, -0.45)], start: { x: 0.5, y: 0 }, end: { x: 0.5, y: 1 }, style: StyleSheet.absoluteFill }), /* @__PURE__ */ React.createElement(Sunburst, { size: Math.max(width, height) * 1.5, cx: width / 2, cy: height * 0.38, color: "#FFFFFF", opacity: 0.32, rays: 20, period: 22e3 }), /* @__PURE__ */ React.createElement(Twinkles, { w: width, h: height, color: "#FFFFFF", points: [[0.12, 0.16, 20], [0.86, 0.12, 24], [0.2, 0.5, 14], [0.84, 0.46, 16], [0.5, 0.08, 12], [0.1, 0.66, 10], [0.9, 0.62, 12]] }), /* @__PURE__ */ React.createElement(View, { style: [styles.successBody, { paddingTop: insets.top + 24 }] }, /* @__PURE__ */ React.createElement(View, { style: { width: leo, height: leo } }, /* @__PURE__ */ React.createElement(FloorShadow, { width: leo * 0.8, cx: leo / 2, y: leo * 0.95, dark: 0.4 }), /* @__PURE__ */ React.createElement(Pop, { delay: 120 }, /* @__PURE__ */ React.createElement(Float, { distance: 6 }, /* @__PURE__ */ React.createElement(LeoAvatar, { look, size: leo, crop: false })))), /* @__PURE__ */ React.createElement(Pop, { delay: 380 }, /* @__PURE__ */ React.createElement(View, { style: styles.ribbon }, /* @__PURE__ */ React.createElement(Svg, { width: 220, height: 50, viewBox: "0 0 220 50", style: StyleSheet.absoluteFill }, /* @__PURE__ */ React.createElement(Polygon, { points: "0,14 34,14 34,46 0,46 12,30", fill: shade(color, -0.3) }), /* @__PURE__ */ React.createElement(Polygon, { points: "220,14 186,14 186,46 220,46 208,30", fill: shade(color, -0.3) }), /* @__PURE__ */ React.createElement(Polygon, { points: "24,38 34,46 34,38", fill: shade(color, -0.55) }), /* @__PURE__ */ React.createElement(Polygon, { points: "196,38 186,46 186,38", fill: shade(color, -0.55) }), /* @__PURE__ */ React.createElement(Rect, { x: "24", y: "4", width: "172", height: "34", rx: "6", fill: "#FFFFFF" })), /* @__PURE__ */ React.createElement(Text, { style: [styles.ribbonText, { color: shade(color, -0.35) }] }, RARITY_LABEL[rarity].toUpperCase()))), /* @__PURE__ */ React.createElement(Text, { style: styles.successTitle }, "It's yours!"), /* @__PURE__ */ React.createElement(Text, { style: styles.successLine }, name), /* @__PURE__ */ React.createElement(Text, { style: styles.successSub }, "New in your wardrobe")), /* @__PURE__ */ React.createElement(View, { style: { paddingHorizontal: 20, paddingBottom: insets.bottom + 18 } }, /* @__PURE__ */ React.createElement(ChunkyButton, { tone: "gold", label: worn ? "Wearing it" : "Wear it", onPress: onWear, height: 54, haptic: true }), /* @__PURE__ */ React.createElement(TouchableOpacity, { onPress: onKeep, style: styles.keep, accessibilityRole: "button" }, /* @__PURE__ */ React.createElement(Text, { style: styles.keepText }, "Keep shopping"))), /* @__PURE__ */ React.createElement(ConfettiBurst, { show: true, count: 48 }));
+}
+function shade(hex, amount) {
+  const n = parseInt(hex.slice(1), 16);
+  const ch = (v) => Math.round(amount >= 0 ? v + (255 - v) * amount : v * (1 + amount));
+  const [r, g, b] = [n >> 16 & 255, n >> 8 & 255, n & 255].map(ch);
+  return `#${(1 << 24 | r << 16 | g << 8 | b).toString(16).slice(1)}`;
 }
 function NotEnoughSheet({ visible, onClose, name, price, balance, item }) {
   const insets = useSafeAreaInsets();
@@ -140,7 +144,10 @@ const styles = StyleSheet.create({
   top: { flexDirection: "row", alignItems: "center", gap: 12, height: 44 },
   topCaption: { flex: 1, textAlign: "center", fontSize: 13, fontWeight: "700", color: COLORS.textMuted },
   middle: { flex: 1, justifyContent: "center", paddingBottom: 24 },
-  stage: { alignItems: "center", justifyContent: "center" },
+  stage: { alignSelf: "center", height: STAGE_H, marginTop: 50 },
+  stageCard: { ...StyleSheet.absoluteFillObject, borderRadius: 26, overflow: "hidden", borderBottomWidth: 5, borderColor: "rgba(0,0,0,0.18)" },
+  rarityTag: { position: "absolute", left: 14, top: 14, paddingHorizontal: 10, height: 24, borderRadius: 12, justifyContent: "center" },
+  rarityTagText: { fontSize: 11, fontWeight: "900", letterSpacing: 1, color: "#FFFFFF" },
   info: { alignItems: "center", marginTop: 22, gap: 6 },
   kicker: { fontSize: 11.5, fontWeight: "900", letterSpacing: 1 },
   name: { fontSize: 28, fontWeight: "900", color: COLORS.textPrimary, textAlign: "center", letterSpacing: -0.4 },
@@ -158,11 +165,12 @@ const styles = StyleSheet.create({
   blocked: { height: 56, borderRadius: 16, backgroundColor: COLORS.bg1, alignItems: "center", justifyContent: "center", borderWidth: 1, borderColor: COLORS.border },
   blockedText: { fontSize: 15, fontWeight: "800", color: COLORS.textMuted },
   after: { fontSize: 12.5, fontWeight: "600", color: COLORS.textMuted, textAlign: "center" },
-  successBody: { flex: 1, alignItems: "center", justifyContent: "center", gap: 10 },
-  successChip: { flexDirection: "row", alignItems: "center", gap: 6, height: 36, paddingHorizontal: 12, borderRadius: 18, backgroundColor: "#FFFFFF" },
-  successChipText: { fontSize: 16, fontWeight: "900", color: "#6D28D9", fontVariant: ["tabular-nums"] },
-  successTitle: { fontSize: 34, fontWeight: "900", color: "#FFFFFF", marginTop: 18 },
-  successLine: { fontSize: 15, fontWeight: "600", color: "#EDE9FE", textAlign: "center" },
+  successBody: { flex: 1, alignItems: "center", justifyContent: "center" },
+  successTitle: { fontSize: 40, fontWeight: "900", color: "#FFFFFF", marginTop: 14, letterSpacing: -0.6, textShadowColor: "rgba(0,0,0,0.18)", textShadowOffset: { width: 0, height: 3 }, textShadowRadius: 0 },
+  successLine: { fontSize: 18, fontWeight: "800", color: "#FFFFFF", opacity: 0.92, textAlign: "center", marginTop: 4 },
+  ribbon: { width: 220, height: 50, marginTop: -4, alignItems: "center", paddingTop: 11 },
+  ribbonText: { fontSize: 15, fontWeight: "900", letterSpacing: 2.5 },
+  successSub: { fontSize: 14, fontWeight: "700", color: "#FFFFFF", opacity: 0.75, marginTop: 6 },
   keep: { alignItems: "center", paddingVertical: 14 },
   keepText: { fontSize: 15, fontWeight: "800", color: "#FFFFFF" },
   scrim: { flex: 1, backgroundColor: "rgba(10, 10, 20, 0.45)" },

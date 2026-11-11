@@ -18,6 +18,7 @@ function PriceButton({ price, was, label, onPress, disabled, busy, height = 48, 
     ChunkyButton,
     {
       tone: "gold",
+      haptic: true,
       height,
       onPress,
       disabled,
@@ -32,7 +33,7 @@ function PriceButton({ price, was, label, onPress, disabled, busy, height = 48, 
 function SectionHead({ title, sub, action, onAction, tag }) {
   return /* @__PURE__ */ React.createElement(View, { style: styles.head }, /* @__PURE__ */ React.createElement(View, { style: { flex: 1 } }, /* @__PURE__ */ React.createElement(View, { style: styles.titleRow }, /* @__PURE__ */ React.createElement(Text, { style: styles.title }, title), tag ? /* @__PURE__ */ React.createElement(View, { style: styles.tag }, /* @__PURE__ */ React.createElement(Text, { style: styles.tagText }, tag)) : null), sub ? /* @__PURE__ */ React.createElement(Text, { style: styles.sub }, sub) : null), action && onAction ? /* @__PURE__ */ React.createElement(TouchableOpacity, { onPress: onAction, hitSlop: 10, accessibilityRole: "button" }, /* @__PURE__ */ React.createElement(Text, { style: styles.action }, action)) : null);
 }
-function Carousel({ items, render, keyOf, autoMs = 4e3, cardWidth: forced }) {
+function Carousel({ items, render, keyOf, autoMs = 4e3, cardWidth: forced, padTop = 0 }) {
   const { width } = useWindowDimensions();
   const cardWidth = forced ?? Math.min(340, width - 52);
   const gap = 12;
@@ -60,7 +61,7 @@ function Carousel({ items, render, keyOf, autoMs = 4e3, cardWidth: forced }) {
       showsHorizontalScrollIndicator: false,
       snapToInterval: cardWidth + gap,
       decelerationRate: "fast",
-      contentContainerStyle: { paddingHorizontal: 20, gap },
+      contentContainerStyle: { paddingHorizontal: 20, gap, paddingTop: padTop },
       onScrollBeginDrag: () => {
         touched.current = true;
       },

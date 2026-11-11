@@ -41,6 +41,7 @@ export function PriceButton({ price, was, label, onPress, disabled, busy, height
   return (
     <ChunkyButton
       tone="gold"
+      haptic
       height={height}
       onPress={onPress}
       disabled={disabled}
@@ -79,8 +80,10 @@ export function SectionHead({ title, sub, action, onAction, tag }: { title: stri
  * Big swipe cards like the Intel news cards: one card per page with the next one peeking, snapping, page dots,
  * and a gentle auto-advance every few seconds that pauses once the learner swipes.
  */
-export function Carousel<T>({ items, render, keyOf, autoMs = 4000, cardWidth: forced }: {
+export function Carousel<T>({ items, render, keyOf, autoMs = 4000, cardWidth: forced, padTop = 0 }: {
   items: T[]; render: (item: T, width: number) => React.ReactNode; keyOf: (item: T) => string; autoMs?: number; cardWidth?: number;
+  /** Room above the cards, so art can break out of their top edge. */
+  padTop?: number;
 }) {
   const { width } = useWindowDimensions();
   const cardWidth = forced ?? Math.min(340, width - 52);
@@ -109,7 +112,7 @@ export function Carousel<T>({ items, render, keyOf, autoMs = 4000, cardWidth: fo
         showsHorizontalScrollIndicator={false}
         snapToInterval={cardWidth + gap}
         decelerationRate="fast"
-        contentContainerStyle={{ paddingHorizontal: 20, gap }}
+        contentContainerStyle={{ paddingHorizontal: 20, gap, paddingTop: padTop }}
         onScrollBeginDrag={() => { touched.current = true; }}
         onMomentumScrollEnd={e => setIndex(Math.round(e.nativeEvent.contentOffset.x / (cardWidth + gap)))}
       >

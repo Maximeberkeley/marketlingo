@@ -4,8 +4,9 @@
  * motion. Only transforms and opacity animate, never icon props.
  */
 import React, { useEffect, useRef, useState } from 'react';
-import { AccessibilityInfo, Animated, Easing, StyleSheet, View, ViewStyle } from 'react-native';
+import { AccessibilityInfo, Animated, Easing, Pressable, StyleSheet, View, ViewStyle } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
+import { triggerHaptic } from '../../lib/haptics';
 
 export function useReduceMotion(): boolean {
   const [reduce, setReduce] = useState(false);
@@ -78,6 +79,72 @@ export function Rise({ index, children, style }: { index: number; children: Reac
     Animated.timing(v, { toValue: 1, duration: 380, delay: Math.min(index, 8) * 70, easing: Easing.out(Easing.cubic), useNativeDriver: true }).start();
   }, [reduce, index, v]);
   return <Animated.View style={[style, { opacity: v, transform: [{ translateY: v.interpolate({ inputRange: [0, 1], outputRange: [14, 0] }) }] }]}>{children}</Animated.View>;
+}
+
+/** Turns its child slowly and forever (sunbursts). */
+export function Spin({ children, period = 24000, style }: { children: React.ReactNode; period?: number; style?: ViewStyle }) {
+  const reduce = useReduceMotion();
+  const r = useRef(new Animated.Value(0)).current;
+  useEffect(() => {
+    if (reduce) return;
+    const loop = Animated.loop(Animated.timing(r, { toValue: 1, duration: period, easing: Easing.linear, useNativeDriver: true }));
+    loop.start();
+    return () => loop.stop();
+  }, [reduce, period, r]);
+  return <Animated.View pointerEvents="none" style={[style, { transform: [{ rotate: r.interpolate({ inputRange: [0, 1], outputRange: ['0deg', '360deg'] }) }] }]}>{children}</Animated.View>;
+}
+
+/** Fades and grows its child in and out like a twinkling star, out of step with others via `phase`. */
+export function Twinkle({ children, phase = 0, period = 1800, style }: { children: React.ReactNode; phase?: number; period?: number; style?: ViewStyle }) {
+  const reduce = useReduceMotion();
+  const v = useRef(new Animated.Value(reduce ? 1 : 0)).current;
+  useEffect(() => {
+    if (reduce) { v.setValue(1); return; }
+    const loop = Animated.loop(Animated.sequence([
+      Animated.delay(phase),
+      Animated.timing(v, { toValue: 1, duration: period / 2, easing: Easing.out(Easing.quad), useNativeDriver: true }),
+      Animated.timing(v, { toValue: 0, duration: period / 2, easing: Easing.in(Easing.quad), useNativeDriver: true }),
+      Animated.delay(Math.max(0, 1600 - phase)),
+    ]));
+    loop.start();
+    return () => loop.stop();
+  }, [reduce, phase, period, v]);
+  return (
+    <Animated.View pointerEvents="none" style={[style, { opacity: v.interpolate({ inputRange: [0, 1], outputRange: [0.25, 1] }), transform: [{ scale: v.interpolate({ inputRange: [0, 1], outputRange: [0.6, 1.15] }) }] }]}>
+      {children}
+    </Animated.View>
+  );
+}
+
+/** Springs its child in from small with a little overshoot (the "it's yours" pop). */
+export function Pop({ children, delay = 0, style }: { children: React.ReactNode; delay?: number; style?: ViewStyle }) {
+  const reduce = useReduceMotion();
+  const v = useRef(new Animated.Value(reduce ? 1 : 0)).current;
+  useEffect(() => {
+    if (reduce) { v.setValue(1); return; }
+    Animated.sequence([Animated.delay(delay), Animated.spring(v, { toValue: 1, friction: 4, tension: 90, useNativeDriver: true })]).start();
+  }, [reduce, delay, v]);
+  return <Animated.View style={[style, { opacity: v.interpolate({ inputRange: [0, 0.3, 1], outputRange: [0, 1, 1] }), transform: [{ scale: v.interpolate({ inputRange: [0, 1], outputRange: [0.3, 1] }) }] }]}>{children}</Animated.View>;
+}
+
+/** A pressable card that squishes down a little under the finger, with a light tap of haptics. */
+export function PressScale({ children, onPress, style, accessibilityLabel, disabled }: {
+  children: React.ReactNode; onPress?: () => void; style?: ViewStyle | ViewStyle[]; accessibilityLabel?: string; disabled?: boolean;
+}) {
+  const s = useRef(new Animated.Value(1)).current;
+  const to = (v: number) => Animated.spring(s, { toValue: v, friction: 6, tension: 260, useNativeDriver: true }).start();
+  return (
+    <Pressable
+      onPress={onPress}
+      disabled={disabled}
+      onPressIn={() => { to(0.965); triggerHaptic('light'); }}
+      onPressOut={() => to(1)}
+      accessibilityRole="button"
+      accessibilityLabel={accessibilityLabel}
+    >
+      <Animated.View style={[style as ViewStyle, { transform: [{ scale: s }] }]}>{children}</Animated.View>
+    </Pressable>
+  );
 }
 
 /** Page dots under a carousel; the active one is a short pill. */

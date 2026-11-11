@@ -6,10 +6,10 @@ import { Feather, MaterialCommunityIcons } from '@expo/vector-icons';
 import { COLORS } from '../lib/constants';
 import { isDark } from '../lib/theme';
 import { triggerHaptic } from '../lib/haptics';
-import { COSMETICS, Cosmetic, DEFAULT_HAT, SLOT_LABEL, Slot, WARDROBE_SLOTS, priceOf } from '../lib/shopCatalog';
+import { COSMETICS, Cosmetic, DEFAULT_HAT, MAX_FREEZES_HELD, SLOT_LABEL, STREAK_FREEZE_ID, Slot, WARDROBE_SLOTS, priceOf } from '../lib/shopCatalog';
 import { hasArt, useShop } from '../hooks/useShop';
 import { LeoAvatar } from '../components/shop/LeoAvatar';
-import { ItemArt, SLOT_ICON } from '../components/shop/ItemArt';
+import { ItemArt, SLOT_ICON, ShopIcon } from '../components/shop/ItemArt';
 import { Flask } from '../components/shop/ShopKit';
 
 const fmt = (n: number) => n.toLocaleString('en-US');
@@ -24,6 +24,7 @@ export default function WardrobeScreen() {
   const shop = useShop();
   const [slot, setSlot] = useState<Slot>('hat');
   const tile = Math.floor((width - 40 - 20) / 3);
+  const freezes = shop.owned[STREAK_FREEZE_ID]?.qty ?? 0;
 
   // Capes are worn behind Leo and are chosen from the outfit tab.
   const inSlot = (c: Cosmetic) => (slot === 'outfit' ? c.slot === 'outfit' || c.slot === 'cape' : c.slot === slot) && !c.hidden;
@@ -66,6 +67,13 @@ export default function WardrobeScreen() {
             <LeoAvatar look={shop.look} crown={shop.wearsCrown} size={208} bg={isDark ? COLORS.bg1 : '#F4F2FB'} />
           </View>
         </View>
+
+        <TouchableOpacity onPress={() => router.push('/shop-freeze' as any)} style={styles.freezeRow} accessibilityRole="button" accessibilityLabel={`Streak Freezes: ${freezes} of ${MAX_FREEZES_HELD}`}>
+          <ShopIcon id="streak-freeze" size={30} />
+          <Text style={styles.freezeText}>Streak Freeze <Text style={styles.freezeCount}>×{freezes}</Text></Text>
+          <Text style={styles.freezeSub}>Hold up to {MAX_FREEZES_HELD}</Text>
+          <Feather name="chevron-right" size={16} color={COLORS.textMuted} />
+        </TouchableOpacity>
 
         <View style={styles.tabs} accessibilityRole="tablist">
           {WARDROBE_SLOTS.map(s => {
@@ -115,6 +123,10 @@ const styles = StyleSheet.create({
   done: { fontSize: 16, fontWeight: '800', color: COLORS.accent },
   stage: { alignItems: 'center', paddingVertical: 18 },
   shadow: { borderRadius: 104, shadowColor: '#4C1D95', shadowOpacity: 0.12, shadowRadius: 18, shadowOffset: { width: 0, height: 8 }, elevation: 4 },
+  freezeRow: { flexDirection: 'row', alignItems: 'center', gap: 8, marginHorizontal: 20, marginBottom: 10, paddingHorizontal: 12, height: 48, borderRadius: 16, borderWidth: 2, borderBottomWidth: 4, borderColor: COLORS.border, backgroundColor: COLORS.bg2 },
+  freezeText: { flex: 1, fontSize: 14.5, fontWeight: '800', color: COLORS.textPrimary },
+  freezeCount: { color: isDark ? '#7DD3FC' : '#0284C7' },
+  freezeSub: { fontSize: 12, fontWeight: '600', color: COLORS.textMuted },
   tabs: { flexDirection: 'row', justifyContent: 'space-around', paddingHorizontal: 12, borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: COLORS.border },
   tab: { alignItems: 'center', paddingVertical: 10, paddingHorizontal: 10, minWidth: 44 },
   tabDot: { width: 5, height: 5, borderRadius: 3, marginTop: 6 },

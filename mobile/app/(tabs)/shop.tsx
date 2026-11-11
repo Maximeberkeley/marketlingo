@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo, useState } from 'react';
-import { ScrollView, StyleSheet, Text, TouchableOpacity, View, RefreshControl } from 'react-native';
+import { ScrollView, StyleSheet, Text, TouchableOpacity, View, RefreshControl, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { router, useFocusEffect } from 'expo-router';
 import { Feather } from '@expo/vector-icons';
@@ -10,14 +10,16 @@ import { isDark } from '../../lib/theme';
 import { triggerHaptic } from '../../lib/haptics';
 import {
   BUNDLES, Bundle, COLLECTIONS, COSMETICS, Collection, Cosmetic, PERKS, POWER_UPS, Perk, RARITY_COLOR, RARITY_LABEL,
-  STREAK_FREEZE_ID, bundleFullPrice, cosmetic, priceOf,
+  SLOT_LABEL, STREAK_FREEZE_ID, bundleFullPrice, cosmetic, priceOf,
 } from '../../lib/shopCatalog';
 import { formatCountdown, msUntilLocalMidnight, msUntilNextMonday, requirementProgress, weeklyFeature } from '../../lib/shopEconomy';
 import { hasArt, useShop } from '../../hooks/useShop';
 import { LeoAvatar } from '../../components/shop/LeoAvatar';
 import { ItemArt, ShopIcon } from '../../components/shop/ItemArt';
 import { Carousel, Flask, PriceButton, Row, SectionHead, XPChip } from '../../components/shop/ShopKit';
-import { Float, Rise, Sheen, useNow } from '../../components/shop/Motion';
+import { Float, PressScale, Rise, Sheen, useNow } from '../../components/shop/Motion';
+import { FloatIcon, FloorShadow, PERK_SCENE, PerkObject, SCENES, SceneBackdrop, SceneTheme, Sunburst, Twinkles } from '../../components/shop/Scene';
+import { SHOP_SCENES } from '../../lib/shopArt';
 import { XPSheet } from '../../components/shop/XPSheet';
 import { ChunkyButton } from '../../components/social/ChunkyButton';
 
@@ -71,9 +73,13 @@ export default function ShopScreen() {
     <View style={styles.root}>
       {/* Header: your Leo, the title, and XP to spend. */}
       <View style={[styles.header, { paddingTop: insets.top + 8 }]}>
-        <TouchableOpacity onPress={() => open('/wardrobe')} accessibilityRole="button" accessibilityLabel="Dress Leo">
-          <LeoAvatar look={shop.look} crown={shop.wearsCrown} size={42} ring={COLORS.border} ringWidth={1.5} />
-        </TouchableOpacity>
+        <PressScale onPress={() => open('/wardrobe')} style={styles.bag} accessibilityLabel={`Your items: Dress Leo, ${wardrobeCount} pieces, ${freezes} Streak ${freezes === 1 ? 'Freeze' : 'Freezes'}`}>
+          <LeoAvatar look={shop.look} crown={shop.wearsCrown} size={40} bg="transparent" />
+          <View style={styles.bagTag}><Feather name="shopping-bag" size={10} color="#FFFFFF" /></View>
+          {freezes > 0 && (
+            <View style={styles.freezeBadge}><ShopIcon id="streak-freeze" size={14} /><Text style={styles.freezeBadgeText}>{freezes}</Text></View>
+          )}
+        </PressScale>
         <Text style={styles.headerTitle}>Shop</Text>
         <XPChip value={shop.balance.balance} onPress={() => setXpOpen(true)} />
       </View>
@@ -107,17 +113,6 @@ export default function ShopScreen() {
           />
         </Rise>
 
-        <Rise index={2} style={styles.section}>
-          <SectionHead title="Your items" />
-          <View style={styles.yourItems}>
-            <ItemTile label="Streak Freeze" count={`×${freezes}`} onPress={() => open('/shop-freeze')}><ShopIcon id="streak-freeze" size={52} /></ItemTile>
-            <ItemTile label="Wardrobe" count={`${wardrobeCount} ${wardrobeCount === 1 ? 'piece' : 'pieces'}`} onPress={() => open('/wardrobe')}>
-              <LeoAvatar look={shop.look} crown={shop.wearsCrown} size={52} bg="transparent" />
-            </ItemTile>
-            <ItemTile label="To spend" count={fmt(shop.balance.balance)} onPress={() => setXpOpen(true)}><ShopIcon id="xp-crate" size={52} /></ItemTile>
-          </View>
-        </Rise>
-
         {toClaim.length > 0 && (
           <Rise index={3} style={styles.section}>
             <SectionHead title="One-time rewards" />
@@ -147,9 +142,11 @@ export default function ShopScreen() {
           <SectionHead title="Power-ups" />
           <Row>
             {POWER_UPS.map(p => (
-              <TouchableOpacity key={p.id} activeOpacity={0.9} disabled={!p.live} onPress={() => open('/shop-freeze')} style={styles.powerTile} accessibilityRole="button">
+              <PressScale key={p.id} disabled={!p.live} onPress={() => open('/shop-freeze')} style={styles.powerTile} accessibilityLabel={p.id === STREAK_FREEZE_ID ? `${p.name}, you have ${freezes}` : p.name}>
                 <View style={[styles.powerArt, { backgroundColor: p.live ? (isDark ? 'rgba(56,189,248,0.14)' : '#EAF6FE') : COLORS.bg1 }]}>
+                  {p.live && <Sunburst size={220} cx={84} cy={52} color={isDark ? '#7DD3FC' : '#38BDF8'} opacity={0.3} />}
                   <Float distance={4} phase={p.live ? 0 : 700}><View style={{ opacity: p.live ? 1 : 0.55 }}><ShopIcon id={p.icon} size={64} /></View></Float>
+                  {p.id === STREAK_FREEZE_ID && <View style={styles.haveTag}><Text style={styles.haveText}>You have {freezes}</Text></View>}
                 </View>
                 <View style={styles.tileBody}>
                   <Text style={styles.tileTitle}>{p.name}</Text>
@@ -160,7 +157,7 @@ export default function ShopScreen() {
                     <View style={styles.soonPill}><Text style={styles.soonText}>Coming soon</Text></View>
                   )}
                 </View>
-              </TouchableOpacity>
+              </PressScale>
             ))}
           </Row>
         </Rise>
@@ -181,9 +178,10 @@ export default function ShopScreen() {
                 const owned = shop.owns(c.id);
                 const color = RARITY_COLOR[c.rarity];
                 return (
-                  <TouchableOpacity key={d.itemId} activeOpacity={0.9} onPress={() => open(`/shop-item?id=${c.id}&deal=1`)} style={[styles.dealTile, { borderColor: color + '66' }]} accessibilityRole="button">
+                  <PressScale key={d.itemId} onPress={() => open(`/shop-item?id=${c.id}&deal=1`)} style={[styles.dealTile, { borderColor: color + '66' }]} accessibilityLabel={`${c.name}, deal`}>
                     <View style={[styles.dealArt, { backgroundColor: color + (isDark ? '1F' : '14') }]}>
-                      <ItemArt item={c} size={112} />
+                      <Sunburst size={240} cx={82} cy={62} color={color} opacity={0.28} />
+                      <Float distance={3} phase={(c.id.length % 5) * 300}><ItemArt item={c} size={112} tint="transparent" /></Float>
                       <View style={styles.offBadge}><Text style={styles.offText}>-30%</Text></View>
                       {c.rarity !== 'common' && <Sheen width={168} every={4200} delay={600} />}
                     </View>
@@ -196,7 +194,7 @@ export default function ShopScreen() {
                         <PriceButton price={d.dealPrice} was={d.price} onPress={() => open(`/shop-item?id=${c.id}&deal=1`)} height={40} style={{ marginTop: 10 }} />
                       )}
                     </View>
-                  </TouchableOpacity>
+                  </PressScale>
                 );
               })}
             </Row>
@@ -205,7 +203,7 @@ export default function ShopScreen() {
 
         <Rise index={6} style={styles.section}>
           <SectionHead title="Leo collections" sub="Swipe through. Tap to try on." />
-          <Carousel items={COLLECTIONS} keyOf={c => c.id} autoMs={5000} render={(c, w) => <CollectionCard collection={c} width={w} owned={shop.owns} />} />
+          <Carousel items={COLLECTIONS} keyOf={c => c.id} autoMs={5000} padTop={40} render={(c, w) => <CollectionCard collection={c} width={w} owned={shop.owns} />} />
         </Rise>
 
         <Rise index={7} style={styles.section}>
@@ -218,9 +216,14 @@ export default function ShopScreen() {
               const full = bundleFullPrice(b);
               const save = Math.round((1 - b.price / full) * 100);
               return (
-                <TouchableOpacity key={b.id} activeOpacity={0.9} onPress={() => open(`/shop-item?bundle=${b.id}`)} style={styles.bundleTile} accessibilityRole="button">
-                  <View style={[styles.bundleArt, { backgroundColor: isDark ? 'rgba(251,191,36,0.10)' : '#FFF7E6' }]}>
-                    <LeoAvatar look={{ hat: '', ...wear }} size={100} bg="transparent" />
+                <PressScale key={b.id} onPress={() => open(`/shop-item?bundle=${b.id}`)} style={styles.bundleTile} accessibilityLabel={b.name}>
+                  <View style={styles.bundleArt}>
+                    <SceneBackdrop theme={(b.collection in SCENES ? b.collection : 'promo') as SceneTheme} sceneId={b.collection} />
+                    <Sunburst size={320} cx={138} cy={70} color="#FFFFFF" opacity={0.35} />
+                    <Twinkles w={276} h={128} color="#FFFFFF" points={[[0.2, 0.3, 12], [0.8, 0.25, 14], [0.7, 0.8, 9]]} />
+                    <Float distance={4} style={{ position: 'absolute', left: 138 - 70, top: 128 - 140 * 0.955 + 4 }}>
+                      <LeoAvatar look={{ hat: '', ...wear }} size={140} crop={false} />
+                    </Float>
                     <Text style={styles.bundleCount}>{b.items.length} pieces</Text>
                     <View style={styles.saveBadge}><Text style={styles.offText}>Save {save}%</Text></View>
                   </View>
@@ -235,7 +238,7 @@ export default function ShopScreen() {
                       <View style={[styles.soonPill, { marginTop: 12 }]}><Text style={styles.soonText}>Art soon · {fmt(b.price)} XP</Text></View>
                     )}
                   </View>
-                </TouchableOpacity>
+                </PressScale>
               );
             })}
           </Row>
@@ -244,12 +247,14 @@ export default function ShopScreen() {
         {earnable.length > 0 && (
           <Rise index={8} style={styles.section}>
             <LinearGradient colors={isDark ? ['#2A1858', '#1B1240'] : ['#5B21B6', '#4C1D95']} style={styles.earnBand}>
+              <Twinkles w={390} h={120} color="#FDE68A" points={[[0.62, 0.22, 16], [0.86, 0.5, 12], [0.74, 0.12, 9]]} />
               <Text style={styles.earnTitle}>Earn these</Text>
               <Text style={styles.earnSub}>XP can't buy them. Only you can.</Text>
               <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 12, paddingTop: 14, paddingRight: 20 }}>
                 {earnable.map(({ c, p }) => (
                   <TouchableOpacity key={c.id} activeOpacity={0.9} onPress={() => open(`/shop-item?id=${c.id}`)} style={styles.earnTile} accessibilityRole="button">
                     <View style={styles.earnArt}>
+                      <Sunburst size={220} cx={72} cy={50} color="#FDE68A" opacity={p.met ? 0.4 : 0.18} />
                       <View style={{ opacity: p.met ? 1 : 0.55 }}><ItemArt item={c} size={92} showTag={false} tint="transparent" /></View>
                       <View style={[styles.lock, p.met && { backgroundColor: '#4ADE80' }]}><Feather name={p.met ? 'check' : 'lock'} size={13} color={p.met ? '#052E16' : '#3A2600'} /></View>
                     </View>
@@ -277,65 +282,84 @@ export default function ShopScreen() {
 // ── Pieces ───────────────────────────────────────────────────────────────────
 
 function PromoCard({ feature, now, owned, look }: { feature: Feature; now: Date; owned: boolean; look: Record<string, string> }) {
+  const { width: screen } = useWindowDimensions();
+  const W = screen - 40;
+  const H = 208;
   const isSet = feature.kind === 'bundle';
   const title = isSet ? feature.bundle.name : `Leo's ${feature.item.name.toLowerCase()}`;
-  const line = isSet ? `${feature.bundle.line} · save ${Math.round((1 - feature.bundle.price / bundleFullPrice(feature.bundle)) * 100)}%` : `${RARITY_LABEL[feature.item.rarity]} · new this week`;
+  const rarity = isSet ? null : feature.item.rarity;
+  const line = isSet ? `Save ${Math.round((1 - feature.bundle.price / bundleFullPrice(feature.bundle)) * 100)}% on the set` : `${RARITY_LABEL[feature.item.rarity]} ${SLOT_LABEL[feature.item.slot].toLowerCase()}`;
   const price = isSet ? feature.bundle.price : priceOf(feature.item)!;
   const was = isSet ? bundleFullPrice(feature.bundle) : null;
   const wear = isSet ? Object.fromEntries(feature.bundle.items.map(id => [cosmetic(id)!.slot, id])) : { [feature.item.slot]: feature.item.id };
   const path = isSet ? `/shop-item?bundle=${feature.bundle.id}` : `/shop-item?id=${feature.item.id}`;
+  const leo = Math.min(250, W * 0.72);
+  const leoX = W - 8 - leo * 0.83;
+  const leoTop = H - 14 - leo * 0.955;
+  const t = SCENES.promo;
   return (
-    <TouchableOpacity activeOpacity={0.94} onPress={() => open(path)} accessibilityRole="button" accessibilityLabel={`${title}. ${line}`}>
-      <LinearGradient colors={['#1E1B4B', '#4C1D95', '#7C3AED']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={styles.promo}>
-        <View style={styles.promoTop}>
-          <View style={{ flex: 1 }}>
-            <View style={styles.promoKicker}>
-              <Feather name="clock" size={11} color="#E9D5FF" />
-              <Text style={styles.promoKickerText}>Featured · {formatCountdown(msUntilNextMonday(now))}</Text>
-            </View>
-            <Text style={styles.promoTitle} numberOfLines={2}>{title}</Text>
-            <Text style={styles.promoLine} numberOfLines={2}>{line}</Text>
-          </View>
-          <Float distance={6}>
-            <LeoAvatar look={{ ...look, ...wear }} size={118} bg="rgba(255,255,255,0.12)" />
-          </Float>
-          <Float distance={4} phase={500} style={styles.sparkA}><Text style={styles.spark}>✦</Text></Float>
-          <Float distance={5} phase={900} style={styles.sparkB}><Text style={[styles.spark, { fontSize: 14 }]}>✦</Text></Float>
+    <PressScale onPress={() => open(path)} accessibilityLabel={`${title}. ${line}`} style={{ marginTop: 34 }}>
+      <View style={[styles.promo, { height: H }]}>
+        <View style={styles.promoClip}>
+          <SceneBackdrop theme="promo" sceneId="promo" />
+          <Sunburst size={420} cx={leoX + leo / 2} cy={H * 0.52} color={rarity ? RARITY_COLOR[rarity] : t.ray} opacity={0.55} />
+          <Twinkles w={W} h={H} color={t.spark} points={[[0.52, 0.14, 16], [0.94, 0.1, 12], [0.6, 0.86, 10], [0.06, 0.08, 9], [0.42, 0.62, 8]]} />
+          <FloorShadow width={leo * 0.8} cx={leoX + leo * 0.49} y={H - 16} dark={0.7} />
+          {rarity === 'legendary' || rarity === 'epic' || isSet ? <Sheen width={W} every={3800} /> : null}
         </View>
-        <View style={styles.promoBtn}>
+        <View style={styles.promoText}>
+          <View style={styles.promoKicker}>
+            <Feather name="clock" size={11} color="#FDE68A" />
+            <Text style={styles.promoKickerText}>NEW · {formatCountdown(msUntilNextMonday(now))}</Text>
+          </View>
+          <Text style={styles.promoTitle} numberOfLines={2}>{title}</Text>
+          <Text style={styles.promoLine} numberOfLines={1}>{line}</Text>
+          <View style={{ flex: 1 }} />
           {owned ? (
-            <Text style={styles.promoBtnText}>Owned · Wear it</Text>
+            <ChunkyButton label="Owned · Wear it" onPress={() => open(path)} height={44} tone="plain" />
           ) : (
-            <>
-              <Flask size={17} color="#6D28D9" />
-              {was ? <Text style={styles.promoWas}>{fmt(was)}</Text> : null}
-              <Text style={styles.promoBtnText}>{fmt(price)} · Get the look</Text>
-            </>
+            <PriceButton price={price} was={was} onPress={() => open(path)} height={44} />
           )}
         </View>
-        <Sheen width={360} every={4200} />
-      </LinearGradient>
-    </TouchableOpacity>
+        <FloatIcon id={t.icons[2]} size={40} x={leoX + leo * 0.06} y={-16} depth={0} phase={300} />
+        <Float distance={6} style={{ position: 'absolute', left: leoX, top: leoTop }}>
+          <LeoAvatar look={{ ...look, ...wear }} size={leo} crop={false} />
+        </Float>
+        <FloatIcon id={t.icons[1]} size={54} x={W - 60} y={H - 74} depth={2} phase={800} />
+        <FloatIcon id={t.icons[0]} size={36} x={W - 44} y={10} depth={1} phase={1300} />
+      </View>
+    </PressScale>
   );
 }
 
 function PerkCard({ perk, width, waitlist, joined, locked, onJoin }: { perk: Perk; width: number; waitlist: number; joined: boolean; locked: boolean; onJoin: () => void }) {
-  const status = locked ? 'Unlocks after your Weekly Case' : waitlist >= 10 ? `Coming soon · ${fmt(waitlist)} on the waitlist` : 'Coming soon';
+  const status = locked ? 'Unlocks after your Weekly Case' : waitlist >= 10 ? `${fmt(waitlist)} on the waitlist` : 'Coming soon';
+  const scene = PERK_SCENE[perk.id] ?? PERK_SCENE['perk-tool-credits'];
+  const H = 176;
+  const art = SHOP_SCENES[perk.id];
   return (
-    <TouchableOpacity activeOpacity={0.94} onPress={() => open(`/shop-perk?id=${perk.id}`)} style={[styles.perk, { width }]} accessibilityRole="button" accessibilityLabel={`${perk.name}. ${status}`}>
-      <LinearGradient colors={['#171327', '#2B1F4E']} style={styles.perkArt}>
-        <View style={styles.perkGlow} />
+    <PressScale onPress={() => open(`/shop-perk?id=${perk.id}`)} style={[styles.perk, { width }]} accessibilityLabel={`${perk.name}. ${status}`}>
+      <View style={[styles.perkArt, { height: H }]}>
+        {art ? <SceneBackdrop theme="promo" sceneId={perk.id} /> : (
+          <LinearGradient colors={scene.bg} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={StyleSheet.absoluteFill} />
+        )}
+        <Sunburst size={380} cx={width / 2} cy={H * 0.56} color="#FDE68A" opacity={0.32} rays={18} />
+        <Twinkles w={width} h={H} color="#FDE68A" points={[[0.12, 0.3, 12], [0.86, 0.22, 15], [0.22, 0.82, 9], [0.8, 0.84, 10]]} />
+        {!art && (
+          <Float distance={5} style={{ position: 'absolute', left: width / 2 - 92, top: H / 2 - 60 }}>
+            <PerkObject id={perk.id} width={184} />
+          </Float>
+        )}
+        <FloatIcon id={scene.icons[0]} size={42} x={14} y={H - 66} depth={2} phase={400} />
+        <FloatIcon id={scene.icons[1]} size={34} x={width - 54} y={46} depth={0} phase={1100} />
         <View style={styles.perkTag}><Text style={styles.perkTagText}>✦ PERK</Text></View>
         <Text style={styles.perkKicker}>{perk.kicker.toUpperCase()}</Text>
-        <Float distance={5}>
-          <View style={styles.perkBadge}><Feather name={perk.icon} size={34} color="#FCD34D" /></View>
-        </Float>
         <Sheen width={width} every={5200} delay={1200} />
-      </LinearGradient>
+      </View>
       <View style={styles.perkBody}>
         <Text style={styles.perkName} numberOfLines={2}>{perk.name}</Text>
         <View style={styles.perkStatus}>
-          <View style={[styles.statusDot, { backgroundColor: locked ? COLORS.textMuted : COLORS.success }]} />
+          {locked ? <Feather name="lock" size={12} color={COLORS.textMuted} /> : <View style={[styles.statusDot, { backgroundColor: COLORS.success }]} />}
           <Text style={styles.perkStatusText} numberOfLines={1}>{status}</Text>
         </View>
         <View style={styles.perkActions}>
@@ -343,11 +367,11 @@ function PerkCard({ perk, width, waitlist, joined, locked, onJoin }: { perk: Per
           {joined ? (
             <View style={styles.joined}><Feather name="check" size={15} color={COLORS.success} /><Text style={styles.joinedText}>You're on the list</Text></View>
           ) : (
-            <ChunkyButton label={locked ? 'Notify me' : 'Join waitlist'} onPress={onJoin} height={42} style={{ flex: 1 }} />
+            <ChunkyButton label={locked ? 'Notify me' : 'Join waitlist'} onPress={onJoin} height={42} style={{ flex: 1 }} haptic />
           )}
         </View>
       </View>
-    </TouchableOpacity>
+    </PressScale>
   );
 }
 
@@ -356,36 +380,37 @@ function CollectionCard({ collection, width, owned }: { collection: Collection; 
   const drawn = items.filter(c => hasArt(c.id));
   const look = Object.fromEntries(drawn.map(c => [c.slot, c.id]));
   const have = items.filter(c => owned(c.id)).length;
-  const first = drawn[0] ?? items[0];
+  const theme = collection.id as SceneTheme;
+  const t = SCENES[theme] ?? SCENES.promo;
+  const H = 208;
+  const leo = 252;
+  const leoTop = H - leo * 0.955 + 6;
   return (
-    <TouchableOpacity activeOpacity={0.94} onPress={() => open(`/shop-collection?id=${collection.id}`)} style={[styles.coll, { width }]} accessibilityRole="button" accessibilityLabel={`${collection.name} collection`}>
-      <LinearGradient colors={collection.tint} style={styles.collArt}>
-        <View style={styles.collPill}><Text style={styles.collPillText}>COLLECTION</Text></View>
-        <LeoAvatar look={look} size={176} bg="rgba(255,255,255,0.22)" />
-        {!drawn.length && <View style={styles.collSoon}><Text style={styles.soonText}>Art soon</Text></View>}
+    <PressScale onPress={() => open(`/shop-collection?id=${collection.id}`)} style={[styles.coll, { width }]} accessibilityLabel={`${collection.name} collection`}>
+      <View style={[styles.collArt, { height: H }]}>
+        <SceneBackdrop theme={theme} sceneId={collection.id} />
+        <Sunburst size={420} cx={width / 2} cy={H * 0.62} color={t.ray} opacity={t.rayOpacity} />
+        <Twinkles w={width} h={H} color={t.spark} />
+        <FloorShadow width={230} cx={width / 2} y={H - 4} dark={0.45} />
         <Sheen width={width} every={5600} delay={300} />
-      </LinearGradient>
+      </View>
+      <FloatIcon id={t.icons[1]} size={40} x={width - 66} y={28} depth={0} phase={700} />
+      <Float distance={5} style={{ position: 'absolute', left: width / 2 - leo / 2, top: leoTop }}>
+        <LeoAvatar look={drawn.length ? { hat: '', ...look } : {}} size={leo} crop={false} />
+      </Float>
+      <FloatIcon id={t.icons[0]} size={50} x={12} y={H - 74} depth={2} phase={200} />
+      <FloatIcon id={t.icons[2]} size={44} x={width - 60} y={H - 62} depth={1} phase={1200} />
+      {!drawn.length && <View style={styles.collPill}><Text style={styles.collPillText}>ART SOON</Text></View>}
       <View style={styles.collBody}>
         <View style={{ flex: 1 }}>
           <Text style={styles.collName}>{collection.name}</Text>
           <Text style={styles.collHook} numberOfLines={1}>{collection.hook}</Text>
+          <View style={styles.collMeter}><View style={[styles.collFill, { width: `${Math.max(4, (have / Math.max(1, items.length)) * 100)}%` }]} /></View>
           <Text style={styles.collOwned}>{have} of {items.length} owned</Text>
         </View>
-        <TouchableOpacity onPress={() => open(first ? `/shop-collection?id=${collection.id}` : '/(tabs)/shop')} style={styles.seeSet} accessibilityRole="button">
-          <Text style={styles.seeSetText}>See set</Text>
-        </TouchableOpacity>
+        <ChunkyButton label="See set" onPress={() => open(`/shop-collection?id=${collection.id}`)} height={42} tone="plain" style={{ width: 110 }} haptic />
       </View>
-    </TouchableOpacity>
-  );
-}
-
-function ItemTile({ label, count, onPress, children }: { label: string; count: string; onPress: () => void; children: React.ReactNode }) {
-  return (
-    <TouchableOpacity onPress={onPress} activeOpacity={0.88} style={styles.itemTile} accessibilityRole="button" accessibilityLabel={`${label}: ${count}`}>
-      <View style={styles.itemArt}>{children}</View>
-      <Text style={styles.itemCount}>{count}</Text>
-      <Text style={styles.itemLabel} numberOfLines={1}>{label}</Text>
-    </TouchableOpacity>
+    </PressScale>
   );
 }
 
@@ -398,42 +423,35 @@ const styles = StyleSheet.create({
   pad: { paddingHorizontal: 20 },
   section: { marginTop: 30 },
 
-  promo: { borderRadius: 24, padding: 18, overflow: 'hidden' },
-  promoTop: { flexDirection: 'row', alignItems: 'center', gap: 10 },
-  promoKicker: { flexDirection: 'row', alignItems: 'center', gap: 5, alignSelf: 'flex-start', paddingHorizontal: 9, height: 22, borderRadius: 11, backgroundColor: 'rgba(255,255,255,0.14)' },
-  promoKickerText: { fontSize: 11, fontWeight: '800', color: '#F3E8FF' },
-  promoTitle: { fontSize: 24, lineHeight: 28, fontWeight: '900', color: '#FFFFFF', marginTop: 10 },
-  promoLine: { fontSize: 13, fontWeight: '600', color: '#DDD6FE', marginTop: 4 },
-  promoBtn: { marginTop: 16, height: 50, borderRadius: 25, backgroundColor: '#FFFFFF', flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8 },
-  promoBtnText: { fontSize: 16, fontWeight: '900', color: '#1E1B4B' },
-  promoWas: { fontSize: 15, fontWeight: '700', color: '#9CA3AF', textDecorationLine: 'line-through' },
-  sparkA: { position: 'absolute', right: 4, top: -2 },
-  sparkB: { position: 'absolute', right: 118, bottom: 4 },
-  spark: { fontSize: 20, color: '#FDE68A' },
+  bag: { width: 46, height: 46, borderRadius: 23, borderWidth: 2, borderBottomWidth: 4, borderColor: COLORS.border, backgroundColor: COLORS.bg2, alignItems: 'center', justifyContent: 'center' },
+  bagTag: { position: 'absolute', left: -4, bottom: -4, width: 18, height: 18, borderRadius: 9, backgroundColor: COLORS.accent, borderWidth: 2, borderColor: COLORS.bg0, alignItems: 'center', justifyContent: 'center' },
+  freezeBadge: { position: 'absolute', right: -10, top: -6, flexDirection: 'row', alignItems: 'center', gap: 1, height: 20, paddingHorizontal: 4, borderRadius: 10, backgroundColor: isDark ? '#0C4A6E' : '#E0F2FE', borderWidth: 2, borderColor: COLORS.bg0 },
+  freezeBadgeText: { fontSize: 11, fontWeight: '900', color: isDark ? '#BAE6FD' : '#0369A1' },
+
+  promo: { borderRadius: 26, borderBottomWidth: 5, borderColor: '#06081F' },
+  promoClip: { ...StyleSheet.absoluteFillObject, borderRadius: 26, overflow: 'hidden', backgroundColor: '#0A0E2C' },
+  promoText: { position: 'absolute', left: 18, top: 18, bottom: 18, width: '47%' },
+  promoKicker: { flexDirection: 'row', alignItems: 'center', gap: 5, alignSelf: 'flex-start', paddingHorizontal: 9, height: 24, borderRadius: 12, backgroundColor: 'rgba(253,230,138,0.16)', borderWidth: 1, borderColor: 'rgba(253,230,138,0.4)' },
+  promoKickerText: { fontSize: 11.5, fontWeight: '900', color: '#FDE68A', fontVariant: ['tabular-nums'] },
+  promoTitle: { fontSize: 25, lineHeight: 28, fontWeight: '900', color: '#FFFFFF', marginTop: 10, letterSpacing: -0.4 },
+  promoLine: { fontSize: 13, fontWeight: '700', color: '#C4B5FD', marginTop: 4 },
 
   perk: { ...CARD, overflow: 'hidden' },
-  perkArt: { height: 150, alignItems: 'center', justifyContent: 'center', overflow: 'hidden' },
-  perkGlow: { position: 'absolute', width: 180, height: 180, borderRadius: 90, backgroundColor: 'rgba(252, 211, 77, 0.16)' },
-  perkTag: { position: 'absolute', top: 12, left: 12, paddingHorizontal: 9, height: 24, borderRadius: 12, borderWidth: 1.5, borderColor: '#FCD34D', alignItems: 'center', justifyContent: 'center' },
+  perkArt: { overflow: 'hidden', borderTopLeftRadius: 18, borderTopRightRadius: 18 },
+  perkTag: { position: 'absolute', top: 12, left: 12, paddingHorizontal: 9, height: 24, borderRadius: 12, borderWidth: 1.5, borderColor: '#FCD34D', backgroundColor: 'rgba(0,0,0,0.25)', alignItems: 'center', justifyContent: 'center' },
   perkTagText: { fontSize: 11, fontWeight: '900', letterSpacing: 0.8, color: '#FCD34D' },
-  perkKicker: { position: 'absolute', top: 17, right: 14, fontSize: 10.5, fontWeight: '800', letterSpacing: 1, color: '#C4B5FD' },
-  perkBadge: { width: 76, height: 76, borderRadius: 38, backgroundColor: 'rgba(255,255,255,0.08)', borderWidth: 2, borderColor: 'rgba(252,211,77,0.55)', alignItems: 'center', justifyContent: 'center' },
+  perkKicker: { position: 'absolute', top: 17, right: 14, fontSize: 10.5, fontWeight: '900', letterSpacing: 1, color: '#E9D5FF' },
   perkBody: { padding: 16, gap: 8 },
   perkName: { fontSize: 18, lineHeight: 23, fontWeight: '900', color: COLORS.textPrimary },
   perkStatus: { flexDirection: 'row', alignItems: 'center', gap: 6 },
   statusDot: { width: 7, height: 7, borderRadius: 4 },
   perkStatusText: { flex: 1, fontSize: 12.5, fontWeight: '700', color: COLORS.textSecondary },
   perkActions: { flexDirection: 'row', alignItems: 'center', gap: 10, marginTop: 4 },
-  perkPrice: { flexDirection: 'row', alignItems: 'center', gap: 5, height: 42, paddingHorizontal: 12, borderRadius: 14, backgroundColor: isDark ? 'rgba(255,200,61,0.16)' : '#FFF4D1' },
+  perkPrice: { flexDirection: 'row', alignItems: 'center', gap: 5, height: 46, paddingHorizontal: 12, borderRadius: 14, borderBottomWidth: 4, borderColor: isDark ? 'rgba(217,154,0,0.55)' : '#F2C94C', backgroundColor: isDark ? 'rgba(255,200,61,0.16)' : '#FFF4D1' },
   perkPriceText: { fontSize: 15, fontWeight: '900', color: isDark ? '#FCD34D' : '#7A5A00' },
   joined: { flex: 1, height: 42, borderRadius: 14, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, backgroundColor: COLORS.successSoft },
   joinedText: { fontSize: 14, fontWeight: '800', color: COLORS.success },
 
-  yourItems: { flexDirection: 'row', gap: 10, paddingHorizontal: 20 },
-  itemTile: { flex: 1, alignItems: 'center', paddingVertical: 12, ...CARD },
-  itemArt: { height: 56, alignItems: 'center', justifyContent: 'center' },
-  itemCount: { fontSize: 15, fontWeight: '900', color: COLORS.textPrimary, marginTop: 6 },
-  itemLabel: { fontSize: 11.5, fontWeight: '600', color: COLORS.textSecondary, marginTop: 1 },
 
   claimRow: { flexDirection: 'row', alignItems: 'center', gap: 12, paddingVertical: 10 },
   claimBorder: { borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: COLORS.border },
@@ -442,7 +460,9 @@ const styles = StyleSheet.create({
   claim: { fontSize: 14, fontWeight: '900', letterSpacing: 0.6, color: COLORS.accent },
 
   powerTile: { width: 168, overflow: 'hidden', ...CARD },
-  powerArt: { height: 104, alignItems: 'center', justifyContent: 'center' },
+  powerArt: { height: 104, alignItems: 'center', justifyContent: 'center', overflow: 'hidden' },
+  haveTag: { position: 'absolute', top: 8, left: 8, paddingHorizontal: 8, height: 22, borderRadius: 11, backgroundColor: isDark ? '#0C4A6E' : '#FFFFFF', justifyContent: 'center' },
+  haveText: { fontSize: 11, fontWeight: '900', color: isDark ? '#BAE6FD' : '#0369A1' },
   tileBody: { padding: 12 },
   tileTitle: { fontSize: 15, fontWeight: '800', color: COLORS.textPrimary },
   tileSub: { fontSize: 12, lineHeight: 16, color: COLORS.textSecondary, marginTop: 2, minHeight: 32 },
@@ -460,28 +480,27 @@ const styles = StyleSheet.create({
   offBadge: { position: 'absolute', top: 8, left: 8, paddingHorizontal: 7, height: 22, borderRadius: 7, backgroundColor: '#E11D48', alignItems: 'center', justifyContent: 'center' },
   offText: { fontSize: 11.5, fontWeight: '900', color: '#FFFFFF' },
 
-  coll: { ...CARD, overflow: 'hidden' },
-  collArt: { height: 206, alignItems: 'center', justifyContent: 'center', overflow: 'hidden' },
-  collPill: { position: 'absolute', top: 12, left: 12, paddingHorizontal: 9, height: 22, borderRadius: 11, backgroundColor: 'rgba(255,255,255,0.32)', justifyContent: 'center' },
+  coll: { ...CARD },
+  collArt: { overflow: 'hidden', borderTopLeftRadius: 18, borderTopRightRadius: 18 },
+  collPill: { position: 'absolute', top: 12, left: 12, paddingHorizontal: 9, height: 22, borderRadius: 11, backgroundColor: 'rgba(0,0,0,0.22)', justifyContent: 'center' },
   collPillText: { fontSize: 10, fontWeight: '900', letterSpacing: 1, color: '#FFFFFF' },
-  collSoon: { position: 'absolute', bottom: 10, right: 12, paddingHorizontal: 9, height: 22, borderRadius: 11, backgroundColor: COLORS.bg2, justifyContent: 'center' },
   collBody: { flexDirection: 'row', alignItems: 'flex-end', padding: 16, gap: 12 },
   collName: { fontSize: 20, fontWeight: '900', color: COLORS.textPrimary },
   collHook: { fontSize: 13, color: COLORS.textSecondary, marginTop: 2 },
-  collOwned: { fontSize: 12.5, fontWeight: '800', color: COLORS.accent, marginTop: 10 },
-  seeSet: { height: 42, paddingHorizontal: 16, borderRadius: 14, borderWidth: 2, borderBottomWidth: 4, borderColor: COLORS.border, alignItems: 'center', justifyContent: 'center' },
-  seeSetText: { fontSize: 14, fontWeight: '800', color: COLORS.accent },
+  collMeter: { height: 8, borderRadius: 4, backgroundColor: COLORS.border, marginTop: 10, overflow: 'hidden' },
+  collFill: { height: 8, borderRadius: 4, backgroundColor: COLORS.accent },
+  collOwned: { fontSize: 12.5, fontWeight: '800', color: COLORS.accent, marginTop: 6 },
 
   bundleTile: { width: 276, overflow: 'hidden', ...CARD },
-  bundleArt: { height: 116, alignItems: 'center', justifyContent: 'center' },
-  bundleCount: { position: 'absolute', right: 12, bottom: 10, fontSize: 11.5, fontWeight: '800', color: COLORS.textMuted },
+  bundleArt: { height: 128, overflow: 'hidden' },
+  bundleCount: { position: 'absolute', right: 10, bottom: 8, paddingHorizontal: 8, height: 22, lineHeight: 22, borderRadius: 11, overflow: 'hidden', backgroundColor: 'rgba(0,0,0,0.28)', fontSize: 11.5, fontWeight: '800', color: '#FFFFFF' },
   saveBadge: { position: 'absolute', top: 8, left: 8, paddingHorizontal: 8, height: 22, borderRadius: 7, backgroundColor: '#E11D48', alignItems: 'center', justifyContent: 'center' },
 
   earnBand: { paddingVertical: 22, paddingLeft: 20 },
   earnTitle: { fontSize: 22, fontWeight: '900', color: '#FFFFFF' },
   earnSub: { fontSize: 13, fontWeight: '600', color: '#DDD6FE', marginTop: 2 },
   earnTile: { width: 168, padding: 12, borderRadius: 20, backgroundColor: 'rgba(255,255,255,0.08)', borderWidth: 1.5, borderColor: 'rgba(255,255,255,0.16)' },
-  earnArt: { height: 100, borderRadius: 14, backgroundColor: 'rgba(0,0,0,0.18)', alignItems: 'center', justifyContent: 'center' },
+  earnArt: { height: 100, borderRadius: 14, backgroundColor: 'rgba(0,0,0,0.18)', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' },
   lock: { position: 'absolute', top: 8, right: 8, width: 26, height: 26, borderRadius: 13, backgroundColor: '#FCD34D', alignItems: 'center', justifyContent: 'center' },
   earnName: { fontSize: 15, fontWeight: '800', color: '#FFFFFF', marginTop: 10 },
   earnRule: { fontSize: 12, lineHeight: 16, color: '#DDD6FE', marginTop: 2, minHeight: 32 },

@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
-import { AccessibilityInfo, Animated, Easing, StyleSheet, View } from "react-native";
+import { AccessibilityInfo, Animated, Easing, Pressable, StyleSheet, View } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
+import { triggerHaptic } from "../../lib/haptics";
 function useReduceMotion() {
   const [reduce, setReduce] = useState(false);
   useEffect(() => {
@@ -70,6 +71,67 @@ function Rise({ index, children, style }) {
   }, [reduce, index, v]);
   return /* @__PURE__ */ React.createElement(Animated.View, { style: [style, { opacity: v, transform: [{ translateY: v.interpolate({ inputRange: [0, 1], outputRange: [14, 0] }) }] }] }, children);
 }
+function Spin({ children, period = 24e3, style }) {
+  const reduce = useReduceMotion();
+  const r = useRef(new Animated.Value(0)).current;
+  useEffect(() => {
+    if (reduce) return;
+    const loop = Animated.loop(Animated.timing(r, { toValue: 1, duration: period, easing: Easing.linear, useNativeDriver: true }));
+    loop.start();
+    return () => loop.stop();
+  }, [reduce, period, r]);
+  return /* @__PURE__ */ React.createElement(Animated.View, { pointerEvents: "none", style: [style, { transform: [{ rotate: r.interpolate({ inputRange: [0, 1], outputRange: ["0deg", "360deg"] }) }] }] }, children);
+}
+function Twinkle({ children, phase = 0, period = 1800, style }) {
+  const reduce = useReduceMotion();
+  const v = useRef(new Animated.Value(reduce ? 1 : 0)).current;
+  useEffect(() => {
+    if (reduce) {
+      v.setValue(1);
+      return;
+    }
+    const loop = Animated.loop(Animated.sequence([
+      Animated.delay(phase),
+      Animated.timing(v, { toValue: 1, duration: period / 2, easing: Easing.out(Easing.quad), useNativeDriver: true }),
+      Animated.timing(v, { toValue: 0, duration: period / 2, easing: Easing.in(Easing.quad), useNativeDriver: true }),
+      Animated.delay(Math.max(0, 1600 - phase))
+    ]));
+    loop.start();
+    return () => loop.stop();
+  }, [reduce, phase, period, v]);
+  return /* @__PURE__ */ React.createElement(Animated.View, { pointerEvents: "none", style: [style, { opacity: v.interpolate({ inputRange: [0, 1], outputRange: [0.25, 1] }), transform: [{ scale: v.interpolate({ inputRange: [0, 1], outputRange: [0.6, 1.15] }) }] }] }, children);
+}
+function Pop({ children, delay = 0, style }) {
+  const reduce = useReduceMotion();
+  const v = useRef(new Animated.Value(reduce ? 1 : 0)).current;
+  useEffect(() => {
+    if (reduce) {
+      v.setValue(1);
+      return;
+    }
+    Animated.sequence([Animated.delay(delay), Animated.spring(v, { toValue: 1, friction: 4, tension: 90, useNativeDriver: true })]).start();
+  }, [reduce, delay, v]);
+  return /* @__PURE__ */ React.createElement(Animated.View, { style: [style, { opacity: v.interpolate({ inputRange: [0, 0.3, 1], outputRange: [0, 1, 1] }), transform: [{ scale: v.interpolate({ inputRange: [0, 1], outputRange: [0.3, 1] }) }] }] }, children);
+}
+function PressScale({ children, onPress, style, accessibilityLabel, disabled }) {
+  const s = useRef(new Animated.Value(1)).current;
+  const to = (v) => Animated.spring(s, { toValue: v, friction: 6, tension: 260, useNativeDriver: true }).start();
+  return /* @__PURE__ */ React.createElement(
+    Pressable,
+    {
+      onPress,
+      disabled,
+      onPressIn: () => {
+        to(0.965);
+        triggerHaptic("light");
+      },
+      onPressOut: () => to(1),
+      accessibilityRole: "button",
+      accessibilityLabel
+    },
+    /* @__PURE__ */ React.createElement(Animated.View, { style: [style, { transform: [{ scale: s }] }] }, children)
+  );
+}
 function Dots({ count, index, color, idle }) {
   if (count < 2) return null;
   return /* @__PURE__ */ React.createElement(View, { style: styles.dots }, Array.from({ length: count }, (_, i) => /* @__PURE__ */ React.createElement(View, { key: i, style: [styles.dot, { backgroundColor: i === index ? color : idle, width: i === index ? 18 : 6 }] })));
@@ -81,8 +143,12 @@ const styles = StyleSheet.create({
 export {
   Dots,
   Float,
+  Pop,
+  PressScale,
   Rise,
   Sheen,
+  Spin,
+  Twinkle,
   useNow,
   useReduceMotion
 };

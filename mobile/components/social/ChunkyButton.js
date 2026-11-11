@@ -1,6 +1,7 @@
 import React, { useRef } from "react";
 import { ActivityIndicator, Animated, Pressable, StyleSheet, Text, View } from "react-native";
 import { COLORS } from "../../lib/constants";
+import { triggerHaptic } from "../../lib/haptics";
 const TONES = {
   accent: { face: COLORS.accent, lip: COLORS.courseCoinLip, text: "#FFFFFF" },
   streak: { face: COLORS.streak, lip: "#C2410C", text: "#FFFFFF" },
@@ -10,7 +11,7 @@ const TONES = {
   gold: { face: "#FFC83D", lip: "#D99A00", text: "#3A2600" }
 };
 const LIP = 4;
-function ChunkyButton({ label, onPress, tone = "accent", icon, busy = false, disabled = false, style, height = 52, accessibilityLabel }) {
+function ChunkyButton({ label, onPress, tone = "accent", icon, busy = false, disabled = false, style, height = 52, accessibilityLabel, haptic = false }) {
   const press = useRef(new Animated.Value(0)).current;
   const t = TONES[tone];
   const off = disabled || busy;
@@ -19,7 +20,11 @@ function ChunkyButton({ label, onPress, tone = "accent", icon, busy = false, dis
     Pressable,
     {
       onPress,
-      onPressIn: () => !off && to(1),
+      onPressIn: () => {
+        if (off) return;
+        to(1);
+        if (haptic) triggerHaptic("light");
+      },
       onPressOut: () => to(0),
       disabled: off,
       accessibilityRole: "button",
