@@ -58,6 +58,22 @@ function weeklyFeature(candidates, now) {
   const sorted = [...candidates].sort((a, b) => a.id.localeCompare(b.id));
   return sorted[fnv1a(isoWeekKey(now)) % sorted.length];
 }
+function pickFeature(bundles, cosmetics, hasArt, now) {
+  const month = now.getMonth() + 1;
+  const byId = new Map(cosmetics.map((c) => [c.id, c]));
+  const months = (id) => byId.get(id)?.featuredIn;
+  const inSeason = (id) => !!months(id)?.includes(month);
+  const outOfSeason = (id) => !!months(id)?.length && !inSeason(id);
+  const drawn = (b) => b.items.every(hasArt);
+  const forSale = (c) => priceOf(c) !== null && !c.hidden && hasArt(c.id);
+  const seasonSets = bundles.filter((b) => drawn(b) && b.items.every(inSeason)).map((bundle) => ({ kind: "bundle", bundle }));
+  const seasonItems = cosmetics.filter((c) => forSale(c) && inSeason(c.id)).map((item) => ({ kind: "item", item }));
+  const sets = bundles.filter((b) => drawn(b) && !b.items.some(outOfSeason)).map((bundle) => ({ kind: "bundle", bundle }));
+  const heroes = cosmetics.filter((c) => forSale(c) && !outOfSeason(c.id) && (c.rarity === "epic" || c.rarity === "legendary")).map((item) => ({ kind: "item", item }));
+  const pool = seasonSets.length ? seasonSets : seasonItems.length ? seasonItems : sets.length ? sets : heroes;
+  const pick = weeklyFeature(pool.map((f) => ({ id: f.kind === "bundle" ? f.bundle.id : f.item.id, f })), now);
+  return pick?.f ?? null;
+}
 function msUntilLocalMidnight(now) {
   const next = new Date(now);
   next.setHours(24, 0, 0, 0);
@@ -153,6 +169,7 @@ export {
   milestoneProgress,
   msUntilLocalMidnight,
   msUntilNextMonday,
+  pickFeature,
   requirementProgress,
   spendable,
   weekOf,

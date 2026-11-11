@@ -5,7 +5,7 @@
  * XP earned, so friend races, the crown, levels and milestones keep reading earned. The server is the authority
  * (shop_balance, shop_purchase); these helpers decide what the phone shows and enables.
  */
-import { CROWN_ID, Cosmetic, DEFAULT_HAT, MAX_FREEZES_HELD, Requirements, Slot, SLOT_ORDER, priceOf } from './shopCatalog';
+import { Bundle, CROWN_ID, Cosmetic, DEFAULT_HAT, MAX_FREEZES_HELD, Requirements, Slot, SLOT_ORDER, priceOf } from './shopCatalog';
 
 export interface Balance { earned: number; spent: number; balance: number }
 
@@ -107,6 +107,34 @@ export function weeklyFeature<T extends { id: string }>(candidates: T[], now: Da
   if (!candidates.length) return null;
   const sorted = [...candidates].sort((a, b) => a.id.localeCompare(b.id));
   return sorted[fnv1a(isoWeekKey(now)) % sorted.length];
+}
+
+export type Feature = { kind: 'bundle'; bundle: Bundle } | { kind: 'item'; item: Cosmetic };
+
+/**
+ * The Shop's top promo card. A piece with `featuredIn` months is seasonal: in those months it (or a full set of
+ * such pieces) takes the card, starting on the 1st, local date; outside them it never appears there, alone or in
+ * a set, so the Christmas set cannot show up in November. Otherwise one full set a week, else an epic/legendary.
+ */
+export function pickFeature(bundles: Bundle[], cosmetics: Cosmetic[], hasArt: (id: string) => boolean, now: Date): Feature | null {
+  const month = now.getMonth() + 1;
+  const byId = new Map(cosmetics.map(c => [c.id, c]));
+  const months = (id: string) => byId.get(id)?.featuredIn;
+  const inSeason = (id: string) => !!months(id)?.includes(month);
+  const outOfSeason = (id: string) => !!months(id)?.length && !inSeason(id);
+  const drawn = (b: Bundle) => b.items.every(hasArt);
+  const forSale = (c: Cosmetic) => priceOf(c) !== null && !c.hidden && hasArt(c.id);
+
+  const seasonSets: Feature[] = bundles.filter(b => drawn(b) && b.items.every(inSeason)).map(bundle => ({ kind: 'bundle', bundle }));
+  const seasonItems: Feature[] = cosmetics.filter(c => forSale(c) && inSeason(c.id)).map(item => ({ kind: 'item', item }));
+  const sets: Feature[] = bundles.filter(b => drawn(b) && !b.items.some(outOfSeason)).map(bundle => ({ kind: 'bundle', bundle }));
+  const heroes: Feature[] = cosmetics
+    .filter(c => forSale(c) && !outOfSeason(c.id) && (c.rarity === 'epic' || c.rarity === 'legendary'))
+    .map(item => ({ kind: 'item', item }));
+
+  const pool = seasonSets.length ? seasonSets : seasonItems.length ? seasonItems : sets.length ? sets : heroes;
+  const pick = weeklyFeature(pool.map(f => ({ id: f.kind === 'bundle' ? f.bundle.id : f.item.id, f })), now);
+  return pick?.f ?? null;
 }
 
 // ── Countdowns ───────────────────────────────────────────────────────────────

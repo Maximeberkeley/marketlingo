@@ -22,7 +22,7 @@ import {
   cosmetic,
   priceOf
 } from "../../lib/shopCatalog";
-import { msUntilLocalMidnight, msUntilNextMonday, requirementProgress, weeklyFeature } from "../../lib/shopEconomy";
+import { msUntilLocalMidnight, msUntilNextMonday, pickFeature, requirementProgress } from "../../lib/shopEconomy";
 import { hasArt, useShop } from "../../hooks/useShop";
 import { LeoAvatar } from "../../components/shop/LeoAvatar";
 import { ItemArt, ShopIcon } from "../../components/shop/ItemArt";
@@ -60,16 +60,7 @@ function ShopScreen() {
     setRefreshing(false);
   };
   const feature = useMemo(() => {
-    const month = now.getMonth() + 1;
-    const inSeason = (id) => !!cosmetic(id)?.featuredIn?.includes(month);
-    const seasonSets = BUNDLES.filter((b) => b.items.every(hasArt) && b.items.every(inSeason)).map((bundle) => ({ kind: "bundle", bundle }));
-    const seasonItems = COSMETICS.filter((c) => priceOf(c) !== null && hasArt(c.id) && inSeason(c.id)).map((item) => ({ kind: "item", item }));
-    const seasonal = seasonSets.length ? seasonSets : seasonItems;
-    const sets = BUNDLES.filter((b) => b.items.every(hasArt)).map((bundle) => ({ kind: "bundle", bundle }));
-    const items = COSMETICS.filter((c) => priceOf(c) !== null && hasArt(c.id) && (c.rarity === "epic" || c.rarity === "legendary")).map((item) => ({ kind: "item", item }));
-    const pool = seasonal.length ? seasonal : sets.length ? sets : items;
-    const pick = weeklyFeature(pool.map((f) => ({ id: f.kind === "bundle" ? f.bundle.id : f.item.id, f })), now);
-    return pick?.f ?? null;
+    return pickFeature(BUNDLES, COSMETICS, hasArt, now);
   }, [now.toDateString()]);
   const freezes = shop.owned[STREAK_FREEZE_ID]?.qty ?? 0;
   const wardrobeCount = COSMETICS.filter((c) => !c.hidden && shop.owns(c.id)).length;
@@ -158,7 +149,7 @@ function PromoCard({ feature, owned, look }) {
   const leoX = W - 8 - leo * 0.83;
   const leoTop = H - 14 - leo * 0.955;
   const t = SCENES.promo;
-  return /* @__PURE__ */ React.createElement(PressScale, { onPress: () => open(path), accessibilityLabel: `${title}. ${line}`, style: { marginTop: 34 } }, /* @__PURE__ */ React.createElement(View, { style: [styles.promo, { height: H }] }, /* @__PURE__ */ React.createElement(View, { style: styles.promoClip }, /* @__PURE__ */ React.createElement(SceneBackdrop, { theme: "promo", sceneId: "promo" }), /* @__PURE__ */ React.createElement(Sunburst, { size: 420, cx: leoX + leo / 2, cy: H * 0.52, color: rarity ? RARITY_COLOR[rarity] : t.ray, opacity: 0.55 }), /* @__PURE__ */ React.createElement(Twinkles, { w: W, h: H, color: t.spark, points: [[0.52, 0.14, 16], [0.94, 0.1, 12], [0.6, 0.86, 10], [0.06, 0.08, 9], [0.42, 0.62, 8]] }), /* @__PURE__ */ React.createElement(FloorShadow, { width: leo * 0.8, cx: leoX + leo * 0.49, y: H - 16, dark: 0.7 }), rarity === "legendary" || rarity === "epic" || isSet ? /* @__PURE__ */ React.createElement(Sheen, { width: W, every: 3800 }) : null), /* @__PURE__ */ React.createElement(View, { style: styles.promoText }, /* @__PURE__ */ React.createElement(View, { style: styles.promoKicker }, /* @__PURE__ */ React.createElement(Feather, { name: "clock", size: 11, color: "#FDE68A" }), /* @__PURE__ */ React.createElement(Countdown, { until: msUntilNextMonday, prefix: "NEW \xB7 ", style: styles.promoKickerText })), /* @__PURE__ */ React.createElement(Text, { maxFontSizeMultiplier: 1.15, style: styles.promoTitle, numberOfLines: 2, adjustsFontSizeToFit: true, minimumFontScale: 0.75 }, title), /* @__PURE__ */ React.createElement(Text, { maxFontSizeMultiplier: 1.15, style: styles.promoLine, numberOfLines: 1 }, line), /* @__PURE__ */ React.createElement(View, { style: { flex: 1 } }), owned ? /* @__PURE__ */ React.createElement(ChunkyButton, { label: "Owned \xB7 Wear it", onPress: () => open(path), height: 44, tone: "plain" }) : /* @__PURE__ */ React.createElement(PriceButton, { price, was, onPress: () => open(path), height: 44 })), /* @__PURE__ */ React.createElement(FloatIcon, { id: t.icons[2], size: 40, x: leoX + leo * 0.06, y: -16, depth: 0, phase: 300 }), /* @__PURE__ */ React.createElement(Float, { distance: 6, style: { position: "absolute", left: leoX, top: leoTop } }, /* @__PURE__ */ React.createElement(LeoAvatar, { look: { ...look, ...wear }, size: leo, crop: false })), /* @__PURE__ */ React.createElement(FloatIcon, { id: t.icons[1], size: 54, x: W - 60, y: H - 74, depth: 2, phase: 800 }), /* @__PURE__ */ React.createElement(FloatIcon, { id: t.icons[0], size: 36, x: W - 44, y: 10, depth: 1, phase: 1300 })));
+  return /* @__PURE__ */ React.createElement(PressScale, { onPress: () => open(path), accessibilityLabel: `${title}. ${line}`, style: { marginTop: 34 } }, /* @__PURE__ */ React.createElement(View, { style: [styles.promo, { height: H }] }, /* @__PURE__ */ React.createElement(View, { style: styles.promoClip }, /* @__PURE__ */ React.createElement(SceneBackdrop, { theme: "promo", sceneId: "promo" }), /* @__PURE__ */ React.createElement(Sunburst, { size: 420, cx: leoX + leo / 2, cy: H * 0.52, color: rarity ? RARITY_COLOR[rarity] : t.ray, opacity: 0.55 }), /* @__PURE__ */ React.createElement(Twinkles, { w: W, h: H, color: t.spark, points: [[0.52, 0.14, 16], [0.94, 0.1, 12], [0.6, 0.86, 10], [0.06, 0.08, 9], [0.42, 0.62, 8]] }), /* @__PURE__ */ React.createElement(FloorShadow, { width: leo * 0.8, cx: leoX + leo * 0.49, y: H - 16, dark: 0.7 }), rarity === "legendary" || rarity === "epic" || isSet ? /* @__PURE__ */ React.createElement(Sheen, { width: W, every: 3800 }) : null), /* @__PURE__ */ React.createElement(FloatIcon, { id: t.icons[2], size: 40, x: leoX + leo * 0.06, y: -16, depth: 0, phase: 300 }), /* @__PURE__ */ React.createElement(Float, { distance: 6, style: { position: "absolute", left: leoX, top: leoTop } }, /* @__PURE__ */ React.createElement(LeoAvatar, { look: { ...look, ...wear }, size: leo, crop: false })), /* @__PURE__ */ React.createElement(View, { style: styles.promoText }, /* @__PURE__ */ React.createElement(View, { style: styles.promoKicker }, /* @__PURE__ */ React.createElement(Feather, { name: "clock", size: 11, color: "#FDE68A" }), /* @__PURE__ */ React.createElement(Countdown, { until: msUntilNextMonday, prefix: "NEW \xB7 ", style: styles.promoKickerText })), /* @__PURE__ */ React.createElement(Text, { maxFontSizeMultiplier: 1.15, style: styles.promoTitle, numberOfLines: 2, adjustsFontSizeToFit: true, minimumFontScale: 0.75 }, title), /* @__PURE__ */ React.createElement(Text, { maxFontSizeMultiplier: 1.15, style: styles.promoLine, numberOfLines: 1 }, line), /* @__PURE__ */ React.createElement(View, { style: { flex: 1 } }), owned ? /* @__PURE__ */ React.createElement(ChunkyButton, { label: "Owned \xB7 Wear it", onPress: () => open(path), height: 44, tone: "plain" }) : /* @__PURE__ */ React.createElement(PriceButton, { price, was, onPress: () => open(path), height: 44 })), /* @__PURE__ */ React.createElement(FloatIcon, { id: t.icons[1], size: 54, x: W - 60, y: H - 74, depth: 2, phase: 800 }), /* @__PURE__ */ React.createElement(FloatIcon, { id: t.icons[0], size: 36, x: W - 44, y: 10, depth: 1, phase: 1300 })));
 }
 function PerkCard({ perk, width, waitlist, joined, locked, onJoin }) {
   const status = locked ? "Unlocks after your Weekly Case" : waitlist >= 10 ? `${fmt(waitlist)} on the waitlist` : "Coming soon";
@@ -195,7 +186,7 @@ const styles = StyleSheet.create({
   promoText: { position: "absolute", left: 18, top: 18, bottom: 18, width: "47%" },
   promoKicker: { flexDirection: "row", alignItems: "center", gap: 5, alignSelf: "flex-start", paddingHorizontal: 9, height: 24, borderRadius: 12, backgroundColor: "rgba(253,230,138,0.16)", borderWidth: 1, borderColor: "rgba(253,230,138,0.4)" },
   promoKickerText: { fontSize: 11.5, fontWeight: "900", color: "#FDE68A", fontVariant: ["tabular-nums"] },
-  promoTitle: { fontSize: 25, lineHeight: 28, fontWeight: "900", color: "#FFFFFF", marginTop: 10, letterSpacing: -0.4 },
+  promoTitle: { fontSize: 25, lineHeight: 28, fontWeight: "900", color: "#FFFFFF", marginTop: 10, letterSpacing: -0.4, textShadowColor: "rgba(30,16,70,0.55)", textShadowOffset: { width: 0, height: 1 }, textShadowRadius: 6 },
   promoLine: { fontSize: 13, fontWeight: "700", color: "#C4B5FD", marginTop: 4 },
   perk: { ...CARD, overflow: "hidden" },
   perkArt: { overflow: "hidden", borderTopLeftRadius: 18, borderTopRightRadius: 18 },

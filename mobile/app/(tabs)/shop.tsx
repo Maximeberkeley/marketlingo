@@ -12,7 +12,7 @@ import {
   BUNDLES, Bundle, COLLECTIONS, COSMETICS, Collection, Cosmetic, PERKS, POWER_UPS, Perk, RARITY_COLOR, RARITY_LABEL,
   SLOT_LABEL, STREAK_FREEZE_ID, bundleFullPrice, cosmetic, priceOf,
 } from '../../lib/shopCatalog';
-import { formatCountdown, msUntilLocalMidnight, msUntilNextMonday, requirementProgress, weeklyFeature } from '../../lib/shopEconomy';
+import { Feature, formatCountdown, msUntilLocalMidnight, msUntilNextMonday, pickFeature, requirementProgress } from '../../lib/shopEconomy';
 import { hasArt, useShop } from '../../hooks/useShop';
 import { LeoAvatar } from '../../components/shop/LeoAvatar';
 import { ItemArt, ShopIcon } from '../../components/shop/ItemArt';
@@ -28,7 +28,6 @@ export const SHOP_SEEN_KEY = 'ml_shop_tab_seen_v1';
 const fmt = (n: number) => n.toLocaleString('en-US');
 const open = (path: string) => { triggerHaptic('light'); router.push(path as any); };
 
-type Feature = { kind: 'bundle'; bundle: Bundle } | { kind: 'item'; item: Cosmetic };
 
 /** The XP Shop tab: spend XP on Leo's look, streak freezes, and (soon) real perks. */
 export default function ShopScreen() {
@@ -57,17 +56,8 @@ export default function ShopScreen() {
 
   // The weekly featured offer: a full set when one is drawn, else a hero item.
   const feature = useMemo<Feature | null>(() => {
-    // A seasonal piece takes over in its month (holiday antlers in December); otherwise a full set, else a hero item.
-    const month = now.getMonth() + 1;
-    const inSeason = (id: string) => !!cosmetic(id)?.featuredIn?.includes(month);
-    const seasonSets: Feature[] = BUNDLES.filter(b => b.items.every(hasArt) && b.items.every(inSeason)).map(bundle => ({ kind: 'bundle', bundle }));
-    const seasonItems: Feature[] = COSMETICS.filter(c => priceOf(c) !== null && hasArt(c.id) && inSeason(c.id)).map(item => ({ kind: 'item', item }));
-    const seasonal = seasonSets.length ? seasonSets : seasonItems;
-    const sets: Feature[] = BUNDLES.filter(b => b.items.every(hasArt)).map(bundle => ({ kind: 'bundle', bundle }));
-    const items: Feature[] = COSMETICS.filter(c => priceOf(c) !== null && hasArt(c.id) && (c.rarity === 'epic' || c.rarity === 'legendary')).map(item => ({ kind: 'item', item }));
-    const pool = seasonal.length ? seasonal : sets.length ? sets : items;
-    const pick = weeklyFeature(pool.map(f => ({ id: f.kind === 'bundle' ? f.bundle.id : f.item.id, f })), now);
-    return pick?.f ?? null;
+    // Seasonal pieces take the card only in their months (the Christmas set from December 1); see pickFeature.
+    return pickFeature(BUNDLES, COSMETICS, hasArt, now);
     // the offer changes weekly; recompute when the week key changes, not every second
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [now.toDateString()]);
@@ -330,6 +320,11 @@ function PromoCard({ feature, owned, look }: { feature: Feature; owned: boolean;
           <FloorShadow width={leo * 0.8} cx={leoX + leo * 0.49} y={H - 16} dark={0.7} />
           {rarity === 'legendary' || rarity === 'epic' || isSet ? <Sheen width={W} every={3800} /> : null}
         </View>
+        <FloatIcon id={t.icons[2]} size={40} x={leoX + leo * 0.06} y={-16} depth={0} phase={300} />
+        <Float distance={6} style={{ position: 'absolute', left: leoX, top: leoTop }}>
+          <LeoAvatar look={{ ...look, ...wear }} size={leo} crop={false} />
+        </Float>
+        {/* Text sits above Leo: on narrow phones (iPhone SE) wings and capes reach under the title. */}
         <View style={styles.promoText}>
           <View style={styles.promoKicker}>
             <Feather name="clock" size={11} color="#FDE68A" />
@@ -344,10 +339,6 @@ function PromoCard({ feature, owned, look }: { feature: Feature; owned: boolean;
             <PriceButton price={price} was={was} onPress={() => open(path)} height={44} />
           )}
         </View>
-        <FloatIcon id={t.icons[2]} size={40} x={leoX + leo * 0.06} y={-16} depth={0} phase={300} />
-        <Float distance={6} style={{ position: 'absolute', left: leoX, top: leoTop }}>
-          <LeoAvatar look={{ ...look, ...wear }} size={leo} crop={false} />
-        </Float>
         <FloatIcon id={t.icons[1]} size={54} x={W - 60} y={H - 74} depth={2} phase={800} />
         <FloatIcon id={t.icons[0]} size={36} x={W - 44} y={10} depth={1} phase={1300} />
       </View>
@@ -456,7 +447,7 @@ const styles = StyleSheet.create({
   promoText: { position: 'absolute', left: 18, top: 18, bottom: 18, width: '47%' },
   promoKicker: { flexDirection: 'row', alignItems: 'center', gap: 5, alignSelf: 'flex-start', paddingHorizontal: 9, height: 24, borderRadius: 12, backgroundColor: 'rgba(253,230,138,0.16)', borderWidth: 1, borderColor: 'rgba(253,230,138,0.4)' },
   promoKickerText: { fontSize: 11.5, fontWeight: '900', color: '#FDE68A', fontVariant: ['tabular-nums'] },
-  promoTitle: { fontSize: 25, lineHeight: 28, fontWeight: '900', color: '#FFFFFF', marginTop: 10, letterSpacing: -0.4 },
+  promoTitle: { fontSize: 25, lineHeight: 28, fontWeight: '900', color: '#FFFFFF', marginTop: 10, letterSpacing: -0.4, textShadowColor: 'rgba(30,16,70,0.55)', textShadowOffset: { width: 0, height: 1 }, textShadowRadius: 6 },
   promoLine: { fontSize: 13, fontWeight: '700', color: '#C4B5FD', marginTop: 4 },
 
   perk: { ...CARD, overflow: 'hidden' },

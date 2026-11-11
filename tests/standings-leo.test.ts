@@ -87,7 +87,7 @@ describe('Winter royal', () => {
     expect(antlers).toMatchObject({ slot: 'hat', rarity: 'common', collection: 'seasonal', featuredIn: [12] });
     expect(priceOf(antlers)).toBe(300);
     expect(read('drizzle/migrations/0060_shop_catalog_legendary_looks.sql')).toContain("('holiday-antlers', 'cosmetic', 'hat', 'common', 'Holiday antlers', 300, 'purchase'");
-    expect(read('mobile/app/(tabs)/shop.tsx')).toContain('const pool = seasonal.length ? seasonal : sets.length ? sets : items;');
+    expect(read('mobile/app/(tabs)/shop.tsx')).toContain('pickFeature(BUNDLES, COSMETICS, hasArt, now)');
     // the Christmas set: antlers + collar, both common, cheaper together, featured as a set in December
     const collar = COSMETICS.find(c => c.id === 'holiday-collar')!;
     expect(collar).toMatchObject({ slot: 'outfit', rarity: 'common', collection: 'seasonal', featuredIn: [12] });
