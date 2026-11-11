@@ -73,6 +73,7 @@ const COSMETICS = [
   { id: "royal-mantle-green", slot: "outfit", name: "Emerald mantle", rarity: "rare", acquisition: "purchase", collection: "royal" },
   { id: "sapphire-tiara", slot: "hat", name: "Sapphire tiara", rarity: "legendary", acquisition: "purchase", collection: "royal", price: 1e4, pairsWith: ["ermine-cape", "sun-diamond-necklace"] },
   { id: "sun-diamond-necklace", slot: "outfit", name: "Sun diamond necklace", rarity: "rare", acquisition: "purchase", collection: "royal", pairsWith: ["sapphire-tiara"] },
+  { id: "stethoscope", slot: "outfit", name: "Stethoscope", rarity: "rare", acquisition: "purchase", collection: "lab", pairsWith: ["safety-goggles", "round-glasses"] },
   { id: "ermine-cape", slot: "outfit", name: "Ermine cape", rarity: "legendary", acquisition: "purchase", collection: "royal", price: 7e3, pairsWith: ["sapphire-tiara"] },
   { id: "crow-cape", slot: "outfit", name: "Crow cape", rarity: "legendary", acquisition: "purchase", collection: "royal", price: 7e3, pairsWith: ["raven-crown", "top-hat"] },
   { id: "raven-crown", slot: "hat", name: "Raven crown", rarity: "legendary", acquisition: "purchase", collection: "royal", pairsWith: ["crow-cape"] },

@@ -31,6 +31,7 @@ export const SHOP_ART: Record<string, ImageSourcePropType> = {
   'royal-mantle': require('../assets/shop/outfit/royal-mantle.png'),
   'royal-mantle-blue': require('../assets/shop/outfit/royal-mantle-blue.png'),
   'royal-mantle-green': require('../assets/shop/outfit/royal-mantle-green.png'),
+  'stethoscope': require('../assets/shop/outfit/stethoscope.png'),
   'sun-diamond-necklace': require('../assets/shop/outfit/sun-diamond-necklace.png'),
   'angel-wings': require('../assets/shop/cape/angel-wings.png'),
   'medal-bronze': require('../assets/shop/held/medal-bronze.png'),

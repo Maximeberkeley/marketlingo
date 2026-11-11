@@ -231,3 +231,14 @@ describe('streak rewards', () => {
     expect(readFileSync('drizzle/migrations/0067_eternal_flame_150.sql', 'utf8')).toContain(`'{"min_streak_days":150}'::jsonb WHERE id = 'eternal-flame-halo'`);
   });
 });
+
+describe('stethoscope', () => {
+  it('is a drawn rare Lab outfit at 800 XP, on the phone and the server', () => {
+    const c = COSMETICS.find(x => x.id === 'stethoscope')!;
+    expect(c).toMatchObject({ slot: 'outfit', rarity: 'rare', collection: 'lab' });
+    expect(priceOf(c)).toBe(800);
+    const sql = readFileSync('drizzle/migrations/0068_shop_catalog_stethoscope.sql', 'utf8');
+    expect(sql).toContain("('stethoscope', 'cosmetic', 'outfit', 'rare', 'Stethoscope', 800");
+    expect(sql).toContain("'stethoscope'");
+  });
+});
