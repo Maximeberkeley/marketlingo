@@ -20,7 +20,9 @@ Deno.serve(async (req) => {
   if (!market || !(market in FILES)) return json({ error: "market must be one of " + Object.keys(FILES).join(", ") }, 400);
   const sql = postgres(Deno.env.get("SUPABASE_DB_URL")!, { max: 1, prepare: false });
   try {
-    await sql.unsafe(await gunzip(FILES[market])).simple();
+    // The files label stack_type 'MICRO_LESSON', which the table rejects; every loaded hand-written lesson uses 'LESSON'.
+    const text = (await gunzip(FILES[market])).replaceAll("'MICRO_LESSON', ARRAY[", "'LESSON', ARRAY[");
+    await sql.unsafe(text).simple();
     const [r] = await sql`select count(*)::int as n from public.stacks where market_id = ${market} and 'handwritten-v1' = any(tags)`;
     return json({ market, handwrittenStacks: r.n });
   } catch (e) {
