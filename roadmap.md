@@ -1,10 +1,12 @@
 # MarketLingo roadmap
 
+> For Lovable and any agent: this file is a log, not a to-do list for you. Only do what Max asks in the current chat. Never pick up unchecked items here on your own.
+
 ## Nov 11 — Catch-up on past work
 - [ ] Load hand-written lessons days 6–30 for 10 industries (0028–0037 were skipped by migrations).
 - [ ] Split the oversized Deep Case loader so it deploys.
 - [x] Verify the XP Shop end to end as a signed-in learner.
-- [x] Bring key players up to 15 companies + 5 startups per market. — DONE: every industry now lists 20+ companies (new file mobile/data/keyPlayersMore).
+- [ ] ~~Bring key players up to 15 companies + 5 startups per market.~~ REVERTED Nov 11: the added companies were written from memory and never source-checked. Not requested by Max. Do not redo without a sourced, verified list.
 
 ## Nov 11 — Completed-day streak reminder
 - [x] Identify the unconditional 20:30 phone fallback despite Max's credited Nov 10 lesson.
