@@ -51,6 +51,8 @@ import { LeoCharacter } from '../../components/mascot/LeoCharacter';
 import { FoxMascot } from '../../components/mascot/FoxMascot';
 import { LeoPopup } from '../../components/mascot/LeoPopup';
 import { useLeoPopups } from '../../hooks/useLeoPopups';
+import { useSocialNudges } from '../../hooks/useSocialNudges';
+import { trackEvent } from '../../lib/analytics';
 import { useAchievements } from '../../hooks/useAchievements';
 import { LeoVoiceChatOverlay } from '../../components/ai/LeoVoiceChatOverlay';
 import { log } from '../../lib/logger';
@@ -449,6 +451,17 @@ function HomeScreenContent() {
       clearTimeout(idleTimer);
     };
   }, [loading, authLoading, selectedMarket, user, lessonCompletedToday, lessonStack?.id, displayName, courseFocused, session.showGoals, session.showReader, session.showSessionComplete]);
+
+  // Friend race and reward reminders: Leo says them, through the same queue as his lesson nudges.
+  const socialNudgesActive = !loading && !authLoading && !!user && courseFocused && !session.showGoals && !session.showReader && !session.showSessionComplete;
+  useSocialNudges(user?.id, socialNudgesActive, nudge => leoPopups.enqueue({
+    category: 'social',
+    title: nudge.title,
+    body: nudge.body,
+    actionLabel: nudge.action,
+    onAction: () => { trackEvent('social_nudge_opened', { kind: nudge.key.split(':')[0] }); router.push('/friends' as any); },
+    duration: 9000,
+  }));
 
   // Opening a lesson cancels the dashboard-idle nudge lifecycle until Course
   // is visible again; completion also clears any queued in-app messages.
