@@ -98,11 +98,11 @@ The author must not grade their own numbers.
 
 ### 6. Publish
 
-1. `node scripts/weekly/export.mjs --write` regenerates `export/weekly_cases.generated.sql` and `.json`. Commit the case file and both generated files.
+1. `node scripts/weekly/export.mjs --write` regenerates `export/weekly_cases.generated.sql` and `.json`, and the bundle `supabase/functions/load-weekly-cases/data/index.ts`. Commit the case file and all three generated files (a test fails if the bundle is out of date).
 2. Run the repository's tests (`npm test`, which is `vitest run`; run `npm ci` first if dependencies are not installed) and make sure nothing fails.
 3. Open a pull request into `main` with `gh api repos/Maximeberkeley/marketlingo/pulls -X POST --input file.json`. Title: `Weekly case <week_start>: <title>`. Body: the five candidates and why each was kept or dropped; the tension; the validator output; the list of facts that rest on a single secondary source; the `time_sensitive` list; and the attribution line from your instructions.
 4. If checks pass, merge with `gh api repos/Maximeberkeley/marketlingo/pulls/<n>/merge -X PUT -f merge_method=merge`. On a 405, wait a few seconds and retry up to three times. Do not merge a PR whose validator or tests fail.
-5. Delivery to the database: the exported SQL is idempotent. If `supabase/functions/load-weekly-cases` exists, load the new case as its README describes and confirm the row. Otherwise the notification must say the SQL is ready in `scripts/weekly/export/` and still needs loading.
+5. Delivery to the database: merging is enough. Lovable deploys `supabase/functions/load-weekly-cases`, and a database job (`weekly-case-load`, every six hours, created by migration 0044) calls it, so the new case is inserted before its Monday without anyone running SQL. The agent cannot call the function itself (the sandbox network is allowlisted), so the notification must say "merged; the database job loads it within six hours". If the migration has not been applied yet, say the case is "merged, loading starts once migration 0044 is applied". The exported SQL in `scripts/weekly/export/` remains a manual fallback.
 
 ### 7. Notify
 

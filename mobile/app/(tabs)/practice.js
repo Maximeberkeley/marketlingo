@@ -7,6 +7,8 @@ import { triggerHaptic } from "../../lib/haptics";
 import { playSound } from "../../lib/sounds";
 import { useStudiedLessons } from "../../hooks/useStudiedLessons";
 import { useUserXP } from "../../hooks/useUserXP";
+import { useWeeklyCase } from "../../hooks/useWeeklyCase";
+import { weeklyCardInfo } from "../../lib/weeklyCase";
 import { COLORS, TYPE } from "../../lib/constants";
 import { useAuth } from "../../hooks/useAuth";
 import { supabase } from "../../lib/supabase";
@@ -31,7 +33,7 @@ function PracticeCard({ card, first }) {
     router.push(card.path);
   };
   const quiet = card.done;
-  return /* @__PURE__ */ React.createElement(View, { style: [styles.card, first && !card.locked && !card.done && styles.cardFirst] }, /* @__PURE__ */ React.createElement(Image, { source: ART[card.id], style: [styles.thumb, card.locked && styles.thumbLocked], resizeMode: "cover" }), /* @__PURE__ */ React.createElement(View, { style: styles.cardBody }, /* @__PURE__ */ React.createElement(Text, { style: [styles.eyebrow, card.locked && { color: COLORS.textMuted }] }, card.eyebrow), /* @__PURE__ */ React.createElement(Text, { style: styles.cardTitle }, card.title), card.done ? /* @__PURE__ */ React.createElement(View, { style: styles.doneRow }, /* @__PURE__ */ React.createElement(Feather, { name: "check", size: 15, color: COLORS.success }), /* @__PURE__ */ React.createElement(Text, { style: styles.doneText }, card.state.before)) : /* @__PURE__ */ React.createElement(Text, { style: styles.stateLine }, card.state.before, card.state.bold ? /* @__PURE__ */ React.createElement(Text, { style: styles.stateBold }, card.state.bold) : null, card.state.after), card.locked ? /* @__PURE__ */ React.createElement(View, { style: styles.lockRow }, /* @__PURE__ */ React.createElement(Feather, { name: "lock", size: 14, color: COLORS.textMuted }), /* @__PURE__ */ React.createElement(Text, { style: styles.lockText }, UNLOCK_LINE)) : card.button ? /* @__PURE__ */ React.createElement(
+  return /* @__PURE__ */ React.createElement(View, { style: [styles.card, first && !card.locked && !card.done && styles.cardFirst] }, card.tile ? /* @__PURE__ */ React.createElement(View, { style: [styles.thumb, styles.tile, card.done && styles.tileDone], accessible: false }, /* @__PURE__ */ React.createElement(Feather, { name: card.tile.icon, size: 30, color: card.done ? COLORS.success : COLORS.accent }), /* @__PURE__ */ React.createElement(Text, { style: [styles.tileLabel, card.done && { color: COLORS.success }] }, card.tile.label)) : /* @__PURE__ */ React.createElement(Image, { source: ART[card.id], style: [styles.thumb, card.locked && styles.thumbLocked], resizeMode: "cover" }), /* @__PURE__ */ React.createElement(View, { style: styles.cardBody }, /* @__PURE__ */ React.createElement(Text, { style: [styles.eyebrow, card.locked && { color: COLORS.textMuted }] }, card.eyebrow), card.byline ? /* @__PURE__ */ React.createElement(Text, { style: styles.byline, numberOfLines: 1 }, card.byline) : null, /* @__PURE__ */ React.createElement(Text, { style: styles.cardTitle, numberOfLines: 2 }, card.title), card.done ? /* @__PURE__ */ React.createElement(View, { style: styles.doneRow }, /* @__PURE__ */ React.createElement(Feather, { name: "check", size: 15, color: COLORS.success }), /* @__PURE__ */ React.createElement(Text, { style: styles.doneText }, card.state.before)) : /* @__PURE__ */ React.createElement(Text, { style: styles.stateLine }, card.state.before, card.state.bold ? /* @__PURE__ */ React.createElement(Text, { style: styles.stateBold }, card.state.bold) : null, card.state.after), card.locked ? /* @__PURE__ */ React.createElement(View, { style: styles.lockRow }, /* @__PURE__ */ React.createElement(Feather, { name: "lock", size: 14, color: COLORS.textMuted }), /* @__PURE__ */ React.createElement(Text, { style: styles.lockText }, UNLOCK_LINE)) : card.button ? /* @__PURE__ */ React.createElement(
     TouchableOpacity,
     {
       onPress: open,
@@ -40,7 +42,7 @@ function PracticeCard({ card, first }) {
       style: [styles.button, quiet && styles.buttonQuiet]
     },
     /* @__PURE__ */ React.createElement(Text, { style: [styles.buttonText, quiet && styles.buttonQuietText] }, card.button)
-  ) : null));
+  ) : null, card.extra ? /* @__PURE__ */ React.createElement(TouchableOpacity, { onPress: () => router.push(card.extra.path), accessibilityRole: "link", style: styles.extra, hitSlop: { top: 8, bottom: 8 } }, /* @__PURE__ */ React.createElement(Text, { style: styles.extraText }, card.extra.label)) : null));
 }
 function WorthAnotherLook({ entries, today, later }) {
   const due = dueEntries(entries, today);
@@ -75,6 +77,8 @@ function PracticeScreen() {
   const [ledger, setLedger] = useState([]);
   const studied = useStudiedLessons(selectedMarket || void 0);
   const { dailyCompletion } = useUserXP(selectedMarket || void 0);
+  const weekly = useWeeklyCase();
+  const refreshWeekly = weekly.refresh;
   useEffect(() => {
     if (!user) return;
     supabase.from("profiles").select("selected_market").eq("id", user.id).single().then(({ data }) => {
@@ -86,6 +90,7 @@ function PracticeScreen() {
     });
   }, [user]);
   useFocusEffect(useCallback(() => {
+    void refreshWeekly();
     if (!user?.id || !selectedMarket) return;
     let active = true;
     void loadLedger(user.id, selectedMarket).then((rows) => {
@@ -98,7 +103,7 @@ function PracticeScreen() {
     return () => {
       active = false;
     };
-  }, [user?.id, selectedMarket]));
+  }, [user?.id, selectedMarket, refreshWeekly]));
   if (loading || studied.isLoading) {
     return /* @__PURE__ */ React.createElement(View, { style: [styles.container, styles.centered] }, /* @__PURE__ */ React.createElement(ActivityIndicator, { size: "large", color: COLORS.accent }));
   }
@@ -108,7 +113,14 @@ function PracticeScreen() {
     lessonsStudied: studied.lessons.length,
     gamesCompleted: dailyCompletion?.games_completed,
     drillsCompleted: dailyCompletion?.drills_completed,
-    mocks
+    mocks,
+    weekly: weekly.loading ? null : weeklyCardInfo({
+      now: Date.now(),
+      current: weekly.current,
+      submitted: weekly.submitted,
+      score: weekly.score,
+      previous: weekly.previous && weekly.previousScore !== null ? { case: weekly.previous, score: weekly.previousScore } : null
+    })
   });
   return /* @__PURE__ */ React.createElement(View, { style: styles.container }, /* @__PURE__ */ React.createElement(
     ScrollView,
@@ -132,6 +144,12 @@ const styles = StyleSheet.create({
   cardFirst: { borderColor: COLORS.accent, borderWidth: 2 },
   thumb: { width: 84, height: 84, borderRadius: 14, backgroundColor: COLORS.accentSoft },
   thumbLocked: { opacity: 0.45 },
+  tile: { alignItems: "center", justifyContent: "center", gap: 6, backgroundColor: COLORS.accentSoft },
+  tileDone: { backgroundColor: COLORS.successSoft },
+  tileLabel: { fontSize: 11, fontWeight: "800", letterSpacing: 1, color: COLORS.accent },
+  byline: { fontSize: 12, fontWeight: "600", color: COLORS.textMuted },
+  extra: { marginTop: 8, alignSelf: "flex-start", minHeight: 32, justifyContent: "center" },
+  extraText: { fontSize: 13, fontWeight: "700", color: COLORS.accent },
   cardBody: { flex: 1, minWidth: 0, gap: 3 },
   eyebrow: { fontSize: 11, fontWeight: "800", letterSpacing: 1, textTransform: "uppercase", color: COLORS.accent },
   cardTitle: { fontSize: 18, fontWeight: "800", color: COLORS.textPrimary },

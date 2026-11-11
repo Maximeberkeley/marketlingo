@@ -18,6 +18,7 @@ export type AnalyticsEvent =
   | 'trainer_complete'
   | 'game_complete'
   | 'drill_complete'
+  | 'weekly_case_submitted'
   | 'subscription_view'
   | 'app_open'
   | 'onboarding_complete'

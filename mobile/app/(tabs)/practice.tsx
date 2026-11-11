@@ -7,6 +7,8 @@ import { triggerHaptic } from '../../lib/haptics';
 import { playSound } from '../../lib/sounds';
 import { useStudiedLessons } from '../../hooks/useStudiedLessons';
 import { useUserXP } from '../../hooks/useUserXP';
+import { useWeeklyCase } from '../../hooks/useWeeklyCase';
+import { weeklyCardInfo } from '../../lib/weeklyCase';
 import { COLORS, TYPE } from '../../lib/constants';
 import { useAuth } from '../../hooks/useAuth';
 import { supabase } from '../../lib/supabase';
@@ -16,7 +18,7 @@ import { localDateString } from '../../lib/dayMath';
 import { practiceCards, PracticeCardId, PracticeCardState, UNLOCK_LINE } from '../../lib/practiceCards';
 import { dueEntries, dueMeta, loadLedger, nextDue, REVIEW_XP, REVIEW_ROUND_LIMIT, ReviewEntry, STAGES } from '../../lib/reviewLedger';
 
-const ART: Record<PracticeCardId, ImageSourcePropType> = {
+const ART: Record<Exclude<PracticeCardId, 'weekly-case'>, ImageSourcePropType> = {
   interview: INTERVIEW_ARTWORK.practice,
   investment: INTERVIEW_ARTWORK.investment,
   'deep-case': INTERVIEW_ARTWORK.case,
@@ -36,10 +38,18 @@ function PracticeCard({ card, first }: { card: PracticeCardState; first: boolean
   const quiet = card.done;
   return (
     <View style={[styles.card, first && !card.locked && !card.done && styles.cardFirst]}>
-      <Image source={ART[card.id]} style={[styles.thumb, card.locked && styles.thumbLocked]} resizeMode="cover" />
+      {card.tile ? (
+        <View style={[styles.thumb, styles.tile, card.done && styles.tileDone]} accessible={false}>
+          <Feather name={card.tile.icon as any} size={30} color={card.done ? COLORS.success : COLORS.accent} />
+          <Text style={[styles.tileLabel, card.done && { color: COLORS.success }]}>{card.tile.label}</Text>
+        </View>
+      ) : (
+        <Image source={ART[card.id as Exclude<PracticeCardId, 'weekly-case'>]} style={[styles.thumb, card.locked && styles.thumbLocked]} resizeMode="cover" />
+      )}
       <View style={styles.cardBody}>
         <Text style={[styles.eyebrow, card.locked && { color: COLORS.textMuted }]}>{card.eyebrow}</Text>
-        <Text style={styles.cardTitle}>{card.title}</Text>
+        {card.byline ? <Text style={styles.byline} numberOfLines={1}>{card.byline}</Text> : null}
+        <Text style={styles.cardTitle} numberOfLines={2}>{card.title}</Text>
         {card.done ? (
           <View style={styles.doneRow}>
             <Feather name="check" size={15} color={COLORS.success} />
@@ -65,6 +75,11 @@ function PracticeCard({ card, first }: { card: PracticeCardState; first: boolean
             style={[styles.button, quiet && styles.buttonQuiet]}
           >
             <Text style={[styles.buttonText, quiet && styles.buttonQuietText]}>{card.button}</Text>
+          </TouchableOpacity>
+        ) : null}
+        {card.extra ? (
+          <TouchableOpacity onPress={() => router.push(card.extra!.path as any)} accessibilityRole="link" style={styles.extra} hitSlop={{ top: 8, bottom: 8 }}>
+            <Text style={styles.extraText}>{card.extra.label}</Text>
           </TouchableOpacity>
         ) : null}
       </View>
@@ -136,6 +151,8 @@ export default function PracticeScreen() {
   const [ledger, setLedger] = useState<ReviewEntry[]>([]);
   const studied = useStudiedLessons(selectedMarket || undefined);
   const { dailyCompletion } = useUserXP(selectedMarket || undefined);
+  const weekly = useWeeklyCase();
+  const refreshWeekly = weekly.refresh;
 
   useEffect(() => {
     if (!user) return;
@@ -156,6 +173,7 @@ export default function PracticeScreen() {
 
   // Mocks and the review list change after every session, so reload on focus.
   useFocusEffect(useCallback(() => {
+    void refreshWeekly();
     if (!user?.id || !selectedMarket) return;
     let active = true;
     void loadLedger(user.id, selectedMarket).then(rows => { if (active) setLedger(rows); });
@@ -165,7 +183,7 @@ export default function PracticeScreen() {
       .then(({ data }: any) => { if (active) setMocks(Array.isArray(data) ? data : []); })
       .catch(() => {});
     return () => { active = false; };
-  }, [user?.id, selectedMarket]));
+  }, [user?.id, selectedMarket, refreshWeekly]));
 
   if (loading || studied.isLoading) {
     return (
@@ -182,6 +200,13 @@ export default function PracticeScreen() {
     gamesCompleted: dailyCompletion?.games_completed,
     drillsCompleted: dailyCompletion?.drills_completed,
     mocks,
+    weekly: weekly.loading ? null : weeklyCardInfo({
+      now: Date.now(),
+      current: weekly.current,
+      submitted: weekly.submitted,
+      score: weekly.score,
+      previous: weekly.previous && weekly.previousScore !== null ? { case: weekly.previous, score: weekly.previousScore } : null,
+    }),
   });
 
   return (
@@ -218,6 +243,12 @@ const styles = StyleSheet.create({
   cardFirst: { borderColor: COLORS.accent, borderWidth: 2 },
   thumb: { width: 84, height: 84, borderRadius: 14, backgroundColor: COLORS.accentSoft },
   thumbLocked: { opacity: 0.45 },
+  tile: { alignItems: 'center', justifyContent: 'center', gap: 6, backgroundColor: COLORS.accentSoft },
+  tileDone: { backgroundColor: COLORS.successSoft },
+  tileLabel: { fontSize: 11, fontWeight: '800', letterSpacing: 1, color: COLORS.accent },
+  byline: { fontSize: 12, fontWeight: '600', color: COLORS.textMuted },
+  extra: { marginTop: 8, alignSelf: 'flex-start', minHeight: 32, justifyContent: 'center' },
+  extraText: { fontSize: 13, fontWeight: '700', color: COLORS.accent },
   cardBody: { flex: 1, minWidth: 0, gap: 3 },
   eyebrow: { fontSize: 11, fontWeight: '800', letterSpacing: 1, textTransform: 'uppercase', color: COLORS.accent },
   cardTitle: { fontSize: 18, fontWeight: '800', color: COLORS.textPrimary },
