@@ -6592,6 +6592,6587 @@ const rows: unknown[] = [
    "handwritten-v1",
    "src:c9009f7d7b2e"
   ]
+ },
+ {
+  "id": "60c7be3a-55e4-5188-9a3e-3114cf748415",
+  "market_id": "logistics",
+  "day": 16,
+  "slot": 1,
+  "content": {
+   "id": "logistics-d16-c1",
+   "title": "The contract premium shrinks",
+   "lessonTitle": "The spot-contract squeeze",
+   "slot": 1,
+   "type": "apply",
+   "brief": {
+    "headline": "In February 2026, truckload spot rates averaged $2.01 a mile and contract rates $2.12, the U.S. Bank and DAT index showed. The contract premium fell from about 39 cents a year earlier to about 11 cents.",
+    "kicker": "Apply the rule: broker profit lives in the gap.",
+    "fullText": "Spot rates bottomed at $1.57 a mile in May 2025 and rose about 28% by February 2026. Contract rates rose about 6.5% over the same stretch.\n\nVolumes did not drive it: from March 2025 to February 2026, spot volume fell about 3.7% and contract volume about 22.1%. DAT's Ken Adamo described a market \"beginning to rebalance.\" Pricing power was shifting with tighter capacity, not stronger demand.",
+    "sources": [
+     {
+      "url": "https://www.freightwaves.com/?p=571890",
+      "label": "FreightWaves, contract premium shrinks as truckload market reprices higher"
+     },
+     {
+      "url": "https://www.logisticsmgmt.com/article/december_spot_truckload_activity_sees_gains_to_end_2025",
+      "label": "Logistics Management, December spot truckload activity"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "buildChain",
+    "prompt": "Put the chain in order.",
+    "steps": [
+     "Truck capacity tightens",
+     "Spot rates rise about 28%",
+     "Contract rates rise only about 6.5%",
+     "The gap a broker can earn shrinks"
+    ],
+    "explanation": "Brokers often sell at contract rates and buy at spot. When spot catches up, the spread narrows."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "About how many cents a mile was the contract premium by March 2026?",
+    "min": 0,
+    "max": 50,
+    "value": 11,
+    "unit": "cents",
+    "explanation": "About 11 cents, down from about 39 cents a year earlier."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You are a broker sales rep. Your contract customers pay $2.12 a mile, and spot trucks cost $2.01.",
+      "prompt": "What worries your manager?",
+      "options": [
+       "Spot trucks are too cheap to trust",
+       "Contract customers will pay us more soon",
+       "The 11-cent gap barely covers our costs"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Price is not the trust problem here.",
+       "Contract rates are set for months.",
+       "You see how thin the spread has become."
+      ],
+      "explanation": "A broker that sells contract and buys spot earns the gap. Eleven cents leaves little room."
+     },
+     "proReasoning": "Good brokers track the spread on every lane, not just total volume.",
+     "commonMistake": "Watching revenue while the margin quietly disappears.",
+     "mentalModel": "Watch the gap."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Spot rates rose about 28% while contract rates rose about 6.5%.",
+      "prompt": "Which business is squeezed in the short run?",
+      "options": [
+       "Brokers selling at fixed contract rates",
+       "Carriers paid at higher spot rates",
+       "Shippers on locked contract rates"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Brokers pay more to carriers before contracts reset.",
+       "Carriers gain from rising spot.",
+       "Shippers on contracts are protected for now."
+      ],
+      "explanation": "Rising spot costs hit brokers until contract rates catch up."
+     },
+     "proReasoning": "Investors watch where each company sits on the spot-contract gap.",
+     "commonMistake": "Treating all freight companies as winners when rates rise.",
+     "mentalModel": "Know which side of the gap you are on."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Brokers face shrinking spreads when spot rates rise faster than contracts.",
+      "prompt": "What would brokers pay for?",
+      "options": [
+       "A plan to buy hundreds of trucks",
+       "Alerts when a lane's spread turns thin",
+       "A bigger load board with more ads"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Trucks change the model.",
+       "You help them spot losing lanes early.",
+       "More ads do not fix margins."
+      ],
+      "explanation": "Seeing thin or negative spreads early lets brokers reprice or walk away."
+     },
+     "proReasoning": "Founders build tools that show margin risk before it hits results.",
+     "commonMistake": "Selling more volume when the problem is margin.",
+     "mentalModel": "Show the margin before it is gone."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You read that freight volumes fell but spot rates still rose.",
+      "prompt": "How can both happen?",
+      "options": [
+       "Shippers sent far more loads than before",
+       "Fuel prices tripled in a year",
+       "Truck supply shrank faster than demand"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Volumes fell.",
+       "Fuel rose only about 2.5%.",
+       "You see capacity driving price."
+      ],
+      "explanation": "Prices rose because capacity tightened, not because demand grew."
+     },
+     "proReasoning": "Price is set by supply and demand together.",
+     "commonMistake": "Assuming rising prices always mean rising demand.",
+     "mentalModel": "Check supply, not just demand."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:32f52578113e"
+  ]
+ },
+ {
+  "id": "ea190e03-cba5-5aee-84e1-d7550e22d199",
+  "market_id": "logistics",
+  "day": 16,
+  "slot": 2,
+  "content": {
+   "id": "logistics-d16-c2",
+   "title": "Productivity meets a squeeze",
+   "lessonTitle": "The spot-contract squeeze",
+   "slot": 2,
+   "type": "connect",
+   "brief": {
+    "headline": "In December 2025, the DAT dry van spot rate averaged $2.29 a mile against a contract rate of $2.46. Broker margins fell to 9.9%.",
+    "kicker": "Connect day 14 and day 16: productivity versus the spread.",
+    "fullText": "Day 14 showed that brokers can lift margins by handling more loads per person, as C.H. Robinson did. Day 16 shows the force working the other way: holiday demand, severe weather and tight capacity pushed spot rates up, squeezing the gap brokers earn.\n\nProductivity lowers what each load costs to handle. The spread decides what each load earns. A broker needs both to hold its margin.",
+    "sources": [
+     {
+      "url": "https://www.logisticsmgmt.com/article/december_spot_truckload_activity_sees_gains_to_end_2025",
+      "label": "Logistics Management, December spot truckload activity"
+     },
+     {
+      "url": "https://www.freightwaves.com/news/headcount-falls-at-c-h-robinson-as-automation-ai-reshape-brokerage",
+      "label": "FreightWaves, headcount falls at C.H. Robinson as automation reshapes brokerage"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "sortSignal",
+    "prompt": "Does it help or hurt a broker's margin?",
+    "buckets": [
+     "Helps",
+     "Hurts"
+    ],
+    "items": [
+     {
+      "text": "More loads handled per person",
+      "bucket": 0
+     },
+     {
+      "text": "Contract rates rising faster than spot",
+      "bucket": 0
+     },
+     {
+      "text": "Spot rates jumping in a storm",
+      "bucket": 1
+     },
+     {
+      "text": "Holiday demand tightening trucks",
+      "bucket": 1
+     }
+    ],
+    "explanation": "Productivity and a wide spread help. Spot spikes from weather or peak demand hurt."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "What was the broker margin in December 2025?",
+    "min": 0,
+    "max": 25,
+    "value": 9.9,
+    "unit": "%",
+    "explanation": "It fell to 9.9%, as spot rates rose toward contract rates."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You manage a broker team. Margins fell to about 10% in a storm-hit December.",
+      "prompt": "What can your team control?",
+      "options": [
+       "Cost per load via better workflows",
+       "The weather across the Midwest",
+       "National spot rates next week"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "You focus on the lever you hold.",
+       "No one controls storms.",
+       "Market rates are set by everyone."
+      ],
+      "explanation": "You cannot set spot rates, but you can lower what each load costs to handle."
+     },
+     "proReasoning": "Good managers separate what the market does from what the team can change.",
+     "commonMistake": "Blaming the market for everything.",
+     "mentalModel": "Control your costs; respect the market."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A broker shows rising productivity but falling margins in December.",
+      "prompt": "What explains it?",
+      "options": [
+       "Productivity always lowers margins",
+       "A spot spike outweighed the gains",
+       "The company stopped tracking costs"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Productivity usually helps margins.",
+       "You weigh the two forces.",
+       "Nothing suggests that."
+      ],
+      "explanation": "Efficiency gains can be swamped when spot rates jump toward contract."
+     },
+     "proReasoning": "Investors separate cyclical squeezes from lasting changes.",
+     "commonMistake": "Reading one bad month as a broken strategy.",
+     "mentalModel": "Separate the cycle from the trend."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Brokers want to keep margins when spot rates spike.",
+      "prompt": "What product helps most?",
+      "options": [
+       "A chat app for drivers to share photos",
+       "A billboard ad campaign",
+       "Pricing that updates contracts faster"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "That does not touch margins.",
+       "Ads do not fix spreads.",
+       "You shorten the lag between cost and price."
+      ],
+      "explanation": "The squeeze comes from contract prices lagging spot. Faster repricing narrows the lag."
+     },
+     "proReasoning": "Founders attack the lag that causes the pain.",
+     "commonMistake": "Building for engagement when the pain is price.",
+     "mentalModel": "Shorten the lag."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You wonder why storms and holidays hurt freight brokers.",
+      "prompt": "What is the link?",
+      "options": [
+       "They tighten trucks and lift spot rates",
+       "They make shippers pay brokers more",
+       "They make each load lighter to haul"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "You see how events move spot rates.",
+       "Contracts usually stay fixed.",
+       "Weight is not the issue."
+      ],
+      "explanation": "Fewer available trucks push spot rates up while contract prices stay put."
+     },
+     "proReasoning": "Short shocks hit the spot market first.",
+     "commonMistake": "Thinking brokers win whenever freight is busy.",
+     "mentalModel": "Shocks hit spot first."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:cfc7f9fb9f11"
+  ]
+ },
+ {
+  "id": "b1a958d1-2b2a-5076-95ef-74a3c114985c",
+  "market_id": "logistics",
+  "day": 16,
+  "slot": 3,
+  "content": {
+   "id": "logistics-d16-c3",
+   "title": "Reprice or eat the squeeze?",
+   "lessonTitle": "The spot-contract squeeze",
+   "slot": 3,
+   "type": "decide",
+   "brief": {
+    "headline": "You run a freight broker. A big customer's contract pays $2.12 a mile, and spot trucks on its lanes now cost about $2.01 and rising.",
+    "kicker": "Decide: how do you protect the spread?",
+    "fullText": "In February 2026 the contract premium had fallen to about 11 cents a mile from about 39 cents a year earlier. Brokers often sell at contract rates and buy trucks at spot rates, so the gap is their gross profit.\n\nThe contract has three months left. You can ask to reopen it, keep hauling at a thin margin, or move some loads to carriers on fixed rates.",
+    "sources": [
+     {
+      "url": "https://www.freightwaves.com/?p=571890",
+      "label": "FreightWaves, contract premium shrinks as truckload market reprices higher"
+     },
+     {
+      "url": "https://www.logisticsmgmt.com/article/december_spot_truckload_activity_sees_gains_to_end_2025",
+      "label": "Logistics Management, December spot truckload activity"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "faceOff",
+    "prompt": "Which move protects your spread better?",
+    "left": {
+     "name": "Lock carrier rates",
+     "note": "Fix your buy price on key lanes"
+    },
+    "right": {
+     "name": "Buy every load at spot",
+     "note": "Pay whatever the market asks"
+    },
+    "correctIndex": 0,
+    "explanation": "Fixing your buy price on key lanes stops rising spot rates eating the spread."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "About how many cents a mile was the contract premium a year before March 2026?",
+    "min": 0,
+    "max": 60,
+    "value": 39,
+    "unit": "cents",
+    "explanation": "About 39 cents, before it shrank to about 11 cents."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You manage the account. The customer resists any price talk.",
+      "prompt": "How do you open the conversation?",
+      "options": [
+       "Say nothing and absorb the loss",
+       "Share lane data showing costs rising",
+       "Threaten to stop hauling tomorrow"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Silence drains margin for months.",
+       "Data makes a fair case for repricing.",
+       "Threats damage the relationship."
+      ],
+      "explanation": "Shippers accept changes more readily when shown market data."
+     },
+     "proReasoning": "Good account managers bring evidence, not ultimatums.",
+     "commonMistake": "Avoiding the conversation until the contract ends.",
+     "mentalModel": "Lead with data."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Many brokers hold contracts priced before spot rates rose.",
+      "prompt": "When might their margins recover?",
+      "options": [
+       "Never, since contracts never change",
+       "Only if spot rates double",
+       "As contracts reprice to the new market"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Contracts reset regularly.",
+       "A doubling would make things worse.",
+       "Contract resets close the gap."
+      ],
+      "explanation": "Contracts reset over months. Margins improve as sell rates catch up."
+     },
+     "proReasoning": "Investors model when contracts roll over, not just today's spread.",
+     "commonMistake": "Assuming today's squeeze lasts forever.",
+     "mentalModel": "Squeezes end when contracts reset."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your startup broker has many contracts priced last year.",
+      "prompt": "What is the smart move?",
+      "options": [
+       "Lock carrier rates on big lanes",
+       "Take every new load at any price",
+       "Cancel all contracts at once"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "You cap your buy cost where it matters.",
+       "Volume at a loss burns cash.",
+       "Cancelling loses customers."
+      ],
+      "explanation": "Locking carrier rates on key lanes protects the spread until contracts reset."
+     },
+     "proReasoning": "Founders hedge their biggest exposure first.",
+     "commonMistake": "Chasing volume during a squeeze.",
+     "mentalModel": "Hedge the biggest lanes."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You wonder why a broker would lose money on a contract it signed.",
+      "prompt": "How does that happen?",
+      "options": [
+       "Trucks suddenly became free to hire",
+       "Its buy cost rose after it set the price",
+       "The customer stopped paying its bills"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Trucks cost more, not less.",
+       "You see the timing risk.",
+       "Nothing points to unpaid bills."
+      ],
+      "explanation": "The sell price was fixed months ago. The buy price moved with the market."
+     },
+     "proReasoning": "Fixed prices carry timing risk.",
+     "commonMistake": "Thinking a signed contract guarantees profit.",
+     "mentalModel": "Fixed price, moving cost."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:b8de9c969d80"
+  ]
+ },
+ {
+  "id": "d4afcb40-efd5-529d-83f4-2f265a4a27b8",
+  "market_id": "logistics",
+  "day": 17,
+  "slot": 1,
+  "content": {
+   "id": "logistics-d17-c1",
+   "title": "A final rule on CDL eligibility",
+   "lessonTitle": "English tests and driver licenses",
+   "slot": 1,
+   "type": "apply",
+   "brief": {
+    "headline": "In February 2026, FMCSA issued a final rule limiting non-domiciled commercial driver's licenses. Work authorization documents no longer count as proof of eligibility.",
+    "kicker": "Apply the rule: enforcement can shrink capacity.",
+    "fullText": "Applicants now need an unexpired foreign passport and specific I-94 documents, and states must verify status through the federal SAVE system. Holders of H-2A, H-2B and E-2 status can still qualify.\n\nOverdrive said the original September 2025 rulemaking sought to remove nearly 200,000 drivers from commercial driving; a court paused that interim rule in November. FMCSA Administrator Derek Barrs said, \"If we cannot verify your safe driving history, you cannot hold a CDL in this country.\"",
+    "sources": [
+     {
+      "url": "https://www.overdriveonline.com/business/article/15816996/fmcsa-issues-final-rule-banning-nondomiciled-cdls-almost-entirely",
+      "label": "Overdrive, FMCSA final rule on non-domiciled CDLs"
+     },
+     {
+      "url": "https://www.fleetowner.com/news/regulations/article/55353817/a-2026-federal-enforcement-outlook-for-trucking",
+      "label": "FleetOwner, FMCSA's enforcement outlook for 2026"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "spotFake",
+    "prompt": "One of these is false. Tap it.",
+    "statements": [
+     "States must check applicants through the SAVE system.",
+     "H-2A, H-2B and E-2 holders can still qualify.",
+     "The final rule accepts work permits as proof."
+    ],
+    "fakeIndex": 2,
+    "explanation": "The final rule removed Employment Authorization Documents as proof of eligibility."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "About how many thousand drivers did the September 2025 rulemaking aim to remove?",
+    "min": 0,
+    "max": 300,
+    "value": 200,
+    "unit": "K",
+    "explanation": "Overdrive described nearly 200,000 drivers."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You handle driver compliance at a carrier.",
+      "prompt": "What do you do first under the final rule?",
+      "options": [
+       "Review which drivers' licenses are affected",
+       "Wait for drivers to raise it themselves",
+       "Assume none of your drivers are affected"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "You find the exposure before it hits.",
+       "Waiting risks trucks parked overnight.",
+       "Assumptions leave you unprepared."
+      ],
+      "explanation": "Knowing which licenses are affected lets you plan capacity and stay compliant."
+     },
+     "proReasoning": "Compliance teams audit exposure as soon as a rule is final.",
+     "commonMistake": "Learning about the problem at a roadside check.",
+     "mentalModel": "Audit exposure early."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A rule could remove many drivers from the market over time.",
+      "prompt": "What could that do to truckload rates?",
+      "options": [
+       "Leave them unchanged in every case",
+       "Push them up as capacity tightens",
+       "Push them down as trucks multiply"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Capacity changes move prices.",
+       "Fewer drivers mean fewer trucks running.",
+       "Fewer drivers do not add trucks."
+      ],
+      "explanation": "Removing drivers reduces capacity. Tighter capacity tends to raise rates."
+     },
+     "proReasoning": "Investors treat enforcement as a supply shock.",
+     "commonMistake": "Ignoring rules as a driver of capacity.",
+     "mentalModel": "Rules can move supply."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "States must now verify every non-domiciled applicant through SAVE.",
+      "prompt": "Where could a startup help carriers?",
+      "options": [
+       "Issuing licenses on behalf of states",
+       "Helping drivers skip the checks",
+       "Tracking license status and expiry dates"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Only states issue licenses.",
+       "Skipping checks breaks the law.",
+       "You help carriers stay ahead of expiring licenses."
+      ],
+      "explanation": "Carriers need to know when licenses change status. Tracking tools help."
+     },
+     "proReasoning": "Founders build compliance tools around new requirements.",
+     "commonMistake": "Building products that work around the rules.",
+     "mentalModel": "Track status, not shortcuts."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You wonder why a licensing rule matters to freight prices.",
+      "prompt": "Why does it?",
+      "options": [
+       "Each license is a driver who can haul",
+       "Licenses set the price of diesel",
+       "Licenses only matter for buses"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "You link drivers to capacity.",
+       "Fuel prices are set elsewhere.",
+       "CDLs cover trucks too."
+      ],
+      "explanation": "Every truck needs a licensed driver. Fewer drivers means fewer trucks running."
+     },
+     "proReasoning": "Rules on people are rules on capacity.",
+     "commonMistake": "Seeing licensing as paperwork only.",
+     "mentalModel": "Drivers are capacity."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:916095bde128"
+  ]
+ },
+ {
+  "id": "49025dc3-3bab-52d1-ad38-e39c6b05a58f",
+  "market_id": "logistics",
+  "day": 17,
+  "slot": 2,
+  "content": {
+   "id": "logistics-d17-c2",
+   "title": "Capacity can vanish by rule",
+   "lessonTitle": "English tests and driver licenses",
+   "slot": 2,
+   "type": "connect",
+   "brief": {
+    "headline": "US trucking had about 3.58 million drivers in 2024. In 2025, US inspectors recorded 12,308 out-of-service violations for drivers lacking English proficiency.",
+    "kicker": "Connect day 4 and day 17: driver numbers and enforcement.",
+    "fullText": "Day 4 showed that trucks carry more than 72% of US freight tonnage. Day 17 shows that enforcement can change how many of those trucks run. An out-of-service order stops a driver from driving until the problem is fixed.\n\nNon-domiciled licenses went to drivers who were not permanent residents of the issuing state, about 5% of CDL holders. Rules affecting them, and English proficiency checks, both cut into available capacity.",
+    "sources": [
+     {
+      "url": "https://trucking.org/news-insights/ata-releases-latest-edition-american-trucking-trends-0",
+      "label": "ATA, American Trucking Trends 2025"
+     },
+     {
+      "url": "https://www.fleetowner.com/news/regulations/article/55353817/a-2026-federal-enforcement-outlook-for-trucking",
+      "label": "FleetOwner, FMCSA's enforcement outlook for 2026"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "multipleChoice",
+    "prompt": "What does an out-of-service order do?",
+    "options": [
+     "Stops the driver until the issue is fixed",
+     "Adds a small fine but lets the truck go",
+     "Cancels the carrier's whole authority"
+    ],
+    "correctIndex": 0,
+    "explanation": "An out-of-service order takes the truck off the road immediately until the problem is fixed."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "How many thousand English proficiency out-of-service violations were logged in 2025?",
+    "min": 0,
+    "max": 30,
+    "value": 12.3,
+    "unit": "K",
+    "explanation": "12,308 violations in 2025."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You plan capacity for a shipper. Enforcement is taking some trucks off the road.",
+      "prompt": "What do you adjust?",
+      "options": [
+       "Cut your shipping volumes in half",
+       "Book further ahead on tight lanes",
+       "Assume capacity will always be there"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Halving volume hurts sales.",
+       "You leave room for tighter supply.",
+       "Tighter enforcement can reduce trucks."
+      ],
+      "explanation": "Less capacity means trucks are harder to find at short notice."
+     },
+     "proReasoning": "Planners adjust lead times when supply tightens.",
+     "commonMistake": "Planning as if capacity were fixed.",
+     "mentalModel": "Tighter supply needs more lead time."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Enforcement removes some drivers from a pool of about 3.58 million.",
+      "prompt": "How should an investor size the effect?",
+      "options": [
+       "Assume the whole pool disappears",
+       "Ignore it unless rates double",
+       "Compare drivers lost with the total"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Only a share is affected.",
+       "Smaller shifts still matter.",
+       "You put the change in proportion."
+      ],
+      "explanation": "The effect depends on how many drivers leave relative to the total."
+     },
+     "proReasoning": "Investors size shocks against the base they hit.",
+     "commonMistake": "Overreacting or ignoring without doing the math.",
+     "mentalModel": "Size the shock against the base."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Carriers want to avoid out-of-service orders that park trucks.",
+      "prompt": "What product could help?",
+      "options": [
+       "Training and checks before trips",
+       "Faster ways to dispute every inspection",
+       "Ads for trucking jobs in other countries"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "You prevent violations before they happen.",
+       "Disputes come after the truck is parked.",
+       "That does not prevent violations."
+      ],
+      "explanation": "Preventing violations keeps trucks moving. Training and checks help."
+     },
+     "proReasoning": "Founders often win by preventing problems rather than fixing them.",
+     "commonMistake": "Building for the aftermath instead of prevention.",
+     "mentalModel": "Prevent, do not dispute."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You wonder how a roadside check can affect freight prices.",
+      "prompt": "What is the link?",
+      "options": [
+       "Inspections add more trucks",
+       "Parked trucks are capacity that is gone",
+       "Inspections lower the price of fuel"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "They remove trucks, not add them.",
+       "You see enforcement shrinking supply.",
+       "Fuel prices are unrelated."
+      ],
+      "explanation": "Each out-of-service order removes a truck from service until fixed."
+     },
+     "proReasoning": "Small removals add up across a large market.",
+     "commonMistake": "Thinking enforcement only affects the driver involved.",
+     "mentalModel": "Small removals add up."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:a9c4be78ab7d"
+  ]
+ },
+ {
+  "id": "a76fde60-8b55-5a9f-8b3b-befb2b3d393b",
+  "market_id": "logistics",
+  "day": 17,
+  "slot": 3,
+  "content": {
+   "id": "logistics-d17-c3",
+   "title": "Licenses up for renewal",
+   "lessonTitle": "English tests and driver licenses",
+   "slot": 3,
+   "type": "decide",
+   "brief": {
+    "headline": "You run a 120-truck carrier. Under FMCSA's final rule, some of your drivers may not be able to renew their licenses this year.",
+    "kicker": "Decide: how do you keep trucks running and stay compliant?",
+    "fullText": "The February 2026 final rule removed work authorization documents as proof of eligibility for non-domiciled CDLs and requires states to verify status through SAVE. Holders of H-2A, H-2B and E-2 status can still qualify.\n\nYour customers expect steady capacity. Your drivers want clear answers about their jobs.",
+    "sources": [
+     {
+      "url": "https://www.overdriveonline.com/business/article/15816996/fmcsa-issues-final-rule-banning-nondomiciled-cdls-almost-entirely",
+      "label": "Overdrive, FMCSA final rule on non-domiciled CDLs"
+     },
+     {
+      "url": "https://www.fleetowner.com/news/regulations/article/55353817/a-2026-federal-enforcement-outlook-for-trucking",
+      "label": "FleetOwner, FMCSA's enforcement outlook for 2026"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "sortSignal",
+    "prompt": "Sound plan or risky plan?",
+    "buckets": [
+     "Sound",
+     "Risky"
+    ],
+    "items": [
+     {
+      "text": "Check each license's renewal date",
+      "bucket": 0
+     },
+     {
+      "text": "Tell customers early about capacity",
+      "bucket": 0
+     },
+     {
+      "text": "Let drivers run on expired licenses",
+      "bucket": 1
+     },
+     {
+      "text": "Wait until renewals fail",
+      "bucket": 1
+     }
+    ],
+    "explanation": "Early checks and honest updates keep you compliant and give customers time to plan."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "About what share of CDL holders had non-domiciled licenses?",
+    "min": 0,
+    "max": 20,
+    "value": 5,
+    "unit": "%",
+    "explanation": "About 5% of CDL holders."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your drivers ask whether they will keep their jobs.",
+      "prompt": "What do you say?",
+      "options": [
+       "Promise nothing will change for anyone",
+       "Refuse to discuss it at all",
+       "Explain the rule and check each case"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "You cannot promise that.",
+       "Silence erodes trust.",
+       "You are honest and specific."
+      ],
+      "explanation": "Clear information and individual checks respect drivers and keep you compliant."
+     },
+     "proReasoning": "Good managers explain rules plainly and act case by case.",
+     "commonMistake": "Making promises the rules may not allow.",
+     "mentalModel": "Be clear and specific."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A carrier may lose some drivers as licenses come up for renewal.",
+      "prompt": "What should an investor watch?",
+      "options": [
+       "How fast it replaces lost capacity",
+       "How many press releases it issues",
+       "Its truck paint color"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "You track the operational impact.",
+       "Press releases are not capacity.",
+       "Paint is irrelevant."
+      ],
+      "explanation": "Replacing drivers quickly limits lost revenue."
+     },
+     "proReasoning": "Investors watch how firms absorb rule changes.",
+     "commonMistake": "Ignoring the timing of license renewals.",
+     "mentalModel": "Watch the replacement pace."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Many carriers face license renewals under new rules.",
+      "prompt": "What could you build for them?",
+      "options": [
+       "A new trucking school abroad",
+       "A dashboard of license renewals and risks",
+       "A service to forge license documents"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "That does not solve renewals.",
+       "You help carriers plan ahead legally.",
+       "Forgery is a crime."
+      ],
+      "explanation": "Carriers need to see which licenses are at risk and when."
+     },
+     "proReasoning": "Founders turn new compliance work into simple tools.",
+     "commonMistake": "Offering illegal workarounds.",
+     "mentalModel": "Make the risk visible."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You wonder why a carrier cannot just hire new drivers overnight.",
+      "prompt": "Why not?",
+      "options": [
+       "Drivers are banned from changing jobs",
+       "Trucks drive themselves already",
+       "Hiring and training drivers takes time"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Drivers can change jobs.",
+       "Most trucks need drivers.",
+       "You see the lag in replacing capacity."
+      ],
+      "explanation": "Finding, checking and training new drivers takes weeks or months."
+     },
+     "proReasoning": "Capacity lost fast is regained slowly.",
+     "commonMistake": "Assuming labor can be replaced instantly.",
+     "mentalModel": "Lost fast, regained slowly."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:a0f13d4e1a72"
+  ]
+ },
+ {
+  "id": "2dec26ff-59bc-55ed-af1e-e4468a0e8702",
+  "market_id": "logistics",
+  "day": 18,
+  "slot": 1,
+  "content": {
+   "id": "logistics-d18-c1",
+   "title": "Fewer thefts, bigger losses",
+   "lessonTitle": "Cargo theft goes upmarket",
+   "slot": 1,
+   "type": "apply",
+   "brief": {
+    "headline": "Verisk CargoNet counted 547 cargo thefts in the US and Canada in Q3 2026, down 33% from a year earlier. Estimated losses rose 12% to $230.1 million.",
+    "kicker": "Apply the rule: the handoff is the weak link.",
+    "fullText": "Year to date, the average value per theft with a documented value rose about 72%, from $261,115 to $448,456. Thefts of $1 million or more rose to 19 in the quarter from 9.\n\nFictitious pickups, where thieves pose as legitimate carriers to collect a load, made up about 25% of incidents, up from 18%. California had 182 incidents, about a third of the total.",
+    "sources": [
+     {
+      "url": "https://www.verisk.com/company/newsroom/fewer-cargo-thefts-bigger-losses-average-theft-value-jumps-72-percent-year-to-date/",
+      "label": "Verisk CargoNet, fewer cargo thefts and bigger losses in Q3 2026"
+     },
+     {
+      "url": "https://www.verisk.com/company/newsroom/cargo-theft-losses-surge-to-estimated-$725-million-in-2025-verisk-cargonet-analysis-reveals/",
+      "label": "Verisk CargoNet, cargo theft losses surge in 2025"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "multipleChoice",
+    "prompt": "What is a fictitious pickup?",
+    "options": [
+     "A shipper forgets to send a load",
+     "A thief posing as a carrier collects a load",
+     "A truck is broken into at a rest stop"
+    ],
+    "correctIndex": 1,
+    "explanation": "In a fictitious pickup, the load is handed over willingly to a fake carrier."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "What were estimated cargo theft losses in Q3 2026, in million dollars?",
+    "min": 0,
+    "max": 400,
+    "value": 230,
+    "unit": "M",
+    "explanation": "About $230.1 million, up 12%."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You manage a warehouse dock. A driver arrives for a high-value load.",
+      "prompt": "What do you check?",
+      "options": [
+       "That the truck is clean and tidy",
+       "That driver and truck match the booking",
+       "That the driver looks friendly and calm"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Cleanliness is not identity.",
+       "You verify the handoff.",
+       "Looks prove nothing."
+      ],
+      "explanation": "Fictitious pickups succeed at the handoff. Matching driver and truck to the booking stops them."
+     },
+     "proReasoning": "Dock teams verify identity before releasing freight.",
+     "commonMistake": "Releasing freight on trust alone.",
+     "mentalModel": "Verify the handoff."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Thefts fell 33%, but losses rose 12%.",
+      "prompt": "What does that tell an investor?",
+      "options": [
+       "Cargo theft is no longer a risk",
+       "Insurance costs will fall sharply",
+       "Thieves are aiming at pricier loads"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Losses rose.",
+       "Higher losses push costs up.",
+       "You see the shift upmarket."
+      ],
+      "explanation": "Fewer thefts with bigger losses means each theft is worth more."
+     },
+     "proReasoning": "Investors look at both count and value of losses.",
+     "commonMistake": "Celebrating a lower count while losses grow.",
+     "mentalModel": "Count and value tell different stories."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Fictitious pickups rose to about a quarter of thefts.",
+      "prompt": "What product targets that?",
+      "options": [
+       "Identity checks at pickup",
+       "Stronger locks on trailer doors",
+       "Brighter lights in parking lots"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "You stop the deception at the handoff.",
+       "Locks do not stop a willing handover.",
+       "Lights do not verify identity."
+      ],
+      "explanation": "The load is handed over willingly. Only identity checks stop that."
+     },
+     "proReasoning": "Founders match the fix to how the crime happens.",
+     "commonMistake": "Selling locks against a deception problem.",
+     "mentalModel": "Match the fix to the crime."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You wonder how thieves steal loads without breaking in.",
+      "prompt": "How do they do it?",
+      "options": [
+       "They wait for loads to fall off trucks",
+       "They pose as the carrier and get the load",
+       "They hack the truck's engine computer"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "That is not how it works.",
+       "You see theft by deception.",
+       "That is not the common method."
+      ],
+      "explanation": "Fictitious pickups use fake identities, so the shipper releases the load."
+     },
+     "proReasoning": "The weakest point is often trust, not hardware.",
+     "commonMistake": "Thinking theft always means force.",
+     "mentalModel": "Trust can be the weak link."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:e7b279b33d35"
+  ]
+ },
+ {
+  "id": "b4950404-2949-5000-bc19-2d7af85dad8f",
+  "market_id": "logistics",
+  "day": 18,
+  "slot": 2,
+  "content": {
+   "id": "logistics-d18-c2",
+   "title": "Fraud becomes theft",
+   "lessonTitle": "Cargo theft goes upmarket",
+   "slot": 2,
+   "type": "connect",
+   "brief": {
+    "headline": "Cargo theft losses reached an estimated $725 million in 2025, up 60%, across 3,594 events. The average theft was worth about $273,990.",
+    "kicker": "Connect day 13 and day 18: fake identities, real losses.",
+    "fullText": "Day 13 showed that a fragmented carrier market forces brokers to trust firms they have never met, and that fraud attempts were rising. Day 18 shows where that leads: theft by deception, using fake identities or redirection instead of break-ins.\n\nIn 2025, food and beverage thefts rose 47% and metals 77%. California led with 1,218 incidents, with activity shifting inland to Kern and San Joaquin counties.",
+    "sources": [
+     {
+      "url": "https://www.verisk.com/company/newsroom/cargo-theft-losses-surge-to-estimated-$725-million-in-2025-verisk-cargonet-analysis-reveals/",
+      "label": "Verisk CargoNet, cargo theft losses surge in 2025"
+     },
+     {
+      "url": "https://www.ajot.com/news/highway-releases-freight-fraud-index-revealing-400000-sophisticated-fraud-attempts-in-q1-2025",
+      "label": "AJOT, Highway freight fraud index for Q1 2025"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "buildChain",
+    "prompt": "Put the chain in order.",
+    "steps": [
+     "A fraudster copies a real carrier's identity",
+     "A broker books the load with the fake carrier",
+     "The shipper hands the load over",
+     "The goods disappear"
+    ],
+    "explanation": "Fraud at the booking step becomes theft at the handoff."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "About how many thousand cargo theft events did CargoNet record in 2025?",
+    "min": 0,
+    "max": 6,
+    "value": 3.6,
+    "unit": "K",
+    "explanation": "3,594 events, with losses of about $725 million."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You book loads at a broker. A carrier you used once asks for a high-value load.",
+      "prompt": "What do you do?",
+      "options": [
+       "Book it, since you used them before",
+       "Ask the driver to send a selfie",
+       "Re-verify the carrier's identity"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Fraudsters copy real carriers.",
+       "A photo proves little.",
+       "Identities can be copied; re-check."
+      ],
+      "explanation": "Fraudsters copy identities of real carriers. Each high-value load deserves a fresh check."
+     },
+     "proReasoning": "Careful brokers verify again for valuable freight.",
+     "commonMistake": "Trusting a name you have seen before.",
+     "mentalModel": "Re-verify for value."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Theft losses rose 60% in 2025.",
+      "prompt": "Who might see rising demand?",
+      "options": [
+       "Carrier vetting and tracking firms",
+       "Firms that sell paper logbooks",
+       "Fuel retailers"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Rising theft drives demand for trust tools.",
+       "Paper logs do not stop theft.",
+       "Fuel is unrelated."
+      ],
+      "explanation": "As losses rise, shippers and brokers pay more for vetting and tracking."
+     },
+     "proReasoning": "Investors look for who sells protection against a growing risk.",
+     "commonMistake": "Missing the market a problem creates.",
+     "mentalModel": "Rising risk, rising demand for protection."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Food and beverage thefts rose 47% in 2025.",
+      "prompt": "What product could help food shippers?",
+      "options": [
+       "Bigger trucks built just for food",
+       "Live tracking with pickup checks",
+       "A new brand of snack for drivers"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Size does not stop theft.",
+       "You protect the handoff and the route.",
+       "Snacks do not stop theft."
+      ],
+      "explanation": "Food loads are frequent and resellable. Tracking and verification protect them."
+     },
+     "proReasoning": "Founders target the most-hit categories first.",
+     "commonMistake": "Building generic tools without a target segment.",
+     "mentalModel": "Start where thefts hit hardest."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You wonder why thieves target food and drinks.",
+      "prompt": "Why those goods?",
+      "options": [
+       "They are the heaviest goods to move",
+       "They are always left unguarded",
+       "They are easy to resell and hard to trace"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Weight makes theft harder.",
+       "Not always.",
+       "You see why thieves pick them."
+      ],
+      "explanation": "Food and drinks sell quickly and are hard to trace back."
+     },
+     "proReasoning": "Thieves pick goods that are easy to sell.",
+     "commonMistake": "Thinking only luxury goods get stolen.",
+     "mentalModel": "Easy to sell, easy to steal."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:0294884fe413"
+  ]
+ },
+ {
+  "id": "1669c89c-6bf5-536d-b732-08f16cacc261",
+  "market_id": "logistics",
+  "day": 18,
+  "slot": 3,
+  "content": {
+   "id": "logistics-d18-c3",
+   "title": "Guarding a shipment of laptops",
+   "lessonTitle": "Cargo theft goes upmarket",
+   "slot": 3,
+   "type": "decide",
+   "brief": {
+    "headline": "You ship laptops from a California warehouse. Each truckload is worth more than $1 million, and theft by fake carriers is rising.",
+    "kicker": "Decide: where do you put your security budget?",
+    "fullText": "In Q3 2026, fictitious pickups made up about 25% of cargo thefts, and thefts worth $1 million or more rose to 19 from 9. California had 182 incidents, about a third of the total.\n\nYou can spend on stronger trailer locks, guards at the yard, or identity checks for every driver and carrier before release.",
+    "sources": [
+     {
+      "url": "https://www.verisk.com/company/newsroom/fewer-cargo-thefts-bigger-losses-average-theft-value-jumps-72-percent-year-to-date/",
+      "label": "Verisk CargoNet, fewer cargo thefts and bigger losses in Q3 2026"
+     },
+     {
+      "url": "https://www.verisk.com/company/newsroom/cargo-theft-losses-surge-to-estimated-$725-million-in-2025-verisk-cargonet-analysis-reveals/",
+      "label": "Verisk CargoNet, cargo theft losses surge in 2025"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "faceOff",
+    "prompt": "Which defense stops a fictitious pickup?",
+    "left": {
+     "name": "Identity checks at release",
+     "note": "Confirm driver, truck, carrier"
+    },
+    "right": {
+     "name": "Heavier trailer locks",
+     "note": "Stop break-ins"
+    },
+    "correctIndex": 0,
+    "explanation": "A fictitious pickup is a willing handover. Locks do not stop it; identity checks do."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "What share of Q3 2026 thefts were fictitious pickups?",
+    "min": 0,
+    "max": 60,
+    "value": 25,
+    "unit": "%",
+    "explanation": "About 25%, up from 18% a year earlier."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You lead security for the warehouse.",
+      "prompt": "What do you fund first?",
+      "options": [
+       "Identity checks before every release",
+       "Thicker padlocks on every trailer",
+       "A bigger company logo on trucks"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "You target the fastest-growing method.",
+       "Locks miss deception.",
+       "Logos do nothing."
+      ],
+      "explanation": "Fake carriers get loads handed to them. Checks at release stop that."
+     },
+     "proReasoning": "Security leads fund defenses that match current threats.",
+     "commonMistake": "Spending on yesterday's threat.",
+     "mentalModel": "Defend against today's method."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A laptop maker loses two $1 million loads to fake carriers.",
+      "prompt": "What does an investor ask?",
+      "options": [
+       "How many trucks it owns",
+       "What checks it now runs at pickup",
+       "Whether laptops are still popular"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Ownership is not the issue.",
+       "You check the fix for the real cause.",
+       "Demand is not the issue."
+      ],
+      "explanation": "The losses came from the handoff. The fix belongs there."
+     },
+     "proReasoning": "Investors ask whether management fixed the root cause.",
+     "commonMistake": "Treating losses as bad luck.",
+     "mentalModel": "Ask about the root cause."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Shippers of high-value goods need to verify carriers at pickup.",
+      "prompt": "What do you build?",
+      "options": [
+       "A safe that rides inside the trailer",
+       "A drone to follow every truck",
+       "An app that confirms driver and booking"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Safes do not stop a willing handover.",
+       "Drones are costly and limited.",
+       "You solve the handoff cheaply."
+      ],
+      "explanation": "Confirming driver, truck and booking at release stops fake carriers."
+     },
+     "proReasoning": "Founders solve the specific step where loss happens.",
+     "commonMistake": "Building expensive hardware for a trust problem.",
+     "mentalModel": "Fix the step where loss happens."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You wonder why California sees so many cargo thefts.",
+      "prompt": "What could explain it?",
+      "options": [
+       "Huge freight volumes through its hubs",
+       "It has the fewest trucks in the US",
+       "Thieves are banned in other states"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "You link theft to freight volume.",
+       "It has many trucks.",
+       "Theft is illegal everywhere."
+      ],
+      "explanation": "More freight passing through means more chances for theft."
+     },
+     "proReasoning": "Crime follows volume.",
+     "commonMistake": "Assuming one cause explains everything.",
+     "mentalModel": "Crime follows the freight."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:9eb9240b7a23"
+  ]
+ },
+ {
+  "id": "3aa160ee-3ff3-5bda-aa62-9741272b0dd1",
+  "market_id": "logistics",
+  "day": 19,
+  "slot": 1,
+  "content": {
+   "id": "logistics-d19-c1",
+   "title": "Demand fills the gap",
+   "lessonTitle": "How full are the warehouses?",
+   "slot": 1,
+   "type": "apply",
+   "brief": {
+    "headline": "CBRE put US industrial vacancy at 6.4% in Q3 2026, down 20 basis points from a year earlier. Net absorption hit 104.6 million square feet, the most since Q4 2022.",
+    "kicker": "Apply the rule: vacancy sets who holds pricing power.",
+    "fullText": "CBRE said \"the declines reflect stronger demand and fewer new deliveries.\" Leasing reached 276.8 million square feet in the quarter, up 27.1% from a year earlier.\n\nThe average net asking rent rose 3.6% to $11.16 per square foot. Other firms measure the market a little differently; Cushman & Wakefield put vacancy at 6.8%. Both pointed in the same direction: less empty space and firmer rents.",
+    "sources": [
+     {
+      "url": "https://www.cbre.com/insights/figures/q3-2026-us-industrial-and-logistics-market-report",
+      "label": "CBRE, US industrial and logistics figures Q3 2026"
+     },
+     {
+      "url": "https://www.cushmanwakefield.com/en/united-states/news/2026/10/leasing-activity-remains-elevated-and-new-construction-rebounds",
+      "label": "Cushman & Wakefield, US industrial market Q3 2026"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "multipleChoice",
+    "prompt": "Vacancy falls while rents rise. Who gains bargaining power?",
+    "options": [
+     "Warehouse landlords",
+     "Tenants looking for space",
+     "Truck drivers"
+    ],
+    "correctIndex": 0,
+    "explanation": "Less empty space means tenants have fewer options, so landlords can ask more."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "What was US industrial vacancy in Q3 2026, according to CBRE?",
+    "min": 0,
+    "max": 15,
+    "value": 6.4,
+    "unit": "%",
+    "explanation": "6.4%, down 20 basis points from a year earlier."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You join a warehouse leasing team. Your manager asks what Q3 means for deals.",
+      "prompt": "What do you say?",
+      "options": [
+       "Tenants can demand big rent cuts now",
+       "Nothing changes for leasing deals",
+       "Landlords can push rents as space tightens"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Falling vacancy favors landlords.",
+       "Tighter space changes terms.",
+       "You link vacancy to pricing power."
+      ],
+      "explanation": "Falling vacancy and strong leasing shift power toward landlords."
+     },
+     "proReasoning": "Good leasing staff read vacancy as a guide to who sets terms.",
+     "commonMistake": "Negotiating as if the market were still loose.",
+     "mentalModel": "Vacancy tells you who sets terms."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Absorption hit its highest since 2022 and rents rose 3.6%.",
+      "prompt": "What might a logistics landlord investor expect?",
+      "options": [
+       "Firmer rents on new and renewed leases",
+       "Falling rents across every market",
+       "Empty buildings piling up quickly"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Strong demand supports rent growth.",
+       "Rents rose.",
+       "Vacancy fell."
+      ],
+      "explanation": "Strong absorption with less new supply supports rising rents."
+     },
+     "proReasoning": "Investors track absorption against new deliveries.",
+     "commonMistake": "Looking at rents without checking supply.",
+     "mentalModel": "Compare demand with new supply."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Tenants face less choice as warehouse vacancy falls.",
+      "prompt": "What could help them?",
+      "options": [
+       "A plan to buy every empty building",
+       "Tools that find space before listing",
+       "Software to raise their own rents"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "That needs huge capital.",
+       "You help tenants act early in a tight market.",
+       "Tenants pay rent; they do not set it."
+      ],
+      "explanation": "In a tight market, finding space early is valuable."
+     },
+     "proReasoning": "Founders help the side of the market losing power.",
+     "commonMistake": "Building for landlords who already hold the cards.",
+     "mentalModel": "Help the side with fewer options."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You wonder what \"net absorption\" really measures.",
+      "prompt": "What is it?",
+      "options": [
+       "The total size of every warehouse",
+       "How much rain a roof absorbs",
+       "Space newly filled minus space vacated"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "That is inventory, not absorption.",
+       "That is not the meaning.",
+       "You know the measure of demand."
+      ],
+      "explanation": "Net absorption shows how much more space tenants occupy than before."
+     },
+     "proReasoning": "Absorption is the market's demand signal.",
+     "commonMistake": "Confusing total space with demand.",
+     "mentalModel": "Absorption measures demand."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:db94c9619ffc"
+  ]
+ },
+ {
+  "id": "5de7d101-c759-532a-b6cb-65023796d163",
+  "market_id": "logistics",
+  "day": 19,
+  "slot": 2,
+  "content": {
+   "id": "logistics-d19-c2",
+   "title": "Who holds the power this year?",
+   "lessonTitle": "How full are the warehouses?",
+   "slot": 2,
+   "type": "connect",
+   "brief": {
+    "headline": "Cushman & Wakefield put US industrial vacancy at 6.8% in Q3 2026, with 76.6 million square feet of net absorption. Rents rose in 74% of 83 tracked markets.",
+    "kicker": "Connect day 16 and day 19: tight capacity shifts power.",
+    "fullText": "Day 16 showed that when truck capacity tightens, spot rates rise and power moves to carriers. Day 19 shows the same pattern in warehouses: when vacancy falls, landlords gain the upper hand.\n\nRents were rising about 4% a year. In both trucks and buildings, the side that controls scarce capacity sets the price.",
+    "sources": [
+     {
+      "url": "https://www.cushmanwakefield.com/en/united-states/news/2026/10/leasing-activity-remains-elevated-and-new-construction-rebounds",
+      "label": "Cushman & Wakefield, US industrial market Q3 2026"
+     },
+     {
+      "url": "https://www.freightwaves.com/?p=571890",
+      "label": "FreightWaves, contract premium shrinks as truckload market reprices higher"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "sortSignal",
+    "prompt": "Does it shift power to the capacity owner?",
+    "buckets": [
+     "Shifts power",
+     "Does not"
+    ],
+    "items": [
+     {
+      "text": "Warehouse vacancy falling",
+      "bucket": 0
+     },
+     {
+      "text": "Truck capacity tightening",
+      "bucket": 0
+     },
+     {
+      "text": "Many new warehouses opening",
+      "bucket": 1
+     },
+     {
+      "text": "Lots of idle trucks",
+      "bucket": 1
+     }
+    ],
+    "explanation": "Scarce capacity favors owners. Excess capacity favors buyers."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "In what share of 83 tracked markets did rents rise from a year earlier?",
+    "min": 0,
+    "max": 100,
+    "value": 74,
+    "unit": "%",
+    "explanation": "Rents rose in 74% of the 83 markets."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You buy freight and warehouse space for a retailer.",
+      "prompt": "What do tight trucks and tight warehouses mean for you?",
+      "options": [
+       "Plan earlier and expect higher prices",
+       "Wait for prices to fall next month",
+       "Cut all orders to avoid the costs"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "You adapt to a seller's market.",
+       "Tight markets rarely loosen overnight.",
+       "Cutting orders hurts sales."
+      ],
+      "explanation": "When capacity is scarce, early planning secures space at better terms."
+     },
+     "proReasoning": "Buyers in tight markets lock in early.",
+     "commonMistake": "Waiting for a buyer's market that has not come.",
+     "mentalModel": "Scarce capacity rewards early buyers."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Both truck and warehouse capacity are tightening.",
+      "prompt": "Who benefits most?",
+      "options": [
+       "Tenants with expiring leases",
+       "Owners of scarce trucks and buildings",
+       "Brokers on fixed contract prices"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Those tenants face higher rents.",
+       "Capacity owners can raise prices.",
+       "Brokers get squeezed."
+      ],
+      "explanation": "Scarcity favors owners of capacity in both markets."
+     },
+     "proReasoning": "Investors follow pricing power to the owner of the scarce asset.",
+     "commonMistake": "Missing who gains when capacity tightens.",
+     "mentalModel": "Own the scarce thing."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Shippers struggle as both trucks and warehouses tighten.",
+      "prompt": "What product helps?",
+      "options": [
+       "A rival warehouse built next month",
+       "A marketing campaign for shippers",
+       "Planning that books space and trucks"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Building takes years.",
+       "Marketing does not add capacity.",
+       "You tackle both constraints together."
+      ],
+      "explanation": "Shippers need to plan trucks and space together when both are tight."
+     },
+     "proReasoning": "Founders find problems that span markets.",
+     "commonMistake": "Solving one constraint while ignoring the other.",
+     "mentalModel": "Solve the joint problem."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You notice trucks and warehouses both got pricier at once.",
+      "prompt": "What do they have in common?",
+      "options": [
+       "Scarce capacity lets owners charge more",
+       "Both are run by the very same company",
+       "Both are taxed by the same law"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "You see the shared pattern.",
+       "Different firms own them.",
+       "Taxes do not explain it."
+      ],
+      "explanation": "In both markets, less spare capacity hands power to owners."
+     },
+     "proReasoning": "Pricing power follows scarcity.",
+     "commonMistake": "Treating each market as unrelated.",
+     "mentalModel": "Power follows scarcity."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:2dde88f16945"
+  ]
+ },
+ {
+  "id": "bda5f48c-bfaf-5634-83ec-f4f6652d1c25",
+  "market_id": "logistics",
+  "day": 19,
+  "slot": 3,
+  "content": {
+   "id": "logistics-d19-c3",
+   "title": "Renew the warehouse lease?",
+   "lessonTitle": "How full are the warehouses?",
+   "slot": 3,
+   "type": "decide",
+   "brief": {
+    "headline": "You run a 3PL whose 500,000-square-foot warehouse lease ends in a year. The landlord offers a five-year renewal at a higher rent.",
+    "kicker": "Decide: lock in now or shop around?",
+    "fullText": "In Q3 2026, CBRE put US industrial vacancy at 6.4% and average asking rent up 3.6% from a year earlier. Cushman & Wakefield found rents rising in 74% of 83 markets.\n\nYour customers depend on this building. Moving would take months and disrupt service. Waiting could mean higher rents, or a better deal if new buildings open nearby.",
+    "sources": [
+     {
+      "url": "https://www.cbre.com/insights/figures/q3-2026-us-industrial-and-logistics-market-report",
+      "label": "CBRE, US industrial and logistics figures Q3 2026"
+     },
+     {
+      "url": "https://www.cushmanwakefield.com/en/united-states/news/2026/10/leasing-activity-remains-elevated-and-new-construction-rebounds",
+      "label": "Cushman & Wakefield, US industrial market Q3 2026"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "faceOff",
+    "prompt": "In a tightening market, which is safer for a 3PL?",
+    "left": {
+     "name": "Renew early",
+     "note": "Lock rent and location"
+    },
+    "right": {
+     "name": "Wait until the end",
+     "note": "Hope rents soften"
+    },
+    "correctIndex": 0,
+    "explanation": "With vacancy falling and rents rising, waiting tends to cost more."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "By what percent did average asking rent rise in Q3 2026, per CBRE?",
+    "min": 0,
+    "max": 10,
+    "value": 3.6,
+    "unit": "%",
+    "explanation": "It rose 3.6% to $11.16 a square foot."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your CEO asks for a recommendation on the lease.",
+      "prompt": "What do you propose?",
+      "options": [
+       "Accept the first offer without talks",
+       "Negotiate an early renewal with terms",
+       "Let the lease run out and move later"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "You leave value on the table.",
+       "You secure the site while bargaining.",
+       "Moving is costly and slow."
+      ],
+      "explanation": "Renewing early protects the site, and you can still bargain on terms."
+     },
+     "proReasoning": "Good operators lock key sites early in tight markets.",
+     "commonMistake": "Gambling the main site on a market turn.",
+     "mentalModel": "Secure the site, then bargain."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A 3PL renews its main lease at a higher rent.",
+      "prompt": "What should an investor check?",
+      "options": [
+       "Whether the building has new paint",
+       "Whether rents will fall next year",
+       "Whether it can pass costs to customers"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Paint does not matter.",
+       "Rents rose this year.",
+       "You test if margins survive."
+      ],
+      "explanation": "Higher rent hurts unless customer contracts adjust."
+     },
+     "proReasoning": "Investors check pass-through when costs rise.",
+     "commonMistake": "Ignoring how cost increases flow through.",
+     "mentalModel": "Check the pass-through."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your startup 3PL needs a small warehouse in a tight market.",
+      "prompt": "What is a flexible option?",
+      "options": [
+       "Shared or short-term warehouse space",
+       "A 15-year lease on a huge building",
+       "Building your own warehouse now"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "You avoid big commitments early.",
+       "Long leases are risky for startups.",
+       "Building takes capital and time."
+      ],
+      "explanation": "Shared space lets you grow without long, costly commitments."
+     },
+     "proReasoning": "Founders keep fixed commitments small until demand is proven.",
+     "commonMistake": "Signing long leases before revenue is steady.",
+     "mentalModel": "Stay flexible early."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You wonder why the landlord asks for more rent.",
+      "prompt": "Why can it?",
+      "options": [
+       "Rents are set by the government",
+       "There is less empty space to move to",
+       "The building got smaller"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Markets set rents.",
+       "You see vacancy driving pricing power.",
+       "Size did not change."
+      ],
+      "explanation": "Low vacancy gives tenants few alternatives, so landlords can ask more."
+     },
+     "proReasoning": "Ask how many alternatives the buyer has.",
+     "commonMistake": "Thinking landlords set prices at will.",
+     "mentalModel": "Alternatives set the price."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:8276d0d3717d"
+  ]
+ },
+ {
+  "id": "370fa5c6-ff31-594b-ac92-6edb9d9edc45",
+  "market_id": "logistics",
+  "day": 20,
+  "slot": 1,
+  "content": {
+   "id": "logistics-d20-c1",
+   "title": "Rents reset higher at Prologis",
+   "lessonTitle": "Trillions through one landlord's buildings",
+   "slot": 1,
+   "type": "apply",
+   "brief": {
+    "headline": "Prologis reported average occupancy of 95.1% in Q3 2026 and a 38% net effective rent change on new leases. It raised its 2026 core funds from operations guidance.",
+    "kicker": "Apply the rule: the right buildings earn on all trade.",
+    "fullText": "Core FFO was $1.60 per share, up from $1.49 a year earlier, and full-year guidance rose to $6.25 to $6.29. CEO Daniel S. Letter pointed to \"signing 60 million square feet of leases and announcing nearly $2.3 billion of transactions.\"\n\nThe release also said shareholders had approved a combination with SEGRO, a UK logistics landlord, to expand in Europe. A 38% rent change means leases renewing or signing now pay far more than the leases they replace.",
+    "sources": [
+     {
+      "url": "https://finviz.com/news/402919/prologis-reports-third-quarter-2026-results",
+      "label": "Prologis reports third quarter 2026 results"
+     },
+     {
+      "url": "https://ir.prologis.com/news-events/press-releases/detail/949/oxford-economics-prologis-properties-facilitate-goods-equal-to-nearly-3-of-the-worlds-gdp-and-house-1-1-million-jobs",
+      "label": "Prologis, Oxford Economics impact study"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "spotFake",
+    "prompt": "One of these is false. Tap it.",
+    "statements": [
+     "Average occupancy was 95.1% in Q3 2026.",
+     "Core FFO rose to $1.60 per share.",
+     "Prologis cut its core FFO guidance."
+    ],
+    "fakeIndex": 2,
+    "explanation": "Prologis raised its 2026 core FFO guidance to $6.25 to $6.29 per share."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "What was Prologis's net effective rent change in Q3 2026?",
+    "min": 0,
+    "max": 60,
+    "value": 38,
+    "unit": "%",
+    "explanation": "A 38.0% net effective rent change."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You interview at Prologis. They ask what drives their growth.",
+      "prompt": "What is a strong answer?",
+      "options": [
+       "Old leases resetting to higher rents",
+       "Building new trucks for customers",
+       "Selling goods in its own warehouses"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "You name the rent reset behind earnings.",
+       "Prologis is a landlord.",
+       "Tenants sell goods, not Prologis."
+      ],
+      "explanation": "Leases signed years ago are renewing at much higher rents."
+     },
+     "proReasoning": "Candidates who understand rent resets show they know the business.",
+     "commonMistake": "Describing a landlord as a logistics operator.",
+     "mentalModel": "Old rents reset upward."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Prologis is signing new leases 38% above the ones they replace.",
+      "prompt": "What does that suggest for future earnings?",
+      "options": [
+       "No change, since rents are fixed",
+       "More rent as more leases roll over",
+       "Falling rent as leases expire"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Leases reset at renewal.",
+       "You see built-in growth as leases renew.",
+       "Renewals are at higher rents."
+      ],
+      "explanation": "Each expiring lease can reset higher, lifting income over time."
+     },
+     "proReasoning": "Investors model how much rent resets as leases roll.",
+     "commonMistake": "Valuing only today's rent roll.",
+     "mentalModel": "Rent rolls reset over time."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Big landlords keep warehouses about 95% full.",
+      "prompt": "Where is the startup opening?",
+      "options": [
+       "A rival to Prologis in 19 countries",
+       "Paint for warehouse walls",
+       "Tools that help tenants use space better"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "That needs vast capital.",
+       "Paint is not a business edge.",
+       "Tenants paying more want more from each foot."
+      ],
+      "explanation": "With rents rising, tenants want to store more in less space."
+     },
+     "proReasoning": "Founders help customers get more from rising costs.",
+     "commonMistake": "Competing with a giant landlord head-on.",
+     "mentalModel": "Help tenants get more per foot."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You wonder how a landlord earns from trade it does not touch.",
+      "prompt": "How?",
+      "options": [
+       "Tenants pay rent to move goods through",
+       "It takes a cut of every product sold",
+       "It owns all the goods inside"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "You see rent as a toll on trade.",
+       "It earns rent, not a product cut.",
+       "Tenants own the goods."
+      ],
+      "explanation": "Retailers and 3PLs pay rent to use the buildings that move their goods."
+     },
+     "proReasoning": "Owning the right place can earn on everyone's trade.",
+     "commonMistake": "Thinking landlords must handle goods to earn.",
+     "mentalModel": "Rent is a toll on trade."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:96289dec58e2"
+  ]
+ },
+ {
+  "id": "0723d82b-93c8-573f-b118-320850ccab12",
+  "market_id": "logistics",
+  "day": 20,
+  "slot": 2,
+  "content": {
+   "id": "logistics-d20-c2",
+   "title": "Low vacancy, big landlord",
+   "lessonTitle": "Trillions through one landlord's buildings",
+   "slot": 2,
+   "type": "connect",
+   "brief": {
+    "headline": "Prologis owns about 1.2 billion square feet in 19 countries with around 5,800 customers. In 2022, goods worth about $2.7 trillion passed through its buildings.",
+    "kicker": "Connect day 19 and day 20: vacancy and the largest landlord.",
+    "fullText": "Day 19 showed that falling vacancy shifts pricing power to landlords. Day 20 shows the biggest one: Oxford Economics estimated the goods flowing through Prologis properties in 2022 were equal to about 2.8% of world GDP, and its buildings housed about 1.1 million jobs.\n\nWhen vacancy is low, a landlord at that scale benefits across thousands of leases at once.",
+    "sources": [
+     {
+      "url": "https://ir.prologis.com/news-events/press-releases/detail/949/oxford-economics-prologis-properties-facilitate-goods-equal-to-nearly-3-of-the-worlds-gdp-and-house-1-1-million-jobs",
+      "label": "Prologis, Oxford Economics impact study"
+     },
+     {
+      "url": "https://www.cushmanwakefield.com/en/united-states/news/2026/10/leasing-activity-remains-elevated-and-new-construction-rebounds",
+      "label": "Cushman & Wakefield, US industrial market Q3 2026"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "buildChain",
+    "prompt": "Put the chain in order.",
+    "steps": [
+     "Warehouse vacancy falls",
+     "Tenants have fewer places to go",
+     "Landlords raise rents at renewal",
+     "The largest landlord gains across thousands of leases"
+    ],
+    "explanation": "Scale magnifies pricing power when the whole market tightens."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "About how many trillion dollars of goods passed through Prologis buildings in 2022?",
+    "min": 0,
+    "max": 6,
+    "value": 2.7,
+    "unit": "trillion",
+    "explanation": "About $2.7 trillion, roughly 2.8% of world GDP."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You manage leasing for a big landlord in a tight market.",
+      "prompt": "What do you focus on?",
+      "options": [
+       "Selling every building fast",
+       "Renewing leases at market rents",
+       "Cutting rents to fill space"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Selling gives up income.",
+       "You capture the rent reset.",
+       "Space is already scarce."
+      ],
+      "explanation": "Tight markets let landlords renew at higher rents."
+     },
+     "proReasoning": "Leasing teams time renewals to market strength.",
+     "commonMistake": "Discounting in a seller's market.",
+     "mentalModel": "Renew at market."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Prologis has about 5,800 customers across 19 countries.",
+      "prompt": "Why does that spread matter to investors?",
+      "options": [
+       "It makes rents fall even faster",
+       "It means it owns the goods too",
+       "No one tenant can sink its income"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "It does not lower rents.",
+       "Tenants own goods.",
+       "You see diversification."
+      ],
+      "explanation": "Thousands of tenants spread the risk of any one leaving."
+     },
+     "proReasoning": "Investors value spread-out tenant bases.",
+     "commonMistake": "Ignoring tenant concentration risk.",
+     "mentalModel": "Spread reduces risk."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Goods worth about $2.7 trillion move through one landlord's buildings.",
+      "prompt": "What does that suggest for a startup?",
+      "options": [
+       "Serving tenants inside those buildings",
+       "Building a rival global landlord",
+       "Ignoring warehouses entirely"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "You reach many tenants in one network.",
+       "That takes decades and billions.",
+       "Warehouses are central to trade."
+      ],
+      "explanation": "Selling to tenants in big landlord networks reaches many customers at once."
+     },
+     "proReasoning": "Founders use large platforms as distribution.",
+     "commonMistake": "Trying to replicate the platform instead of using it.",
+     "mentalModel": "Use the platform, do not rebuild it."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You wonder how goods worth 2.8% of world GDP pass through one landlord.",
+      "prompt": "How is that possible?",
+      "options": [
+       "It owns most of the world's ships",
+       "Its buildings sit on key trade routes",
+       "It makes 2.8% of all goods itself"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "It owns buildings, not ships.",
+       "You see location as the asset.",
+       "Tenants make and sell the goods."
+      ],
+      "explanation": "Warehouses near ports, cities and highways handle huge flows."
+     },
+     "proReasoning": "Location turns buildings into trade gateways.",
+     "commonMistake": "Thinking the landlord makes the goods.",
+     "mentalModel": "Location is the asset."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:d57ca85b919a"
+  ]
+ },
+ {
+  "id": "45eacef5-b4df-51a0-951d-0bbb5183c3d6",
+  "market_id": "logistics",
+  "day": 20,
+  "slot": 3,
+  "content": {
+   "id": "logistics-d20-c3",
+   "title": "Lease or build your own?",
+   "lessonTitle": "Trillions through one landlord's buildings",
+   "slot": 3,
+   "type": "decide",
+   "brief": {
+    "headline": "You run logistics for a growing retailer. You need a new distribution center near a major city within two years.",
+    "kicker": "Decide: lease from a big landlord or build your own?",
+    "fullText": "Prologis averaged 95.1% occupancy in Q3 2026, and rents on new leases were 38% above the leases they replaced. Leasing gives speed and flexibility but rents can reset higher at renewal.\n\nBuilding your own site ties up capital and takes longer, but fixes your long-term cost. You expect your volume to keep growing but are not sure by how much.",
+    "sources": [
+     {
+      "url": "https://finviz.com/news/402919/prologis-reports-third-quarter-2026-results",
+      "label": "Prologis reports third quarter 2026 results"
+     },
+     {
+      "url": "https://ir.prologis.com/news-events/press-releases/detail/949/oxford-economics-prologis-properties-facilitate-goods-equal-to-nearly-3-of-the-worlds-gdp-and-house-1-1-million-jobs",
+      "label": "Prologis, Oxford Economics impact study"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "sortSignal",
+    "prompt": "Favors leasing or building?",
+    "buckets": [
+     "Lease",
+     "Build"
+    ],
+    "items": [
+     {
+      "text": "Need space within two years",
+      "bucket": 0
+     },
+     {
+      "text": "Unsure how fast volume grows",
+      "bucket": 0
+     },
+     {
+      "text": "Plenty of spare capital",
+      "bucket": 1
+     },
+     {
+      "text": "Want fixed costs for decades",
+      "bucket": 1
+     }
+    ],
+    "explanation": "Speed and uncertainty favor leasing. Capital and long horizons favor building."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "What was Prologis's average occupancy in Q3 2026?",
+    "min": 80,
+    "max": 100,
+    "value": 95.1,
+    "unit": "%",
+    "explanation": "Average occupancy of 95.1%, with 95.6% at period end."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your CFO asks for a recommendation.",
+      "prompt": "What do you propose?",
+      "options": [
+       "Build now, whatever the demand is",
+       "Delay the project until rents fall",
+       "Lease now; revisit building later"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Building blind risks idle capital.",
+       "Rents are rising.",
+       "You get speed and keep options."
+      ],
+      "explanation": "Leasing meets the deadline without betting capital on uncertain growth."
+     },
+     "proReasoning": "Good planners keep options open when demand is unclear.",
+     "commonMistake": "Committing capital before demand is known.",
+     "mentalModel": "Keep options open."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A retailer leases rather than builds its new center.",
+      "prompt": "What does that tell an investor?",
+      "options": [
+       "It keeps capital for the core business",
+       "It is about to stop selling goods",
+       "It will never face any rent rises"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "You see capital allocation.",
+       "Leasing does not mean shrinking.",
+       "Renewals can reset higher."
+      ],
+      "explanation": "Leasing frees cash for stores, stock and growth."
+     },
+     "proReasoning": "Investors look at where a company puts its capital.",
+     "commonMistake": "Assuming owning is always cheaper.",
+     "mentalModel": "Capital has other uses."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your startup retailer needs warehouse space fast.",
+      "prompt": "What fits best?",
+      "options": [
+       "Store goods in your office",
+       "Lease space or use a 3PL",
+       "Build your own warehouse"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Offices do not scale.",
+       "You get space without heavy capital.",
+       "Building is slow and costly."
+      ],
+      "explanation": "Startups rarely have capital or time to build."
+     },
+     "proReasoning": "Founders rent capacity until demand justifies owning.",
+     "commonMistake": "Building assets before proving demand.",
+     "mentalModel": "Rent before you own."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You wonder why big retailers lease from landlords at all.",
+      "prompt": "Why do they?",
+      "options": [
+       "Retailers are not allowed to build",
+       "Landlords give space away free",
+       "Leasing is faster and saves capital"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Retailers can and do build.",
+       "Space costs rent.",
+       "You see the speed and capital trade-off."
+      ],
+      "explanation": "Leasing lets retailers open faster and keep cash for their core business."
+     },
+     "proReasoning": "Every company decides what to own and what to rent.",
+     "commonMistake": "Thinking leasing is always the expensive option.",
+     "mentalModel": "Own the core, rent the rest."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:809c08ca23ec"
+  ]
+ },
+ {
+  "id": "dc18d77a-c688-5427-8105-91212b7d6b7c",
+  "market_id": "logistics",
+  "day": 21,
+  "slot": 1,
+  "content": {
+   "id": "logistics-d21-c1",
+   "title": "Walmart hands off its robots",
+   "lessonTitle": "A million robots",
+   "slot": 1,
+   "type": "apply",
+   "brief": {
+    "headline": "In January 2025, Symbotic agreed to buy Walmart's Advanced Systems and Robotics business for $200 million in cash. Walmart agreed to buy systems for 400 store-based fulfillment centers.",
+    "kicker": "Apply the rule: scale buys automation.",
+    "fullText": "Walmart also agreed to pay Symbotic $520 million for development, and Symbotic could earn up to $350 million more tied to orders. Symbotic was already automating all 42 of Walmart's US regional distribution centers.\n\nSymbotic said the deals could add more than $5 billion to its backlog. Walmart said about 90% of the US population lives within 10 miles of its more than 4,600 stores.",
+    "sources": [
+     {
+      "url": "https://ir.symbotic.com/news-releases/news-release-details/symbotic-acquire-walmarts-advanced-systems-and-robotics-business",
+      "label": "Symbotic to acquire Walmart's Advanced Systems and Robotics business"
+     },
+     {
+      "url": "https://www.eweek.com/news/amazon-robots-automation-jobs/",
+      "label": "eWeek, Amazon's robot fleet hits 1 million"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "faceOff",
+    "prompt": "What did Walmart choose for its store robots?",
+    "left": {
+     "name": "Buy from a specialist",
+     "note": "Symbotic builds the systems"
+    },
+    "right": {
+     "name": "Build them in-house",
+     "note": "Keep its own robotics unit"
+    },
+    "correctIndex": 0,
+    "explanation": "Walmart sold its robotics unit to Symbotic and agreed to buy the systems instead."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "How many store-based fulfillment systems did Walmart commit to buy?",
+    "min": 0,
+    "max": 1000,
+    "value": 400,
+    "unit": "systems",
+    "explanation": "Systems for 400 store-based fulfillment centers over several years."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You join Symbotic after the Walmart deal.",
+      "prompt": "What skill will the company need most?",
+      "options": [
+       "Running Walmart's checkout lines",
+       "Rolling out systems across hundreds of sites",
+       "Designing a new store layout for shoppers"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Checkout is not Symbotic's role.",
+       "You see the deployment challenge.",
+       "Store layout is Walmart's job."
+      ],
+      "explanation": "Installing systems across 400 sites and 42 centers is a huge rollout."
+     },
+     "proReasoning": "People who can deploy at scale are scarce in automation.",
+     "commonMistake": "Thinking the hard part is only the robot design.",
+     "mentalModel": "Deployment is the hard part."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Symbotic says the Walmart deals could add more than $5 billion to backlog.",
+      "prompt": "What should an investor watch?",
+      "options": [
+       "How many press releases it issues",
+       "Whether Walmart opens new stores abroad",
+       "How fast systems are installed and accepted"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Press is not revenue.",
+       "That does not drive this deal.",
+       "You track backlog turning into revenue."
+      ],
+      "explanation": "Backlog only becomes revenue when systems are built and accepted."
+     },
+     "proReasoning": "Investors track conversion of backlog to revenue.",
+     "commonMistake": "Counting backlog as money in the bank.",
+     "mentalModel": "Backlog is not revenue yet."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Walmart chose to buy robots rather than build them itself.",
+      "prompt": "What does that suggest for robotics startups?",
+      "options": [
+       "Big retailers may buy from specialists",
+       "Every retailer will build its own robots",
+       "Robots are no longer wanted in stores"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "You see a buyer's preference to outsource.",
+       "Walmart just did the opposite.",
+       "Walmart ordered 400 systems."
+      ],
+      "explanation": "A giant retailer handed robotics to a specialist and became a customer."
+     },
+     "proReasoning": "Founders watch whether big buyers build or buy.",
+     "commonMistake": "Assuming big companies always build in-house.",
+     "mentalModel": "Watch build versus buy."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You wonder why Walmart would sell its own robotics team.",
+      "prompt": "What is a likely reason?",
+      "options": [
+       "Robots were banned in its stores",
+       "A specialist builds systems at scale",
+       "Walmart stopped selling goods online"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "No ban exists.",
+       "You see focus on core strengths.",
+       "Walmart's online deliveries grew."
+      ],
+      "explanation": "Walmart kept the benefit of automation while a specialist builds and runs it."
+     },
+     "proReasoning": "Companies outsource work that others can do better at scale.",
+     "commonMistake": "Thinking selling a unit means giving up its benefits.",
+     "mentalModel": "Buy what others build best."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:36be5c21206a"
+  ]
+ },
+ {
+  "id": "bed7c6ed-12c7-5f27-98d4-bc65ffc12365",
+  "market_id": "logistics",
+  "day": 21,
+  "slot": 2,
+  "content": {
+   "id": "logistics-d21-c2",
+   "title": "Network scale pays for robots",
+   "lessonTitle": "A million robots",
+   "slot": 2,
+   "type": "connect",
+   "brief": {
+    "headline": "Amazon deployed its millionth warehouse robot in July 2025. Robots now assist about 75% of its deliveries, and it delivered about 6.3 billion US parcels in 2024.",
+    "kicker": "Connect day 3 and day 21: control the network, fund the robots.",
+    "fullText": "Day 3 showed that power in delivery shifts to whoever controls the network, with Amazon at 28% of US parcels. Day 21 shows what that scale buys: an AI model called DeepFleet coordinates robot traffic and improved routing efficiency by 10%.\n\nAverage employees per Amazon site fell to a 16-year low as robots spread. Huge, steady volume makes automation pay off, and automation makes more volume cheaper to handle.",
+    "sources": [
+     {
+      "url": "https://www.eweek.com/news/amazon-robots-automation-jobs/",
+      "label": "eWeek, Amazon's robot fleet hits 1 million"
+     },
+     {
+      "url": "https://www.nasdaq.com/press-release/pitney-bowes-parcel-shipping-index-us-carrier-disruption-increasing-and-thats-good",
+      "label": "Pitney Bowes Parcel Shipping Index"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "buildChain",
+    "prompt": "Put the loop in order.",
+    "steps": [
+     "Amazon controls a huge parcel network",
+     "Steady volume justifies big robot investments",
+     "Robots lower the cost of each package",
+     "Lower costs help win even more volume"
+    ],
+    "explanation": "Scale funds automation, and automation builds more scale."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "About what share of Amazon deliveries do robots assist?",
+    "min": 0,
+    "max": 100,
+    "value": 75,
+    "unit": "%",
+    "explanation": "About 75% of Amazon deliveries."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You work in an Amazon fulfillment center as robots spread.",
+      "prompt": "Which skill grows in value?",
+      "options": [
+       "Walking faster between shelves",
+       "Hand-sorting every single parcel",
+       "Maintaining the robot systems"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Robots now bring shelves to people.",
+       "Sorting is increasingly automated.",
+       "You move toward the systems."
+      ],
+      "explanation": "As robots do more of the movement, keeping them running matters more."
+     },
+     "proReasoning": "Workers who learn the systems stay valuable.",
+     "commonMistake": "Competing with robots on tasks they do well.",
+     "mentalModel": "Work with the machines."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Amazon's employees per site fell to a 16-year low as robots spread.",
+      "prompt": "What does that suggest for its costs?",
+      "options": [
+       "Lower labor cost per package",
+       "Higher labor costs every year",
+       "No change in its costs at all"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "You see productivity gains.",
+       "Fewer people per site lowers labor cost.",
+       "Automation changes costs."
+      ],
+      "explanation": "More robots per site lets each package take less labor."
+     },
+     "proReasoning": "Investors track cost per unit as automation spreads.",
+     "commonMistake": "Ignoring the capital spent on robots.",
+     "mentalModel": "Track cost per package."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Only giants have Amazon's volume to justify custom robots.",
+      "prompt": "How can smaller firms get automation?",
+      "options": [
+       "Giving up on automation",
+       "Shared or rented robot systems",
+       "Building a custom fleet like Amazon"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Smaller firms still need efficiency.",
+       "You spread the cost across users.",
+       "Custom fleets need huge volume."
+      ],
+      "explanation": "Rented or shared systems let smaller firms automate without Amazon's scale."
+     },
+     "proReasoning": "Founders package big-company tech for smaller buyers.",
+     "commonMistake": "Selling giant-scale solutions to small customers.",
+     "mentalModel": "Package scale for the small."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You wonder why Amazon can afford a million robots.",
+      "prompt": "What makes it possible?",
+      "options": [
+       "Robots are free to buy now",
+       "Robots never need any maintenance",
+       "Its huge, steady volume pays them back"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Robots cost a lot.",
+       "They need upkeep.",
+       "You see the scale loop."
+      ],
+      "explanation": "Billions of parcels a year spread the robot cost thinly."
+     },
+     "proReasoning": "Scale buys automation; automation builds scale.",
+     "commonMistake": "Thinking any firm could do the same.",
+     "mentalModel": "Scale pays for robots."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:83258f260585"
+  ]
+ },
+ {
+  "id": "ba17114e-37be-5b4f-b0fc-41fdf469afb9",
+  "market_id": "logistics",
+  "day": 21,
+  "slot": 3,
+  "content": {
+   "id": "logistics-d21-c3",
+   "title": "Robots for a mid-size 3PL?",
+   "lessonTitle": "A million robots",
+   "slot": 3,
+   "type": "decide",
+   "brief": {
+    "headline": "You run a 3PL with five warehouses and steady growth. A vendor offers mobile robots on a monthly subscription instead of a big purchase.",
+    "kicker": "Decide: rent robots, buy them, or wait?",
+    "fullText": "Amazon's million robots assist about 75% of its deliveries, and Walmart agreed to buy Symbotic systems for 400 store-based centers. Both have the scale to make large automation pay.\n\nYour volume is steady but much smaller. A subscription costs more per year than owning, but you can scale it up or down.",
+    "sources": [
+     {
+      "url": "https://www.eweek.com/news/amazon-robots-automation-jobs/",
+      "label": "eWeek, Amazon's robot fleet hits 1 million"
+     },
+     {
+      "url": "https://ir.symbotic.com/news-releases/news-release-details/symbotic-acquire-walmarts-advanced-systems-and-robotics-business",
+      "label": "Symbotic to acquire Walmart's Advanced Systems and Robotics business"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "multipleChoice",
+    "prompt": "What fits a mid-size 3PL with steady growth?",
+    "options": [
+     "A subscription pilot in one warehouse",
+     "Buy robots for all five sites today",
+     "Rule out robots for good"
+    ],
+    "correctIndex": 0,
+    "explanation": "A pilot tests the payoff at your volume without a large upfront bet."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "By what percent did DeepFleet improve Amazon's robot routing efficiency?",
+    "min": 0,
+    "max": 40,
+    "value": 10,
+    "unit": "%",
+    "explanation": "About 10%."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your CEO asks how to test robots without risking too much.",
+      "prompt": "What do you propose?",
+      "options": [
+       "A three-month pilot with targets",
+       "A full rollout across all sites",
+       "A survey of other 3PLs only"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "You get real data at low risk.",
+       "A full rollout risks a costly mistake.",
+       "A survey gives no data on your sites."
+      ],
+      "explanation": "A short pilot with targets shows whether robots pay at your volume."
+     },
+     "proReasoning": "Operators test automation in one site before scaling.",
+     "commonMistake": "Scaling before proving the payoff.",
+     "mentalModel": "Pilot, measure, then scale."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Robot vendors offer subscriptions to mid-size warehouses.",
+      "prompt": "Why could that grow the market?",
+      "options": [
+       "It removes the need for any software",
+       "It cuts upfront cost for smaller firms",
+       "It makes robots free forever"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Robots still need software.",
+       "You see access widening.",
+       "Subscriptions still cost money."
+      ],
+      "explanation": "Subscriptions let firms without Amazon's scale adopt robots."
+     },
+     "proReasoning": "Investors watch pricing models that open new customer groups.",
+     "commonMistake": "Thinking only giants buy automation.",
+     "mentalModel": "Pricing can open markets."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You sell robots to mid-size warehouses.",
+      "prompt": "What offer wins them?",
+      "options": [
+       "A large upfront purchase only",
+       "A 20-year locked contract",
+       "Pay monthly, scale up or down"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Upfront cost scares smaller buyers.",
+       "Long locks scare them too.",
+       "You match their uncertain volume."
+      ],
+      "explanation": "Flexible pricing matches buyers whose volume can shift."
+     },
+     "proReasoning": "Founders match pricing to the customer's risk.",
+     "commonMistake": "Copying giant-customer pricing for small buyers.",
+     "mentalModel": "Match pricing to the buyer's risk."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You wonder why a subscription costs more per year than buying.",
+      "prompt": "Why accept that?",
+      "options": [
+       "It lowers risk if volume falls",
+       "Subscriptions include free warehouses",
+       "Buying robots is illegal"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "You see flexibility has a price.",
+       "Warehouses are separate.",
+       "Buying is legal."
+      ],
+      "explanation": "You pay extra each year for the right to scale down if volume falls."
+     },
+     "proReasoning": "Flexibility is worth paying for when demand is uncertain.",
+     "commonMistake": "Comparing only yearly cost, not risk.",
+     "mentalModel": "Flexibility has a price."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:464a7037aca2"
+  ]
+ },
+ {
+  "id": "f8cda698-5f6b-5208-af2f-a488470a57d9",
+  "market_id": "logistics",
+  "day": 22,
+  "slot": 1,
+  "content": {
+   "id": "logistics-d22-c1",
+   "title": "The next wave of warehouses",
+   "lessonTitle": "The construction pipeline returns",
+   "slot": 1,
+   "type": "apply",
+   "brief": {
+    "headline": "CBRE counted 278 million square feet of US industrial space under construction in Q3 2026, up 9.3% from a year earlier. Deliveries so far in 2026 were 17% below the same point last year.",
+    "kicker": "Apply the rule: a tight market sparks building.",
+    "fullText": "Completions picked up to 79.4 million square feet in Q3, from 47.3 million in Q2. CBRE expects industrial investment to rise 15% this year to $130.7 billion.\n\nCBRE said the Dallas-Fort Worth, Phoenix and Houston pipelines \"will be important indicators of how quickly demand can absorb the next wave of deliveries.\" Cushman & Wakefield measured a larger pipeline, about 324 million square feet.",
+    "sources": [
+     {
+      "url": "https://www.cbre.com/insights/figures/q3-2026-us-industrial-and-logistics-market-report",
+      "label": "CBRE, US industrial and logistics figures Q3 2026"
+     },
+     {
+      "url": "https://www.cushmanwakefield.com/en/united-states/news/2026/10/leasing-activity-remains-elevated-and-new-construction-rebounds",
+      "label": "Cushman & Wakefield, US industrial market Q3 2026"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "buildChain",
+    "prompt": "Put the cycle in order.",
+    "steps": [
+     "Vacancy falls and rents rise",
+     "Developers start more buildings",
+     "The pipeline grows",
+     "New space opens and vacancy can rise again"
+    ],
+    "explanation": "A tight market draws new building, which later adds supply."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "How many million square feet were under construction in Q3 2026, per CBRE?",
+    "min": 0,
+    "max": 450,
+    "value": 278,
+    "unit": "M",
+    "explanation": "About 278 million square feet, up 9.3% from a year earlier."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You work for an industrial developer. Your boss asks where to watch for risk.",
+      "prompt": "What do you point to?",
+      "options": [
+       "Markets with no building at all",
+       "The color of new warehouse roofs",
+       "Markets with the biggest new pipelines"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "No building means no oversupply risk.",
+       "Roof color is irrelevant.",
+       "You watch where supply could outrun demand."
+      ],
+      "explanation": "Big pipelines in a few markets could add space faster than demand absorbs it."
+     },
+     "proReasoning": "Developers watch pipelines market by market.",
+     "commonMistake": "Looking only at national averages.",
+     "mentalModel": "Watch the biggest pipelines."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "The pipeline grew 9.3% while deliveries fell this year.",
+      "prompt": "What could that mean in a year or two?",
+      "options": [
+       "More supply that could slow rent growth",
+       "Permanent shortages of warehouse space",
+       "Falling demand for all buildings"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "You see today's pipeline as tomorrow's supply.",
+       "New space ends shortages over time.",
+       "Demand was strong."
+      ],
+      "explanation": "Space under construction will open later and add supply."
+     },
+     "proReasoning": "Investors read pipelines as a forecast of supply.",
+     "commonMistake": "Assuming today's tight market lasts.",
+     "mentalModel": "Today's pipeline is tomorrow's supply."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A new wave of warehouses will open over the next two years.",
+      "prompt": "What will their tenants need?",
+      "options": [
+       "Fewer trucks arriving at the docks",
+       "Fast setup of racks, systems, staff",
+       "Old buildings they can move out of"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "New sites need trucks.",
+       "You help tenants get running quickly.",
+       "They are moving in, not out."
+      ],
+      "explanation": "New buildings need to be fitted out and staffed fast."
+     },
+     "proReasoning": "Founders time products to a coming wave of demand.",
+     "commonMistake": "Building for the last cycle instead of the next.",
+     "mentalModel": "Ride the next wave."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You wonder why developers build more when space is tight.",
+      "prompt": "Why do they?",
+      "options": [
+       "Governments order them to build",
+       "Old warehouses vanish overnight",
+       "Rising rents promise better returns"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Building is a business choice.",
+       "Old stock stays.",
+       "You see price signals at work."
+      ],
+      "explanation": "Low vacancy and rising rents make new projects more attractive."
+     },
+     "proReasoning": "Prices signal where to build.",
+     "commonMistake": "Thinking supply ignores prices.",
+     "mentalModel": "Prices call for supply."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:ea8876704efb"
+  ]
+ },
+ {
+  "id": "78d6b8e8-dc29-52e3-967f-1d511eaafe0c",
+  "market_id": "logistics",
+  "day": 22,
+  "slot": 2,
+  "content": {
+   "id": "logistics-d22-c2",
+   "title": "Today tight, tomorrow built",
+   "lessonTitle": "The construction pipeline returns",
+   "slot": 2,
+   "type": "connect",
+   "brief": {
+    "headline": "Cushman & Wakefield put the US industrial pipeline at about 324 million square feet in Q3 2026, up 23%. Vacancy was 6.8%.",
+    "kicker": "Connect day 19 and day 22: low vacancy calls in cranes.",
+    "fullText": "Day 19 showed that falling vacancy gives landlords pricing power. Day 22 shows the response: with vacancy falling and leasing strong, developers started more projects.\n\nDeliveries of new space through Q3 2026 were about 185 million square feet, down 13% from 2025. Less new supply helped push vacancy down, and that tightness is what drew the next wave of construction.",
+    "sources": [
+     {
+      "url": "https://www.cushmanwakefield.com/en/united-states/news/2026/10/leasing-activity-remains-elevated-and-new-construction-rebounds",
+      "label": "Cushman & Wakefield, US industrial market Q3 2026"
+     },
+     {
+      "url": "https://www.cbre.com/insights/figures/q3-2026-us-industrial-and-logistics-market-report",
+      "label": "CBRE, US industrial and logistics figures Q3 2026"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "spotFake",
+    "prompt": "One of these is false. Tap it.",
+    "statements": [
+     "The pipeline grew 23% in a year.",
+     "Deliveries fell 13% year to date.",
+     "Vacancy rose as deliveries fell."
+    ],
+    "fakeIndex": 2,
+    "explanation": "Fewer deliveries helped vacancy fall, not rise."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "By what percent did the construction pipeline grow in a year?",
+    "min": 0,
+    "max": 50,
+    "value": 23,
+    "unit": "%",
+    "explanation": "It grew 23% to about 324 million square feet."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You lease space for a tenant whose lease ends in three years.",
+      "prompt": "What does the pipeline suggest?",
+      "options": [
+       "More choice may come before renewal",
+       "Space will be scarcer forever now",
+       "Rents can only rise from here on"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "You see new supply giving options.",
+       "New buildings add choice.",
+       "More supply can slow rents."
+      ],
+      "explanation": "New buildings opening could give you options by renewal time."
+     },
+     "proReasoning": "Good tenant reps time renewals to the supply cycle.",
+     "commonMistake": "Assuming today's market will last.",
+     "mentalModel": "Time deals to the cycle."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Vacancy is low and the pipeline is up 23%.",
+      "prompt": "Which risk grows for landlords?",
+      "options": [
+       "Tenants refusing all leases",
+       "Oversupply in markets building most",
+       "Too little space in every market"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Leasing was strong.",
+       "You see where new supply could pile up.",
+       "Supply is growing."
+      ],
+      "explanation": "Heavy building in some markets could raise vacancy when it opens."
+     },
+     "proReasoning": "Investors watch for the cycle turning market by market.",
+     "commonMistake": "Extrapolating today's rents forever.",
+     "mentalModel": "Booms build their own risk."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Space is tight today but more is coming.",
+      "prompt": "What offer suits tenants now?",
+      "options": [
+       "A 20-year lease at today's rents",
+       "Buying land to build in five years",
+       "Short-term space until new sites open"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Locking long at peak rents is risky.",
+       "That is too slow.",
+       "You bridge the gap flexibly."
+      ],
+      "explanation": "Flexible space bridges the gap until new buildings open."
+     },
+     "proReasoning": "Founders bridge timing gaps in a cycle.",
+     "commonMistake": "Ignoring that the cycle will turn.",
+     "mentalModel": "Bridge the gap."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You wonder why fewer deliveries made vacancy fall.",
+      "prompt": "Why?",
+      "options": [
+       "Less new space came as demand held",
+       "Old warehouses were all torn down",
+       "Demand stopped completely this year"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "You see supply and demand together.",
+       "Most old stock remains.",
+       "Demand stayed strong."
+      ],
+      "explanation": "With fewer new buildings and steady leasing, empty space shrank."
+     },
+     "proReasoning": "Vacancy depends on supply and demand together.",
+     "commonMistake": "Looking at demand alone.",
+     "mentalModel": "Supply moves vacancy too."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:c8690f1dab3f"
+  ]
+ },
+ {
+  "id": "b06c53a1-b0fa-5073-9ba6-02b944e358cb",
+  "market_id": "logistics",
+  "day": 22,
+  "slot": 3,
+  "content": {
+   "id": "logistics-d22-c3",
+   "title": "Start a speculative warehouse?",
+   "lessonTitle": "The construction pipeline returns",
+   "slot": 3,
+   "type": "decide",
+   "brief": {
+    "headline": "You are an industrial developer with land near Phoenix. You could start a 600,000-square-foot warehouse without a tenant signed.",
+    "kicker": "Decide: build on speculation or wait for a tenant?",
+    "fullText": "CBRE counted 278 million square feet under construction in Q3 2026, up 9.3%, and named Phoenix as one of the pipelines to watch. Vacancy is low today, and rents are rising.\n\nA speculative building could capture high rents if demand holds. If many projects open at once, you could face months of empty space.",
+    "sources": [
+     {
+      "url": "https://www.cbre.com/insights/figures/q3-2026-us-industrial-and-logistics-market-report",
+      "label": "CBRE, US industrial and logistics figures Q3 2026"
+     },
+     {
+      "url": "https://www.cushmanwakefield.com/en/united-states/news/2026/10/leasing-activity-remains-elevated-and-new-construction-rebounds",
+      "label": "Cushman & Wakefield, US industrial market Q3 2026"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "sortSignal",
+    "prompt": "Supports building now, or waiting?",
+    "buckets": [
+     "Build now",
+     "Wait"
+    ],
+    "items": [
+     {
+      "text": "Vacancy low and falling locally",
+      "bucket": 0
+     },
+     {
+      "text": "Strong leasing in your size range",
+      "bucket": 0
+     },
+     {
+      "text": "Many rival projects nearby",
+      "bucket": 1
+     },
+     {
+      "text": "No tenant interest yet",
+      "bucket": 1
+     }
+    ],
+    "explanation": "Local demand supports building. A crowded local pipeline argues for waiting."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "By what percent was CBRE's construction pipeline up from a year earlier?",
+    "min": 0,
+    "max": 30,
+    "value": 9.3,
+    "unit": "%",
+    "explanation": "Up 9.3% to about 278 million square feet."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You lead market research for the developer.",
+      "prompt": "What do you study first?",
+      "options": [
+       "Warehouse designs used in Europe",
+       "Rival projects opening near you",
+       "National vacancy figures only"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "That is not the local risk.",
+       "You check local supply risk.",
+       "National figures hide local gluts."
+      ],
+      "explanation": "Local supply decides whether your building fills."
+     },
+     "proReasoning": "Researchers dig into the local pipeline.",
+     "commonMistake": "Relying on national averages.",
+     "mentalModel": "Real estate is local."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "The developer starts a speculative warehouse in a busy pipeline market.",
+      "prompt": "What is the main risk?",
+      "options": [
+       "Rents rising too fast for tenants",
+       "Too many tenants wanting space",
+       "Opening alongside many rivals"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "That is an upside risk.",
+       "That would be good news.",
+       "You see the oversupply risk."
+      ],
+      "explanation": "If many buildings open at once, rents and occupancy can fall."
+     },
+     "proReasoning": "Investors weigh timing against the local pipeline.",
+     "commonMistake": "Assuming demand absorbs all supply.",
+     "mentalModel": "Timing beats averages."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your small development firm has one site and limited capital.",
+      "prompt": "What is the careful path?",
+      "options": [
+       "Pre-lease to a tenant before building",
+       "Build on speculation with all your cash",
+       "Sell the land today at any price"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "You lower risk before spending.",
+       "One empty building could sink you.",
+       "That gives up the opportunity."
+      ],
+      "explanation": "A signed tenant secures income before you commit capital."
+     },
+     "proReasoning": "Small developers reduce risk with pre-leasing.",
+     "commonMistake": "Betting the firm on one speculative project.",
+     "mentalModel": "Lease first, build second."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You wonder why developers build without tenants.",
+      "prompt": "Why take that risk?",
+      "options": [
+       "Because empty buildings earn rent",
+       "To capture demand when space is scarce",
+       "Because tenants refuse to sign early"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Empty buildings earn nothing.",
+       "You see the upside of speed.",
+       "Many tenants do sign early."
+      ],
+      "explanation": "Ready space can lease fast at high rents in a tight market."
+     },
+     "proReasoning": "Speculation trades risk for speed.",
+     "commonMistake": "Thinking speculation is always reckless.",
+     "mentalModel": "Speed has value in tight markets."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:9dcd2e253fe7"
+  ]
+ },
+ {
+  "id": "b9579885-0670-59c7-9553-86612554581a",
+  "market_id": "logistics",
+  "day": 23,
+  "slot": 1,
+  "content": {
+   "id": "logistics-d23-c1",
+   "title": "A seventh state on quotas",
+   "lessonTitle": "Limits on warehouse quotas",
+   "slot": 1,
+   "type": "apply",
+   "brief": {
+    "headline": "In July 2026, Rhode Island signed its Warehouse Worker Protection Act. Employers must give workers a written description of their tasks and the quotas they must meet.",
+    "kicker": "Apply the rule: labor law shapes what algorithms demand.",
+    "fullText": "Governor Dan McKee ceremonially signed the law on July 13, 2026. Rhode Island became the seventh state with such a law, after California, Minnesota, New York, Oregon, Washington and Connecticut.\n\nThe Teamsters backed the bill. McKee said, \"Hard-working people deserve to know exactly what is expected of them.\" Each new state adds rules that multistate warehouse operators must track.",
+    "sources": [
+     {
+      "url": "https://governor.ri.gov/press-releases/governor-mckee-ceremonially-signs-warehouse-worker-protection-act",
+      "label": "Rhode Island Governor, Warehouse Worker Protection Act signed"
+     },
+     {
+      "url": "https://www.freightwaves.com/news/amazon-focused-ab-701-in-california-gets-governors-signature",
+      "label": "FreightWaves, AB 701 gets the governor's signature"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "spotFake",
+    "prompt": "One of these is false. Tap it.",
+    "statements": [
+     "Rhode Island was the seventh state with such a law.",
+     "Workers must get a written description of quotas.",
+     "The law bans all warehouse quotas."
+    ],
+    "fakeIndex": 2,
+    "explanation": "Laws like this require quotas to be disclosed. They do not ban them."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "How many states had warehouse worker protection laws after Rhode Island?",
+    "min": 0,
+    "max": 20,
+    "value": 7,
+    "unit": "states",
+    "explanation": "Rhode Island was the seventh."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You manage HR for a warehouse in Rhode Island.",
+      "prompt": "What do you prepare?",
+      "options": [
+       "Written quota details for new hires",
+       "A plan to remove all quotas at once",
+       "Nothing, since quotas stay secret"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "You meet the new requirement.",
+       "The law does not require that.",
+       "Disclosure is now required."
+      ],
+      "explanation": "The law requires written descriptions of tasks and quotas on hire."
+     },
+     "proReasoning": "HR teams turn new laws into clear onboarding steps.",
+     "commonMistake": "Assuming disclosure means abolition.",
+     "mentalModel": "Disclose, do not hide."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Seven states now require warehouse quota disclosure.",
+      "prompt": "What does that mean for multistate operators?",
+      "options": [
+       "No effect on operations",
+       "More compliance work across states",
+       "Quotas are banned everywhere"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Each law adds work.",
+       "You see rising compliance costs.",
+       "Disclosure is not a ban."
+      ],
+      "explanation": "Each state adds rules that operators must track and document."
+     },
+     "proReasoning": "Investors count compliance as an operating cost.",
+     "commonMistake": "Ignoring patchwork rules across states.",
+     "mentalModel": "Patchwork rules add cost."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Warehouse operators must document quotas in seven states.",
+      "prompt": "What could you build?",
+      "options": [
+       "A tool to hide quotas from workers",
+       "A robot to replace all HR teams",
+       "Software tracking quota rules by state"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Hiding quotas breaks these laws.",
+       "HR still needs people.",
+       "You simplify multistate compliance."
+      ],
+      "explanation": "Operators need a single view of rules that differ by state."
+     },
+     "proReasoning": "Founders turn regulatory patchworks into software.",
+     "commonMistake": "Building tools that dodge the rules.",
+     "mentalModel": "Simplify the patchwork."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You wonder why states focus on quota disclosure.",
+      "prompt": "What problem does it address?",
+      "options": [
+       "Workers not knowing what is expected",
+       "Warehouses having too many robots",
+       "Trucks arriving late"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "You see the transparency goal.",
+       "The law is about quotas.",
+       "Trucks are not the issue."
+      ],
+      "explanation": "The laws aim to tell workers what pace they must meet."
+     },
+     "proReasoning": "Transparency rules target hidden expectations.",
+     "commonMistake": "Thinking the laws ban productivity targets.",
+     "mentalModel": "Make expectations visible."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:23c9c793ec30"
+  ]
+ },
+ {
+  "id": "be4114cb-b34e-50d4-a910-ff8e034fd68d",
+  "market_id": "logistics",
+  "day": 23,
+  "slot": 2,
+  "content": {
+   "id": "logistics-d23-c2",
+   "title": "Algorithms meet the law",
+   "lessonTitle": "Limits on warehouse quotas",
+   "slot": 2,
+   "type": "connect",
+   "brief": {
+    "headline": "California's AB 701 requires warehouse employers to disclose productivity quotas. Quotas cannot stop workers from taking legally required breaks, including bathroom breaks.",
+    "kicker": "Connect day 21 and day 23: robots set the pace, law sets limits.",
+    "fullText": "Day 21 showed that robots and software increasingly coordinate warehouse work, with Amazon's DeepFleet improving routing efficiency by 10%. Day 23 shows the limit: when software sets the pace, labor law decides what it may demand.\n\nAB 701 does not ban quotas. It requires disclosure and protects breaks and safety, so systems that set targets must leave room for them.",
+    "sources": [
+     {
+      "url": "https://www.freightwaves.com/news/amazon-focused-ab-701-in-california-gets-governors-signature",
+      "label": "FreightWaves, AB 701 gets the governor's signature"
+     },
+     {
+      "url": "https://www.eweek.com/news/amazon-robots-automation-jobs/",
+      "label": "eWeek, Amazon's robot fleet hits 1 million"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "faceOff",
+    "prompt": "What does AB 701 do?",
+    "left": {
+     "name": "Requires disclosure",
+     "note": "Workers learn their quotas"
+    },
+    "right": {
+     "name": "Bans quotas",
+     "note": "No targets allowed"
+    },
+    "correctIndex": 0,
+    "explanation": "AB 701 requires disclosure and protects breaks. It does not ban quotas."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "By what percent did DeepFleet improve Amazon's robot routing efficiency?",
+    "min": 0,
+    "max": 40,
+    "value": 10,
+    "unit": "%",
+    "explanation": "About 10%."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You build the system that sets pick targets in a California warehouse.",
+      "prompt": "What must the targets allow for?",
+      "options": [
+       "Whatever pace the robots can sustain",
+       "Required breaks, bathroom breaks too",
+       "Only peak speed with no breaks at all"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "People are not robots.",
+       "You design within the law.",
+       "That would violate AB 701."
+      ],
+      "explanation": "Targets must leave time for legally required breaks."
+     },
+     "proReasoning": "Engineers who build pace systems design in legal limits.",
+     "commonMistake": "Setting targets from machine speed alone.",
+     "mentalModel": "Design in the breaks."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Warehouses automate more while states pass quota laws.",
+      "prompt": "What risk should investors watch?",
+      "options": [
+       "Robots refusing to do their work",
+       "Customers banning all automation",
+       "Fines if pace systems break rules"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Robots do not refuse.",
+       "Customers want speed.",
+       "You see compliance risk in automation."
+      ],
+      "explanation": "Systems that set pace must comply, or operators face penalties."
+     },
+     "proReasoning": "Investors check compliance alongside efficiency.",
+     "commonMistake": "Assuming automation is free of legal risk.",
+     "mentalModel": "Efficiency must stay legal."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Operators must set targets that respect breaks.",
+      "prompt": "What feature would they pay for?",
+      "options": [
+       "Targets that adjust for required breaks",
+       "Targets based only on top speed",
+       "Hidden targets workers cannot see"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "You build compliance into the product.",
+       "That breaks the law.",
+       "Disclosure is required."
+      ],
+      "explanation": "Pace tools that account for breaks keep operators compliant."
+     },
+     "proReasoning": "Founders bake rules into the product.",
+     "commonMistake": "Leaving compliance to the customer.",
+     "mentalModel": "Bake the rules in."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You wonder why laws target warehouse algorithms.",
+      "prompt": "Why?",
+      "options": [
+       "Algorithms set warehouse rents now",
+       "Software now sets the pace of work",
+       "Algorithms drive all the trucks"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Rents are set by markets.",
+       "You see who sets the pace.",
+       "That is a different topic."
+      ],
+      "explanation": "When software sets targets, rules on targets become rules on software."
+     },
+     "proReasoning": "Laws follow who makes the decisions.",
+     "commonMistake": "Thinking algorithms are outside the law.",
+     "mentalModel": "Rules follow the decision-maker."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:ff3f9801a653"
+  ]
+ },
+ {
+  "id": "0ff3a128-f416-5d7c-b6ed-3a21f60e4fa2",
+  "market_id": "logistics",
+  "day": 23,
+  "slot": 3,
+  "content": {
+   "id": "logistics-d23-c3",
+   "title": "One policy for every state?",
+   "lessonTitle": "Limits on warehouse quotas",
+   "slot": 3,
+   "type": "decide",
+   "brief": {
+    "headline": "You run warehouses in 12 states, including several with quota disclosure laws. Your team asks whether to use one national quota policy.",
+    "kicker": "Decide: match each state or adopt the strictest?",
+    "fullText": "Seven states, from California to Rhode Island, now require warehouse employers to disclose quotas. California's AB 701 also protects required breaks, including bathroom breaks.\n\nRunning different policies by state is complex. Using the strictest standard everywhere is simpler but may change how sites in other states operate.",
+    "sources": [
+     {
+      "url": "https://governor.ri.gov/press-releases/governor-mckee-ceremonially-signs-warehouse-worker-protection-act",
+      "label": "Rhode Island Governor, Warehouse Worker Protection Act signed"
+     },
+     {
+      "url": "https://www.freightwaves.com/news/amazon-focused-ab-701-in-california-gets-governors-signature",
+      "label": "FreightWaves, AB 701 gets the governor's signature"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "multipleChoice",
+    "prompt": "What is the main benefit of one strict national policy?",
+    "options": [
+     "No need to disclose anything at all",
+     "Simpler compliance at every site",
+     "Higher quotas in every single state"
+    ],
+    "correctIndex": 1,
+    "explanation": "A single standard that meets the strictest law is easier to run and audit."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "How many states had quota disclosure laws in July 2026?",
+    "min": 0,
+    "max": 20,
+    "value": 7,
+    "unit": "states",
+    "explanation": "Rhode Island became the seventh."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You lead compliance across all 12 states.",
+      "prompt": "What do you recommend?",
+      "options": [
+       "Different secret policies by site",
+       "Ignore states without laws",
+       "One policy meeting the strictest rules"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Secrecy breaks disclosure laws.",
+       "More states may pass laws.",
+       "You simplify and stay compliant."
+      ],
+      "explanation": "One strict policy is easier to train, audit and defend."
+     },
+     "proReasoning": "Compliance leads often adopt the strictest standard to simplify.",
+     "commonMistake": "Running a patchwork that is hard to audit.",
+     "mentalModel": "Simplify to the strictest rule."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "An operator adopts one strict quota policy nationwide.",
+      "prompt": "What does that signal?",
+      "options": [
+       "Lower legal risk as more states act",
+       "Plans to leave every strict state",
+       "Higher quotas everywhere"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "You see risk reduction.",
+       "It is staying.",
+       "Strict policies do not raise quotas."
+      ],
+      "explanation": "Meeting the strictest standard now reduces risk as more states pass laws."
+     },
+     "proReasoning": "Investors value companies that get ahead of regulation.",
+     "commonMistake": "Seeing compliance only as cost.",
+     "mentalModel": "Get ahead of the rules."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Many operators face the same multistate problem.",
+      "prompt": "What could you offer?",
+      "options": [
+       "Robots that never need any breaks",
+       "A tool applying the right rule per site",
+       "Legal advice to dodge the laws"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Workers still need breaks.",
+       "You handle the patchwork for them.",
+       "Dodging laws is risky."
+      ],
+      "explanation": "Operators need help applying the right rule in each place."
+     },
+     "proReasoning": "Founders handle complexity buyers cannot.",
+     "commonMistake": "Selling avoidance instead of compliance.",
+     "mentalModel": "Handle the complexity."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You wonder why a company would follow rules stricter than required.",
+      "prompt": "Why would it?",
+      "options": [
+       "Stricter rules raise quotas",
+       "Laws require national policies",
+       "One standard is simpler to run"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "They do not raise quotas.",
+       "No law requires that.",
+       "You see the value of simplicity."
+      ],
+      "explanation": "One policy avoids errors from juggling many rules."
+     },
+     "proReasoning": "Simplicity can be worth extra cost.",
+     "commonMistake": "Assuming the minimum is always cheapest.",
+     "mentalModel": "Simple can be cheaper."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:0c65f0f995fe"
+  ]
+ },
+ {
+  "id": "09c84461-6991-57cb-b5ee-8173a0806069",
+  "market_id": "logistics",
+  "day": 24,
+  "slot": 1,
+  "content": {
+   "id": "logistics-d24-c1",
+   "title": "Another Ocado site closes",
+   "lessonTitle": "When warehouse robots did not pay off",
+   "slot": 1,
+   "type": "apply",
+   "brief": {
+    "headline": "In January 2026, Sobeys said it would close its Ocado-equipped fulfillment center in Calgary. It cited the size and growth rate of Alberta's online grocery market.",
+    "kicker": "Apply the rule: robots pay off only with volume.",
+    "fullText": "Sobeys agreed to pay Ocado about $24.6 million for the closure, and Ocado expected to lose about $9.5 million of revenue in 2026. Sobeys' Vancouver-area center remained paused, while its Toronto and Montreal sites kept running.\n\nOcado CEO Tim Steiner said, \"we have taken a pragmatic approach to refining the network.\" The news followed Kroger's November 2025 decision to close three Ocado sites.",
+    "sources": [
+     {
+      "url": "https://www.automatedwarehouseonline.com/sobeys-to-close-ocado-facility-in-calgary/",
+      "label": "Automated Warehouse, Sobeys to close Ocado facility in Calgary"
+     },
+     {
+      "url": "https://www.spokesman.com/stories/2025/nov/18/kroger-to-close-three-automated-delivery-fulfillme",
+      "label": "Reuters via Spokesman-Review, Kroger to close three automated centers"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "buildChain",
+    "prompt": "Put the chain in order.",
+    "steps": [
+     "A grocer builds a large automated center",
+     "Local online grocery demand grows slowly",
+     "The center runs well below capacity",
+     "The grocer closes it and pays the partner"
+    ],
+    "explanation": "Automated centers need high, steady volume. Without it, the economics fail."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "About how many million dollars did Sobeys agree to pay Ocado for the closure?",
+    "min": 0,
+    "max": 60,
+    "value": 24.6,
+    "unit": "M",
+    "explanation": "About $24.6 million."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You plan e-commerce for a grocer considering an automated center.",
+      "prompt": "What do you test first?",
+      "options": [
+       "Whether rivals have built one too",
+       "Whether local demand can fill it",
+       "Whether the robots look modern"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Copying rivals is not a plan.",
+       "You check the volume it needs.",
+       "Looks do not drive payback."
+      ],
+      "explanation": "Sobeys closed Calgary because the market was too small and slow-growing."
+     },
+     "proReasoning": "Planners size demand before committing to automation.",
+     "commonMistake": "Building because competitors did.",
+     "mentalModel": "Size demand first."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Two Ocado partners closed sites within months.",
+      "prompt": "What should an Ocado investor watch?",
+      "options": [
+       "Whether robots get faster",
+       "Whether stores close on Sundays",
+       "Whether partners keep sites running"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Speed does not fix low volume.",
+       "Opening hours are irrelevant.",
+       "You track the revenue base."
+      ],
+      "explanation": "Ocado earns from partner sites. Closures cut its revenue."
+     },
+     "proReasoning": "Investors watch customer retention for tech suppliers.",
+     "commonMistake": "Focusing on technology instead of customer demand.",
+     "mentalModel": "Watch the customer base."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Grocers are closing big automated centers in smaller markets.",
+      "prompt": "What could serve those markets?",
+      "options": [
+       "Smaller systems inside existing stores",
+       "Even bigger automated warehouses",
+       "Drone delivery from orbit"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "You match automation to smaller volume.",
+       "Bigger needs more volume.",
+       "That is not practical."
+      ],
+      "explanation": "Store-based fulfillment fits markets too small for a big center."
+     },
+     "proReasoning": "Founders size products to the volume customers have.",
+     "commonMistake": "Selling scale to markets without it.",
+     "mentalModel": "Size to the volume."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You wonder why a working robot warehouse would close.",
+      "prompt": "Why?",
+      "options": [
+       "Shoppers stopped eating",
+       "Too few orders to cover its cost",
+       "The robots broke down for good"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "People still buy groceries.",
+       "You see volume as the deciding factor.",
+       "The tech was not the stated reason."
+      ],
+      "explanation": "Big automated sites have high fixed costs. Low volume cannot cover them."
+     },
+     "proReasoning": "Fixed costs need volume to pay off.",
+     "commonMistake": "Thinking good technology guarantees success.",
+     "mentalModel": "Volume pays for robots."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:3119e6e45bfd"
+  ]
+ },
+ {
+  "id": "bdbb7cb6-395a-5983-a722-39fd015be1a3",
+  "market_id": "logistics",
+  "day": 24,
+  "slot": 2,
+  "content": {
+   "id": "logistics-d24-c2",
+   "title": "Same robots, different volume",
+   "lessonTitle": "When warehouse robots did not pay off",
+   "slot": 2,
+   "type": "connect",
+   "brief": {
+    "headline": "Amazon's robots assist about 75% of its deliveries. In November 2025, Kroger said it would close three Ocado-run automated centers and take an impairment of about $2.6 billion.",
+    "kicker": "Connect day 21 and day 24: volume decides who wins.",
+    "fullText": "Day 21 showed that huge, steady volume lets Amazon's robots pay off. Day 24 shows the reverse: pandemic-era online grocery gains faded, and Kroger's dedicated centers lost their economics.\n\nKroger leaned more on delivery partners like Instacart, DoorDash and Uber Eats, and expected about $400 million of e-commerce profit improvement. Ocado received over $250 million in compensation.",
+    "sources": [
+     {
+      "url": "https://www.spokesman.com/stories/2025/nov/18/kroger-to-close-three-automated-delivery-fulfillme",
+      "label": "Reuters via Spokesman-Review, Kroger to close three automated centers"
+     },
+     {
+      "url": "https://www.eweek.com/news/amazon-robots-automation-jobs/",
+      "label": "eWeek, Amazon's robot fleet hits 1 million"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "sortSignal",
+    "prompt": "Helps automation pay off, or not?",
+    "buckets": [
+     "Helps",
+     "Hurts"
+    ],
+    "items": [
+     {
+      "text": "Billions of parcels a year",
+      "bucket": 0
+     },
+     {
+      "text": "Steady, predictable demand",
+      "bucket": 0
+     },
+     {
+      "text": "Online demand fading after a boom",
+      "bucket": 1
+     },
+     {
+      "text": "A small regional market",
+      "bucket": 1
+     }
+    ],
+    "explanation": "High, steady volume makes robots pay. Fading or small demand does not."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "About how many billion dollars was Kroger's impairment?",
+    "min": 0,
+    "max": 4,
+    "value": 2.6,
+    "unit": "B",
+    "explanation": "About $2.6 billion."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You are asked to pitch warehouse robots to a regional grocer.",
+      "prompt": "What do you ask them first?",
+      "options": [
+       "What color they want the robots",
+       "Whether they like Amazon",
+       "How many online orders they handle"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Color does not drive payback.",
+       "Preference is not the issue.",
+       "You check if the volume is there."
+      ],
+      "explanation": "Robots pay off only with enough steady volume."
+     },
+     "proReasoning": "Good sellers qualify buyers on volume first.",
+     "commonMistake": "Selling the robots before checking demand.",
+     "mentalModel": "Qualify on volume."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Amazon's robots pay off while Kroger wrote down $2.6 billion.",
+      "prompt": "What explains the gap?",
+      "options": [
+       "Steady scale versus faded demand",
+       "Amazon uses far cheaper robots",
+       "Kroger had no warehouses at all"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "You see volume as the driver.",
+       "The cost of robots is not the main gap.",
+       "Kroger had automated centers."
+      ],
+      "explanation": "The same idea works with steady volume and fails without it."
+     },
+     "proReasoning": "Investors check that demand exists before valuing automation.",
+     "commonMistake": "Judging automation without looking at volume.",
+     "mentalModel": "Volume decides."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Kroger switched to partners like Instacart and DoorDash.",
+      "prompt": "What does that suggest?",
+      "options": [
+       "Online grocery has ended for good",
+       "Partners can beat robots at low volume",
+       "Partners always lose to owned robots"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Online grocery continues.",
+       "You see asset-light delivery winning here.",
+       "Not at low volume."
+      ],
+      "explanation": "At lower volume, paying partners per order can beat owning robots."
+     },
+     "proReasoning": "Founders compare owning and renting at each volume.",
+     "commonMistake": "Assuming ownership always wins.",
+     "mentalModel": "Rent until volume justifies owning."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You wonder why the pandemic made grocers build robot warehouses.",
+      "prompt": "What happened?",
+      "options": [
+       "Robots became free during the pandemic",
+       "Stores were closed for good",
+       "Online orders surged, then cooled"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Robots stayed costly.",
+       "Stores reopened.",
+       "You see a demand spike fading."
+      ],
+      "explanation": "Grocers built for pandemic-era demand that later faded."
+     },
+     "proReasoning": "Building for a spike is risky.",
+     "commonMistake": "Treating a surge as permanent.",
+     "mentalModel": "Spikes fade."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:a3338905df07"
+  ]
+ },
+ {
+  "id": "d009ec21-97f9-521f-88d6-ba99aa1bf6bc",
+  "market_id": "logistics",
+  "day": 24,
+  "slot": 3,
+  "content": {
+   "id": "logistics-d24-c3",
+   "title": "Robot center or store picking?",
+   "lessonTitle": "When warehouse robots did not pay off",
+   "slot": 3,
+   "type": "decide",
+   "brief": {
+    "headline": "You run online grocery for a regional chain with 150 stores. A vendor pitches a large automated fulfillment center for your main city.",
+    "kicker": "Decide: big robot center, store picking, or partners?",
+    "fullText": "Kroger closed three Ocado-run centers with a $2.6 billion impairment, and Sobeys closed its Calgary center because the local market was too small. Both leaned on store-based fulfillment or delivery partners instead.\n\nYour online orders are growing but small compared with your store sales.",
+    "sources": [
+     {
+      "url": "https://www.spokesman.com/stories/2025/nov/18/kroger-to-close-three-automated-delivery-fulfillme",
+      "label": "Reuters via Spokesman-Review, Kroger to close three automated centers"
+     },
+     {
+      "url": "https://www.automatedwarehouseonline.com/sobeys-to-close-ocado-facility-in-calgary/",
+      "label": "Automated Warehouse, Sobeys to close Ocado facility in Calgary"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "faceOff",
+    "prompt": "Which fits modest, growing online demand?",
+    "left": {
+     "name": "Store picking plus partners",
+     "note": "Low fixed cost, scales with orders"
+    },
+    "right": {
+     "name": "Big automated center",
+     "note": "High fixed cost, needs volume"
+    },
+    "correctIndex": 0,
+    "explanation": "Low fixed costs suit modest volume. Big centers need high, steady demand."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "About how many million dollars of e-commerce profit improvement did Kroger expect?",
+    "min": 0,
+    "max": 1000,
+    "value": 400,
+    "unit": "M",
+    "explanation": "About $400 million."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your CEO asks for a recommendation.",
+      "prompt": "What do you propose?",
+      "options": [
+       "Store picking now; revisit at scale",
+       "Build the big center right away",
+       "Stop selling groceries online now"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "You match cost to demand.",
+       "Volume may not fill it.",
+       "You lose a growing channel."
+      ],
+      "explanation": "Store picking scales with demand; a big center needs volume you lack."
+     },
+     "proReasoning": "Good planners set volume triggers before big automation.",
+     "commonMistake": "Building capacity ahead of demand.",
+     "mentalModel": "Set a volume trigger."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A regional grocer declines a big robot center.",
+      "prompt": "How might investors see it?",
+      "options": [
+       "As leaving the grocery business",
+       "As avoiding a costly bet on thin volume",
+       "As falling behind rivals for good"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "It still sells groceries.",
+       "You see prudent capital use.",
+       "It can automate later."
+      ],
+      "explanation": "Kroger's write-down shows the risk of building ahead of demand."
+     },
+     "proReasoning": "Investors reward capital matched to demand.",
+     "commonMistake": "Praising automation regardless of payoff.",
+     "mentalModel": "Match capital to demand."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Many regional grocers have modest online volume.",
+      "prompt": "What could you sell them?",
+      "options": [
+       "Billion-dollar robot warehouses",
+       "A new grocery chain",
+       "Store-based picking software"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Too big for them.",
+       "That competes with them.",
+       "You fit their volume."
+      ],
+      "explanation": "Software that helps stores pick online orders fits modest volume."
+     },
+     "proReasoning": "Founders size solutions to the customer's scale.",
+     "commonMistake": "Selling giant solutions to small buyers.",
+     "mentalModel": "Fit the customer's scale."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You wonder why picking from stores can beat robots.",
+      "prompt": "How?",
+      "options": [
+       "Stores exist, so fixed cost is low",
+       "Store staff are faster than robots",
+       "Robots cannot pick groceries"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "You see the fixed cost advantage.",
+       "Robots can be faster.",
+       "Robots can pick groceries."
+      ],
+      "explanation": "Using existing stores avoids building a costly new site."
+     },
+     "proReasoning": "Use what you already own before building more.",
+     "commonMistake": "Comparing speed instead of total cost.",
+     "mentalModel": "Use what you have."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:68e4e268c443"
+  ]
+ },
+ {
+  "id": "67012e01-cd20-5592-94d2-70fb5f0c8591",
+  "market_id": "logistics",
+  "day": 25,
+  "slot": 1,
+  "content": {
+   "id": "logistics-d25-c1",
+   "title": "A costly classification case",
+   "lessonTitle": "The code on every import",
+   "slot": 1,
+   "type": "apply",
+   "brief": {
+    "headline": "In December 2025, the US collected more than $53 million from Wanxiang America to settle claims it misclassified Chinese auto parts. The total included over $30 million in civil penalties.",
+    "kicker": "Apply the rule: the code you choose decides the duty.",
+    "fullText": "The Justice Department said Wanxiang made false statements about tapered roller bearings, wheel hub assemblies and other parts, filing them under incorrect tariff provisions. Some were covered by an antidumping order on Chinese bearings with a 92.84% China-wide rate.\n\nThe case ended after nearly 10 years of litigation. The settlement resolved allegations only, with no finding of liability. CBP said misclassification \"undermine[s] the American economy.\"",
+    "sources": [
+     {
+      "url": "https://www.justice.gov/opa/pr/united-states-settles-suit-misclassification-chinese-automotive-components",
+      "label": "US Department of Justice, settlement over misclassified automotive components"
+     },
+     {
+      "url": "https://www.wcoomd.org/en/topics/nomenclature/overview/what-is-the-harmonized-system.aspx",
+      "label": "World Customs Organization, what is the Harmonized System?"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "buildChain",
+    "prompt": "Put the chain in order.",
+    "steps": [
+     "Goods are filed under the wrong tariff code",
+     "Lower duties are paid at entry",
+     "Customs investigates the entries",
+     "The importer pays back duties and penalties"
+    ],
+    "explanation": "A wrong code means the wrong duty, and the bill can come back with penalties."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "How many million dollars did the US collect from Wanxiang America?",
+    "min": 0,
+    "max": 120,
+    "value": 53,
+    "unit": "M",
+    "explanation": "More than $53 million, including over $30 million in civil penalties."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You start as a customs compliance analyst at an auto parts importer.",
+      "prompt": "What do you review first?",
+      "options": [
+       "The color of the shipping boxes",
+       "Which port has the best coffee",
+       "How each product is classified"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Packaging color is irrelevant.",
+       "That is not compliance.",
+       "You check the decision that sets duty."
+      ],
+      "explanation": "Classification sets the duty. Errors can lead to years of back duties and penalties."
+     },
+     "proReasoning": "Good compliance analysts audit classifications regularly.",
+     "commonMistake": "Assuming past classifications are correct.",
+     "mentalModel": "Audit the codes."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "An importer settles misclassification claims for over $53 million.",
+      "prompt": "What risk does that show for importers?",
+      "options": [
+       "Wrong codes can bring big penalties",
+       "Customs never checks old entries",
+       "Tariff codes do not affect costs"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "You see classification as a liability.",
+       "This case ran almost 10 years.",
+       "Codes set the duty rate."
+      ],
+      "explanation": "Duties underpaid through wrong codes can return with penalties years later."
+     },
+     "proReasoning": "Investors look for hidden liabilities in trade-heavy companies.",
+     "commonMistake": "Ignoring customs risk in import-heavy firms.",
+     "mentalModel": "Codes can hide liabilities."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Importers must classify thousands of products correctly.",
+      "prompt": "What could you build?",
+      "options": [
+       "A shipping line for auto parts",
+       "Tools that check codes before entry",
+       "Software to pick the lowest-duty code"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "That does not solve the code problem.",
+       "You prevent errors at the source.",
+       "Choosing codes by duty is misclassification."
+      ],
+      "explanation": "Catching classification errors before entry avoids back duties and penalties."
+     },
+     "proReasoning": "Founders build tools that prevent costly mistakes.",
+     "commonMistake": "Selling tools that encourage wrong codes.",
+     "mentalModel": "Get the code right first."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You wonder how a code can cost a company millions.",
+      "prompt": "How?",
+      "options": [
+       "Codes are charged per letter",
+       "Customs charges for long codes",
+       "The code decides which duties apply"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Codes are not priced that way.",
+       "Length is not the cost.",
+       "You see code and duty linked."
+      ],
+      "explanation": "Different codes carry different duties, including antidumping duties."
+     },
+     "proReasoning": "In customs, a label is a price.",
+     "commonMistake": "Thinking codes are just paperwork.",
+     "mentalModel": "The label is the price."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:0f0ab2724940"
+  ]
+ },
+ {
+  "id": "1d38c887-33cc-530b-bee1-99733db7c132",
+  "market_id": "logistics",
+  "day": 25,
+  "slot": 2,
+  "content": {
+   "id": "logistics-d25-c2",
+   "title": "Policy hits by code",
+   "lessonTitle": "The code on every import",
+   "slot": 2,
+   "type": "connect",
+   "brief": {
+    "headline": "Over 98% of goods in world trade are classified using the Harmonized System, with more than 5,000 commodity groups. Over 200 countries use it.",
+    "kicker": "Connect day 11 and day 25: policy costs land by code.",
+    "fullText": "Day 11 showed that trade policy can add or remove costs faster than markets do. Day 25 shows how those costs reach a product: tariffs are set by tariff line, and each product's code decides which rates apply.\n\nThe first six digits of the code are shared worldwide. Countries add extra digits for their own tariff lines, so the same product can face different duties in different countries.",
+    "sources": [
+     {
+      "url": "https://www.wcoomd.org/en/topics/nomenclature/overview/what-is-the-harmonized-system.aspx",
+      "label": "World Customs Organization, what is the Harmonized System?"
+     },
+     {
+      "url": "https://gcaptain.com/white-house-confirms-one-year-suspension-of-ustr-port-fees-in-u-s-china-trade-deal",
+      "label": "gCaptain, one-year suspension of USTR port fees"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "spotFake",
+    "prompt": "One of these is false. Tap it.",
+    "statements": [
+     "The first six digits are shared worldwide.",
+     "Countries add digits for their own lines.",
+     "Every country uses identical full codes."
+    ],
+    "fakeIndex": 2,
+    "explanation": "Only the first six digits are shared. Countries add their own digits."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "About how many commodity groups does the Harmonized System have?",
+    "min": 0,
+    "max": 8,
+    "value": 5,
+    "unit": "K",
+    "explanation": "More than 5,000 commodity groups."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A new tariff hits certain product codes. Your boss asks if you are affected.",
+      "prompt": "How do you answer?",
+      "options": [
+       "Check our codes against the list",
+       "Assume we are not affected at all",
+       "Wait for a bill from customs"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "You answer from your actual codes.",
+       "Assumptions can be costly.",
+       "Waiting means surprise costs."
+      ],
+      "explanation": "Tariffs apply by code, so your codes tell you your exposure."
+     },
+     "proReasoning": "Trade analysts map each policy change to their code list.",
+     "commonMistake": "Guessing exposure without checking codes.",
+     "mentalModel": "Map policy to your codes."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "New tariffs target specific product codes.",
+      "prompt": "How do investors judge which firms are hit?",
+      "options": [
+       "By how many trucks they own outright",
+       "By the codes of what they import",
+       "By the size of their logo"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Trucks do not decide duties.",
+       "You link exposure to product mix.",
+       "Logos do not matter."
+      ],
+      "explanation": "Exposure depends on the codes of the goods a company imports."
+     },
+     "proReasoning": "Investors map tariff lists to company product mixes.",
+     "commonMistake": "Treating all importers as equally exposed.",
+     "mentalModel": "Exposure is by code."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Over 200 countries use the system, each adding its own digits.",
+      "prompt": "What product helps exporters?",
+      "options": [
+       "A new global code to replace HS",
+       "A ban on all extra digits worldwide",
+       "A tool mapping codes across countries"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Replacing HS is unrealistic.",
+       "Startups cannot ban digits.",
+       "You handle country differences."
+      ],
+      "explanation": "Exporters need to know the full code and duty in each destination."
+     },
+     "proReasoning": "Founders handle local variations in global systems.",
+     "commonMistake": "Assuming one code works everywhere.",
+     "mentalModel": "Map the local digits."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You wonder why the whole world shares one product code system.",
+      "prompt": "Why?",
+      "options": [
+       "It lets countries describe goods alike",
+       "It sets one tariff for all countries",
+       "It replaces all customs checks"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "You see the common language.",
+       "Each country sets its own rates.",
+       "Checks still happen."
+      ],
+      "explanation": "A shared six-digit base lets customs and statistics match across borders."
+     },
+     "proReasoning": "Shared standards make trade legible.",
+     "commonMistake": "Thinking a shared code means shared tariffs.",
+     "mentalModel": "A common language, local prices."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:13ed7da5e93b"
+  ]
+ },
+ {
+  "id": "375a86cb-cccf-575e-8c42-0570f9a83799",
+  "market_id": "logistics",
+  "day": 25,
+  "slot": 3,
+  "content": {
+   "id": "logistics-d25-c3",
+   "title": "Two codes, two duties",
+   "lessonTitle": "The code on every import",
+   "slot": 3,
+   "type": "decide",
+   "brief": {
+    "headline": "You import a new e-bike accessory that could fit two tariff codes. One carries a much lower duty than the other.",
+    "kicker": "Decide: how do you choose the code?",
+    "fullText": "The Harmonized System classifies over 98% of traded goods, and the code decides the duty rate. Misclassifying a product can mean paying the wrong duty or facing penalties.\n\nIn December 2025, Wanxiang America paid more than $53 million to settle claims it filed auto parts under incorrect tariff provisions.",
+    "sources": [
+     {
+      "url": "https://www.wcoomd.org/en/topics/nomenclature/overview/what-is-the-harmonized-system.aspx",
+      "label": "World Customs Organization, what is the Harmonized System?"
+     },
+     {
+      "url": "https://www.justice.gov/opa/pr/united-states-settles-suit-misclassification-chinese-automotive-components",
+      "label": "US Department of Justice, settlement over misclassified automotive components"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "multipleChoice",
+    "prompt": "What is the safest approach?",
+    "options": [
+     "Pick whichever code has the lower duty",
+     "Use a code at random and fix it later",
+     "Classify by what it is, with expert advice"
+    ],
+    "correctIndex": 2,
+    "explanation": "The correct code depends on what the product is, not on which duty is lower."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "What share of goods in trade are classified using the Harmonized System?",
+    "min": 0,
+    "max": 100,
+    "value": 98,
+    "unit": "%",
+    "explanation": "Over 98%."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your sales team wants the lower-duty code to keep prices down.",
+      "prompt": "What do you say?",
+      "options": [
+       "Let the sales team choose the code",
+       "The code must match the product",
+       "Use the cheaper code and hope"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Sales is not the right owner.",
+       "You protect the company from penalties.",
+       "Penalties can exceed the savings."
+      ],
+      "explanation": "Classification is a legal question about the product, not a pricing choice."
+     },
+     "proReasoning": "Compliance staff hold the line on correct codes.",
+     "commonMistake": "Letting pricing goals choose the code.",
+     "mentalModel": "Classify by facts."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "An importer's margins depend on a lower-duty code.",
+      "prompt": "What should an investor ask?",
+      "options": [
+       "Is the logo trademarked yet?",
+       "How many colors does it sell?",
+       "Have experts checked the code?"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Trademarks are unrelated.",
+       "Colors are unrelated.",
+       "You test the margin's legal footing."
+      ],
+      "explanation": "If the code is wrong, margins could vanish with back duties and penalties."
+     },
+     "proReasoning": "Investors check that margins do not rest on a shaky code.",
+     "commonMistake": "Trusting margins built on aggressive classification.",
+     "mentalModel": "Check what the margin rests on."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your startup imports a new product that fits two codes.",
+      "prompt": "What is the careful move?",
+      "options": [
+       "Get a formal ruling before scaling up",
+       "Use the low code on every shipment",
+       "Avoid importing entirely"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "You get certainty before volume grows.",
+       "Risky if the code is wrong.",
+       "That ends the business."
+      ],
+      "explanation": "A formal answer from customs removes doubt before large volumes ship."
+     },
+     "proReasoning": "Founders reduce legal uncertainty before scaling.",
+     "commonMistake": "Scaling on a guess.",
+     "mentalModel": "Get certainty before scale."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You wonder how one product could fit two codes.",
+      "prompt": "How does that happen?",
+      "options": [
+       "Customs assigns codes at random",
+       "New products may not fit old groups",
+       "Codes change every single week"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Codes follow rules.",
+       "You see why classification needs judgment.",
+       "The system updates every five to six years."
+      ],
+      "explanation": "New products can share features of several categories."
+     },
+     "proReasoning": "Classification needs judgment for new things.",
+     "commonMistake": "Thinking codes are always obvious.",
+     "mentalModel": "New things need judgment."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:95904480ec4a"
+  ]
+ },
+ {
+  "id": "503e30bc-44b4-533a-92c5-3a64c6999770",
+  "market_id": "logistics",
+  "day": 26,
+  "slot": 1,
+  "content": {
+   "id": "logistics-d26-c1",
+   "title": "Big revenue, bigger deficit",
+   "lessonTitle": "A record year for tariffs",
+   "slot": 1,
+   "type": "apply",
+   "brief": {
+    "headline": "The US collected $154.47 billion in net customs duties in fiscal 2026 through July. That covered roughly 9% of the $1.799 trillion federal deficit over the same period.",
+    "kicker": "Apply the rule: the importer pays first.",
+    "fullText": "The figures came from Treasury data compiled by the Joint Economic Committee, as reported by The National Desk in September 2026.\n\nThe Congressional Budget Office cut its customs revenue projection by about $250 billion from its February estimate, largely tied to lower-than-expected tariff collections. Importers pay the duties at entry and then decide how much to pass on.",
+    "sources": [
+     {
+      "url": "https://kmph.com/news/nation-world/fact-check-team-tariffs-are-bringing-in-billions-but-arent-close-to-solving-the-deficit-economic",
+      "label": "The National Desk, tariffs bring in billions but not close to the deficit"
+     },
+     {
+      "url": "https://www.crfb.org/blogs/tariff-revenue-soars-fy-2025-amid-legal-uncertainty",
+      "label": "CRFB, tariff revenue soars in FY 2025"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "multipleChoice",
+    "prompt": "Who pays a US customs duty when goods enter?",
+    "options": [
+     "The foreign factory that made it",
+     "The shipping line that carried it",
+     "The importer of record"
+    ],
+    "correctIndex": 2,
+    "explanation": "The importer of record pays the duty at entry, then decides who bears the cost."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "How many billion dollars in net customs duties did the US collect in fiscal 2026 through July?",
+    "min": 0,
+    "max": 250,
+    "value": 154,
+    "unit": "B",
+    "explanation": "$154.47 billion."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You work in finance at a retailer that imports most of its goods.",
+      "prompt": "What do you track each month?",
+      "options": [
+       "Duties paid and how much we pass on",
+       "The federal deficit total",
+       "How many ships sail each week"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "You track the cost and who bears it.",
+       "The deficit does not set your margin.",
+       "Sailings are not your cost line."
+      ],
+      "explanation": "Duties hit at entry. Your margin depends on how much you pass to buyers."
+     },
+     "proReasoning": "Finance teams track duty cost and pass-through together.",
+     "commonMistake": "Treating duties as someone else's cost.",
+     "mentalModel": "Track cost and pass-through."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "CBO cut its customs revenue forecast by about $250 billion.",
+      "prompt": "What could explain that?",
+      "options": [
+       "Tariffs rising across the board",
+       "Lower tariff collections",
+       "Imports doubling overnight"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "That would raise revenue too.",
+       "You link the cut to collections.",
+       "That would raise revenue."
+      ],
+      "explanation": "CBO tied the revision largely to lower-than-expected tariff collections."
+     },
+     "proReasoning": "Investors watch revisions as signals of policy and trade shifts.",
+     "commonMistake": "Assuming forecasts always hold.",
+     "mentalModel": "Watch the revisions."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Importers paid over $154 billion in duties in ten months.",
+      "prompt": "What could help them?",
+      "options": [
+       "A plan to stop all imports now",
+       "A rival private customs agency",
+       "Tools showing duty cost by product"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Most cannot stop importing.",
+       "Only governments run customs.",
+       "You help them manage a large cost."
+      ],
+      "explanation": "Importers need to see where duties hit their products and margins."
+     },
+     "proReasoning": "Founders build for large, new costs buyers struggle to track.",
+     "commonMistake": "Ignoring where the money now goes.",
+     "mentalModel": "Show the cost by product."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You wonder why big tariff revenue still covers little of the deficit.",
+      "prompt": "Why?",
+      "options": [
+       "The deficit is far larger than duties",
+       "Tariffs are paid only once a decade",
+       "Duties go to foreign countries"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "You see the scale gap.",
+       "Duties are collected all year.",
+       "Duties go to the US Treasury."
+      ],
+      "explanation": "Duties of $154 billion are large, but the deficit was $1.799 trillion."
+     },
+     "proReasoning": "Compare a number to the total it is meant to address.",
+     "commonMistake": "Judging size without a comparison.",
+     "mentalModel": "Compare to the whole."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:0cd0480ecbff"
+  ]
+ },
+ {
+  "id": "7bc2e62c-c971-50b1-86f4-5e86e9815f1d",
+  "market_id": "logistics",
+  "day": 26,
+  "slot": 2,
+  "content": {
+   "id": "logistics-d26-c2",
+   "title": "Codes decide the bill",
+   "lessonTitle": "A record year for tariffs",
+   "slot": 2,
+   "type": "connect",
+   "brief": {
+    "headline": "The US collected $195 billion in customs duties in fiscal 2025, more than 250% of the prior year. Duties rose about $118 billion in a year.",
+    "kicker": "Connect day 25 and day 26: the code sets the bill.",
+    "fullText": "Day 25 showed that a product's code decides which duties apply. Day 26 shows the scale of the bill: Section 232 tariffs drove over a quarter of the rise, and most new tariffs came under IEEPA.\n\nCBP data suggested about $90 billion might have to be refunded if courts struck down the IEEPA tariffs. Importers paid first, at entry, by code.",
+    "sources": [
+     {
+      "url": "https://www.crfb.org/blogs/tariff-revenue-soars-fy-2025-amid-legal-uncertainty",
+      "label": "CRFB, tariff revenue soars in FY 2025"
+     },
+     {
+      "url": "https://www.wcoomd.org/en/topics/nomenclature/overview/what-is-the-harmonized-system.aspx",
+      "label": "World Customs Organization, what is the Harmonized System?"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "sortSignal",
+    "prompt": "True of fiscal 2025 customs duties?",
+    "buckets": [
+     "True",
+     "False"
+    ],
+    "items": [
+     {
+      "text": "About $195 billion collected",
+      "bucket": 0
+     },
+     {
+      "text": "Section 232 drove over a quarter of the rise",
+      "bucket": 0
+     },
+     {
+      "text": "Exporters paid the duties",
+      "bucket": 1
+     },
+     {
+      "text": "Duties fell from the prior year",
+      "bucket": 1
+     }
+    ],
+    "explanation": "Importers pay duties, and fiscal 2025 duties rose sharply."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "About how many billion dollars did customs duties rise in a year?",
+    "min": 0,
+    "max": 200,
+    "value": 118,
+    "unit": "B",
+    "explanation": "About $118 billion."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You manage imports for a toolmaker. Duties jumped this year.",
+      "prompt": "Where do you look first?",
+      "options": [
+       "Which ports are the busiest now",
+       "Which codes carry new tariffs",
+       "Which ships are the fastest"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Port traffic does not set duties.",
+       "You find the cost source.",
+       "Speed does not change duties."
+      ],
+      "explanation": "Tariffs apply by code, so the codes show where the cost came from."
+     },
+     "proReasoning": "Import managers trace cost increases to specific codes.",
+     "commonMistake": "Blaming freight when duties drove costs.",
+     "mentalModel": "Trace cost to the code."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "About $90 billion of duties could be refunded if courts ruled against IEEPA.",
+      "prompt": "Which firms gain most from refunds?",
+      "options": [
+       "Exporters with no imports at all",
+       "Firms that have never imported",
+       "Importers that paid IEEPA duties"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "They paid no import duties.",
+       "They paid nothing.",
+       "You link refunds to who paid."
+      ],
+      "explanation": "Refunds go to importers of record who paid the duties."
+     },
+     "proReasoning": "Investors identify who paid before estimating who gets refunds.",
+     "commonMistake": "Assuming refunds reach end buyers automatically.",
+     "mentalModel": "Refunds follow the payer."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Duties rose about $118 billion and may be partly refunded.",
+      "prompt": "What could a startup offer importers?",
+      "options": [
+       "Tracking duties by code and law",
+       "A loan to pay every duty forever",
+       "A plan to ignore the courts"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "You help them claim what they are owed.",
+       "That does not solve tracking.",
+       "Courts decide refunds."
+      ],
+      "explanation": "Knowing which duties came under which law helps with any refund."
+     },
+     "proReasoning": "Founders build records that pay off when rules change.",
+     "commonMistake": "Ignoring the legal basis of costs.",
+     "mentalModel": "Track the legal basis."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You wonder why the law behind a tariff matters to importers.",
+      "prompt": "Why?",
+      "options": [
+       "Laws do not affect duties",
+       "Some laws could be ruled invalid",
+       "All tariff laws are identical"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Laws set duties.",
+       "You see legal risk.",
+       "Laws differ."
+      ],
+      "explanation": "If a court rules a law does not allow tariffs, those duties may be refunded."
+     },
+     "proReasoning": "The legal basis can decide whether a cost sticks.",
+     "commonMistake": "Treating every tariff as permanent.",
+     "mentalModel": "The legal basis matters."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:6645e591ae14"
+  ]
+ },
+ {
+  "id": "8351b60d-7eca-5b73-8fad-59883a6ba666",
+  "market_id": "logistics",
+  "day": 26,
+  "slot": 3,
+  "content": {
+   "id": "logistics-d26-c3",
+   "title": "Absorb or pass on?",
+   "lessonTitle": "A record year for tariffs",
+   "slot": 3,
+   "type": "decide",
+   "brief": {
+    "headline": "You import furniture and pay new duties at entry. Rivals have raised prices, but your customers are price-sensitive.",
+    "kicker": "Decide: absorb the duty, pass it on, or split it?",
+    "fullText": "US customs duties reached $154.47 billion in fiscal 2026 through July. A New York Fed study estimated about 26% of the tariff increase passed through to prices.\n\nThe importer of record pays the duty first. How much reaches customers is a business choice.",
+    "sources": [
+     {
+      "url": "https://kmph.com/news/nation-world/fact-check-team-tariffs-are-bringing-in-billions-but-arent-close-to-solving-the-deficit-economic",
+      "label": "The National Desk, tariffs bring in billions but not close to the deficit"
+     },
+     {
+      "url": "https://www.crfb.org/blogs/tariff-revenue-soars-fy-2025-amid-legal-uncertainty",
+      "label": "CRFB, tariff revenue soars in FY 2025"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "faceOff",
+    "prompt": "With price-sensitive customers, which is wiser?",
+    "left": {
+     "name": "Split the cost",
+     "note": "Some price rise, some margin hit"
+    },
+    "right": {
+     "name": "Pass it all on",
+     "note": "Full price rise now"
+    },
+    "correctIndex": 0,
+    "explanation": "Splitting the cost limits lost sales while protecting some margin."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "What share of the tariff increase did a New York Fed study estimate passed through to prices?",
+    "min": 0,
+    "max": 100,
+    "value": 26,
+    "unit": "%",
+    "explanation": "About 26%."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your boss asks for a pricing plan after duties rise.",
+      "prompt": "What do you propose?",
+      "options": [
+       "Raise every price by the full duty",
+       "Keep all prices flat and hope",
+       "Raise prices where buyers value most"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Full rises can lose sales.",
+       "Absorbing all can erase margin.",
+       "You target where buyers accept increases."
+      ],
+      "explanation": "Selective increases protect sales while recovering some cost."
+     },
+     "proReasoning": "Pricing teams pass costs where demand is least sensitive.",
+     "commonMistake": "Treating every product the same.",
+     "mentalModel": "Price where buyers will pay."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A furniture importer absorbs most of its new duties.",
+      "prompt": "What do you watch?",
+      "options": [
+       "Its gross margin next quarters",
+       "Its new logo redesign plan",
+       "Its head office location"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "You track the cost of absorbing.",
+       "Logos do not affect margins.",
+       "Offices are not the issue."
+      ],
+      "explanation": "Absorbing duties lowers margins unless costs fall elsewhere."
+     },
+     "proReasoning": "Investors track margins after cost shocks.",
+     "commonMistake": "Focusing on sales and ignoring margin.",
+     "mentalModel": "Watch the margin."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your small furniture brand faces new duties.",
+      "prompt": "What is a smart response?",
+      "options": [
+       "Double every price overnight",
+       "Review supplier costs in the chain",
+       "Ignore the new duties completely"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "That risks losing customers.",
+       "You look for savings to offset duties.",
+       "Duties must be paid."
+      ],
+      "explanation": "Savings elsewhere can offset part of the duty."
+     },
+     "proReasoning": "Founders look across the whole cost chain.",
+     "commonMistake": "Treating price as the only lever.",
+     "mentalModel": "Look across the chain."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You wonder why tariffs did not fully raise store prices.",
+      "prompt": "Why not?",
+      "options": [
+       "Tariffs were never collected",
+       "Stores sold everything at cost",
+       "Firms absorbed some cost in margins"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Duties were collected.",
+       "Stores still need margins.",
+       "You see pass-through choices."
+      ],
+      "explanation": "Importers chose how much to pass on; studies found partial pass-through."
+     },
+     "proReasoning": "Who pays a tax depends on more than who writes the check.",
+     "commonMistake": "Assuming the payer bears the full cost.",
+     "mentalModel": "Payer and bearer can differ."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:21aa804c18b9"
+  ]
+ },
+ {
+  "id": "e400f48c-1ef4-5619-8e60-864730fa76b5",
+  "market_id": "logistics",
+  "day": 27,
+  "slot": 1,
+  "content": {
+   "id": "logistics-d27-c1",
+   "title": "Refunds are not automatic",
+   "lessonTitle": "The Supreme Court limits tariffs",
+   "slot": 1,
+   "type": "apply",
+   "brief": {
+    "headline": "About $166 billion in IEEPA duties was collected across about 53 million entries from over 333,000 importers. On March 4, 2026, the trade court ordered CBP to begin refunds.",
+    "kicker": "Apply the rule: the law decides who may tax imports.",
+    "fullText": "CBP built a system called CAPE inside its ACE platform to process claims, with a first phase expected in late April 2026. Refunds are not automatic: importers or their brokers must file a declaration, and payment goes only by electronic transfer.\n\nTradlinx reported that over 7,700 refunds had failed by late March because importers had not enrolled for electronic payment.",
+    "sources": [
+     {
+      "url": "https://blogs.tradlinx.com/ieepa-tariff-refunds-where-the-166-billion-refund-process-actually-stands-and-what-importers-should-do-now/",
+      "label": "Tradlinx, where the IEEPA refund process stands"
+     },
+     {
+      "url": "https://ropesgray.com/en/insights/alerts/2026/02/supreme-court-strikes-down-ieepa-tariffs-key-takeaways-and-implications-for-importers",
+      "label": "Ropes & Gray, Supreme Court strikes down IEEPA tariffs"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "spotFake",
+    "prompt": "One of these is false. Tap it.",
+    "statements": [
+     "Importers must file to claim refunds.",
+     "Refunds are paid by electronic transfer.",
+     "Every importer got refunds automatically."
+    ],
+    "fakeIndex": 2,
+    "explanation": "Refunds are not automatic. Importers must file and enroll for electronic payment."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "About how many billion dollars in IEEPA duties were collected?",
+    "min": 0,
+    "max": 300,
+    "value": 166,
+    "unit": "B",
+    "explanation": "About $166 billion."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You work in finance at an importer that paid IEEPA duties.",
+      "prompt": "What do you do first?",
+      "options": [
+       "Assume the money is lost for good",
+       "Enroll for e-payment and file",
+       "Wait for a check in the mail"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Refunds were ordered.",
+       "You set up to receive the refund.",
+       "Refunds go only by electronic transfer."
+      ],
+      "explanation": "Refunds need a filed claim and electronic payment enrollment."
+     },
+     "proReasoning": "Finance teams act fast on refund processes.",
+     "commonMistake": "Assuming refunds arrive without action.",
+     "mentalModel": "File and enroll."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Importers could recover large IEEPA refunds.",
+      "prompt": "What should an investor check at a big importer?",
+      "options": [
+       "Whether its ships are brand new",
+       "Whether it sells goods online",
+       "Whether it filed for refunds"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Ships are not the issue.",
+       "Channel is not the issue.",
+       "You check it is capturing the cash."
+      ],
+      "explanation": "Refunds only arrive if the company files correctly."
+     },
+     "proReasoning": "Investors check that firms capture cash they are owed.",
+     "commonMistake": "Counting refunds before they are claimed.",
+     "mentalModel": "Claimed is not received."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Over 333,000 importers may need to file refund claims.",
+      "prompt": "What service fits?",
+      "options": [
+       "Help with claims and payment setup",
+       "A tool to raise tariffs further",
+       "A new private customs court"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "You help importers recover money.",
+       "That is the opposite of the need.",
+       "Courts are public."
+      ],
+      "explanation": "Many importers need help filing and enrolling correctly."
+     },
+     "proReasoning": "Founders serve one-time surges in paperwork.",
+     "commonMistake": "Missing a time-limited opportunity.",
+     "mentalModel": "Serve the paperwork surge."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You wonder why refunds need a claim if the court ordered them.",
+      "prompt": "Why?",
+      "options": [
+       "Refunds go straight to shoppers",
+       "CBP must match entries to payers",
+       "Courts never order any refunds"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "They go to importers.",
+       "You see the process behind the ruling.",
+       "This one did."
+      ],
+      "explanation": "CBP must match millions of entries to the right importer and account."
+     },
+     "proReasoning": "A ruling sets the right; a process delivers it.",
+     "commonMistake": "Thinking a court order pays itself.",
+     "mentalModel": "Rights need processes."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:29ef907e625c"
+  ]
+ },
+ {
+  "id": "5533ee62-ed0b-5e45-82c0-59dbc648b3ed",
+  "market_id": "logistics",
+  "day": 27,
+  "slot": 2,
+  "content": {
+   "id": "logistics-d27-c2",
+   "title": "From record duties to refunds",
+   "lessonTitle": "The Supreme Court limits tariffs",
+   "slot": 2,
+   "type": "connect",
+   "brief": {
+    "headline": "On February 20, 2026, the Supreme Court ruled 6-3 that IEEPA does not authorize tariffs. Customs duties had hit $195 billion in fiscal 2025.",
+    "kicker": "Connect day 26 and day 27: record duties, then a ruling.",
+    "fullText": "Day 26 showed that customs duties jumped in fiscal 2025, mostly under IEEPA, with about $90 billion at risk of refund. Day 27 shows the ruling: the Court struck down the reciprocal and fentanyl-related tariffs and sent refund questions to the Court of International Trade.\n\nSection 232 and Section 301 tariffs stayed in place. The administration quickly imposed a 10% global tariff under Section 122, limited to 150 days without Congress.",
+    "sources": [
+     {
+      "url": "https://ropesgray.com/en/insights/alerts/2026/02/supreme-court-strikes-down-ieepa-tariffs-key-takeaways-and-implications-for-importers",
+      "label": "Ropes & Gray, Supreme Court strikes down IEEPA tariffs"
+     },
+     {
+      "url": "https://www.crfb.org/blogs/tariff-revenue-soars-fy-2025-amid-legal-uncertainty",
+      "label": "CRFB, tariff revenue soars in FY 2025"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "sortSignal",
+    "prompt": "Struck down or still in place after the ruling?",
+    "buckets": [
+     "Struck down",
+     "Still in place"
+    ],
+    "items": [
+     {
+      "text": "Reciprocal tariffs under IEEPA",
+      "bucket": 0
+     },
+     {
+      "text": "Fentanyl-related IEEPA tariffs",
+      "bucket": 0
+     },
+     {
+      "text": "Section 232 tariffs",
+      "bucket": 1
+     },
+     {
+      "text": "Section 301 tariffs",
+      "bucket": 1
+     }
+    ],
+    "explanation": "The ruling covered IEEPA tariffs. Section 232 and 301 tariffs remained."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "For how many days could the Section 122 tariff last without Congress?",
+    "min": 0,
+    "max": 365,
+    "value": 150,
+    "unit": "days",
+    "explanation": "150 days."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You run trade compliance. The ruling lands on a Friday.",
+      "prompt": "What do you do Monday?",
+      "options": [
+       "Assume all tariffs are gone",
+       "Stop all imports for a month",
+       "Sort duties paid by legal basis"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "232 and 301 tariffs remain.",
+       "That halts the business.",
+       "You know which duties may be refunded."
+      ],
+      "explanation": "Only IEEPA duties were affected. Sorting by law shows what may come back."
+     },
+     "proReasoning": "Compliance teams map rulings to their own entries quickly.",
+     "commonMistake": "Overreading a ruling as the end of all tariffs.",
+     "mentalModel": "Map the ruling to your entries."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "IEEPA tariffs were struck down but a 10% Section 122 tariff followed.",
+      "prompt": "What does that mean for importers' costs?",
+      "options": [
+       "Some relief, but tariffs remain",
+       "All import costs fell to zero",
+       "Costs doubled for all overnight"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "You see the replacement tariff.",
+       "Other tariffs remained.",
+       "The new rate was 10%."
+      ],
+      "explanation": "A new tariff under a different law replaced part of what was struck down."
+     },
+     "proReasoning": "Investors watch for replacement policies after rulings.",
+     "commonMistake": "Assuming a ruling removes all costs.",
+     "mentalModel": "Rulings change the route, not always the cost."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Tariffs now come from several laws with different futures.",
+      "prompt": "What could you build?",
+      "options": [
+       "A forecast that tariffs end soon",
+       "A tracker of duties by legal basis",
+       "A guide to avoid all customs"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "No one can promise that.",
+       "You help importers see their risk by law.",
+       "Customs cannot be avoided."
+      ],
+      "explanation": "Importers need to know which duties rest on which law."
+     },
+     "proReasoning": "Founders organize messy legal change into clear views.",
+     "commonMistake": "Making predictions instead of tools.",
+     "mentalModel": "Organize by legal basis."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You wonder why the Court said IEEPA could not be used for tariffs.",
+      "prompt": "What was the core idea?",
+      "options": [
+       "Tariffs are banned everywhere",
+       "Presidents cannot respond to emergencies",
+       "The law did not clearly grant tariff power"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Other tariff laws remain.",
+       "IEEPA still allows other actions.",
+       "You see the clear-authority principle."
+      ],
+      "explanation": "The Court found IEEPA does not cover tariffs; other laws still do."
+     },
+     "proReasoning": "Power to tax imports must be clearly granted by law.",
+     "commonMistake": "Thinking the ruling ended presidential trade powers.",
+     "mentalModel": "Clear law, clear power."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:e62a74bb05ad"
+  ]
+ },
+ {
+  "id": "e555e1ca-9757-534b-a47c-651a6ed349c5",
+  "market_id": "logistics",
+  "day": 27,
+  "slot": 3,
+  "content": {
+   "id": "logistics-d27-c3",
+   "title": "Claiming your refund",
+   "lessonTitle": "The Supreme Court limits tariffs",
+   "slot": 3,
+   "type": "decide",
+   "brief": {
+    "headline": "You import toys and paid about $2 million in IEEPA duties in 2025. Refunds were ordered, but you must file to get yours.",
+    "kicker": "Decide: how do you recover the money?",
+    "fullText": "CBP built the CAPE system to process IEEPA refund claims. Refunds are not automatic: importers or brokers must file a declaration, and payment goes only by electronic transfer.\n\nThousands of refunds had failed by late March 2026 because importers had not enrolled for electronic payment. The government could still appeal parts of the trade court's order.",
+    "sources": [
+     {
+      "url": "https://blogs.tradlinx.com/ieepa-tariff-refunds-where-the-166-billion-refund-process-actually-stands-and-what-importers-should-do-now/",
+      "label": "Tradlinx, where the IEEPA refund process stands"
+     },
+     {
+      "url": "https://ropesgray.com/en/insights/alerts/2026/02/supreme-court-strikes-down-ieepa-tariffs-key-takeaways-and-implications-for-importers",
+      "label": "Ropes & Gray, Supreme Court strikes down IEEPA tariffs"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "multipleChoice",
+    "prompt": "What should you do first?",
+    "options": [
+     "Enroll for electronic payment and file",
+     "Wait to see if a check arrives",
+     "Pass the refund to customers now"
+    ],
+    "correctIndex": 0,
+    "explanation": "Without electronic payment enrollment and a filed claim, refunds fail."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "About how many thousand refunds had failed by late March for lack of enrollment?",
+    "min": 0,
+    "max": 20,
+    "value": 7.7,
+    "unit": "K",
+    "explanation": "Over 7,700 refunds had failed."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your CFO asks you to own the refund process.",
+      "prompt": "What do you set up?",
+      "options": [
+       "Enrollment, a claim and tracking",
+       "One email to customs and wait",
+       "Nothing until the appeal ends"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "You build a full process.",
+       "One email will not suffice.",
+       "Waiting risks delays and errors."
+      ],
+      "explanation": "Enrollment, accurate claims and tracking get the money back."
+     },
+     "proReasoning": "Good finance staff treat refunds as a project.",
+     "commonMistake": "Assuming one step is enough.",
+     "mentalModel": "Treat it as a project."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "The toy importer expects about $2 million back.",
+      "prompt": "How should an investor treat it?",
+      "options": [
+       "As money that is lost for good",
+       "As likely, not certain, until paid",
+       "As cash already in the bank"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Refunds were ordered.",
+       "You account for timing and appeal risk.",
+       "It is not yet received."
+      ],
+      "explanation": "An appeal or filing error could delay the refund."
+     },
+     "proReasoning": "Investors discount money not yet received.",
+     "commonMistake": "Counting ordered refunds as cash.",
+     "mentalModel": "Paid is different from ordered."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your small import business is owed refunds but lacks staff.",
+      "prompt": "What is the practical step?",
+      "options": [
+       "Ignore it since the sum is small",
+       "Write to the Supreme Court",
+       "Have your customs broker file for you"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Small refunds still matter to a startup.",
+       "The Court is not the process.",
+       "You use experts already in your chain."
+      ],
+      "explanation": "Customs brokers can file CAPE declarations for importers."
+     },
+     "proReasoning": "Founders use partners for specialized paperwork.",
+     "commonMistake": "Leaving owed money unclaimed.",
+     "mentalModel": "Use your broker."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You wonder whether the refund goes to shoppers who paid higher prices.",
+      "prompt": "Who gets it?",
+      "options": [
+       "The importer that paid the duties",
+       "Every shopper who bought a toy",
+       "The foreign factory that made it"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "You see refunds follow the payer.",
+       "Shoppers did not pay duties directly.",
+       "Factories did not pay US duties."
+      ],
+      "explanation": "Refunds go to the importer who paid at entry."
+     },
+     "proReasoning": "Money returns to whoever paid it.",
+     "commonMistake": "Assuming refunds reach end buyers.",
+     "mentalModel": "Refunds follow the payer."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:01f685ca3a94"
+  ]
+ },
+ {
+  "id": "88bdd7a2-d3cf-5daf-8f36-54de5bd9d6c4",
+  "market_id": "logistics",
+  "day": 28,
+  "slot": 1,
+  "content": {
+   "id": "logistics-d28-c1",
+   "title": "Posts pause US parcels",
+   "lessonTitle": "The end of duty-free parcels",
+   "slot": 1,
+   "type": "apply",
+   "brief": {
+    "headline": "Days before the US ended duty-free entry for low-value parcels on August 29, 2025, postal operators across Europe and Asia paused parcel service to the US. Germany's Deutsche Post stopped taking business parcels with goods.",
+    "kicker": "Apply the rule: a small exemption at huge volume matters.",
+    "fullText": "PostEurope, representing 51 European postal companies, warned that key details were undefined, including how duties would be collected. The US required carriers, typically airlines, to collect and file duties for postal shipments, and several airlines stopped carrying US-bound postal items.\n\nPostNord paused parcels to the US but kept a carve-out for gifts under $100. For goods from the EU, the expected US duty rate was 15% of value.",
+    "sources": [
+     {
+      "url": "https://www.freightwaves.com/news/us-de-minimis-suspension-europe",
+      "label": "FreightWaves, global postal operators suspend parcel service to US"
+     },
+     {
+      "url": "https://www.whitehouse.gov/fact-sheets/2025/07/fact-sheet-president-donald-j-trump-is-protecting-the-united-states-national-security-and-economy-by-suspending-the-de-minimis-exemption-for-commercial-shipments-globally/?query-11-page=33",
+      "label": "White House, fact sheet on suspending de minimis globally"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "buildChain",
+    "prompt": "Put the chain in order.",
+    "steps": [
+     "The US ends duty-free entry for low-value goods",
+     "Duties must be collected on postal parcels",
+     "Airlines balk at collecting them",
+     "Postal operators pause US parcel service"
+    ],
+    "explanation": "A new duty with unclear collection rules broke the postal chain to the US."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "How many European postal companies does PostEurope represent?",
+    "min": 0,
+    "max": 80,
+    "value": 51,
+    "unit": "",
+    "explanation": "PostEurope represents 51 postal companies."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You run logistics for an online shop shipping from Europe to US buyers.",
+      "prompt": "What do you do when the post pauses?",
+      "options": [
+       "Keep posting parcels and just hope",
+       "Stop selling to the US for good",
+       "Use an express carrier that files duty"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Parcels may not be accepted.",
+       "You lose a big market.",
+       "You keep orders moving legally."
+      ],
+      "explanation": "Express carriers can collect and file duties when posts cannot."
+     },
+     "proReasoning": "Good operators keep backup carriers for policy shocks.",
+     "commonMistake": "Relying on one channel for a key market.",
+     "mentalModel": "Keep a backup channel."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Posts paused US parcels while express carriers kept moving them.",
+      "prompt": "Who could gain?",
+      "options": [
+       "Express carriers that handle customs",
+       "Postal operators pausing service",
+       "Sellers with no US buyers"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "They can file duties for shippers.",
+       "They lose US parcel revenue.",
+       "They are unaffected."
+      ],
+      "explanation": "Carriers able to collect duties can win parcels posts cannot handle."
+     },
+     "proReasoning": "Investors watch who can handle new compliance work.",
+     "commonMistake": "Missing who wins from a disruption.",
+     "mentalModel": "Compliance capacity wins share."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Postal operators struggled to collect US duties on parcels.",
+      "prompt": "What could a startup offer?",
+      "options": [
+       "A new airline just for letters",
+       "Duty collection for parcels",
+       "Cheaper stamps for US parcels"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "An airline is capital heavy.",
+       "You solve the missing step.",
+       "Stamps do not collect duties."
+      ],
+      "explanation": "The chain broke at duty collection. A service that handles it fills the gap."
+     },
+     "proReasoning": "Founders fill the step a new rule leaves uncovered.",
+     "commonMistake": "Ignoring the step that broke.",
+     "mentalModel": "Fill the broken step."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You wonder why posts stopped shipping instead of collecting duties.",
+      "prompt": "Why?",
+      "options": [
+       "They wanted to stop all mail",
+       "Duties were banned across Europe",
+       "They had no way to collect them"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "They resumed when rules were clear.",
+       "That is not why.",
+       "You see the missing system."
+      ],
+      "explanation": "Posts had no clear process to collect US duties in time."
+     },
+     "proReasoning": "Rules without processes stop the flow.",
+     "commonMistake": "Thinking a pause means refusal forever.",
+     "mentalModel": "Rules need processes."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:d23f896fbd66"
+  ]
+ },
+ {
+  "id": "c371ff22-6c4c-579d-bbb8-0963802759c6",
+  "market_id": "logistics",
+  "day": 28,
+  "slot": 2,
+  "content": {
+   "id": "logistics-d28-c2",
+   "title": "Parcels left the planes",
+   "lessonTitle": "The end of duty-free parcels",
+   "slot": 2,
+   "type": "connect",
+   "brief": {
+    "headline": "De minimis shipments into the US rose from 134 million in 2015 to over 1.36 billion in 2024. In 2025, air cargo demand between Asia and North America fell 0.8%.",
+    "kicker": "Connect day 10 and day 28: parcels and planes.",
+    "fullText": "Day 10 showed that IATA tied the drop on the Asia to North America lane to tariffs and the end of the US de minimis exemption. Day 28 shows how big that exemption was: CBP processed more than 4 million such shipments a day, each worth $800 or less.\n\nThe administration said de minimis shipments accounted for 90% of cargo seizures in fiscal 2024. Duty-free treatment was suspended globally on August 29, 2025.",
+    "sources": [
+     {
+      "url": "https://www.whitehouse.gov/fact-sheets/2025/07/fact-sheet-president-donald-j-trump-is-protecting-the-united-states-national-security-and-economy-by-suspending-the-de-minimis-exemption-for-commercial-shipments-globally/?query-11-page=33",
+      "label": "White House, fact sheet on suspending de minimis globally"
+     },
+     {
+      "url": "https://www.iata.org/en/pressroom/2026-releases/2026-01-29-01/",
+      "label": "IATA, global air cargo demand hit a record in 2025"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "faceOff",
+    "prompt": "Which lane felt the de minimis change most?",
+    "left": {
+     "name": "Asia to North America air",
+     "note": "Demand fell 0.8% in 2025"
+    },
+    "right": {
+     "name": "Global air overall",
+     "note": "Demand rose 3.4%"
+    },
+    "correctIndex": 0,
+    "explanation": "IATA tied the Asia to North America drop to tariffs and the end of de minimis."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "About how many million de minimis shipments a day was CBP processing?",
+    "min": 0,
+    "max": 10,
+    "value": 4,
+    "unit": "M",
+    "explanation": "More than 4 million a day."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You plan capacity for an air cargo airline on Asia to US routes.",
+      "prompt": "What do you adjust after de minimis ends?",
+      "options": [
+       "Expect fewer small online parcels",
+       "Expect parcel volume to double",
+       "Change nothing at all on the lane"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "You plan for the lost flow.",
+       "Volume fell, not rose.",
+       "The lane changed."
+      ],
+      "explanation": "Cheap parcels that filled planes now face duties, so volume drops."
+     },
+     "proReasoning": "Capacity planners react to policy that moves freight.",
+     "commonMistake": "Ignoring policy when forecasting volume.",
+     "mentalModel": "Policy moves volume."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "De minimis parcels went from 134 million to 1.36 billion in under a decade.",
+      "prompt": "What did ending it put at risk?",
+      "options": [
+       "Railroad grain traffic out west",
+       "Models built on duty-free parcels",
+       "Sales of heavy industrial goods"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Rail grain is unrelated.",
+       "You see who relied on the exemption.",
+       "Heavy goods rarely used de minimis."
+      ],
+      "explanation": "Sellers shipping cheap parcels directly to US buyers lost their duty-free edge."
+     },
+     "proReasoning": "Investors look for models built on a single rule.",
+     "commonMistake": "Overlooking dependence on an exemption.",
+     "mentalModel": "Rules can underpin models."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Millions of small parcels now need duties paid.",
+      "prompt": "What service fits?",
+      "options": [
+       "A return to the $800 exemption",
+       "Free shipping on every order",
+       "Duty payment at checkout for buyers"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Startups cannot change the rule.",
+       "Shipping is not the issue.",
+       "You make duties clear and simple."
+      ],
+      "explanation": "Collecting duties up front avoids surprises and stuck parcels."
+     },
+     "proReasoning": "Founders build for the new normal.",
+     "commonMistake": "Betting on a rule coming back.",
+     "mentalModel": "Build for the new rule."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You wonder why a small exemption became a big issue.",
+      "prompt": "Why?",
+      "options": [
+       "Volume grew to billions of parcels",
+       "The exemption was raised each year",
+       "Only one company used it"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "You see scale changing a rule's impact.",
+       "It was $800.",
+       "Many sellers used it."
+      ],
+      "explanation": "At over a billion parcels a year, a small exemption had large effects."
+     },
+     "proReasoning": "Small rules matter at large scale.",
+     "commonMistake": "Judging a rule by its size, not its use.",
+     "mentalModel": "Scale changes stakes."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:f476da74404c"
+  ]
+ },
+ {
+  "id": "2254135a-0872-53ea-97b9-87508ba0f6eb",
+  "market_id": "logistics",
+  "day": 28,
+  "slot": 3,
+  "content": {
+   "id": "logistics-d28-c3",
+   "title": "Keep selling to US buyers?",
+   "lessonTitle": "The end of duty-free parcels",
+   "slot": 3,
+   "type": "decide",
+   "brief": {
+    "headline": "You run a small online shop in France selling $60 handbags to US buyers. Duty-free entry has ended, and your postal service paused US parcels.",
+    "kicker": "Decide: how do you keep serving the US?",
+    "fullText": "De minimis duty-free treatment was suspended on August 29, 2025. For goods from the EU, the expected US duty was 15% of value. Many postal operators paused US parcel service while duty collection was unclear.\n\nYou can switch to an express carrier that handles customs, show duties at checkout, or pause US sales.",
+    "sources": [
+     {
+      "url": "https://www.freightwaves.com/news/us-de-minimis-suspension-europe",
+      "label": "FreightWaves, global postal operators suspend parcel service to US"
+     },
+     {
+      "url": "https://www.whitehouse.gov/fact-sheets/2025/07/fact-sheet-president-donald-j-trump-is-protecting-the-united-states-national-security-and-economy-by-suspending-the-de-minimis-exemption-for-commercial-shipments-globally/?query-11-page=33",
+      "label": "White House, fact sheet on suspending de minimis globally"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "sortSignal",
+    "prompt": "Keeps US sales going, or puts them at risk?",
+    "buckets": [
+     "Keeps going",
+     "At risk"
+    ],
+    "items": [
+     {
+      "text": "Express carrier that files duties",
+      "bucket": 0
+     },
+     {
+      "text": "Duties shown at checkout",
+      "bucket": 0
+     },
+     {
+      "text": "Posting through a paused service",
+      "bucket": 1
+     },
+     {
+      "text": "Hiding duties until delivery",
+      "bucket": 1
+     }
+    ],
+    "explanation": "Clear duties and a carrier that handles customs keep orders moving."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "What US duty rate was expected on EU goods?",
+    "min": 0,
+    "max": 40,
+    "value": 15,
+    "unit": "%",
+    "explanation": "About 15% of the goods' value."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You manage the shop's customer service.",
+      "prompt": "What do you tell US customers?",
+      "options": [
+       "We no longer sell anywhere at all",
+       "Duties apply; here is the total",
+       "Nothing has changed at all for you"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "That is not true.",
+       "You set clear expectations.",
+       "That misleads customers."
+      ],
+      "explanation": "Showing duties upfront prevents surprise fees and refused parcels."
+     },
+     "proReasoning": "Good service teams explain changes before customers hit them.",
+     "commonMistake": "Letting customers discover fees at the door.",
+     "mentalModel": "No surprises at the door."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Small cross-border sellers face duties on every US order.",
+      "prompt": "What might happen to their US sales?",
+      "options": [
+       "They will triple overnight",
+       "Nothing will change",
+       "Some will fall as prices rise"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Costs rose, not fell.",
+       "Duties change prices.",
+       "You see higher landed costs."
+      ],
+      "explanation": "Duties add cost, which can reduce demand for small imported goods."
+     },
+     "proReasoning": "Investors model how added costs affect demand.",
+     "commonMistake": "Ignoring price effects on demand.",
+     "mentalModel": "Cost rises can cut demand."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your shop is small and cannot handle customs alone.",
+      "prompt": "What is the practical choice?",
+      "options": [
+       "Use a carrier that collects duties",
+       "Mark parcels as gifts to dodge duty",
+       "Ship only by post anyway"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "You stay compliant and keep selling.",
+       "False declarations are illegal.",
+       "Paused service may not deliver."
+      ],
+      "explanation": "A carrier that handles duties lets a small shop keep US buyers."
+     },
+     "proReasoning": "Founders outsource complex compliance.",
+     "commonMistake": "Cutting corners on customs declarations.",
+     "mentalModel": "Outsource the complexity."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You wonder why a $60 bag now costs US buyers more.",
+      "prompt": "Why?",
+      "options": [
+       "France raised its export prices",
+       "Duty now applies to cheap goods",
+       "The bags got heavier to ship"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "That is not the cause.",
+       "You see the end of the exemption.",
+       "Weight did not change."
+      ],
+      "explanation": "Goods under $800 once entered duty free. Now they pay duty."
+     },
+     "proReasoning": "Removing an exemption raises the landed cost.",
+     "commonMistake": "Blaming the seller for a policy change.",
+     "mentalModel": "Exemptions lower prices; removing them raises them."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:795ea1aaaa42"
+  ]
+ },
+ {
+  "id": "88cec1d6-91f9-5b38-bdf0-b153a74b7487",
+  "market_id": "logistics",
+  "day": 29,
+  "slot": 1,
+  "content": {
+   "id": "logistics-d29-c1",
+   "title": "Mexico raises its own walls",
+   "lessonTitle": "North American trade on a yearly clock",
+   "slot": 1,
+   "type": "apply",
+   "brief": {
+    "headline": "In December 2025, Mexico's Senate approved tariffs of 5% to 50% on more than 1,400 products from Asian countries without a trade deal with Mexico. Chinese cars face 50%.",
+    "kicker": "Apply the rule: renewal uncertainty shapes trade moves.",
+    "fullText": "The vote was 76 in favor, 5 against and 35 abstentions, with tariffs starting in 2026. Mexico's finance ministry estimated about $2.8 billion in extra revenue.\n\nTransport Topics said the tariffs could give Mexico useful tools ahead of the USMCA review. China's commerce ministry urged Mexico to \"correct its erroneous practices.\" Chinese cars had grown to about 20% of the Mexican market.",
+    "sources": [
+     {
+      "url": "https://www.ttnews.com/articles/mexico-approve-tariffs-china",
+      "label": "Transport Topics, Mexico approves up to 50% tariffs on China and others"
+     },
+     {
+      "url": "https://www.whitecase.com/insight-alert/usmca-2026-joint-review-united-states-declines-extend-agreement-triggering-annual",
+      "label": "White & Case, USMCA 2026 joint review"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "spotFake",
+    "prompt": "One of these is false. Tap it.",
+    "statements": [
+     "The tariffs cover more than 1,400 products.",
+     "Chinese cars face a 50% rate.",
+     "The tariffs apply to USMCA partners."
+    ],
+    "fakeIndex": 2,
+    "explanation": "The tariffs target countries without a trade deal with Mexico, not USMCA partners."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "About how many billion dollars in extra revenue did Mexico expect?",
+    "min": 0,
+    "max": 6,
+    "value": 2.8,
+    "unit": "B",
+    "explanation": "About 52 billion pesos, roughly $2.8 billion."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You source auto parts for a plant in Mexico, some from China.",
+      "prompt": "What do you review?",
+      "options": [
+       "Which inputs face the new tariffs",
+       "Which colors the cars come in",
+       "Whether the plant has enough parking"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "You find the new cost exposure.",
+       "Color is irrelevant.",
+       "Parking is irrelevant."
+      ],
+      "explanation": "Inputs from countries without a Mexican trade deal may now carry tariffs."
+     },
+     "proReasoning": "Sourcing teams map new tariffs to their bill of materials.",
+     "commonMistake": "Assuming only US tariffs matter.",
+     "mentalModel": "Map tariffs to inputs."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Mexico raised tariffs on Asian imports ahead of the USMCA review.",
+      "prompt": "What could that signal?",
+      "options": [
+       "Lower costs for Chinese carmakers",
+       "Alignment with US trade concerns",
+       "Mexico leaving all trade deals"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Their costs rose.",
+       "You read the trade positioning.",
+       "Mexico kept its deals."
+      ],
+      "explanation": "The move resembles US concerns about Chinese goods ahead of talks."
+     },
+     "proReasoning": "Investors read trade moves as signals in negotiations.",
+     "commonMistake": "Reading tariffs only as revenue measures.",
+     "mentalModel": "Tariffs can be signals."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Mexican manufacturers face tariffs on many Asian inputs.",
+      "prompt": "What could a startup offer?",
+      "options": [
+       "Shipping more parts from China",
+       "Lobbying to end the tariffs",
+       "Finding North American suppliers"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "That raises their costs.",
+       "Lobbying is not a product.",
+       "You help them avoid new costs."
+      ],
+      "explanation": "Regional suppliers can avoid the new tariffs."
+     },
+     "proReasoning": "Founders help buyers adjust supply chains to new rules.",
+     "commonMistake": "Ignoring a shift in sourcing costs.",
+     "mentalModel": "Help buyers re-source."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You wonder why Mexico would tax goods from China.",
+      "prompt": "What is one reason given?",
+      "options": [
+       "To protect local car production",
+       "To lower prices for buyers",
+       "To end its trade with the US"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "You see the industry protection goal.",
+       "Tariffs raise prices.",
+       "Mexico trades heavily with the US."
+      ],
+      "explanation": "Officials and auto groups backed the tariffs to protect local vehicle production."
+     },
+     "proReasoning": "Tariffs often protect local industry.",
+     "commonMistake": "Assuming only the US uses tariffs.",
+     "mentalModel": "Many countries use tariffs."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:50d6052d8bac"
+  ]
+ },
+ {
+  "id": "b09c8ca4-f10c-596e-bb85-3998e20c247a",
+  "market_id": "logistics",
+  "day": 29,
+  "slot": 2,
+  "content": {
+   "id": "logistics-d29-c2",
+   "title": "Origin rules, yearly reviews",
+   "lessonTitle": "North American trade on a yearly clock",
+   "slot": 2,
+   "type": "connect",
+   "brief": {
+    "headline": "At the USMCA's first joint review on July 1, 2026, the US declined to extend the agreement for 16 years. It remains in force through July 1, 2036, with annual reviews.",
+    "kicker": "Connect day 25 and day 29: what a product is, and where it is from.",
+    "fullText": "Day 25 showed that a product's code decides its duty. Day 29 adds origin: rules of origin decide whether a product counts as North American and trades tariff-free under USMCA. Those rules remain in effect.\n\nMexico and Canada both supported a 16-year extension. Without one, the parties must review the deal every year, which creates recurring uncertainty for anyone planning long-term investments.",
+    "sources": [
+     {
+      "url": "https://www.whitecase.com/insight-alert/usmca-2026-joint-review-united-states-declines-extend-agreement-triggering-annual",
+      "label": "White & Case, USMCA 2026 joint review"
+     },
+     {
+      "url": "https://www.wcoomd.org/en/topics/nomenclature/overview/what-is-the-harmonized-system.aspx",
+      "label": "World Customs Organization, what is the Harmonized System?"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "multipleChoice",
+    "prompt": "What decides whether a product trades tariff-free under USMCA?",
+    "options": [
+     "Whether it meets the rules of origin",
+     "Whether it is shipped by truck",
+     "Whether it costs under $800"
+    ],
+    "correctIndex": 0,
+    "explanation": "Rules of origin decide if a product counts as North American."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "For how many years would the declined USMCA extension have run?",
+    "min": 0,
+    "max": 30,
+    "value": 16,
+    "unit": "years",
+    "explanation": "A 16-year extension."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You manage trade compliance for a US importer of Mexican parts.",
+      "prompt": "What do you keep doing after the review?",
+      "options": [
+       "Assume the deal has already ended",
+       "Document origin to claim benefits",
+       "Stop claiming USMCA benefits now"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "It remains in force.",
+       "The rules still apply.",
+       "You would pay duties you do not owe."
+      ],
+      "explanation": "USMCA remains in force, so origin records still earn tariff-free treatment."
+     },
+     "proReasoning": "Compliance teams keep claiming benefits while watching reviews.",
+     "commonMistake": "Overreacting to uncertainty.",
+     "mentalModel": "In force means use it."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "USMCA now faces annual reviews instead of a 16-year extension.",
+      "prompt": "How does that affect plant investment decisions?",
+      "options": [
+       "It guarantees 16 more years",
+       "It ends all tariff-free trade",
+       "More uncertainty for long-term bets"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "The extension was declined.",
+       "The deal remains in force.",
+       "You see the planning risk."
+      ],
+      "explanation": "Annual reviews add doubt to decisions with long payback periods."
+     },
+     "proReasoning": "Investors price policy uncertainty into long projects.",
+     "commonMistake": "Treating \"in force\" as \"certain.\"",
+     "mentalModel": "Uncertainty has a cost."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Firms must prove origin to keep USMCA benefits.",
+      "prompt": "What could you build?",
+      "options": [
+       "Origin tracking across suppliers",
+       "A tool to fake origin papers",
+       "A new trade agreement"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "You help firms qualify.",
+       "Faking origin is fraud.",
+       "Startups do not sign treaties."
+      ],
+      "explanation": "Origin depends on where parts and work come from. Tracking it is complex."
+     },
+     "proReasoning": "Founders turn rules of origin into software.",
+     "commonMistake": "Building tools that cut legal corners.",
+     "mentalModel": "Track origin honestly."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You wonder why a deal in force still creates uncertainty.",
+      "prompt": "Why?",
+      "options": [
+       "Its rules change every week",
+       "Its future is reviewed every year",
+       "It ends next month for good"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "The rules remain.",
+       "You see renewal risk.",
+       "It runs to 2036."
+      ],
+      "explanation": "Annual reviews mean the terms could change, even while the deal stands."
+     },
+     "proReasoning": "Renewal doubt can matter as much as the rules.",
+     "commonMistake": "Thinking only current rules matter.",
+     "mentalModel": "The future casts a shadow."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:1d4fd2fdb8b1"
+  ]
+ },
+ {
+  "id": "b312868d-6446-59fe-bf27-78d45a4aba34",
+  "market_id": "logistics",
+  "day": 29,
+  "slot": 3,
+  "content": {
+   "id": "logistics-d29-c3",
+   "title": "A plant in Mexico?",
+   "lessonTitle": "North American trade on a yearly clock",
+   "slot": 3,
+   "type": "decide",
+   "brief": {
+    "headline": "You run a US appliance maker deciding where to build a new plant. Mexico offers lower costs and USMCA access, but the deal now faces yearly reviews.",
+    "kicker": "Decide: build in Mexico, the US, or wait?",
+    "fullText": "USMCA remains in force through July 1, 2036, but the US declined a 16-year extension, triggering annual reviews. Mexico approved tariffs of 5% to 50% on many Asian inputs from 2026, which affects where plants can buy parts.\n\nA plant takes years to pay back. Your decision rests on costs, rules of origin and how much policy risk you can carry.",
+    "sources": [
+     {
+      "url": "https://www.whitecase.com/insight-alert/usmca-2026-joint-review-united-states-declines-extend-agreement-triggering-annual",
+      "label": "White & Case, USMCA 2026 joint review"
+     },
+     {
+      "url": "https://www.ttnews.com/articles/mexico-approve-tariffs-china",
+      "label": "Transport Topics, Mexico approves up to 50% tariffs on China and others"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "sortSignal",
+    "prompt": "Favors Mexico or favors caution?",
+    "buckets": [
+     "Favors Mexico",
+     "Favors caution"
+    ],
+    "items": [
+     {
+      "text": "Lower labor and land costs",
+      "bucket": 0
+     },
+     {
+      "text": "USMCA in force until 2036",
+      "bucket": 0
+     },
+     {
+      "text": "Annual reviews of the deal",
+      "bucket": 1
+     },
+     {
+      "text": "New tariffs on Asian inputs",
+      "bucket": 1
+     }
+    ],
+    "explanation": "Costs and current access favor Mexico; policy uncertainty argues for caution."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "What is the top tariff rate in Mexico's new schedule on non-deal Asian imports?",
+    "min": 0,
+    "max": 80,
+    "value": 50,
+    "unit": "%",
+    "explanation": "Up to 50%, the rate on Chinese cars."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your CEO asks for a recommendation on the plant.",
+      "prompt": "What do you propose?",
+      "options": [
+       "Build only if USMCA is guaranteed",
+       "Pick the cheapest site, ignore policy",
+       "A plan that works under several outcomes"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "No guarantee is coming.",
+       "Policy can erase cost savings.",
+       "You plan for uncertainty."
+      ],
+      "explanation": "Testing the plan under different review outcomes limits the downside."
+     },
+     "proReasoning": "Strategists plan for scenarios, not one forecast.",
+     "commonMistake": "Betting on one policy outcome.",
+     "mentalModel": "Plan for scenarios."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "The company builds in Mexico despite annual reviews.",
+      "prompt": "What should an investor watch?",
+      "options": [
+       "How exposed it is to review outcomes",
+       "Whether the plant has solar panels",
+       "Its US store count"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "You track the policy risk.",
+       "Panels are minor.",
+       "Stores are unrelated."
+      ],
+      "explanation": "Review outcomes could change tariffs on goods from the plant."
+     },
+     "proReasoning": "Investors size policy exposure for cross-border plants.",
+     "commonMistake": "Ignoring trade risk in plant decisions.",
+     "mentalModel": "Size the policy exposure."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your small firm is choosing a first plant location.",
+      "prompt": "What is a cautious path?",
+      "options": [
+       "Wait ten years before deciding",
+       "Contract manufacturing first",
+       "Build two plants at once"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "You lose time and market.",
+       "You keep flexibility while policy settles.",
+       "Too much capital at risk."
+      ],
+      "explanation": "Contract manufacturing lets you serve buyers without a fixed plant bet."
+     },
+     "proReasoning": "Founders rent capacity while uncertainty is high.",
+     "commonMistake": "Locking in capital during policy doubt.",
+     "mentalModel": "Rent capacity in uncertain times."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You wonder why Mexico's new tariffs matter to a US firm's plant.",
+      "prompt": "Why?",
+      "options": [
+       "US firms cannot build plants abroad",
+       "The tariffs apply to US goods",
+       "A Mexican plant may buy Asian parts"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "They can.",
+       "They target non-deal countries.",
+       "You see the input cost link."
+      ],
+      "explanation": "Plants in Mexico that use Asian parts could pay the new tariffs."
+     },
+     "proReasoning": "A plant's costs depend on where its inputs come from.",
+     "commonMistake": "Looking only at final-product tariffs.",
+     "mentalModel": "Inputs carry tariffs too."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:572039b1cf32"
+  ]
+ },
+ {
+  "id": "4d7e3e9d-27dd-5a44-babc-30ff107e236c",
+  "market_id": "logistics",
+  "day": 30,
+  "slot": 1,
+  "content": {
+   "id": "logistics-d30-c1",
+   "title": "A stopgap within four days",
+   "lessonTitle": "Tariffs rebuilt under a new law",
+   "slot": 1,
+   "type": "apply",
+   "brief": {
+    "headline": "Four days after the Supreme Court struck down IEEPA tariffs, a 10% Section 122 tariff took effect on February 24, 2026. On March 5, a challenge from 24 states was filed at the trade court.",
+    "kicker": "Apply the rule: striking one law changes the route.",
+    "fullText": "Section 122 allows tariffs for up to 150 days unless Congress extends them. It filled the gap left by IEEPA tariffs, which Tradlinx estimated had brought in about $166 billion, about half of US customs duties from early 2025 to January 2026.\n\nImporters faced a new legal basis, a new rate and a new court challenge within two weeks of the ruling.",
+    "sources": [
+     {
+      "url": "https://blogs.tradlinx.com/ieepa-tariff-refunds-where-the-166-billion-refund-process-actually-stands-and-what-importers-should-do-now/",
+      "label": "Tradlinx, where the IEEPA refund process stands"
+     },
+     {
+      "url": "https://www.clearygottlieb.com/news-and-insights/publication-listing/trump-administration-imposes-new-section-301-tariffs-on-60-trading-partners",
+      "label": "Cleary Gottlieb, new Section 301 tariffs on 60 trading partners"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "buildChain",
+    "prompt": "Put the events in order.",
+    "steps": [
+     "The Supreme Court strikes down IEEPA tariffs",
+     "A 10% Section 122 tariff takes effect",
+     "States challenge it at the trade court",
+     "Section 301 tariffs replace it after 150 days"
+    ],
+    "explanation": "Each step moved tariffs to a new legal basis rather than ending them."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "How many states joined the March 2026 challenge to the Section 122 tariff?",
+    "min": 0,
+    "max": 40,
+    "value": 24,
+    "unit": "states",
+    "explanation": "24 states."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You run customs compliance. The legal basis for tariffs changed in four days.",
+      "prompt": "What do you update first?",
+      "options": [
+       "The office holiday schedule",
+       "Duty rates and legal basis in our system",
+       "Our company logo and website colors"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Holidays are irrelevant.",
+       "You keep entries accurate.",
+       "Logos are irrelevant."
+      ],
+      "explanation": "Each new law brings new rates and filing codes. Systems must match."
+     },
+     "proReasoning": "Compliance teams update rates the day they change.",
+     "commonMistake": "Filing under a law that no longer applies.",
+     "mentalModel": "Update the basis fast."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Tariffs moved from IEEPA to Section 122 within days.",
+      "prompt": "What does that teach investors?",
+      "options": [
+       "Tariffs end after any court ruling",
+       "Laws never change",
+       "Court wins do not always end tariffs"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "A new tariff followed.",
+       "They changed fast.",
+       "You see policy finding new routes."
+      ],
+      "explanation": "Striking down one authority led quickly to another."
+     },
+     "proReasoning": "Investors expect policy to adapt after legal setbacks.",
+     "commonMistake": "Pricing in relief too early.",
+     "mentalModel": "Policy finds a route."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Importers faced three tariff regimes in a year.",
+      "prompt": "What product helps them most?",
+      "options": [
+       "Real-time duty updates by law and rate",
+       "A printed tariff guide each year",
+       "A tool that ignores legal basis"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "You keep pace with fast changes.",
+       "Yearly guides go stale fast.",
+       "Basis decides refunds and rates."
+      ],
+      "explanation": "Rates and laws changed within weeks. Importers need live updates."
+     },
+     "proReasoning": "Founders build for the speed of change.",
+     "commonMistake": "Offering static tools in a fast-moving field.",
+     "mentalModel": "Match the speed of change."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You wonder why states challenged the new tariff.",
+      "prompt": "What is the basic question?",
+      "options": [
+       "Whether ships may dock",
+       "Whether that law allows these tariffs",
+       "Whether imports should stop entirely"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "That is not the question.",
+       "You see the legal authority question.",
+       "That is not the question."
+      ],
+      "explanation": "Each tariff law has limits, and challengers test whether they were followed."
+     },
+     "proReasoning": "Each new legal basis invites new challenges.",
+     "commonMistake": "Thinking a new law settles everything.",
+     "mentalModel": "Every route can be tested."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:6b789bb35998"
+  ]
+ },
+ {
+  "id": "0e6dc0cc-1517-5656-8c9d-4a2567ab9035",
+  "market_id": "logistics",
+  "day": 30,
+  "slot": 2,
+  "content": {
+   "id": "logistics-d30-c2",
+   "title": "Two rates, one condition",
+   "lessonTitle": "Tariffs rebuilt under a new law",
+   "slot": 2,
+   "type": "connect",
+   "brief": {
+    "headline": "USTR's Section 301 action set a 10% tariff for partners committed to a forced labor import ban and 12.5% for those without one. It covers the top 60 partners, about 99.4% of US imports.",
+    "kicker": "Connect day 27 and day 30: a new law, a new route.",
+    "fullText": "Day 27 showed the Supreme Court ruling that IEEPA does not authorize tariffs. Day 30 shows the replacement: tariffs under Section 301, which took effect on July 24, 2026, after the 150-day Section 122 tariff expired.\n\nGoods subject to Section 232 tariffs were exempt, along with some other products. USTR said ten partners had agreed to enact a ban in their trade agreements.",
+    "sources": [
+     {
+      "url": "https://www.ustr.gov/about/policy-offices/press-office/fact-sheets/2026/july/fact-sheet-ustr-section-301-action-response-failure-60-economies-ban-imports-produced-forced-labor",
+      "label": "USTR fact sheet, Section 301 action on 60 economies"
+     },
+     {
+      "url": "https://www.clearygottlieb.com/news-and-insights/publication-listing/trump-administration-imposes-new-section-301-tariffs-on-60-trading-partners",
+      "label": "Cleary Gottlieb, new Section 301 tariffs on 60 trading partners"
+     },
+     {
+      "url": "https://ropesgray.com/en/insights/alerts/2026/02/supreme-court-strikes-down-ieepa-tariffs-key-takeaways-and-implications-for-importers",
+      "label": "Ropes & Gray, Supreme Court strikes down IEEPA tariffs"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "faceOff",
+    "prompt": "Which partners get the lower 10% rate?",
+    "left": {
+     "name": "Committed to a ban",
+     "note": "Will adopt and enforce one"
+    },
+    "right": {
+     "name": "No ban adopted",
+     "note": "Has not acted"
+    },
+    "correctIndex": 0,
+    "explanation": "Partners committed to a forced labor import ban get 10%; others get 12.5%."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "What share of US imports do the Section 301 tariffs cover?",
+    "min": 0,
+    "max": 100,
+    "value": 99.4,
+    "unit": "%",
+    "explanation": "About 99.4%, from the top 60 trading partners."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You manage sourcing. Your suppliers sit in both the 10% and 12.5% groups.",
+      "prompt": "What do you track?",
+      "options": [
+       "Which countries have the best food",
+       "Which suppliers use email",
+       "Which countries move to the lower rate"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Food is irrelevant.",
+       "Email is irrelevant.",
+       "You watch for rate changes by country."
+      ],
+      "explanation": "Partners that commit to a ban can move to the lower rate."
+     },
+     "proReasoning": "Sourcing teams track country rates as policy shifts.",
+     "commonMistake": "Treating rates as fixed.",
+     "mentalModel": "Watch country rates."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "The new tariffs tie rates to whether partners adopt a policy.",
+      "prompt": "What does that design do?",
+      "options": [
+       "Gives partners a reason to adopt bans",
+       "Sets one rate for everyone forever",
+       "Ends tariffs on all imports"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "You see the incentive in the design.",
+       "Rates differ by action.",
+       "Tariffs apply to most imports."
+      ],
+      "explanation": "A lower rate rewards partners that adopt forced labor bans."
+     },
+     "proReasoning": "Investors read tariff design for the behavior it targets.",
+     "commonMistake": "Ignoring how rates can change by country.",
+     "mentalModel": "Tariffs can carry incentives."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Section 232 goods are exempt, and rates differ by country.",
+      "prompt": "What tool helps importers?",
+      "options": [
+       "A guide to old IEEPA rates",
+       "A rate finder by product and country",
+       "A tool that sets one flat rate"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "IEEPA rates are gone.",
+       "You handle the layers of rules.",
+       "Rates are not flat."
+      ],
+      "explanation": "Importers need the exact rate after exemptions and country tiers."
+     },
+     "proReasoning": "Founders untangle layered rules.",
+     "commonMistake": "Using outdated rate tables.",
+     "mentalModel": "Untangle the layers."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You wonder why tariffs moved to Section 301 after the ruling.",
+      "prompt": "Why that law?",
+      "options": [
+       "It has no limits of any kind",
+       "The courts asked for it directly",
+       "It allows tariffs after a probe"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "It requires investigations.",
+       "Courts did not ask.",
+       "You see the different legal route."
+      ],
+      "explanation": "Section 301 lets USTR act after investigating trade practices."
+     },
+     "proReasoning": "Different laws, different routes to the same tool.",
+     "commonMistake": "Thinking tariff power lives in one law.",
+     "mentalModel": "Many laws, many routes."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:0e052e496d77"
+  ]
+ },
+ {
+  "id": "0275fbc9-71b5-5bc2-8e77-e29e9854e606",
+  "market_id": "logistics",
+  "day": 30,
+  "slot": 3,
+  "content": {
+   "id": "logistics-d30-c3",
+   "title": "Shift sourcing for 2.5 points?",
+   "lessonTitle": "Tariffs rebuilt under a new law",
+   "slot": 3,
+   "type": "decide",
+   "brief": {
+    "headline": "You import kitchenware from a country in the 12.5% Section 301 group. A supplier in a 10% country offers similar goods at a slightly higher price.",
+    "kicker": "Decide: move suppliers, stay, or wait?",
+    "fullText": "In one year, importers went through IEEPA, Section 122 and Section 301 tariff rates. The Section 301 tariffs set 10% for partners committed to a forced labor import ban and 12.5% for those without one.\n\nYour current supplier's country might adopt a ban and move to 10%. Switching suppliers takes months of testing and could raise other costs.",
+    "sources": [
+     {
+      "url": "https://www.ustr.gov/about/policy-offices/press-office/fact-sheets/2026/july/fact-sheet-ustr-section-301-action-response-failure-60-economies-ban-imports-produced-forced-labor",
+      "label": "USTR fact sheet, Section 301 action on 60 economies"
+     },
+     {
+      "url": "https://www.clearygottlieb.com/news-and-insights/publication-listing/trump-administration-imposes-new-section-301-tariffs-on-60-trading-partners",
+      "label": "Cleary Gottlieb, new Section 301 tariffs on 60 trading partners"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "multipleChoice",
+    "prompt": "What is the most careful response?",
+    "options": [
+     "Add a backup supplier, keep the first",
+     "Switch every order over at once",
+     "Ignore the new rates entirely"
+    ],
+    "correctIndex": 0,
+    "explanation": "A second qualified supplier gives options without betting on one rate."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "What is the higher Section 301 rate for partners without a forced labor ban?",
+    "min": 0,
+    "max": 30,
+    "value": 12.5,
+    "unit": "%",
+    "explanation": "12.5%, versus 10% for partners committed to a ban."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your boss asks whether to move all orders to the 10% country.",
+      "prompt": "What do you recommend?",
+      "options": [
+       "Compare total landed cost",
+       "Move all orders over today",
+       "Never change suppliers at all"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "You weigh every cost.",
+       "Price and quality may offset the gap.",
+       "You miss savings."
+      ],
+      "explanation": "A 2.5-point tariff gap can be wiped out by higher prices or freight."
+     },
+     "proReasoning": "Sourcing teams compare total landed cost.",
+     "commonMistake": "Deciding on tariff rate alone.",
+     "mentalModel": "Compare landed cost."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Importers weigh moving suppliers between tariff tiers.",
+      "prompt": "Which risk matters for those that switch?",
+      "options": [
+       "Suppliers never raise prices",
+       "Rates may change again",
+       "Tariffs are fixed forever"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Prices change.",
+       "You see policy volatility.",
+       "Rates changed three times in a year."
+      ],
+      "explanation": "With rates shifting so often, a switch can lose its benefit quickly."
+     },
+     "proReasoning": "Investors discount savings that rest on volatile policy.",
+     "commonMistake": "Treating today's rates as permanent.",
+     "mentalModel": "Volatile rates, fragile savings."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Importers want flexibility as rates shift.",
+      "prompt": "What could you offer?",
+      "options": [
+       "A guarantee of today's tariff rates",
+       "A locked one-supplier contract",
+       "Vetted backup suppliers by country"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "No one can guarantee rates.",
+       "That reduces flexibility.",
+       "You give importers options."
+      ],
+      "explanation": "Backup suppliers let importers move quickly when rates change."
+     },
+     "proReasoning": "Founders sell flexibility in volatile markets.",
+     "commonMistake": "Selling certainty that does not exist.",
+     "mentalModel": "Sell options."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You wonder why the 2.5-point gap may not justify switching.",
+      "prompt": "Why not?",
+      "options": [
+       "Other costs can outweigh the gap",
+       "Tariffs do not affect costs",
+       "The gap is 25 points"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "You see total cost thinking.",
+       "Tariffs do affect costs.",
+       "It is 2.5 points."
+      ],
+      "explanation": "Price, freight, quality and switching costs can exceed the tariff difference."
+     },
+     "proReasoning": "Look at total cost, not one line.",
+     "commonMistake": "Chasing the headline rate.",
+     "mentalModel": "Total cost wins."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:4bbe03ea53a0"
+  ]
  }
 ];
 
