@@ -339,6 +339,13 @@
       "breakpoints": true
     },
     {
+      "idx": 50,
+      "version": "7",
+      "when": 1794500000050,
+      "tag": "0050_climatetech_deep_cases",
+      "breakpoints": true
+    },
+    {
       "idx": 51,
       "version": "7",
       "when": 1794500000051,
