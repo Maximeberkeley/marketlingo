@@ -400,6 +400,13 @@
       "when": 1794500000060,
       "tag": "0060_shop_catalog_legendary_looks",
       "breakpoints": true
+    },
+    {
+      "idx": 61,
+      "version": "7",
+      "when": 1794500000061,
+      "tag": "0061_shop_catalog_holly_wreath",
+      "breakpoints": true
     }
   ]
 }
