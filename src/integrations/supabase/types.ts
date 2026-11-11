@@ -218,6 +218,24 @@ export type Database = {
           },
         ]
       }
+      crown_wins: {
+        Row: {
+          month: string
+          monthly_xp: number
+          user_id: string
+        }
+        Insert: {
+          month: string
+          monthly_xp: number
+          user_id: string
+        }
+        Update: {
+          month?: string
+          monthly_xp?: number
+          user_id?: string
+        }
+        Relationships: []
+      }
       curriculum_generation_jobs: {
         Row: {
           completed_at: string | null
@@ -1862,6 +1880,35 @@ export type Database = {
           },
         ]
       }
+      perk_waitlist: {
+        Row: {
+          consent_email: boolean
+          created_at: string
+          item_id: string
+          user_id: string
+        }
+        Insert: {
+          consent_email?: boolean
+          created_at?: string
+          item_id: string
+          user_id: string
+        }
+        Update: {
+          consent_email?: boolean
+          created_at?: string
+          item_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "perk_waitlist_item_id_fkey"
+            columns: ["item_id"]
+            isOneToOne: false
+            referencedRelation: "shop_items"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       portfolio_snapshots: {
         Row: {
           category_breakdown: Json | null
@@ -2391,6 +2438,86 @@ export type Database = {
           },
         ]
       }
+      shop_deals: {
+        Row: {
+          deal_date: string
+          item_id: string
+          price: number
+        }
+        Insert: {
+          deal_date: string
+          item_id: string
+          price: number
+        }
+        Update: {
+          deal_date?: string
+          item_id?: string
+          price?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "shop_deals_item_id_fkey"
+            columns: ["item_id"]
+            isOneToOne: false
+            referencedRelation: "shop_items"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      shop_items: {
+        Row: {
+          acquisition: string
+          art_ready: boolean
+          created_at: string
+          hidden: boolean
+          id: string
+          kind: string
+          meta: Json
+          name: string
+          price: number | null
+          rarity: string | null
+          requirements: Json
+          slot: string | null
+          status: string
+          stock_left: number | null
+          stock_total: number | null
+        }
+        Insert: {
+          acquisition?: string
+          art_ready?: boolean
+          created_at?: string
+          hidden?: boolean
+          id: string
+          kind: string
+          meta?: Json
+          name: string
+          price?: number | null
+          rarity?: string | null
+          requirements?: Json
+          slot?: string | null
+          status?: string
+          stock_left?: number | null
+          stock_total?: number | null
+        }
+        Update: {
+          acquisition?: string
+          art_ready?: boolean
+          created_at?: string
+          hidden?: boolean
+          id?: string
+          kind?: string
+          meta?: Json
+          name?: string
+          price?: number | null
+          rarity?: string | null
+          requirements?: Json
+          slot?: string | null
+          status?: string
+          stock_left?: number | null
+          stock_total?: number | null
+        }
+        Relationships: []
+      }
       slides: {
         Row: {
           body: string
@@ -2425,6 +2552,54 @@ export type Database = {
             columns: ["stack_id"]
             isOneToOne: false
             referencedRelation: "stacks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      spend_ledger: {
+        Row: {
+          amount: number
+          created_at: string
+          id: string
+          idem_key: string
+          item_id: string
+          reason: string
+          ref_id: string | null
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          id?: string
+          idem_key: string
+          item_id: string
+          reason?: string
+          ref_id?: string | null
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          id?: string
+          idem_key?: string
+          item_id?: string
+          reason?: string
+          ref_id?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "spend_ledger_item_id_fkey"
+            columns: ["item_id"]
+            isOneToOne: false
+            referencedRelation: "shop_items"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "spend_ledger_ref_id_fkey"
+            columns: ["ref_id"]
+            isOneToOne: false
+            referencedRelation: "spend_ledger"
             referencedColumns: ["id"]
           },
         ]
@@ -2479,6 +2654,7 @@ export type Database = {
       streak_freezes: {
         Row: {
           created_at: string
+          freeze_date: string | null
           id: string
           kind: string
           market_id: string
@@ -2488,6 +2664,7 @@ export type Database = {
         }
         Insert: {
           created_at?: string
+          freeze_date?: string | null
           id?: string
           kind?: string
           market_id: string
@@ -2497,6 +2674,7 @@ export type Database = {
         }
         Update: {
           created_at?: string
+          freeze_date?: string | null
           id?: string
           kind?: string
           market_id?: string
@@ -2749,6 +2927,70 @@ export type Database = {
           },
         ]
       }
+      user_equipped: {
+        Row: {
+          item_id: string | null
+          slot: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          item_id?: string | null
+          slot: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          item_id?: string | null
+          slot?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_equipped_item_id_fkey"
+            columns: ["item_id"]
+            isOneToOne: false
+            referencedRelation: "shop_items"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_inventory: {
+        Row: {
+          acquired_at: string
+          item_id: string
+          qty: number
+          seen_at: string | null
+          source: string
+          user_id: string
+        }
+        Insert: {
+          acquired_at?: string
+          item_id: string
+          qty?: number
+          seen_at?: string | null
+          source: string
+          user_id: string
+        }
+        Update: {
+          acquired_at?: string
+          item_id?: string
+          qty?: number
+          seen_at?: string | null
+          source?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_inventory_item_id_fkey"
+            columns: ["item_id"]
+            isOneToOne: false
+            referencedRelation: "shop_items"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_market_milestones: {
         Row: {
           description: string
@@ -2789,6 +3031,24 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      user_milestones: {
+        Row: {
+          milestone: number
+          reached_at: string
+          user_id: string
+        }
+        Insert: {
+          milestone: number
+          reached_at?: string
+          user_id: string
+        }
+        Update: {
+          milestone?: number
+          reached_at?: string
+          user_id?: string
+        }
+        Relationships: []
       }
       user_progress: {
         Row: {
@@ -3452,6 +3712,14 @@ export type Database = {
       }
       generate_friend_code: { Args: never; Returns: string }
       get_available_day: { Args: { p_start_date: string }; Returns: number }
+      get_equipped_looks: {
+        Args: { p_user_ids: string[] }
+        Returns: {
+          look: Json
+          user_id: string
+          wears_crown: boolean
+        }[]
+      }
       get_friend_social: { Args: never; Returns: Json }
       get_friends_overview: {
         Args: never
@@ -3503,6 +3771,7 @@ export type Database = {
       }
       get_weekly_case_result: { Args: { p_case_id: string }; Returns: Json }
       get_weekly_case_reveal: { Args: { p_case_id: string }; Returns: Json }
+      grant_crown_keepsakes: { Args: { p_month: string }; Returns: number }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -3600,6 +3869,61 @@ export type Database = {
         Args: { p_collectible_id: string }
         Returns: undefined
       }
+      shop_balance: {
+        Args: never
+        Returns: {
+          balance: number
+          earned: number
+          spent: number
+        }[]
+      }
+      shop_check_rewards: {
+        Args: never
+        Returns: {
+          item_id: string
+          name: string
+        }[]
+      }
+      shop_daily_deals: {
+        Args: { p_date: string }
+        Returns: {
+          deal_price: number
+          item_id: string
+          price: number
+        }[]
+      }
+      shop_equip: { Args: { p_item_id: string; p_slot: string }; Returns: Json }
+      shop_join_waitlist: {
+        Args: { p_consent?: boolean; p_item_id: string }
+        Returns: number
+      }
+      shop_mark_seen: { Args: { p_item_ids: string[] }; Returns: undefined }
+      shop_perks: {
+        Args: never
+        Returns: {
+          item_id: string
+          joined: boolean
+          waitlist: number
+        }[]
+      }
+      shop_purchase: {
+        Args: { p_deal_date?: string; p_idem_key: string; p_item_id: string }
+        Returns: Json
+      }
+      shop_unmet_requirement: {
+        Args: { p_req: Json; p_user: string }
+        Returns: string
+      }
+      shop_use_freeze: {
+        Args: { p_local_date: string; p_market_id: string }
+        Returns: boolean
+      }
+      shop_wears_crown: {
+        Args: { p_month?: string; p_user: string }
+        Returns: boolean
+      }
+      shop_weekly_case_top3: { Args: { p_user: string }; Returns: boolean }
+      shop_xp_earned: { Args: { p_user: string }; Returns: number }
       start_friend_streak: { Args: { p_friend: string }; Returns: string }
       stop_curriculum_rewrite_schedule: { Args: never; Returns: boolean }
       submit_decision_answer: {
