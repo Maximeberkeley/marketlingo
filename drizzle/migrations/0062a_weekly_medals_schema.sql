@@ -1,3 +1,4 @@
+-- ALREADY APPLIED (Nov 11, 2026): the full 0062/0063 files ran on the live database. Do not run this file again.
 -- Split of 0062_shop_catalog_weekly_medals.sql for tools that cannot run schema and data together.
 -- Run 0062a (schema) first, then 0062b (data). Both are safe to run again. Together they equal 0062.
 
