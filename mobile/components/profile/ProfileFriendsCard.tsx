@@ -4,7 +4,6 @@ import { Feather } from '@expo/vector-icons';
 import { COLORS } from '../../lib/constants';
 import { isDark } from '../../lib/theme';
 import { LeoAnimated } from '../mascot/LeoAnimated';
-import { StreakFlame } from '../ui/StreakFlame';
 import { SocialAvatar } from '../social/SocialAvatar';
 import { ChunkyButton } from '../social/ChunkyButton';
 import { Crown, crownCopy } from '../../lib/crown';
@@ -54,11 +53,6 @@ export function ProfileFriendsCard({ info, onOpen, onAdd }: { info: ProfileFrien
           </View>
         )}
         <View style={{ flex: 1 }} />
-        {hasFriends && (
-          <TouchableOpacity onPress={onAdd} style={styles.addBtn} hitSlop={8} accessibilityRole="button" accessibilityLabel="Add friends">
-            <Feather name="user-plus" size={17} color={COLORS.accent} />
-          </TouchableOpacity>
-        )}
         <TouchableOpacity onPress={onOpen} style={styles.seeAll} hitSlop={8} accessibilityRole="button" accessibilityLabel="Open Friends">
           <Text style={styles.seeAllText}>See all</Text>
           <Feather name="chevron-right" size={16} color={COLORS.accent} />
@@ -101,14 +95,10 @@ export function ProfileFriendsCard({ info, onOpen, onAdd }: { info: ProfileFrien
             <Feather name="chevron-right" size={18} color={COLORS.textMuted} />
           </TouchableOpacity>
 
-          {/* Only something you can act on gets a row of its own. */}
-          {info.urgent?.actionable && (
-            <TouchableOpacity style={styles.urgent} onPress={onOpen} activeOpacity={0.85} accessibilityRole="button">
-              {info.urgent.icon === 'flame' ? <StreakFlame size={16} /> : <Feather name={info.urgent.icon === 'race' ? 'flag' : 'gift'} size={15} color={COLORS.accent} />}
-              <Text style={styles.urgentText} numberOfLines={1}>{info.urgent.text}</Text>
-              <Feather name="chevron-right" size={16} color={COLORS.textMuted} />
-            </TouchableOpacity>
-          )}
+          <View style={styles.actions}>
+            <ChunkyButton label="Open Friends" onPress={onOpen} height={46} style={{ flex: 1 }} />
+            <ChunkyButton label="Add" tone="plain" icon={<Feather name="user-plus" size={17} color={COLORS.accent} />} onPress={onAdd} height={46} style={{ flex: 0.72 }} accessibilityLabel="Add friends" />
+          </View>
         </>
       ) : (
         <>
@@ -138,7 +128,6 @@ const styles = StyleSheet.create({
   pending: { paddingHorizontal: 9, height: 22, borderRadius: 11, backgroundColor: COLORS.error, alignItems: 'center', justifyContent: 'center' },
   pendingText: { fontSize: 11, fontWeight: '800', color: '#FFFFFF' },
   seeAll: { flexDirection: 'row', alignItems: 'center', gap: 2 },
-  addBtn: { width: 36, height: 36, borderRadius: 18, alignItems: 'center', justifyContent: 'center', backgroundColor: COLORS.accentSoft, marginRight: 6 },
   seeAllText: { fontSize: 14, fontWeight: '800', color: COLORS.accent },
   crown: {
     flexDirection: 'row', alignItems: 'flex-end', gap: 6, paddingRight: 12, minHeight: 96, borderRadius: 18, borderWidth: 2,
@@ -156,8 +145,6 @@ const styles = StyleSheet.create({
   stackMoreText: { fontSize: 12, fontWeight: '800', color: COLORS.textSecondary },
   stackTitle: { fontSize: 15, fontWeight: '800', color: COLORS.textPrimary },
   stackSub: { fontSize: 12, color: COLORS.textSecondary, marginTop: 1 },
-  urgent: { flexDirection: 'row', alignItems: 'center', gap: 8, paddingHorizontal: 12, height: 42, borderRadius: 12, borderWidth: 1.5, borderColor: COLORS.accentMedium, backgroundColor: COLORS.bg1 },
-  urgentText: { flex: 1, fontSize: 13, fontWeight: '700', color: COLORS.textPrimary },
   actions: { flexDirection: 'row', gap: 10 },
   empty: {
     flexDirection: 'row', alignItems: 'flex-end', gap: 6, paddingRight: 12, minHeight: 96, borderRadius: 18, borderWidth: 2,
