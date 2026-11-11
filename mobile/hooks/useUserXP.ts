@@ -7,6 +7,8 @@ import { localDateString } from '../lib/dayMath';
 import { cancelRollingLeoNudges } from '../lib/leoNudges';
 import { emitXP, onXP } from '../lib/progressEvents';
 import { transactionSource } from '../lib/xpSource';
+import { boostedAmount } from '../lib/boosts';
+import { doubleXpUntil } from './useShop';
 
 export const XP_REWARDS = {
   /** Floor for the daily lesson; the completion screen's itemized total is banked when higher. */
@@ -168,12 +170,15 @@ export function useUserXP(marketId?: string) {
   }), [user, marketId]);
 
   const addXP = async (
-    amount: number,
+    requested: number,
     sourceType: string,
     sourceId?: string,
     description?: string
   ) => {
     if (!user || !marketId) return null;
+    // Double XP (earned from the Weekly Case) doubles boostable sources while it runs; the lesson itemizes its own.
+    const amount = boostedAmount(requested, sourceType, doubleXpUntil(), Date.now());
+    if (amount !== requested) description = description ? `${description} · Double XP` : 'Double XP';
 
     const ensuredXP = await ensureXPRecord();
     if (!ensuredXP) return null;

@@ -7,6 +7,7 @@ import { useAuth } from "./useAuth";
 import { COSMETICS, cosmetic, priceOf } from "../lib/shopCatalog";
 import { ART_READY_IDS } from "../lib/shopArtIds";
 import { dailyDeals, idemKey, lookFromRows, spendable } from "../lib/shopEconomy";
+import { repairFromJson } from "../lib/boosts";
 const ART = new Set(ART_READY_IDS);
 const EMPTY = {
   ready: false,
@@ -18,7 +19,8 @@ const EMPTY = {
   deals: [],
   dealDate: localDateString(),
   perks: {},
-  stats: { bestStreak: 0, xpEarned: 0, weeklyCasesSubmitted: 0, lessonsCompleted: 0 }
+  stats: { bestStreak: 0, xpEarned: 0, weeklyCasesSubmitted: 0, lessonsCompleted: 0 },
+  doubleXpUntil: 0
 };
 let state = EMPTY;
 let storeUser = null;
@@ -42,7 +44,7 @@ async function load(uid) {
     } catch {
     }
   }
-  const [bal, inv, eq, looks, deals, perks, progress, xp, cases, placements] = await Promise.all([
+  const [bal, inv, eq, looks, deals, perks, progress, xp, cases, placements, boost] = await Promise.all([
     supabase.rpc("shop_balance"),
     supabase.from("user_inventory").select("item_id, qty, source, seen_at").eq("user_id", uid),
     supabase.from("user_equipped").select("slot, item_id").eq("user_id", uid),
@@ -52,7 +54,8 @@ async function load(uid) {
     supabase.from("user_progress").select("longest_streak, completed_stacks").eq("user_id", uid),
     supabase.from("user_xp").select("total_xp").eq("user_id", uid),
     supabase.from("weekly_case_submissions").select("id", { count: "exact", head: true }).eq("user_id", uid).eq("status", "submitted"),
-    supabase.from("weekly_case_placements").select("rank, board_size").eq("user_id", uid)
+    supabase.from("weekly_case_placements").select("rank, board_size").eq("user_id", uid),
+    supabase.from("user_boosts").select("double_xp_until").eq("user_id", uid).maybeSingle()
   ]);
   const available = !bal.error;
   if (bal.error && !isMissing(bal.error)) log.warn("[Shop] Balance could not load:", bal.error.message);
@@ -88,7 +91,8 @@ async function load(uid) {
     deals: dealRows?.length ? dealRows.map((r) => ({ itemId: r.item_id, price: r.price, dealPrice: r.deal_price })) : localDeals(date),
     dealDate: date,
     perks: perkMap,
-    stats
+    stats,
+    doubleXpUntil: boost.error ? 0 : Date.parse(boost.data?.double_xp_until ?? "") || 0
   });
   if (!eq.error) AsyncStorage.setItem(lookKey(uid), JSON.stringify(look)).catch(() => {
   });
@@ -109,6 +113,7 @@ function refreshShop(uid) {
   });
   return inflight;
 }
+const doubleXpUntil = () => state.doubleXpUntil;
 function ownsItem(s, id) {
   const c = cosmetic(id);
   if (c?.acquisition === "default") return true;
@@ -180,7 +185,44 @@ function useShop() {
     emit({ owned });
     await supabase.rpc("shop_mark_seen", { p_item_ids: ids });
   }, [user]);
-  return { ...snap, refresh, purchase, equip, joinWaitlist, checkRewards, markSeen, owns: (id) => ownsItem(snap, id) };
+  const startDoubleXp = useCallback(async () => {
+    if (!user) return { ok: false, error: "signed_out" };
+    const { data, error } = await supabase.rpc("shop_use_double_xp");
+    if (error) return { ok: false, error: isMissing(error) ? "unavailable" : error.message };
+    const r = data;
+    if (!r?.ok) return { ok: false, error: r?.error || "failed" };
+    const until = Date.parse(r.until ?? "") || 0;
+    emit({ doubleXpUntil: until });
+    await refreshShop(user.id);
+    return { ok: true, until };
+  }, [user]);
+  const repairStatus = useCallback(async (marketId) => {
+    const { data, error } = await supabase.rpc("shop_repair_status", { p_market_id: marketId, p_today: localDateString() });
+    if (error) return repairFromJson({ reason: "unavailable" });
+    return repairFromJson(data);
+  }, []);
+  const repairStreak = useCallback(async (marketId) => {
+    if (!user) return { ok: false, error: "signed_out" };
+    const { data, error } = await supabase.rpc("shop_repair_streak", { p_market_id: marketId, p_today: localDateString(), p_idem_key: idemKey() });
+    if (error) return { ok: false, error: isMissing(error) ? "unavailable" : error.message };
+    const r = data;
+    if (!r?.ok) return { ok: false, error: r?.error || "failed" };
+    await refreshShop(user.id);
+    return { ok: true, streak: Number(r.streak) || 0 };
+  }, [user]);
+  return {
+    ...snap,
+    refresh,
+    purchase,
+    equip,
+    joinWaitlist,
+    checkRewards,
+    markSeen,
+    startDoubleXp,
+    repairStatus,
+    repairStreak,
+    owns: (id) => ownsItem(snap, id)
+  };
 }
 function todaysPrice(s, itemId) {
   const c = cosmetic(itemId);
@@ -189,6 +231,7 @@ function todaysPrice(s, itemId) {
 }
 const hasArt = (id) => ART.has(id);
 export {
+  doubleXpUntil,
   hasArt,
   ownsItem,
   refreshShop,

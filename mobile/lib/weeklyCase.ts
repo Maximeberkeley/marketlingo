@@ -6,8 +6,11 @@
  * writing boxes are `content.response.parts`. The server (migration 0044) enforces the same limits as below.
  */
 
-/** Flat XP for submitting an answer; paid once per case. */
-export const WEEKLY_CASE_XP = 40;
+/**
+ * Flat XP for submitting an answer; paid once per case. Normal XP earned, so it counts for friend races and the
+ * crown. The submission also earns one 15-minute Double XP token (granted on the server).
+ */
+export const WEEKLY_CASE_XP = 200;
 /** Fallback when a case gives no part timings. A suggestion, never a lock. */
 export const SUGGESTED_MINUTES = 10;
 /** An answer needs at least this many words in every part, and at most HARD_CAP_FACTOR times the part's guidance. */

@@ -29,6 +29,7 @@ import { latestAccessibleSection, resolveCourseSections, SectionAccess, todaysCr
 import { triggerHaptic } from '../../lib/haptics';
 import { playSound } from '../../lib/sounds';
 import { StreakBadge } from '../ui/StreakBadge';
+import { DoubleXPTag } from '../shop/DoubleXPTag';
 import { XPBadge } from '../ui/XPBadge';
 import { SwitchIndustryModal } from '../ui/SwitchIndustryModal';
 import { LeoCharacter } from '../mascot/LeoCharacter';
@@ -802,6 +803,7 @@ export function CourseJourney({
                 <StreakBadge count={streak} />
               </TouchableOpacity>
               {streakCountdown ? <Text style={styles.streakCountdown} accessibilityLabel={`${streakCountdown} left to study today`}>{streakCountdown}</Text> : null}
+              <DoubleXPTag />
               <TouchableOpacity disabled={!onXPPress} onPress={onXPPress} accessibilityRole="button" accessibilityLabel={`${totalXp.toLocaleString()} XP to spend. Open your XP`}>
                 <XPBadge xp={totalXp} level={level} />
               </TouchableOpacity>

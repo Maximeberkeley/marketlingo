@@ -205,15 +205,20 @@ export const PERKS: Perk[] = [
   { id: 'perk-tool-credits', name: 'Premium tool credits', line: 'A month of a pro tool for your projects.', kicker: 'Digital perks', price: 2500, icon: 'gift', steps: PERK_STEPS },
 ];
 
-export interface PowerUp { id: string; name: string; line: string; price: number | null; live: boolean; icon: 'streak-freeze' | 'streak-repair' | 'countdown' }
+export interface PowerUp {
+  id: string; name: string; line: string; price: number | null; live: boolean; icon: 'streak-freeze' | 'streak-repair' | 'countdown';
+  /** Earn-only: never sold (Double XP comes from each submitted Weekly Case). */
+  earned?: boolean;
+  /** Its screen. */
+  route: string;
+}
 export const STREAK_FREEZE_ID = 'streak-freeze';
 export const STREAK_FREEZE_PRICE = 400;
 export const MAX_FREEZES_HELD = 2;
 export const POWER_UPS: PowerUp[] = [
-  { id: STREAK_FREEZE_ID, name: 'Streak Freeze', line: 'Covers one missed day. Hold 2.', price: STREAK_FREEZE_PRICE, live: true, icon: 'streak-freeze' },
-  // Not decided yet: shown, never sold.
-  { id: 'streak-repair', name: 'Streak Repair', line: 'Bring a lost streak back.', price: 1200, live: false, icon: 'streak-repair' },
-  { id: 'double-xp', name: 'Double XP', line: '15 minutes of double XP.', price: null, live: false, icon: 'countdown' },
+  { id: STREAK_FREEZE_ID, name: 'Streak Freeze', line: 'Covers one missed day. Hold 2.', price: STREAK_FREEZE_PRICE, live: true, icon: 'streak-freeze', route: '/shop-freeze' },
+  { id: 'streak-repair', name: 'Streak Repair', line: 'Bring back a lost 7+ day streak.', price: 1200, live: true, icon: 'streak-repair', route: '/shop-repair' },
+  { id: 'double-xp', name: 'Double XP', line: '15 minutes. Earned with each Weekly Case.', price: null, live: true, earned: true, icon: 'countdown', route: '/shop-boost' },
 ];
 
 const BY_ID = new Map(COSMETICS.map(c => [c.id, c]));

@@ -23,7 +23,7 @@ function useStreakFreeze(marketId, _legacyProFlag = false) {
       supabase.from("streak_freezes").select("id, kind").eq("user_id", user.id).eq("market_id", marketId).eq("week_of", weekStart),
       supabase.from("user_inventory").select("qty").eq("user_id", user.id).eq("item_id", "streak-freeze").maybeSingle()
     ]);
-    const used = (data || []).filter((row) => row.kind !== "shop").length;
+    const used = (data || []).filter((row) => row.kind !== "shop" && row.kind !== "repair").length;
     const boughtHeld = held.error ? 0 : Number(held.data?.qty) || 0;
     setState({
       canFreeze: used < FREE_FREEZES_PER_WEEK || boughtHeld > 0,

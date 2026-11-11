@@ -133,6 +133,8 @@ function RootLayout() {
     /* @__PURE__ */ React.createElement(Stack.Screen, { name: "wardrobe" }),
     /* @__PURE__ */ React.createElement(Stack.Screen, { name: "shop-item", options: { animation: "slide_from_bottom" } }),
     /* @__PURE__ */ React.createElement(Stack.Screen, { name: "shop-freeze", options: { animation: "slide_from_bottom" } }),
+    /* @__PURE__ */ React.createElement(Stack.Screen, { name: "shop-repair", options: { animation: "slide_from_bottom" } }),
+    /* @__PURE__ */ React.createElement(Stack.Screen, { name: "shop-boost", options: { animation: "slide_from_bottom" } }),
     /* @__PURE__ */ React.createElement(Stack.Screen, { name: "shop-perk", options: { animation: "slide_from_bottom" } }),
     /* @__PURE__ */ React.createElement(Stack.Screen, { name: "shop-collection" }),
     /* @__PURE__ */ React.createElement(Stack.Screen, { name: "legal" }),

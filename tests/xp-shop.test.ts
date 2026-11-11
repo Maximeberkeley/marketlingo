@@ -65,8 +65,11 @@ describe('purchase rules', () => {
   it('makes bundles cheaper than their pieces', () => {
     for (const b of BUNDLES) expect(b.price, b.id).toBeLessThan(bundleFullPrice(b));
   });
-  it('keeps undecided power-ups and every perk unsellable', () => {
-    expect(POWER_UPS.filter(p => p.live).map(p => p.id)).toEqual(['streak-freeze']);
+  it('sells only the freeze through shop_purchase; repair has its own checked RPC, Double XP is earned; perks stay unsellable', () => {
+    expect(POWER_UPS.filter(p => p.live).map(p => p.id)).toEqual(['streak-freeze', 'streak-repair', 'double-xp']);
+    expect(POWER_UPS.filter(p => p.live && p.price && !p.earned).map(p => p.route)).toEqual(['/shop-freeze', '/shop-repair']);
+    // shop_purchase only sells cosmetic, freeze and bundle kinds; both new rows are 'powerup'
+    expect(migration).toContain("IF v_item.kind NOT IN ('cosmetic', 'freeze', 'bundle') THEN");
     expect(migration).toContain("'perk', NULL, NULL");
     expect(migration).toMatch(/'perk-founder-call', 'perk',[^\n]*'coming_soon'/);
     // no partner is named anywhere on the phone or in the seed

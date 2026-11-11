@@ -156,6 +156,8 @@ export default function RootLayout() {
                 <Stack.Screen name="wardrobe" />
                 <Stack.Screen name="shop-item" options={{ animation: 'slide_from_bottom' }} />
                 <Stack.Screen name="shop-freeze" options={{ animation: 'slide_from_bottom' }} />
+                <Stack.Screen name="shop-repair" options={{ animation: 'slide_from_bottom' }} />
+                <Stack.Screen name="shop-boost" options={{ animation: 'slide_from_bottom' }} />
                 <Stack.Screen name="shop-perk" options={{ animation: 'slide_from_bottom' }} />
                 <Stack.Screen name="shop-collection" />
                 <Stack.Screen name="legal" />
