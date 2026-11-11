@@ -325,6 +325,13 @@
       "breakpoints": true
     },
     {
+      "idx": 47,
+      "version": "7",
+      "when": 1794500000047,
+      "tag": "0047_healthtech_deep_cases",
+      "breakpoints": true
+    },
+    {
       "idx": 48,
       "version": "7",
       "when": 1794400000048,
