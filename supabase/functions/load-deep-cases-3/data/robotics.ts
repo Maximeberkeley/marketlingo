@@ -6771,6 +6771,6764 @@ const rows: unknown[] = [
    "handwritten-v1",
    "src:a0f7b267ebf9"
   ]
+ },
+ {
+  "id": "b5913aed-ba4c-5ffe-827d-2e527ebed549",
+  "market_id": "robotics",
+  "day": 16,
+  "slot": 1,
+  "content": {
+   "id": "robotics-d16-c1",
+   "title": "A $299 robot for developers",
+   "lessonTitle": "Nearly a billion ROS downloads",
+   "slot": 1,
+   "type": "apply",
+   "brief": {
+    "headline": "In July 2025, Hugging Face opened orders for Reachy Mini, an open-source desktop robot. The Lite kit costs $299 and the wireless version $449.",
+    "kicker": "Apply the adoption lesson: why sell a cheap kit to developers first?",
+    "fullText": "Hugging Face bought the French robotics startup Pollen Robotics in April 2025. Reachy Mini comes as a kit that developers assemble and program in Python.\n\nThe robot links to the Hugging Face Hub, which holds more than 1.7 million AI models and more than 400,000 datasets.\n\nDay 16 showed why that matters: ROS packages were downloaded 984 million times in 2025. Developers who build on a tool today shape the robots of tomorrow.",
+    "sources": [
+     {
+      "url": "https://techcrunch.com/2025/07/09/hugging-face-opens-up-orders-for-its-reachy-mini-desktop-robots",
+      "label": "TechCrunch, Hugging Face opens up orders for its Reachy Mini desktop robots, Jul 2025"
+     },
+     {
+      "url": "https://techcrunch.com/2025/04/14/hugging-face-buys-a-humanoid-robotics-startup",
+      "label": "TechCrunch, Hugging Face buys a humanoid robotics startup, Apr 2025"
+     },
+     {
+      "url": "https://discourse.openrobotics.org/t/2025-ros-metrics-report/52575",
+      "label": "Open Robotics Discourse, 2025 ROS metrics report"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "faceOff",
+    "prompt": "Who is Reachy Mini mainly for?",
+    "left": {
+     "name": "Developers",
+     "note": "Kit, programmed in Python"
+    },
+    "right": {
+     "name": "Factory buyers",
+     "note": "Ready to install"
+    },
+    "correctIndex": 0,
+    "explanation": "It ships as a kit that developers build and program themselves."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "What does the Reachy Mini Lite kit cost, in dollars?",
+    "min": 0,
+    "max": 1000,
+    "value": 299,
+    "unit": "$",
+    "explanation": "$299 for the Lite kit, $449 for the wireless version."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You're interviewing at a robotics startup. They ask why Hugging Face sells a $299 robot.",
+      "prompt": "What do you say?",
+      "options": [
+       "To undercut factory robot makers on price",
+       "To clear old Pollen stock",
+       "To win developers who will build on it"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "It is a desk kit, not a factory arm.",
+       "It is a new product launched in 2025.",
+       "Developers who adopt a tool tend to stay with it."
+      ],
+      "explanation": "A cheap, open kit brings developers onto the Hugging Face platform, where the models and data already live."
+     },
+     "proReasoning": "Candidates who read a product as a play for developers show they understand platforms.",
+     "commonMistake": "Judging a developer kit by its own sales alone.",
+     "mentalModel": "Win the builders first."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend calls Reachy Mini a toy with no business behind it.",
+      "prompt": "How do you answer?",
+      "options": [
+       "It pulls developers toward the Hub",
+       "It is a big source of revenue",
+       "It replaces factory robots"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "The Hub holds over 1.7 million models.",
+       "A $299 kit is not a big earner.",
+       "It is a desktop robot."
+      ],
+      "explanation": "The kit is cheap, but it brings builders to the Hub. ROS shows how shared tools can reach huge adoption."
+     },
+     "proReasoning": "Investors value what a product does for the platform, not just its own sales.",
+     "commonMistake": "Dismissing a product because its price is low.",
+     "mentalModel": "Price low, pull high.",
+     "sources": [
+      {
+       "url": "https://discourse.openrobotics.org/t/2025-ros-metrics-report/52575",
+       "label": "Open Robotics Discourse, 2025 ROS metrics report"
+      }
+     ]
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You build robot software tools.",
+      "prompt": "What does Reachy Mini teach you?",
+      "options": [
+       "Keep your code closed",
+       "Make it cheap and easy for developers to try",
+       "Sell only to large companies with big budgets"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Reachy Mini is open source.",
+       "Low cost and open code invite builders in.",
+       "Big buyers come later, after developers adopt."
+      ],
+      "explanation": "Hugging Face priced a kit at $299 and opened the code, so more developers can start."
+     },
+     "proReasoning": "Founders lower the cost of trying before they ask for big contracts.",
+     "commonMistake": "Charging developers a lot before they have any reason to stay.",
+     "mentalModel": "Lower the cost of trying."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend asks why an AI company would sell a little robot.",
+      "prompt": "What's the best answer?",
+      "options": [
+       "Because robot hardware is cheap to make now",
+       "To stop selling AI software",
+       "To bring AI models into the physical world"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Hardware still costs money to build.",
+       "The Hub is still its core.",
+       "The robot runs models from the Hub."
+      ],
+      "explanation": "The robot gives developers a body to test AI models on."
+     },
+     "proReasoning": "Explain a move by what it connects.",
+     "commonMistake": "Seeing hardware and software companies as separate worlds.",
+     "mentalModel": "Models need bodies."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:d7770aaec3ca"
+  ]
+ },
+ {
+  "id": "b913857f-16fa-570e-80e5-b6bff9e1b57a",
+  "market_id": "robotics",
+  "day": 16,
+  "slot": 2,
+  "content": {
+   "id": "robotics-d16-c2",
+   "title": "Two numbers, one direction",
+   "lessonTitle": "Nearly a billion ROS downloads",
+   "slot": 2,
+   "type": "connect",
+   "brief": {
+    "headline": "In 2025, ROS packages were downloaded 984 million times, up 85%. ROS 2 made up 91.2% of those downloads.",
+    "kicker": "Connect day 16 and day 13: the size of ROS, and which version won.",
+    "fullText": "Day 13 showed that ROS 2, the newer generation of the free robot software, had overtaken the original.\n\nDay 16 added the scale: 984 million downloads, 34,614 packages, and unique users rising from about 844,000 to about 1.32 million over the year to October.\n\nTogether they say the shared layer is growing fast, and almost all of that growth is on ROS 2.",
+    "sources": [
+     {
+      "url": "https://discourse.openrobotics.org/t/2025-ros-metrics-report/52575",
+      "label": "Open Robotics Discourse, 2025 ROS metrics report"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "sortSignal",
+    "prompt": "Which day showed it?",
+    "buckets": [
+     "Day 13",
+     "Day 16"
+    ],
+    "items": [
+     {
+      "text": "ROS 2 made up 91.2% of downloads",
+      "bucket": 0
+     },
+     {
+      "text": "ROS is free, open-source software",
+      "bucket": 0
+     },
+     {
+      "text": "Downloads rose 85% in 2025",
+      "bucket": 1
+     },
+     {
+      "text": "Users rose to about 1.32 million",
+      "bucket": 1
+     }
+    ],
+    "explanation": "Day 13 defined ROS and its shift to ROS 2. Day 16 measured its growth."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "By what percent did ROS downloads grow in 2025?",
+    "min": 0,
+    "max": 200,
+    "value": 85,
+    "unit": "%",
+    "explanation": "Downloads rose 85%, to 984 million."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A robotics company asks which version of ROS you know.",
+      "prompt": "What should you say?",
+      "options": [
+       "ROS 2, the version almost all downloads use",
+       "ROS 1, the original and most familiar version",
+       "Neither, since ROS is fading"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "ROS 2 made up 91.2% of downloads.",
+       "ROS 1 is the shrinking share.",
+       "Downloads rose 85% in 2025."
+      ],
+      "explanation": "ROS is growing and almost all of it is ROS 2. That is the skill teams want."
+     },
+     "proReasoning": "Candidates who back a skill with the adoption numbers sound current.",
+     "commonMistake": "Listing an old version as your main skill.",
+     "mentalModel": "Learn what is growing."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A robot software company says its tools build on ROS 1.",
+      "prompt": "What do you ask first?",
+      "options": [
+       "Whether ROS is still free",
+       "When it plans to move to ROS 2",
+       "Why it chose such a popular tool"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "ROS stays free and open source.",
+       "ROS 2 holds 91.2% of downloads.",
+       "Popularity is not the issue."
+      ],
+      "explanation": "Growth is on ROS 2. Building on ROS 1 puts a company on the shrinking side."
+     },
+     "proReasoning": "Investors check whether a product sits on the growing platform.",
+     "commonMistake": "Ignoring which version a product depends on.",
+     "mentalModel": "Bet on the growing version."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You are starting a robot software product.",
+      "prompt": "Which base should you pick?",
+      "options": [
+       "ROS 1, for its older code",
+       "Your own system, built alone",
+       "ROS 2, where users are growing"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "ROS 1 is losing users to ROS 2.",
+       "Building alone forgoes 34,614 shared packages.",
+       "Users rose to about 1.32 million, mostly on ROS 2."
+      ],
+      "explanation": "ROS 2 has the users and the packages. Starting there saves work."
+     },
+     "proReasoning": "Founders build where the users already are.",
+     "commonMistake": "Rebuilding what thousands of shared packages already do.",
+     "mentalModel": "Start where users are."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend asks how to tell if free software is really used.",
+      "prompt": "What's the best answer?",
+      "options": [
+       "Count downloads and users over time",
+       "Look at how nice its website is",
+       "Ask whether it costs money"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Downloads rose 85% and users grew past 1.3 million.",
+       "A website says little about use.",
+       "ROS is free yet widely used."
+      ],
+      "explanation": "Downloads and unique users show real use. ROS grew on both in 2025."
+     },
+     "proReasoning": "Measure adoption, not appearances.",
+     "commonMistake": "Assuming free means unused.",
+     "mentalModel": "Count real use."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:01dcd2475786"
+  ]
+ },
+ {
+  "id": "822a42cc-a15d-5599-addc-526d06f55a95",
+  "market_id": "robotics",
+  "day": 16,
+  "slot": 3,
+  "content": {
+   "id": "robotics-d16-c3",
+   "title": "Where to hire",
+   "lessonTitle": "Nearly a billion ROS downloads",
+   "slot": 3,
+   "type": "decide",
+   "brief": {
+    "headline": "You run a robot startup and need to hire software engineers. ROS had about 1.32 million unique users in 2025.",
+    "kicker": "Decide: hire for the shared toolkit, or train people on your own?",
+    "fullText": "ROS packages were downloaded 984 million times in 2025, and ROS 2 made up 91.2% of downloads.\n\nThe ecosystem held 34,614 packages. Unique users rose from about 844,000 to about 1.32 million over the year to October.\n\nA large, growing user base means a large pool of people who already know the tools.",
+    "sources": [
+     {
+      "url": "https://discourse.openrobotics.org/t/2025-ros-metrics-report/52575",
+      "label": "Open Robotics Discourse, 2025 ROS metrics report"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "buildChain",
+    "prompt": "Order the steps for hiring on a shared toolkit.",
+    "steps": [
+     "See where developers already work",
+     "Pick that toolkit as your base",
+     "Hire people who know it",
+     "Ship faster with shared packages"
+    ],
+    "explanation": "Choose the toolkit people know, then hire from that pool and reuse its packages."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "About how many ROS packages existed in 2025, in thousands?",
+    "min": 0,
+    "max": 100,
+    "value": 35,
+    "unit": "K",
+    "explanation": "About 34,614 packages."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You are hiring your first robot software engineer.",
+      "prompt": "What skill do you require?",
+      "options": [
+       "No robot software experience",
+       "Experience with ROS 2",
+       "Experience with ROS 1 only"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "They would start from zero.",
+       "Most users and downloads are on ROS 2.",
+       "ROS 1 is fading out."
+      ],
+      "explanation": "ROS 2 holds 91.2% of downloads, so experienced people are easiest to find there."
+     },
+     "proReasoning": "Hiring managers require the skill the market is already building.",
+     "commonMistake": "Asking for a fading skill and shrinking the pool.",
+     "mentalModel": "Hire for the standard."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A startup says it uses a custom robot stack, not ROS.",
+      "prompt": "What risk do you check?",
+      "options": [
+       "Whether ROS license fees will rise soon",
+       "Whether ROS has users",
+       "How hard it will be to hire for it"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "ROS is free.",
+       "ROS had about 1.32 million users.",
+       "Few engineers know a private stack."
+      ],
+      "explanation": "A private stack shrinks the hiring pool. ROS users are already over a million."
+     },
+     "proReasoning": "Investors weigh how a technical choice affects hiring.",
+     "commonMistake": "Treating a custom stack as a moat when it may be a cost.",
+     "mentalModel": "Check the hiring pool."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your team wants to write its own mapping software.",
+      "prompt": "What do you decide?",
+      "options": [
+       "Start from a shared ROS 2 package",
+       "Write it all from scratch in-house",
+       "Skip mapping entirely"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "A shared package saves months.",
+       "Rewriting costs time you need elsewhere.",
+       "Mobile robots need maps."
+      ],
+      "explanation": "There are 34,614 packages to build on. Reuse first and spend your time on what is unique."
+     },
+     "proReasoning": "Founders reuse the common layer and build only what sets them apart.",
+     "commonMistake": "Spending months on code others already share.",
+     "mentalModel": "Reuse the common layer."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend asks why so many robot companies use the same software.",
+      "prompt": "What's the best answer?",
+      "options": [
+       "One company owns the code and makes them use it",
+       "Shared tools save time and attract skilled people",
+       "The law requires it"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "There are many robot makers.",
+       "Over a million users already know ROS.",
+       "No law requires ROS."
+      ],
+      "explanation": "Shared software means less to build and a big pool of people who know it."
+     },
+     "proReasoning": "Explain a standard by the work it saves.",
+     "commonMistake": "Assuming everyone codes from scratch.",
+     "mentalModel": "Shared tools, shared talent."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:9f274a48d118"
+  ]
+ },
+ {
+  "id": "ceee9663-3734-5fda-a230-e480ed4bde0b",
+  "market_id": "robotics",
+  "day": 17,
+  "slot": 1,
+  "content": {
+   "id": "robotics-d17-c1",
+   "title": "The robot that stopped talking",
+   "lessonTitle": "When robot software stops getting fixes",
+   "slot": 1,
+   "type": "apply",
+   "brief": {
+    "headline": "In December 2024, Embodied, maker of the $799 Moxie robot for children, shut down. Moxie needed a cloud connection to talk, so the robots stopped working.",
+    "kicker": "Apply the end-of-life lesson: what happens when the maker stops supporting a robot?",
+    "fullText": "Moxie’s conversations and games relied on a constant connection to a cloud-based AI system. Shutting down the company cut that connection.\n\nEmbodied said a lead investor withdrew from a funding round at the last minute. It also said it could not offer refunds.\n\nDay 17 showed the same risk for robots in the field: when support ends, the robot ages. Moxie went further, because it could not run on its own.",
+    "sources": [
+     {
+      "url": "https://www.axios.com/2024/12/10/moxie-kids-robot-shuts-down",
+      "label": "Axios, maker of AI robots for kids abruptly shutters, Dec 2024"
+     },
+     {
+      "url": "https://ubuntu.com/blog/ros-noetic-is-eol-take-action-to-maintain-fleet-security",
+      "label": "Canonical, ROS Noetic is EOL"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "multipleChoice",
+    "prompt": "Why did Moxie robots stop working?",
+    "options": [
+     "Their cloud service shut down",
+     "A software update broke them",
+     "Their batteries wore out"
+    ],
+    "correctIndex": 0,
+    "explanation": "Moxie needed a cloud AI connection, and that ended when Embodied closed."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "What did a Moxie robot cost, in dollars?",
+    "min": 0,
+    "max": 2000,
+    "value": 799,
+    "unit": "$",
+    "explanation": "$799, with no refunds after the shutdown."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A robot company asks how you would design a product to survive its maker.",
+      "prompt": "What do you suggest?",
+      "options": [
+       "Keep core functions working offline",
+       "Put every feature in the cloud",
+       "Never update the software"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "The robot still works if servers go away.",
+       "That is what stopped Moxie.",
+       "Unpatched software ages too."
+      ],
+      "explanation": "A robot that depends fully on the cloud dies with its servers. Core functions should run locally."
+     },
+     "proReasoning": "Candidates who think about failure modes stand out.",
+     "commonMistake": "Designing as if the company will always exist.",
+     "mentalModel": "Plan for the end."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A robot startup sells devices that need its cloud to work.",
+      "prompt": "What risk do you check?",
+      "options": [
+       "Whether customers like the voice",
+       "What happens to devices if it closes",
+       "How many colors the robot comes in"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Liking the voice will not keep it running.",
+       "A shutdown can brick every unit sold.",
+       "Color does not affect that risk."
+      ],
+      "explanation": "Moxie owners lost their robots when Embodied closed. Cloud dependence adds that risk."
+     },
+     "proReasoning": "Investors ask what customers lose if the company fails.",
+     "commonMistake": "Ignoring the dependency between devices and servers.",
+     "mentalModel": "Check the cloud dependency.",
+     "sources": [
+      {
+       "url": "https://www.axios.com/2024/12/10/moxie-kids-robot-shuts-down",
+       "label": "Axios, maker of AI robots for kids abruptly shutters, Dec 2024"
+      }
+     ]
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your robot uses the cloud for its main features.",
+      "prompt": "What do you build for the worst case?",
+      "options": [
+       "More cloud features first",
+       "Nothing, since the company will keep going",
+       "A way for robots to keep basic features"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "That deepens the dependency.",
+       "Embodied also expected to succeed.",
+       "Customers keep some value even if you close."
+      ],
+      "explanation": "Plan how robots keep working if your servers go dark. It protects customers and trust."
+     },
+     "proReasoning": "Founders plan for their own failure as well as success.",
+     "commonMistake": "Assuming the company will always be there to run the servers.",
+     "mentalModel": "Plan for the worst case."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend asks how a robot can die when nothing is broken.",
+      "prompt": "What's the best answer?",
+      "options": [
+       "Its brain ran on servers that shut down",
+       "Robots are built to expire after a set date",
+       "Its warranty ended"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Moxie talked through a cloud AI system.",
+       "There is no built-in expiry date.",
+       "A warranty does not switch a robot off."
+      ],
+      "explanation": "Moxie’s smarts lived in the cloud. When the servers went, the robot went quiet."
+     },
+     "proReasoning": "Explain a failure by where the work really happens.",
+     "commonMistake": "Thinking a robot is only its hardware.",
+     "mentalModel": "The brain was elsewhere."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:9d9faac07855"
+  ]
+ },
+ {
+  "id": "220ac2f1-6917-5b85-ac79-280c15c26e42",
+  "market_id": "robotics",
+  "day": 17,
+  "slot": 2,
+  "content": {
+   "id": "robotics-d17-c2",
+   "title": "Who pays for the fixes",
+   "lessonTitle": "When robot software stops getting fixes",
+   "slot": 2,
+   "type": "connect",
+   "brief": {
+    "headline": "ROS Noetic reached end of life in May 2025. The free code stopped getting fixes, but paid support from Canonical runs to 2030.",
+    "kicker": "Connect day 17 and day 14: free software, and who pays to maintain it.",
+    "fullText": "Day 14 showed that open-source code is free to use, so the money comes from work and products built around it. Alphabet’s Intrinsic bought the for-profit arm of Open Robotics in 2022.\n\nDay 17 showed what happens when maintenance stops: Noetic, with more than 800 repositories listed, no longer gets security fixes.\n\nCanonical sells extended security support for Noetic through Ubuntu Pro. Free code, paid upkeep.",
+    "sources": [
+     {
+      "url": "https://ubuntu.com/blog/ros-noetic-is-eol-take-action-to-maintain-fleet-security",
+      "label": "Canonical, ROS Noetic is EOL"
+     },
+     {
+      "url": "https://techcrunch.com/2022/12/15/alphabets-intrinsic-acquires-darpa-backed-firm-behind-open-source-robotics-software/",
+      "label": "TechCrunch, Alphabet's Intrinsic acquires firm behind open source robotics software"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "spotFake",
+    "prompt": "One of these is false. Tap it.",
+    "statements": [
+     "Noetic reached end of life in May 2025.",
+     "Free ROS code always gets fixes forever.",
+     "Ubuntu Pro extends Noetic support to 2030."
+    ],
+    "fakeIndex": 1,
+    "explanation": "Free code is maintained only as long as someone does the work. Noetic’s community fixes ended in 2025."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "How many years past end of life does Ubuntu Pro extend Noetic support?",
+    "min": 0,
+    "max": 12,
+    "value": 5,
+    "unit": "years",
+    "explanation": "From May 2025 to 2030, about five years."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A robotics firm asks how open-source software makes money.",
+      "prompt": "What do you say?",
+      "options": [
+       "It never makes money",
+       "Through support and services around it",
+       "By charging a small fee for every download"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Companies do earn from services.",
+       "Canonical sells extended support for Noetic.",
+       "ROS downloads are free."
+      ],
+      "explanation": "The code is free. Support, services and products around it are where money comes from."
+     },
+     "proReasoning": "Candidates who explain open-source business models show commercial sense.",
+     "commonMistake": "Assuming free software has no business behind it.",
+     "mentalModel": "Free code, paid upkeep."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A company sells paid support for old robot software.",
+      "prompt": "What drives its demand?",
+      "options": [
+       "New robots on the newest software",
+       "Robots that never need fixes",
+       "Fleets that cannot upgrade quickly"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "New robots do not need old support.",
+       "All software needs security fixes.",
+       "Old fleets need fixes until they move."
+      ],
+      "explanation": "End of life creates demand from fleets stuck on old versions."
+     },
+     "proReasoning": "Investors look for demand that end of life creates.",
+     "commonMistake": "Missing the business in maintaining old systems.",
+     "mentalModel": "End of life creates demand."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your product depends on a free tool that just lost support.",
+      "prompt": "What do you budget for?",
+      "options": [
+       "Paid support now, and a migration plan",
+       "Nothing extra, since the tool is free to use",
+       "A full rewrite this week"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Support buys time to move safely.",
+       "Unpatched software stays exposed.",
+       "A rushed rewrite adds new risk."
+      ],
+      "explanation": "Free tools still cost money when support ends. Pay for a bridge, then migrate."
+     },
+     "proReasoning": "Founders budget for maintenance, not just the license price.",
+     "commonMistake": "Treating free software as a zero-cost forever.",
+     "mentalModel": "Budget for upkeep."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend asks who fixes free software.",
+      "prompt": "What's the best answer?",
+      "options": [
+       "Nobody ever",
+       "Volunteers and companies, while they choose to",
+       "The government, which requires it by law"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Fixes happen until support ends.",
+       "Noetic fixes ended when maintainers stopped.",
+       "No law requires fixes."
+      ],
+      "explanation": "People and companies maintain it while they choose to. When they stop, paid support may step in."
+     },
+     "proReasoning": "Explain upkeep by who is doing the work.",
+     "commonMistake": "Assuming free software maintains itself.",
+     "mentalModel": "Someone does the work."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:de61768cdee9"
+  ]
+ },
+ {
+  "id": "22f58b92-70bc-57fd-a762-19c7a93785dc",
+  "market_id": "robotics",
+  "day": 17,
+  "slot": 3,
+  "content": {
+   "id": "robotics-d17-c3",
+   "title": "Patch or migrate",
+   "lessonTitle": "When robot software stops getting fixes",
+   "slot": 3,
+   "type": "decide",
+   "brief": {
+    "headline": "You run 200 delivery robots on ROS Noetic, which lost free support in May 2025. Paid security support runs to 2030.",
+    "kicker": "Decide: buy time with paid support, or move the fleet now?",
+    "fullText": "Noetic was the final version of the original ROS. Its maintainers no longer provide updates or security fixes.\n\nCanonical’s Ubuntu Pro offers extended security maintenance for Noetic to 2030. More than 800 repositories were listed for Noetic.\n\nRobots in the field can run for years on old software, and unpatched fleets are exposed.",
+    "sources": [
+     {
+      "url": "https://ubuntu.com/blog/ros-noetic-is-eol-take-action-to-maintain-fleet-security",
+      "label": "Canonical, ROS Noetic is EOL"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "buildChain",
+    "prompt": "Order a safe move off end-of-life software.",
+    "steps": [
+     "Buy paid security support",
+     "List what the fleet depends on",
+     "Port the code to ROS 2",
+     "Retire the old version"
+    ],
+    "explanation": "Secure the fleet first, then map dependencies, port, and retire."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "About how many repositories were listed for Noetic?",
+    "min": 0,
+    "max": 2000,
+    "value": 800,
+    "unit": "",
+    "explanation": "More than 800 repositories, all now without free fixes."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your manager asks what to do about the Noetic fleet.",
+      "prompt": "What do you recommend?",
+      "options": [
+       "Keep running as is, since it still works",
+       "Shut the fleet down today",
+       "Buy paid support and plan the move"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Security holes stay open.",
+       "You lose service and revenue.",
+       "The fleet stays patched while you migrate."
+      ],
+      "explanation": "Paid support keeps the fleet safe while the team ports to ROS 2."
+     },
+     "proReasoning": "Engineers who pair a short-term fix with a long-term plan earn trust.",
+     "commonMistake": "Choosing between doing nothing and doing everything at once.",
+     "mentalModel": "Bridge, then migrate."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A robot operator still runs Noetic with no paid support.",
+      "prompt": "How do you read it?",
+      "options": [
+       "A security risk it must fund soon",
+       "A sign of strong engineering",
+       "A cost saving to praise"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Unpatched fleets are exposed.",
+       "Old unpatched code is not strength.",
+       "The saving comes with risk."
+      ],
+      "explanation": "An unpatched fleet is a liability that will need spending."
+     },
+     "proReasoning": "Investors count deferred maintenance as a cost.",
+     "commonMistake": "Praising savings that come from skipping fixes.",
+     "mentalModel": "Deferred fixes cost later."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your startup sells robots that run Noetic.",
+      "prompt": "What do you tell customers?",
+      "options": [
+       "That Noetic gets new releases",
+       "Your support and migration plan",
+       "Nothing, to avoid worry"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Noetic will not get new releases.",
+       "Customers see you have it handled.",
+       "They will find out anyway."
+      ],
+      "explanation": "Customers expect a plan. Paid support to 2030 and a ROS 2 move give them one."
+     },
+     "proReasoning": "Founders tell customers about risks with a plan attached.",
+     "commonMistake": "Hiding a known risk from the people it affects.",
+     "mentalModel": "Share the plan."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend asks why a working robot needs new software.",
+      "prompt": "What's the best answer?",
+      "options": [
+       "New software always makes robots faster",
+       "Robots must change every year",
+       "Old software stops getting security fixes"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Speed is not the main reason.",
+       "There is no yearly rule.",
+       "Noetic stopped getting fixes in 2025."
+      ],
+      "explanation": "When fixes stop, new security holes stay open."
+     },
+     "proReasoning": "Explain an upgrade by the risk it removes.",
+     "commonMistake": "Thinking \"it still works\" means \"it is still safe\".",
+     "mentalModel": "Working is not safe."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:7eabbaabab1b"
+  ]
+ },
+ {
+  "id": "0ee9b01f-3b04-542f-b7fa-18cf281fd502",
+  "market_id": "robotics",
+  "day": 18,
+  "slot": 1,
+  "content": {
+   "id": "robotics-d18-c1",
+   "title": "A brain for any body",
+   "lessonTitle": "The startup selling robot brains",
+   "slot": 1,
+   "type": "apply",
+   "brief": {
+    "headline": "In January 2026, Skild AI raised about $1.4 billion at a valuation over $14 billion. It builds one AI model meant to control many kinds of robots.",
+    "kicker": "Apply the robot brain lesson: what is the market paying for here?",
+    "fullText": "SoftBank led the round, with Nvidia’s venture arm, Macquarie Capital and Bezos Expeditions taking part. Skild’s Series A in July 2024 valued it at $1.5 billion.\n\nSkild says its model can control robots without knowing their body in advance: four-legged robots, humanoids, tabletop arms and mobile manipulators. It said revenue grew from zero to about $30 million in a few months of 2025.\n\nDay 18 showed the same bet at Physical Intelligence: valuations price in a general brain before it does paid work at scale.",
+    "sources": [
+     {
+      "url": "https://www.businesswire.com/news/home/20260114335623/en/Skild-AI-Raises-%241.4B-Now-Valued-Over-%2414B",
+      "label": "Business Wire, Skild AI raises $1.4B, now valued over $14B, Jan 2026"
+     },
+     {
+      "url": "https://www.bloomberg.com/news/articles/2025-11-20/robotics-startup-physical-intelligence-valued-at-5-6-billion-in-new-funding",
+      "label": "Bloomberg, Physical Intelligence valued at $5.6 billion"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "faceOff",
+    "prompt": "What is Skild AI mainly selling?",
+    "left": {
+     "name": "One model for many robots",
+     "note": "Software brain"
+    },
+    "right": {
+     "name": "Its own humanoid",
+     "note": "Hardware"
+    },
+    "correctIndex": 0,
+    "explanation": "Skild builds a single model meant to control many robot bodies."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "About how many billion dollars was Skild AI valued at in January 2026?",
+    "min": 0,
+    "max": 30,
+    "value": 14,
+    "unit": "B",
+    "explanation": "Over $14 billion, up from $1.5 billion in July 2024."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You're interviewing at a robot AI startup. They ask what investors are paying for.",
+      "prompt": "What do you say?",
+      "options": [
+       "A single robot design",
+       "A model that works across many robots",
+       "Revenue that already matches the price"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Skild targets many bodies.",
+       "That is the bet behind the valuation.",
+       "About $30M revenue against $14B value."
+      ],
+      "explanation": "Investors are paying for a general robot brain, far ahead of today’s revenue."
+     },
+     "proReasoning": "Candidates who see the gap between value and revenue sound grounded.",
+     "commonMistake": "Assuming a high valuation means high revenue.",
+     "mentalModel": "Value runs ahead of revenue."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Skild says revenue grew to about $30 million in 2025.",
+      "prompt": "How do you weigh it against a $14 billion value?",
+      "options": [
+       "The price is about right for current sales",
+       "Revenue does not matter at all",
+       "The price assumes much bigger future revenue"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "The gap is very large.",
+       "Revenue proves the model does paid work.",
+       "$14 billion is hundreds of times that revenue."
+      ],
+      "explanation": "Real revenue is a good sign, but the valuation rests on growth far beyond it."
+     },
+     "proReasoning": "Investors separate early traction from what the price assumes.",
+     "commonMistake": "Reading early revenue as proof the price is fair.",
+     "mentalModel": "Price is a forecast.",
+     "sources": [
+      {
+       "url": "https://www.businesswire.com/news/home/20260114335623/en/Skild-AI-Raises-%241.4B-Now-Valued-Over-%2414B",
+       "label": "Business Wire, Skild AI raises $1.4B, now valued over $14B, Jan 2026"
+      }
+     ]
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You build robot hardware and need an AI brain.",
+      "prompt": "How do you decide?",
+      "options": [
+       "Test a general model on your robot",
+       "Build every model yourself from day one",
+       "Ship with no AI at all"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "You learn fast if it works for you.",
+       "That is costly and slow.",
+       "Buyers expect some autonomy."
+      ],
+      "explanation": "General models claim to work across bodies. Testing one on your hardware shows if that holds."
+     },
+     "proReasoning": "Founders test bought components before building their own.",
+     "commonMistake": "Rebuilding a brain others are spending billions on.",
+     "mentalModel": "Test before you build."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend asks how one AI could run very different robots.",
+      "prompt": "What's the best answer?",
+      "options": [
+       "It cannot, so it is a trick",
+       "It learns to adapt to each body",
+       "All robots are built the same"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Early deployments exist.",
+       "Skild says it handles legs, arms and wheels.",
+       "Robots differ a lot."
+      ],
+      "explanation": "The model is trained to adapt to the body it finds itself in, from four legs to two arms."
+     },
+     "proReasoning": "Explain a claim by what it would have to do.",
+     "commonMistake": "Assuming every robot needs its own separate brain.",
+     "mentalModel": "One brain, many bodies."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:3c502918f2f7"
+  ]
+ },
+ {
+  "id": "059a64e6-317b-5c00-8c3c-1e2165b0ab26",
+  "market_id": "robotics",
+  "day": 18,
+  "slot": 2,
+  "content": {
+   "id": "robotics-d18-c2",
+   "title": "Brain or body",
+   "lessonTitle": "The startup selling robot brains",
+   "slot": 2,
+   "type": "connect",
+   "brief": {
+    "headline": "In late 2025, Figure was valued at $39 billion to build humanoid bodies. Physical Intelligence was valued at $5.6 billion to build robot brains.",
+    "kicker": "Connect day 18 and day 6: two bets on the same robot future.",
+    "fullText": "Day 6 showed Figure AI raising over $1 billion at a $39 billion valuation in September 2025, with plans to ship 100,000 humanoids over four years.\n\nDay 18 showed Physical Intelligence raising $600 million at $5.6 billion in November 2025 to build a general AI brain for many robots. In March 2026, Bloomberg reported talks at over $11 billion.\n\nOne sells the whole robot. The other sells the brain to anyone’s robot.",
+    "sources": [
+     {
+      "url": "https://www.therobotreport.com/figure-ai-raises-1b-in-series-c-funding-toward-humanoid-robot-development/",
+      "label": "The Robot Report, Figure AI raises $1B in Series C funding"
+     },
+     {
+      "url": "https://www.bloomberg.com/news/articles/2025-11-20/robotics-startup-physical-intelligence-valued-at-5-6-billion-in-new-funding",
+      "label": "Bloomberg, Physical Intelligence valued at $5.6 billion"
+     },
+     {
+      "url": "https://www.bloomberg.com/news/articles/2026-03-27/ex-deepmind-staffers-robotics-startup-in-talks-for-11-billion-valuation",
+      "label": "Bloomberg, robotics startup in talks for $11 billion valuation"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "sortSignal",
+    "prompt": "Which company does it describe?",
+    "buckets": [
+     "Figure AI",
+     "Physical Intelligence"
+    ],
+    "items": [
+     {
+      "text": "Plans to ship 100,000 humanoids",
+      "bucket": 0
+     },
+     {
+      "text": "Valued at $39 billion",
+      "bucket": 0
+     },
+     {
+      "text": "Builds AI for many kinds of robots",
+      "bucket": 1
+     },
+     {
+      "text": "Raised $600 million in November 2025",
+      "bucket": 1
+     }
+    ],
+    "explanation": "Figure builds the humanoid. Physical Intelligence builds the brain for many robots."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "About how many times larger was Figure’s valuation than Physical Intelligence’s in late 2025?",
+    "min": 0,
+    "max": 20,
+    "value": 7,
+    "unit": "x",
+    "explanation": "$39 billion against $5.6 billion, about seven times."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A robotics firm asks whether you would rather work on bodies or brains.",
+      "prompt": "What is the strongest answer?",
+      "options": [
+       "Say bodies never matter",
+       "Say brains are just software",
+       "Say which and why, using both bets"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Figure’s value says bodies matter.",
+       "Robot AI is its own hard field.",
+       "You show you know both models."
+      ],
+      "explanation": "Both are funded heavily. Picking one with reasons shows you understand the field."
+     },
+     "proReasoning": "Candidates who compare business models sound informed.",
+     "commonMistake": "Dismissing half of the industry.",
+     "mentalModel": "Know both bets."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You compare Figure and Physical Intelligence.",
+      "prompt": "What is the key difference for an investor?",
+      "options": [
+       "One sells robots, one licenses a brain",
+       "They sell the same product in the same way",
+       "Neither has raised money"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Different models, different risks.",
+       "Their products differ.",
+       "Both raised large rounds."
+      ],
+      "explanation": "A full robot maker carries hardware risk. A brain maker depends on others’ robots."
+     },
+     "proReasoning": "Investors compare where each company sits in the robot stack.",
+     "commonMistake": "Treating all robot AI companies as one bet.",
+     "mentalModel": "Compare the stack position.",
+     "sources": [
+      {
+       "url": "https://www.therobotreport.com/figure-ai-raises-1b-in-series-c-funding-toward-humanoid-robot-development/",
+       "label": "The Robot Report, Figure AI raises $1B in Series C funding"
+      }
+     ]
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You start a robot company.",
+      "prompt": "Where do you sit?",
+      "options": [
+       "Wait until one winner emerges",
+       "Pick a layer: body, brain or a niche use",
+       "Try to build every layer with a small team"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Waiting cedes the market.",
+       "Focus lets a small team compete.",
+       "Rivals spend billions per layer."
+      ],
+      "explanation": "Figure and Physical Intelligence each chose a layer. A startup should choose too."
+     },
+     "proReasoning": "Founders choose where to compete instead of competing everywhere.",
+     "commonMistake": "Fighting well-funded rivals on every front at once.",
+     "mentalModel": "Choose a layer."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend asks why investors fund both robot bodies and robot brains.",
+      "prompt": "What's the best answer?",
+      "options": [
+       "They have too much money",
+       "They know the body makers will buy the brains",
+       "Nobody knows yet which layer will win"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Money still chases returns.",
+       "They are different layers.",
+       "Both bets could pay off."
+      ],
+      "explanation": "Investors spread bets across the stack because it is unclear where the profits will land."
+     },
+     "proReasoning": "Explain funding by the uncertainty it hedges.",
+     "commonMistake": "Assuming investors know the winner.",
+     "mentalModel": "Hedge across the stack."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:8c1fedc0918c"
+  ]
+ },
+ {
+  "id": "db17fcf7-2e9a-503c-be7e-ca281b83e6d6",
+  "market_id": "robotics",
+  "day": 18,
+  "slot": 3,
+  "content": {
+   "id": "robotics-d18-c3",
+   "title": "License the brain?",
+   "lessonTitle": "The startup selling robot brains",
+   "slot": 3,
+   "type": "decide",
+   "brief": {
+    "headline": "You run a warehouse robot maker. Physical Intelligence, valued at $5.6 billion, offers a general robot brain to license.",
+    "kicker": "Decide: license a general brain, or build your own AI?",
+    "fullText": "Physical Intelligence raised $600 million at a $5.6 billion valuation in November 2025, led by CapitalG. It was founded in 2024.\n\nIn March 2026, Bloomberg reported talks for about $1 billion more at over $11 billion.\n\nA robot brain earns money only when it runs on real robots doing paid work.",
+    "sources": [
+     {
+      "url": "https://www.bloomberg.com/news/articles/2025-11-20/robotics-startup-physical-intelligence-valued-at-5-6-billion-in-new-funding",
+      "label": "Bloomberg, Physical Intelligence valued at $5.6 billion"
+     },
+     {
+      "url": "https://www.bloomberg.com/news/articles/2026-03-27/ex-deepmind-staffers-robotics-startup-in-talks-for-11-billion-valuation",
+      "label": "Bloomberg, robotics startup in talks for $11 billion valuation"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "multipleChoice",
+    "prompt": "What makes a robot brain earn money?",
+    "options": [
+     "Its valuation",
+     "Running on robots doing paid work",
+     "Raising more money from investors"
+    ],
+    "correctIndex": 1,
+    "explanation": "Revenue comes when the brain runs real robots doing paid tasks."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "How many million dollars did Physical Intelligence raise in November 2025?",
+    "min": 0,
+    "max": 1500,
+    "value": 600,
+    "unit": "M",
+    "explanation": "$600 million, at a $5.6 billion valuation."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your boss asks if you should license the brain.",
+      "prompt": "What do you recommend?",
+      "options": [
+       "Pilot it on one task and measure",
+       "Sign a long deal at once to lock the price",
+       "Refuse any outside AI"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "You learn what it does on your work.",
+       "You commit before seeing results.",
+       "You may fall behind rivals."
+      ],
+      "explanation": "A pilot shows whether a general brain handles your tasks before you commit."
+     },
+     "proReasoning": "Engineers who propose a measured pilot reduce risk.",
+     "commonMistake": "Committing on valuation and reputation alone.",
+     "mentalModel": "Pilot first."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A robot maker licenses an outside brain for all its products.",
+      "prompt": "What risk do you check?",
+      "options": [
+       "How many offices it has",
+       "Dependence on one AI supplier",
+       "Whether robots still need motors"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Offices do not matter here.",
+       "The supplier controls a core part.",
+       "Motors are not the issue."
+      ],
+      "explanation": "If the brain is licensed, the supplier holds power over price and roadmap."
+     },
+     "proReasoning": "Investors check who controls the core of a product.",
+     "commonMistake": "Ignoring dependence on a single key supplier.",
+     "mentalModel": "Check who holds the core."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You can license a brain or hire an AI team.",
+      "prompt": "How do you choose?",
+      "options": [
+       "Choose whatever is cheapest today",
+       "Do both at full scale",
+       "Weigh speed now against control later"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Cheap now can cost later.",
+       "You cannot afford both at full scale.",
+       "Licensing is fast; building gives control."
+      ],
+      "explanation": "Licensing gets you moving. Building gives you control. Know which matters more for you."
+     },
+     "proReasoning": "Founders decide what they must own and what they can rent.",
+     "commonMistake": "Choosing on price alone.",
+     "mentalModel": "Own the core, rent the rest."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend asks why a robot maker would not build its own brain.",
+      "prompt": "What's the best answer?",
+      "options": [
+       "Others spend billions on it already",
+       "Brains are not needed",
+       "Building one is banned without a license"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Physical Intelligence raised $600 million.",
+       "Robots need control software.",
+       "Anyone may build one."
+      ],
+      "explanation": "Specialists spend huge sums on robot AI. Licensing can be cheaper than competing."
+     },
+     "proReasoning": "Explain a buy decision by the cost of building.",
+     "commonMistake": "Assuming every company must build everything.",
+     "mentalModel": "Buy what others perfect."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:299d2164f52f"
+  ]
+ },
+ {
+  "id": "502702cf-92cf-58da-83dc-5a832290597d",
+  "market_id": "robotics",
+  "day": 19,
+  "slot": 1,
+  "content": {
+   "id": "robotics-d19-c1",
+   "title": "The US adopts the new rules",
+   "lessonTitle": "The safety standard rewritten in 2025",
+   "slot": 1,
+   "type": "apply",
+   "brief": {
+    "headline": "In September 2025, A3 released ANSI/A3 R15.06-2025, the US adoption of the revised ISO 10218. It adds cybersecurity to safety planning.",
+    "kicker": "Apply the safety standard lesson: what changes for US robot cells?",
+    "fullText": "Part 1 covers industrial robots and Part 2 covers robot applications and cells. A Part 3, for users of robot cells, was expected later.\n\nThe update folds in collaborative robot guidance from ISO/TS 15066, adds content on end effectors, and replaces \"safety-rated monitored stop\" with \"monitored standstill\". Pricing starts at $655.\n\nDay 19 showed the international revision behind it. Once adopted nationally, it becomes the rulebook US integrators work to.",
+    "sources": [
+     {
+      "url": "https://www.businesswire.com/news/home/20250910605228/en/New-ANSIA3-R15.06-2025-American-National-Standard-for-Industrial-Robot-Safety-Now-Available-for-Purchase",
+      "label": "Business Wire, ANSI/A3 R15.06-2025 now available, Sep 2025"
+     },
+     {
+      "url": "https://www.therobotreport.com/iso-10218-industrial-robot-safety-standard-receives-major-overhaul/",
+      "label": "The Robot Report, ISO 10218 receives major overhaul"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "spotFake",
+    "prompt": "One of these is false. Tap it.",
+    "statements": [
+     "R15.06-2025 adds cybersecurity guidance.",
+     "It folds in ISO/TS 15066 guidance.",
+     "It bans collaborative robots in the US."
+    ],
+    "fakeIndex": 2,
+    "explanation": "It consolidates collaborative robot guidance; it does not ban cobots."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "What is the starting price of R15.06-2025, in dollars?",
+    "min": 0,
+    "max": 2000,
+    "value": 655,
+    "unit": "$",
+    "explanation": "Pricing starts at $655."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A robot integrator asks what is new in the US standard.",
+      "prompt": "What do you mention first?",
+      "options": [
+       "Cobots are now banned",
+       "Robots no longer need guards or fences",
+       "Cybersecurity is now part of safety"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Cobot guidance was consolidated, not banned.",
+       "Guarding rules remain.",
+       "A hacked robot can become a hazard."
+      ],
+      "explanation": "R15.06-2025 brings cybersecurity into safety planning, as ISO 10218 did."
+     },
+     "proReasoning": "Candidates who know the latest standard show they are current.",
+     "commonMistake": "Quoting an old version of the safety rules.",
+     "mentalModel": "Know the 2025 edition."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A robot cell builder says it still works to the old standard.",
+      "prompt": "What do you ask?",
+      "options": [
+       "When it will update to the 2025 edition",
+       "Why it bothers following any standard",
+       "Whether robots need power"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Customers will ask for the new edition.",
+       "Standards are expected.",
+       "That is not the issue."
+      ],
+      "explanation": "Integrators that lag the new standard may lose bids or face rework."
+     },
+     "proReasoning": "Investors check whether a firm keeps up with its rulebook.",
+     "commonMistake": "Ignoring compliance with the current standard.",
+     "mentalModel": "Check the edition.",
+     "sources": [
+      {
+       "url": "https://www.therobotreport.com/iso-10218-industrial-robot-safety-standard-receives-major-overhaul/",
+       "label": "The Robot Report, ISO 10218 receives major overhaul"
+      }
+     ]
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You design robot cells for US factories.",
+      "prompt": "What do you change first?",
+      "options": [
+       "Wait until the next edition to update",
+       "Add cybersecurity to your risk assessment",
+       "Remove all guarding"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Customers will expect it sooner.",
+       "The new edition expects it.",
+       "Guarding is still required."
+      ],
+      "explanation": "The 2025 rules treat cybersecurity as part of safety. Your risk assessment should too."
+     },
+     "proReasoning": "Founders update their process when the standard changes.",
+     "commonMistake": "Treating security and safety as separate jobs.",
+     "mentalModel": "Safety now includes security."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend asks why a safety standard cares about hacking.",
+      "prompt": "What's the best answer?",
+      "options": [
+       "Hackers steal robot paint",
+       "It only cares about protecting data",
+       "A hacked robot can move dangerously"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Paint is not the concern.",
+       "Physical safety is the point.",
+       "Control of a robot means control of motion."
+      ],
+      "explanation": "If someone takes control of a robot, it can hurt people. So security is a safety issue."
+     },
+     "proReasoning": "Explain a rule by the harm it prevents.",
+     "commonMistake": "Thinking hacking only affects data.",
+     "mentalModel": "Hacks can move arms."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:9c36bb6d8c56"
+  ]
+ },
+ {
+  "id": "985d658c-e386-5047-81a5-c92e13d5817a",
+  "market_id": "robotics",
+  "day": 19,
+  "slot": 2,
+  "content": {
+   "id": "robotics-d19-c2",
+   "title": "From pain limits to the main rulebook",
+   "lessonTitle": "The safety standard rewritten in 2025",
+   "slot": 2,
+   "type": "connect",
+   "brief": {
+    "headline": "ISO/TS 15066 set cobot force limits for 29 body areas. In 2025, the revised ISO 10218 folded those collaborative rules into the main standard.",
+    "kicker": "Connect day 19 and day 5: the cobot rules, now part of the main standard.",
+    "fullText": "Day 5 showed two standards: ISO 10218 for industrial robot safety, and ISO/TS 15066 with specific rules for cobots, including force limits across 29 body areas.\n\nDay 19 showed the 2025 revision of ISO 10218, which took about eight years and folded in the rules from TS 15066. It also added cybersecurity.\n\nWhat started as an add-on for cobots is now part of the main rulebook.",
+    "sources": [
+     {
+      "url": "https://www.automate.org/tech-papers/iso-ts-15066-explained",
+      "label": "A3, ISO/TS 15066 explained"
+     },
+     {
+      "url": "https://www.therobotreport.com/iso-10218-industrial-robot-safety-standard-receives-major-overhaul/",
+      "label": "The Robot Report, ISO 10218 receives major overhaul"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "buildChain",
+    "prompt": "Order how cobot rules became part of the main standard.",
+    "steps": [
+     "ISO 10218 sets industrial robot safety",
+     "TS 15066 adds cobot force limits",
+     "The revision is drafted over years",
+     "The 2025 edition folds them together"
+    ],
+    "explanation": "TS 15066 began as an add-on; the 2025 ISO 10218 brought it inside."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "How many body areas do the cobot force limits cover?",
+    "min": 0,
+    "max": 80,
+    "value": 29,
+    "unit": "",
+    "explanation": "29 body areas, set from a study of when contact starts to hurt."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "An interviewer asks where cobot safety rules live now.",
+      "prompt": "What do you say?",
+      "options": [
+       "Inside the 2025 ISO 10218",
+       "Nowhere, cobots have no rules",
+       "Only in company manuals"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "The revision folded in TS 15066.",
+       "Cobots have force limits.",
+       "There are international standards."
+      ],
+      "explanation": "The collaborative rules moved into the main standard in 2025."
+     },
+     "proReasoning": "Candidates who trace how standards evolve show depth.",
+     "commonMistake": "Treating the cobot rules as a separate, optional extra.",
+     "mentalModel": "One rulebook now."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A cobot maker markets its robots as cage-free.",
+      "prompt": "What do you check?",
+      "options": [
+       "That it is the cheapest",
+       "That it meets the force limits in the standard",
+       "That it is painted in bright warning colors"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Price does not prove safety.",
+       "Cage-free depends on safe contact.",
+       "Color is not safety."
+      ],
+      "explanation": "Cage-free work depends on meeting the collaborative rules now in ISO 10218."
+     },
+     "proReasoning": "Investors check that a safety claim rests on the standard.",
+     "commonMistake": "Accepting \"cage-free\" as a marketing line.",
+     "mentalModel": "Check the claim.",
+     "sources": [
+      {
+       "url": "https://www.automate.org/tech-papers/iso-ts-15066-explained",
+       "label": "A3, ISO/TS 15066 explained"
+      }
+     ]
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You design a cobot.",
+      "prompt": "Which standard do you build to?",
+      "options": [
+       "Only your own internal tests and checks",
+       "None until a customer asks",
+       "The 2025 ISO 10218 with its cobot rules"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Internal tests alone will not satisfy buyers.",
+       "Redesigns later cost more.",
+       "Buyers expect the current standard."
+      ],
+      "explanation": "The cobot rules are part of ISO 10218 now. Build to it from the start."
+     },
+     "proReasoning": "Founders design to the standard before the first sale.",
+     "commonMistake": "Retrofitting safety after the design is done.",
+     "mentalModel": "Design to the standard."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend asks how cobots know not to hurt people.",
+      "prompt": "What's the best answer?",
+      "options": [
+       "They are built to limit force on contact",
+       "They are blocked from touching anything",
+       "They have no motors"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Limits cover 29 body areas.",
+       "They can touch, but gently.",
+       "They do have motors."
+      ],
+      "explanation": "Cobots are designed to keep any contact under set force limits."
+     },
+     "proReasoning": "Explain safety by the limit it enforces.",
+     "commonMistake": "Assuming cobots avoid all contact.",
+     "mentalModel": "Gentle by design."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:1478f5039f05"
+  ]
+ },
+ {
+  "id": "b6c2cc9d-fa77-5a9f-8615-d010d66cc44b",
+  "market_id": "robotics",
+  "day": 19,
+  "slot": 3,
+  "content": {
+   "id": "robotics-d19-c3",
+   "title": "Robot maker or cell builder",
+   "lessonTitle": "The safety standard rewritten in 2025",
+   "slot": 3,
+   "type": "decide",
+   "brief": {
+    "headline": "You build robot cells from arms you buy. ISO 10218 Part 1 covers the robot; Part 2 covers the cell built around it.",
+    "kicker": "Decide: which safety work is yours, and which is the robot maker’s?",
+    "fullText": "The 2025 revision of ISO 10218 took about eight years. Part 1 sets rules for the robot itself and Part 2 for the system built around it.\n\nIt adds cybersecurity requirements and spells out functional safety requirements explicitly.\n\nMakers and integrators share the job, so each must know where their part ends.",
+    "sources": [
+     {
+      "url": "https://www.therobotreport.com/iso-10218-industrial-robot-safety-standard-receives-major-overhaul/",
+      "label": "The Robot Report, ISO 10218 receives major overhaul"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "sortSignal",
+    "prompt": "Whose job is it?",
+    "buckets": [
+     "Robot maker (Part 1)",
+     "Cell builder (Part 2)"
+    ],
+    "items": [
+     {
+      "text": "The robot’s built-in controls",
+      "bucket": 0
+     },
+     {
+      "text": "Design of the arm",
+      "bucket": 0
+     },
+     {
+      "text": "Guarding around the cell",
+      "bucket": 1
+     },
+     {
+      "text": "Layout of the work area",
+      "bucket": 1
+     }
+    ],
+    "explanation": "Part 1 is the robot maker’s; Part 2 is yours as the cell builder."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "About how many years did the ISO 10218 revision take?",
+    "min": 0,
+    "max": 20,
+    "value": 8,
+    "unit": "years",
+    "explanation": "About eight years."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A customer asks who is responsible for cell safety.",
+      "prompt": "What do you say?",
+      "options": [
+       "The customer covers it all",
+       "We are, under Part 2",
+       "The robot maker covers everything"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "The builder has duties too.",
+       "Part 2 covers the cell.",
+       "Part 1 covers only the robot."
+      ],
+      "explanation": "The cell around the robot is the integrator’s job under Part 2."
+     },
+     "proReasoning": "Engineers who know where responsibility sits earn trust.",
+     "commonMistake": "Assuming a safe robot makes a safe cell.",
+     "mentalModel": "Own your part."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "An integrator says the robot maker handles all safety.",
+      "prompt": "How do you read it?",
+      "options": [
+       "A smart way to cut costs",
+       "Standard practice",
+       "A gap in its safety process"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Skipping duties is not a saving.",
+       "The standard splits the work.",
+       "Part 2 duties stay with the builder."
+      ],
+      "explanation": "Part 2 makes the cell builder responsible. Ignoring it is a liability."
+     },
+     "proReasoning": "Investors look for firms that know their legal duties.",
+     "commonMistake": "Taking safety shortcuts as efficiency.",
+     "mentalModel": "Duties do not transfer."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You start a robot cell business.",
+      "prompt": "What do you set up first?",
+      "options": [
+       "A Part 2 risk process for every cell",
+       "A big marketing campaign for launch",
+       "Your own robot arm"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Every cell needs assessing.",
+       "Marketing can wait.",
+       "You buy arms; you build cells."
+      ],
+      "explanation": "Your product is the cell. Part 2 is the rulebook you work to."
+     },
+     "proReasoning": "Founders build their process around the standard that governs them.",
+     "commonMistake": "Selling cells before the safety process exists.",
+     "mentalModel": "Process before sales."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend asks why a safe robot can still make an unsafe cell.",
+      "prompt": "What's the best answer?",
+      "options": [
+       "Cells do not need their own rules",
+       "Layout and guarding matter too",
+       "Robots are never safe"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Cells have their own rules.",
+       "Part 2 covers the cell around the robot.",
+       "Robots can be built safely."
+      ],
+      "explanation": "Where the robot sits, what it handles and how people reach it all change the risk."
+     },
+     "proReasoning": "Explain safety as a system, not one machine.",
+     "commonMistake": "Judging a cell only by its robot.",
+     "mentalModel": "Safety is the whole cell."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:6e316c76d2fc"
+  ]
+ },
+ {
+  "id": "a13588c2-9078-5941-af5a-9c32808ccf89",
+  "market_id": "robotics",
+  "day": 20,
+  "slot": 1,
+  "content": {
+   "id": "robotics-d20-c1",
+   "title": "The cobot pioneer, closed twice",
+   "lessonTitle": "The cobot maker that shrank",
+   "slot": 1,
+   "type": "apply",
+   "brief": {
+    "headline": "In September 2025, The Robot Report said Rethink Robotics had shut down a second time. It had raised $150 million and first went bankrupt in 2018.",
+    "kicker": "Apply the crowded category lesson: why did an early cobot leader fail twice?",
+    "fullText": "Rethink made the Baxter and Sawyer cobots. After its 2018 bankruptcy, the HAHN Group bought its technology, and United Robotics Group relaunched it in late 2024.\n\nIts former CEO said the products were not ready, so sales fell behind plan. The group’s investors pulled funding.\n\nDay 20 showed the pressure in cobots: once the category proved itself, bigger and cheaper rivals arrived.",
+    "sources": [
+     {
+      "url": "https://www.therobotreport.com/rethink-robotics-shuts-down-again/",
+      "label": "The Robot Report, Rethink Robotics shuts down again, Sep 2025"
+     },
+     {
+      "url": "https://www.therobotreport.com/teradyne-robotics-lays-off-another-14-of-workforce/",
+      "label": "The Robot Report, Teradyne Robotics lays off another 14% of workforce"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "buildChain",
+    "prompt": "Order Rethink Robotics’ history.",
+    "steps": [
+     "Raises $150 million and sells cobots",
+     "Goes bankrupt in 2018",
+     "Is relaunched in late 2024",
+     "Shuts down again in 2025"
+    ],
+    "explanation": "Rethink rose, failed, was revived and failed again."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "About how many million dollars did Rethink raise over its history?",
+    "min": 0,
+    "max": 500,
+    "value": 150,
+    "unit": "M",
+    "explanation": "About $150 million."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A cobot company asks what lessons Rethink teaches.",
+      "prompt": "What do you say?",
+      "options": [
+       "Being first does not protect you",
+       "Cobots are a dead category",
+       "Funding guarantees success"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Rivals caught up and products lagged.",
+       "Cobots still sell widely.",
+       "Rethink raised $150 million and failed."
+      ],
+      "explanation": "Rethink was early, but early does not win if products and costs fall behind."
+     },
+     "proReasoning": "Candidates who learn from failures show judgment.",
+     "commonMistake": "Assuming first movers keep their lead.",
+     "mentalModel": "First is not forever."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A revived robot brand asks for new funding.",
+      "prompt": "What do you check?",
+      "options": [
+       "How many times it relaunched",
+       "Whether the products are ready to sell",
+       "How famous the brand was in its prime"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Relaunches alone prove nothing.",
+       "Rethink’s products were not ready.",
+       "Fame did not save it."
+      ],
+      "explanation": "A known name does not sell robots. Ready products and costs do."
+     },
+     "proReasoning": "Investors judge the product, not the brand’s history.",
+     "commonMistake": "Paying for nostalgia.",
+     "mentalModel": "Judge the product.",
+     "sources": [
+      {
+       "url": "https://www.therobotreport.com/rethink-robotics-shuts-down-again/",
+       "label": "The Robot Report, Rethink Robotics shuts down again, Sep 2025"
+      }
+     ]
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You launch a cobot into a crowded market.",
+      "prompt": "What must be true first?",
+      "options": [
+       "You have a famous name",
+       "You are the first to market with it",
+       "The product is ready and costs compete"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "A name will not close sales.",
+       "Others are already there.",
+       "Rethink failed when it lagged on both."
+      ],
+      "explanation": "In a crowded category, readiness and cost decide who survives."
+     },
+     "proReasoning": "Founders ship when the product is ready, not when the plan says so.",
+     "commonMistake": "Launching before the product works well.",
+     "mentalModel": "Ready beats early."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend asks how a well-funded robot company can fail twice.",
+      "prompt": "What's the best answer?",
+      "options": [
+       "Products lagged while rivals got cheaper",
+       "Robots are illegal",
+       "It never managed to sell a single robot"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Sales fell behind plan.",
+       "Robots are legal.",
+       "It sold Baxter and Sawyer."
+      ],
+      "explanation": "Money buys time, not demand. If products lag and rivals improve, sales slip."
+     },
+     "proReasoning": "Explain failure by what customers chose instead.",
+     "commonMistake": "Thinking money alone builds a winner.",
+     "mentalModel": "Money buys time only."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:9dbef52c6cc8"
+  ]
+ },
+ {
+  "id": "8e2ee9e1-7948-5752-8957-182050af10ce",
+  "market_id": "robotics",
+  "day": 20,
+  "slot": 2,
+  "content": {
+   "id": "robotics-d20-c2",
+   "title": "The type that got crowded",
+   "lessonTitle": "The cobot maker that shrank",
+   "slot": 2,
+   "type": "connect",
+   "brief": {
+    "headline": "Cobots are built to work beside people, often without cages. Universal Robots’ revenue fell from $326 million in 2022 to $293 million in 2024.",
+    "kicker": "Connect day 20 and day 1: the cobot type, and its crowded market.",
+    "fullText": "Day 1 showed three kinds of robots: industrial arms, service robots and cobots built to work right next to people, often without safety cages.\n\nDay 20 showed what happened next. Teradyne Robotics, owner of Universal Robots, cut about 14% of its staff in November 2025 after a 10% cut that January. It cited competition from ABB, FANUC, KUKA and low-cost Asian makers.\n\nA new type proved itself, and the big makers joined in.",
+    "sources": [
+     {
+      "url": "https://ifr.org/news/how-robots-work-alongside-humans/",
+      "label": "IFR, how robots work alongside humans"
+     },
+     {
+      "url": "https://www.therobotreport.com/teradyne-robotics-lays-off-another-14-of-workforce/",
+      "label": "The Robot Report, Teradyne Robotics lays off another 14% of workforce"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "multipleChoice",
+    "prompt": "Who did Teradyne name as competitors?",
+    "options": [
+     "Only other small cobot startups in Europe",
+     "ABB, FANUC, KUKA and low-cost Asian makers",
+     "Surgical robot makers"
+    ],
+    "correctIndex": 1,
+    "explanation": "Big industrial makers and cheaper Asian brands now sell cobots too."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "What share of staff did Teradyne Robotics cut in November 2025?",
+    "min": 0,
+    "max": 50,
+    "value": 14,
+    "unit": "%",
+    "explanation": "About 14%, after a 10% cut in January."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "An interviewer asks how the cobot market has changed.",
+      "prompt": "What do you say?",
+      "options": [
+       "Cobots stopped selling",
+       "Big makers and cheap brands joined in",
+       "It still has almost no competition"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Cobots still sell; prices fell.",
+       "Teradyne named them directly.",
+       "Competition is the main story."
+      ],
+      "explanation": "Cobots proved themselves, so the giants and low-cost brands moved in."
+     },
+     "proReasoning": "Candidates who explain market shifts with examples stand out.",
+     "commonMistake": "Describing a market as it was years ago.",
+     "mentalModel": "Success attracts rivals."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A cobot specialist faces the industrial giants.",
+      "prompt": "What do you watch?",
+      "options": [
+       "Its logo design",
+       "How many cobot models it lists for sale",
+       "Its revenue and margins year by year"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Logos do not show pressure.",
+       "Type count does not show health.",
+       "UR’s revenue fell from $326 million."
+      ],
+      "explanation": "Falling revenue shows the specialist losing ground to bigger rivals."
+     },
+     "proReasoning": "Investors track revenue trends when a category gets crowded.",
+     "commonMistake": "Assuming an early leader keeps its share.",
+     "mentalModel": "Track the trend.",
+     "sources": [
+      {
+       "url": "https://www.therobotreport.com/teradyne-robotics-lays-off-another-14-of-workforce/",
+       "label": "The Robot Report, Teradyne Robotics lays off another 14% of workforce"
+      }
+     ]
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You sell cobots and the giants arrived.",
+      "prompt": "Where do you compete?",
+      "options": [
+       "A niche the giants serve poorly",
+       "Head-on on every product line",
+       "On price alone, forever"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Focus can hold share.",
+       "The giants have more scale.",
+       "Asian brands are cheaper."
+      ],
+      "explanation": "When giants arrive, a focused niche is safer than fighting everywhere."
+     },
+     "proReasoning": "Founders find ground big rivals neglect.",
+     "commonMistake": "Fighting the giants on their terms.",
+     "mentalModel": "Find the gap."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend asks why a robot that works beside people became a crowded market.",
+      "prompt": "What's the best answer?",
+      "options": [
+       "Fewer people work in factories now",
+       "It proved demand, so others copied it",
+       "It was banned"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "People still work beside robots.",
+       "Big makers joined once demand was clear.",
+       "Cobots are legal."
+      ],
+      "explanation": "Once cobots proved buyers wanted them, the big robot makers made their own."
+     },
+     "proReasoning": "Explain crowding by proven demand.",
+     "commonMistake": "Thinking good ideas stay exclusive.",
+     "mentalModel": "Proof invites copies."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:3e7d926f08e2"
+  ]
+ },
+ {
+  "id": "760ecdcc-a0d7-5ebd-9a24-a2e8b72abb97",
+  "market_id": "robotics",
+  "day": 20,
+  "slot": 3,
+  "content": {
+   "id": "robotics-d20-c3",
+   "title": "Cut or invest",
+   "lessonTitle": "The cobot maker that shrank",
+   "slot": 3,
+   "type": "decide",
+   "brief": {
+    "headline": "You run a cobot maker. Universal Robots’ revenue fell toward $232 million in 2025 as rivals arrived.",
+    "kicker": "Decide: cut costs, or invest to stand out?",
+    "fullText": "Universal Robots’ revenue fell from $326 million in 2022 to $293 million in 2024, and 2025 was on pace for about $232 million.\n\nTeradyne Robotics cut about 14% of staff in November 2025 after a 10% cut in January. It cited ABB, FANUC, KUKA and low-cost Asian makers.\n\nWhen a category gets crowded, cost and focus decide who keeps share.",
+    "sources": [
+     {
+      "url": "https://www.therobotreport.com/teradyne-robotics-lays-off-another-14-of-workforce/",
+      "label": "The Robot Report, Teradyne Robotics lays off another 14% of workforce"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "faceOff",
+    "prompt": "Which year had higher Universal Robots revenue?",
+    "left": {
+     "name": "2022",
+     "note": "About $326 million"
+    },
+    "right": {
+     "name": "2024",
+     "note": "About $293 million"
+    },
+    "correctIndex": 0,
+    "explanation": "Revenue fell from $326 million in 2022 to $293 million in 2024."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "About how many million dollars was UR’s 2025 revenue pace?",
+    "min": 0,
+    "max": 600,
+    "value": 232,
+    "unit": "M",
+    "explanation": "About $232 million, down from $326 million in 2022."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your boss asks how to respond to falling cobot prices.",
+      "prompt": "What do you recommend?",
+      "options": [
+       "Raise prices to protect margin",
+       "Ignore the new rivals",
+       "Cut costs and focus the product line"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Buyers move to cheaper brands.",
+       "Sales keep sliding.",
+       "You stay competitive as prices fall."
+      ],
+      "explanation": "Cost and focus decide who keeps share when a category gets crowded."
+     },
+     "proReasoning": "People who propose focus, not just cuts, stand out.",
+     "commonMistake": "Raising prices in a market that is getting cheaper.",
+     "mentalModel": "Cost and focus."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A cobot maker’s revenue is falling year after year.",
+      "prompt": "What do you ask management?",
+      "options": [
+       "Where it will keep an edge",
+       "Why rivals exist at all",
+       "When prices will rise again"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "You learn if it has a defensible niche.",
+       "Rivals will not go away.",
+       "Prices are falling, not rising."
+      ],
+      "explanation": "With revenue down from $326 million, the key question is where it can still win."
+     },
+     "proReasoning": "Investors ask for a defensible edge, not hope for better prices.",
+     "commonMistake": "Waiting for a crowded market to reverse.",
+     "mentalModel": "Ask about the edge."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You must choose between layoffs and a new product.",
+      "prompt": "What do you weigh?",
+      "options": [
+       "Only what feels exciting",
+       "Runway now against a real edge later",
+       "Only how to cut costs this quarter"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Excitement is not a plan.",
+       "You need both cash and a reason to win.",
+       "Cuts alone do not create an edge."
+      ],
+      "explanation": "Cutting buys time. Investing must build an edge. Balance both."
+     },
+     "proReasoning": "Founders protect runway while building a reason to exist.",
+     "commonMistake": "Cutting so deep there is nothing left to compete with.",
+     "mentalModel": "Buy time, build an edge."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend asks why a robot company would lay people off while robots are booming.",
+      "prompt": "What's the best answer?",
+      "options": [
+       "Robots are not selling",
+       "Its own robots replaced its staff",
+       "Its own share is shrinking to rivals"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Robots are selling.",
+       "Layoffs came from lower sales.",
+       "UR’s revenue fell as rivals grew."
+      ],
+      "explanation": "A booming market can still squeeze one company if rivals take its share."
+     },
+     "proReasoning": "Separate the market from the company.",
+     "commonMistake": "Assuming every company rides a growing market.",
+     "mentalModel": "Market up, share down."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:5afd323bc12f"
+  ]
+ },
+ {
+  "id": "fc7c3e0a-5ba2-5239-bbac-84d20fa95aed",
+  "market_id": "robotics",
+  "day": 21,
+  "slot": 1,
+  "content": {
+   "id": "robotics-d21-c1",
+   "title": "Europe slows its AI rules",
+   "lessonTitle": "Who signs off on a learning robot",
+   "slot": 1,
+   "type": "apply",
+   "brief": {
+    "headline": "In May 2026, EU lawmakers reached a provisional deal to delay the AI Act’s high-risk rules. AI built into regulated products would face them from August 2, 2028.",
+    "kicker": "Apply the sign-off lesson: what does the delay change for robot makers?",
+    "fullText": "Under the provisional deal, standalone high-risk AI systems would face the rules from December 2, 2027. AI embedded in products such as machinery would follow from August 2, 2028.\n\nThe deal also aims to remove overlapping requirements for AI in products already covered by sector rules. It still needs formal approval.\n\nDay 21 showed that the Machinery Regulation still applies from January 20, 2027. A learning safety function needs outside review either way.",
+    "sources": [
+     {
+      "url": "https://www.pinsentmasons.com/Out-Law/News/Rules-high-risk-AI-delayed-under-EU-omnibus-deal",
+      "label": "Pinsent Masons Out-Law, rules on high-risk AI delayed under EU omnibus deal, May 2026"
+     },
+     {
+      "url": "https://www.ul.com/resources/navigating-new-eu-machinery-regulation-eu-20231230",
+      "label": "UL Solutions, navigating the new EU Machinery Regulation"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "sortSignal",
+    "prompt": "Which rule and date go together?",
+    "buckets": [
+     "January 20, 2027",
+     "August 2, 2028"
+    ],
+    "items": [
+     {
+      "text": "Machinery Regulation applies",
+      "bucket": 0
+     },
+     {
+      "text": "Notified Body checks learning safety",
+      "bucket": 0
+     },
+     {
+      "text": "High-risk rules for AI in products",
+      "bucket": 1
+     },
+     {
+      "text": "Proposed under the May 2026 deal",
+      "bucket": 1
+     }
+    ],
+    "explanation": "The machinery rules arrive first. The delayed AI Act rules for products come later."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "How many months after the Machinery Regulation would AI rules for products apply?",
+    "min": 0,
+    "max": 40,
+    "value": 18,
+    "unit": "months",
+    "explanation": "From January 2027 to August 2028 is about 18 months."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A robot maker asks if the AI Act delay means it can relax.",
+      "prompt": "What do you say?",
+      "options": [
+       "Yes, the AI Act was cancelled",
+       "No, the machinery rules still arrive in 2027",
+       "Yes, all EU robot rules moved to August 2028"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "The deal delays rules; it does not cancel them.",
+       "The Machinery Regulation applies from January 2027.",
+       "Only some AI Act rules moved."
+      ],
+      "explanation": "The AI Act delay does not move the Machinery Regulation. Learning safety still needs review in 2027."
+     },
+     "proReasoning": "Candidates who keep two rulebooks apart show they read the details.",
+     "commonMistake": "Reading one delay as a delay of every rule.",
+     "mentalModel": "One delay, not all."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A robot startup tells you the AI Act delay removes its EU risk.",
+      "prompt": "What do you check?",
+      "options": [
+       "Whether the delay is already final law",
+       "How fast it can enter Europe now",
+       "Whether it meets the 2027 machinery rules"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "It still needs formal approval, but that is not the main risk.",
+       "Speed does not remove the machinery rules.",
+       "Machinery rules still apply from January 2027."
+      ],
+      "explanation": "The machinery rules are the nearer deadline. The AI Act delay is also still provisional."
+     },
+     "proReasoning": "Investors check the nearest binding deadline, not the headline.",
+     "commonMistake": "Treating a provisional deal as the whole story.",
+     "mentalModel": "Check the nearer rule.",
+     "sources": [
+      {
+       "url": "https://www.ul.com/resources/navigating-new-eu-machinery-regulation-eu-20231230",
+       "label": "UL Solutions, navigating the new EU Machinery Regulation"
+      }
+     ]
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You sell a learning robot in the EU.",
+      "prompt": "What do you plan for first?",
+      "options": [
+       "Outside review under the 2027 rules",
+       "Nothing until the AI rules in 2028",
+       "Only a self-check by your team"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "A learning safety function needs a Notified Body.",
+       "The machinery rules come first.",
+       "Self-checks are not enough for learning safety."
+      ],
+      "explanation": "The Machinery Regulation, from January 20, 2027, is the first deadline for learning safety."
+     },
+     "proReasoning": "Founders plan around the first binding deadline.",
+     "commonMistake": "Planning only for the rule in the headlines.",
+     "mentalModel": "Plan for the first deadline."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend asks why Europe would delay its AI rules.",
+      "prompt": "What's the best answer?",
+      "options": [
+       "Because robots are now banned",
+       "To cut overlap and give firms more time",
+       "Because AI makers asked to skip the rules"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Robots are not banned.",
+       "The deal removes overlapping requirements.",
+       "AI use is growing."
+      ],
+      "explanation": "The deal gives firms more time and cuts rules that overlapped with sector laws."
+     },
+     "proReasoning": "Explain a delay by what it changes.",
+     "commonMistake": "Assuming a delay means the rules are gone.",
+     "mentalModel": "Delay, not repeal."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:a97936029463"
+  ]
+ },
+ {
+  "id": "2bac95fe-2d96-5ef7-9f82-22d96bdb27ed",
+  "market_id": "robotics",
+  "day": 21,
+  "slot": 2,
+  "content": {
+   "id": "robotics-d21-c2",
+   "title": "A learning brain meets a checker",
+   "lessonTitle": "Who signs off on a learning robot",
+   "slot": 2,
+   "type": "connect",
+   "brief": {
+    "headline": "Nvidia released GR00T N1, an open model for humanoids, in March 2025. In the EU, a safety function that changes by learning needs outside review from 2027.",
+    "kicker": "Connect day 21 and day 15: learning robot models, and who signs off on them.",
+    "fullText": "Day 15 showed Nvidia’s GR00T N1, an open foundation model that robot makers can adapt to their own humanoids.\n\nDay 21 showed the EU Machinery Regulation, which applies from January 20, 2027. If a safety function evolves through machine learning, a Notified Body, an independent certifier, must check it.\n\nThe more a robot learns on the job, the more an outside checker gets involved.",
+    "sources": [
+     {
+      "url": "https://www.maginative.com/article/nvidia-unveils-isaac-gr00t-n1-an-open-foundation-model-for-humanoid-robots/",
+      "label": "Maginative, Nvidia unveils Isaac GR00T N1"
+     },
+     {
+      "url": "https://www.ul.com/resources/navigating-new-eu-machinery-regulation-eu-20231230",
+      "label": "UL Solutions, navigating the new EU Machinery Regulation"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "buildChain",
+    "prompt": "Order the path for a learning safety function in the EU.",
+    "steps": [
+     "Adapt a learning model to your robot",
+     "Let it control a safety function",
+     "Send it to a Notified Body",
+     "Sell the robot in the EU"
+    ],
+    "explanation": "Once learning touches safety, outside review comes before sale."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "About how many years after GR00T N1 does the Machinery Regulation apply?",
+    "min": 0,
+    "max": 6,
+    "value": 2,
+    "unit": "years",
+    "explanation": "From March 2025 to January 20, 2027, about two years."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A humanoid team asks what changes if its model learns safety behavior.",
+      "prompt": "What do you say?",
+      "options": [
+       "Nothing, if the model is open source",
+       "Only the model maker is responsible",
+       "An outside body must check it in the EU"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Open source does not exempt it.",
+       "The robot maker places it on the market.",
+       "Learning safety functions need a Notified Body."
+      ],
+      "explanation": "In the EU, a safety function that learns needs a Notified Body from 2027."
+     },
+     "proReasoning": "Candidates who link AI design to regulation stand out.",
+     "commonMistake": "Assuming an open model carries no safety duties.",
+     "mentalModel": "Learning invites review."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A robot company builds on an open model for safety features.",
+      "prompt": "What do you ask?",
+      "options": [
+       "How it will pass Notified Body review",
+       "Whether the model is free to use",
+       "How many stars it has online"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "That review is required from 2027.",
+       "Free does not mean approved.",
+       "Popularity is not approval."
+      ],
+      "explanation": "A learning safety function will need outside review before EU sales."
+     },
+     "proReasoning": "Investors check the approval path before revenue plans.",
+     "commonMistake": "Valuing a robot on features it cannot yet sell.",
+     "mentalModel": "Check the approval path.",
+     "sources": [
+      {
+       "url": "https://www.maginative.com/article/nvidia-unveils-isaac-gr00t-n1-an-open-foundation-model-for-humanoid-robots/",
+       "label": "Maginative, Nvidia unveils Isaac GR00T N1"
+      }
+     ]
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your robot uses a learning model.",
+      "prompt": "Where do you keep the learning?",
+      "options": [
+       "Wherever it is easiest for your team to code",
+       "Away from safety functions, if you can",
+       "Inside every safety function"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Ease of coding ignores the rules.",
+       "Fixed safety logic avoids extra review.",
+       "That triggers outside review each time."
+      ],
+      "explanation": "Keeping learning out of safety functions can simplify EU approval."
+     },
+     "proReasoning": "Founders design to keep the review burden small.",
+     "commonMistake": "Mixing learning into safety without a plan.",
+     "mentalModel": "Keep safety fixed."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend asks why a learning robot needs an outside checker.",
+      "prompt": "What's the best answer?",
+      "options": [
+       "Learning robots are always unsafe",
+       "The law bans learning robots",
+       "Its behavior can change after testing"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Learning robots can be safe.",
+       "They are allowed with review.",
+       "What was tested may not be what runs later."
+      ],
+      "explanation": "A robot that learns may behave differently later, so someone independent checks it."
+     },
+     "proReasoning": "Explain a rule by the risk it covers.",
+     "commonMistake": "Thinking a robot is fixed once it ships.",
+     "mentalModel": "It changes, so check it."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:48f7ec3024f6"
+  ]
+ },
+ {
+  "id": "3358168e-de48-55a2-b8e4-6154cfed9928",
+  "market_id": "robotics",
+  "day": 21,
+  "slot": 3,
+  "content": {
+   "id": "robotics-d21-c3",
+   "title": "Book the checker early",
+   "lessonTitle": "Who signs off on a learning robot",
+   "slot": 3,
+   "type": "decide",
+   "brief": {
+    "headline": "You sell a robot whose safety function learns. From January 20, 2027, it needs a Notified Body to check it before EU sale.",
+    "kicker": "Decide: book outside review now, or wait until closer to the date?",
+    "fullText": "The EU Machinery Regulation applies from January 20, 2027.\n\nIf a safety function evolves through machine learning, a Notified Body, an independent certifier, must check it.\n\nMany makers face the same date, so time with certifiers may be scarce.",
+    "sources": [
+     {
+      "url": "https://www.ul.com/resources/navigating-new-eu-machinery-regulation-eu-20231230",
+      "label": "UL Solutions, navigating the new EU Machinery Regulation"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "multipleChoice",
+    "prompt": "Who must check a learning safety function?",
+    "options": [
+     "The maker alone",
+     "A Notified Body",
+     "The customer"
+    ],
+    "correctIndex": 1,
+    "explanation": "A Notified Body, an independent certifier, must check it."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "On what day of January 2027 does the regulation apply?",
+    "min": 0,
+    "max": 31,
+    "value": 20,
+    "unit": "",
+    "explanation": "January 20, 2027."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your manager asks when to book the Notified Body.",
+      "prompt": "What do you recommend?",
+      "options": [
+       "Now, before others fill the queue",
+       "In January 2027, on the day",
+       "After the first EU sale"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "You get a slot and time to fix issues.",
+       "You may miss the date.",
+       "Sales need approval first."
+      ],
+      "explanation": "Many makers share the same deadline. Booking early leaves time to fix what the review finds."
+     },
+     "proReasoning": "Engineers who plan around bottlenecks earn trust.",
+     "commonMistake": "Leaving outside review to the last minute.",
+     "mentalModel": "Book early."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A robot maker has not booked any EU review.",
+      "prompt": "How do you read it?",
+      "options": [
+       "Normal, since review is optional",
+       "A risk to its 2027 EU sales",
+       "A sign it is saving money"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Review is required for learning safety.",
+       "Without review, it cannot sell those robots.",
+       "Delay may cost far more later."
+      ],
+      "explanation": "No booked review means EU sales from 2027 are at risk."
+     },
+     "proReasoning": "Investors check that compliance is on the calendar.",
+     "commonMistake": "Assuming deadlines will slip.",
+     "mentalModel": "Check the calendar."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You can redesign or wait for review.",
+      "prompt": "What do you do?",
+      "options": [
+       "Wait to see if the rule changes",
+       "Sell outside Europe only",
+       "Book review now and fix what it finds"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "The date is set in law.",
+       "You give up a large market.",
+       "You meet the date with time to spare."
+      ],
+      "explanation": "The date is fixed. Early review leaves time to act on findings."
+     },
+     "proReasoning": "Founders treat regulatory dates as fixed.",
+     "commonMistake": "Hoping a regulation will move.",
+     "mentalModel": "Treat the date as fixed."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend asks why booking a checker early matters.",
+      "prompt": "What's the best answer?",
+      "options": [
+       "Many firms need the same few checkers",
+       "Checkers get cheaper close to the deadline",
+       "Early booking is the law"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Everyone shares the same deadline.",
+       "Prices do not fall near deadlines.",
+       "The law sets the date, not the booking."
+      ],
+      "explanation": "When everyone faces the same date, the checkers get busy."
+     },
+     "proReasoning": "Explain timing by who else is waiting.",
+     "commonMistake": "Thinking help will be free when you need it.",
+     "mentalModel": "Beat the queue."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:9c85f3b9e717"
+  ]
+ },
+ {
+  "id": "ea43963c-0a99-5b08-a90f-2c81e9586027",
+  "market_id": "robotics",
+  "day": 22,
+  "slot": 1,
+  "content": {
+   "id": "robotics-d22-c1",
+   "title": "A lawsuit over a released arm",
+   "lessonTitle": "What 41 deaths taught robot safety",
+   "slot": 1,
+   "type": "apply",
+   "brief": {
+    "headline": "In 2025, a former Tesla technician sued Tesla and Fanuc for $51 million. He alleged a robot arm released during maintenance in 2023 and knocked him out.",
+    "kicker": "Apply the maintenance lesson: why is taking a robot apart so dangerous?",
+    "fullText": "The suit says that on July 22, 2023, at Tesla’s Fremont factory, the technician was helping take apart a Fanuc robot when the engineer removed a base motor. It alleges the arm released with the force of a counterbalance of about 8,000 pounds.\n\nHe seeks $51 million for alleged negligence. Tesla moved to dismiss, citing the workers’ comp exclusive remedy. These are allegations, not findings.\n\nDay 22 showed the same pattern in NIOSH data: many robot deaths happened during maintenance.",
+    "sources": [
+     {
+      "url": "https://www.manufacturingdive.com/news/former-factory-worker-sues-tesla-fanuc-robotic-arm-unconscious-51-million/761123/",
+      "label": "Manufacturing Dive, former worker sues Tesla and Fanuc, Sep 2025"
+     },
+     {
+      "url": "https://safetyandhealthmagazine.com/articles/24242-study-of-robot-related-worker-deaths-highlights-safety-challenges",
+      "label": "Safety+Health, study of robot-related worker deaths"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "spotFake",
+    "prompt": "One of these is false. Tap it.",
+    "statements": [
+     "The suit seeks $51 million.",
+     "The incident allegedly happened during maintenance.",
+     "A court found Tesla liable."
+    ],
+    "fakeIndex": 2,
+    "explanation": "These are allegations. Tesla moved to dismiss; no court finding is reported."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "About how many pounds of counterbalance force does the suit describe?",
+    "min": 0,
+    "max": 20,
+    "value": 8,
+    "unit": "K",
+    "explanation": "About 8,000 pounds, according to the suit."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A robot maintenance team asks what you have learned from cases like this.",
+      "prompt": "What do you say?",
+      "options": [
+       "Work faster to cut the time spent near the robot",
+       "Only engineers face any danger",
+       "Release stored energy before taking parts off"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Rushing adds risk.",
+       "The technician was the one hurt.",
+       "A held arm can still move."
+      ],
+      "explanation": "A powered-off robot can still hold energy. Maintenance must release it safely first."
+     },
+     "proReasoning": "Candidates who know maintenance hazards show real safety sense.",
+     "commonMistake": "Assuming a stopped robot is a safe robot.",
+     "mentalModel": "Off is not safe."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A robot user faces a large injury lawsuit.",
+      "prompt": "What do you weigh?",
+      "options": [
+       "The legal outcome is still unknown",
+       "The full $51 million is certain",
+       "Lawsuits never cost anything"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "These are allegations, with a motion to dismiss.",
+       "No court has decided.",
+       "Defense and safety fixes cost money."
+      ],
+      "explanation": "A lawsuit is a risk to weigh, not a known loss. Here the claims are untested."
+     },
+     "proReasoning": "Investors separate allegations from findings.",
+     "commonMistake": "Treating a filed claim as a final cost.",
+     "mentalModel": "Claims are not findings.",
+     "sources": [
+      {
+       "url": "https://www.manufacturingdive.com/news/former-factory-worker-sues-tesla-fanuc-robotic-arm-unconscious-51-million/761123/",
+       "label": "Manufacturing Dive, former worker sues Tesla and Fanuc, Sep 2025"
+      }
+     ]
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You build a robot that must be serviced.",
+      "prompt": "What do you design in?",
+      "options": [
+       "Fewer warning labels",
+       "Clear steps to release stored energy",
+       "A faster way to remove motors and arms"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Warnings help people.",
+       "Technicians can work safely.",
+       "Speed without safety adds risk."
+      ],
+      "explanation": "Many injuries happen during service. Design for safe maintenance, not just safe use."
+     },
+     "proReasoning": "Founders design for the people who repair the machine.",
+     "commonMistake": "Designing only for normal operation.",
+     "mentalModel": "Design for repair."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend asks how a switched-off robot can hurt someone.",
+      "prompt": "What's the best answer?",
+      "options": [
+       "Robots often turn back on all by themselves",
+       "It cannot, so the story is false",
+       "Springs and weights can still store energy"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "That is not the claim here.",
+       "Stored energy is a known hazard.",
+       "The suit cites a large counterbalance."
+      ],
+      "explanation": "Parts like counterbalances hold energy even with power off."
+     },
+     "proReasoning": "Explain a hazard by where the energy hides.",
+     "commonMistake": "Thinking no power means no danger.",
+     "mentalModel": "Energy hides in parts."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:1bf264b234b2"
+  ]
+ },
+ {
+  "id": "d81af7f4-51d6-5af7-bd07-4d4dec0f02e7",
+  "market_id": "robotics",
+  "day": 22,
+  "slot": 2,
+  "content": {
+   "id": "robotics-d22-c2",
+   "title": "From one death to 41",
+   "lessonTitle": "What 41 deaths taught robot safety",
+   "slot": 2,
+   "type": "connect",
+   "brief": {
+    "headline": "In 1979, Robert Williams became the first person killed by an industrial robot. NIOSH later counted 41 robot-related deaths in the US from 1992 to 2017.",
+    "kicker": "Connect day 22 and day 5: the first death, and the pattern behind later ones.",
+    "fullText": "Day 5 showed Robert Williams, killed at Ford’s Flat Rock plant on January 25, 1979, the first known human death caused by a robot.\n\nDay 22 showed what a NIOSH study found later: 41 deaths from 1992 to 2017. About 83% involved stationary robots, about 78% involved a robot striking a worker, and many happened during maintenance.\n\nOne tragedy started the rules. Decades of data showed where the danger still was.",
+    "sources": [
+     {
+      "url": "https://www.guinnessworldrecords.com/world-records/first-human-to-be-killed-by-a-robot",
+      "label": "Guinness World Records, first robot fatality"
+     },
+     {
+      "url": "https://safetyandhealthmagazine.com/articles/24242-study-of-robot-related-worker-deaths-highlights-safety-challenges",
+      "label": "Safety+Health, study of robot-related worker deaths"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "faceOff",
+    "prompt": "Which kind of robot was involved in most of the 41 deaths?",
+    "left": {
+     "name": "Stationary robots",
+     "note": "About 83%"
+    },
+    "right": {
+     "name": "Mobile robots",
+     "note": "The rest"
+    },
+    "correctIndex": 0,
+    "explanation": "About 83% of the deaths involved stationary robots."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "What share of the 41 deaths involved a robot striking a worker?",
+    "min": 0,
+    "max": 100,
+    "value": 78,
+    "unit": "%",
+    "explanation": "About 78%."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A safety manager asks where robot deaths most often happen.",
+      "prompt": "What do you say?",
+      "options": [
+       "Around fixed robots, often during maintenance",
+       "Around mobile robots moving through public places",
+       "Only in the early days of robots"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "About 83% involved stationary robots.",
+       "Mobile robots were a small share.",
+       "Deaths continued through 2017."
+      ],
+      "explanation": "The data point to fixed robots and maintenance, not the robots people imagine."
+     },
+     "proReasoning": "Candidates who use data, not headlines, stand out in safety roles.",
+     "commonMistake": "Picturing the danger as roaming robots.",
+     "mentalModel": "Follow the data."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A safety tech startup targets mobile robots only.",
+      "prompt": "What do you ask?",
+      "options": [
+       "Whether fixed robots move enough to hurt anyone",
+       "Why not fixed robots, where most deaths were",
+       "Why it uses any data"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Both kinds move.",
+       "About 83% involved stationary robots.",
+       "Data should guide it."
+      ],
+      "explanation": "The NIOSH data show most deaths came from fixed robots."
+     },
+     "proReasoning": "Investors check that a product targets where the harm is.",
+     "commonMistake": "Backing a product aimed at the smaller risk.",
+     "mentalModel": "Aim at the harm.",
+     "sources": [
+      {
+       "url": "https://www.guinnessworldrecords.com/world-records/first-human-to-be-killed-by-a-robot",
+       "label": "Guinness World Records, first robot fatality"
+      }
+     ]
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You build safety tools for factories.",
+      "prompt": "Where do you start?",
+      "options": [
+       "Greeter robots in shopping malls",
+       "Toy robots for children",
+       "Maintenance around fixed robots"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "That was not the pattern in the data.",
+       "Not the industrial risk in the study.",
+       "That is where many deaths happened."
+      ],
+      "explanation": "Start where the data show people get hurt."
+     },
+     "proReasoning": "Founders aim at the biggest real problem.",
+     "commonMistake": "Building for the risk that is easiest to picture.",
+     "mentalModel": "Start where harm is."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend asks if robot deaths are mostly sci-fi style accidents.",
+      "prompt": "What's the best answer?",
+      "options": [
+       "No, most involve fixed arms striking workers",
+       "Yes, most involve robots chasing people",
+       "There have been no deaths"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "About 78% were strikes; 83% fixed robots.",
+       "That is not the pattern.",
+       "NIOSH counted 41."
+      ],
+      "explanation": "Real deaths mostly involved fixed robots hitting someone, often during service."
+     },
+     "proReasoning": "Replace the movie image with the data.",
+     "commonMistake": "Imagining robots that decide to attack.",
+     "mentalModel": "Real risk is ordinary."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:e492ae5a4b17"
+  ]
+ },
+ {
+  "id": "49621c59-42f1-5eb5-9cea-cf2635e297b2",
+  "market_id": "robotics",
+  "day": 22,
+  "slot": 3,
+  "content": {
+   "id": "robotics-d22-c3",
+   "title": "Lock out before you step in",
+   "lessonTitle": "What 41 deaths taught robot safety",
+   "slot": 3,
+   "type": "decide",
+   "brief": {
+    "headline": "You run safety at a plant with 40 robot cells. NIOSH found many robot deaths happened when workers entered cells for maintenance.",
+    "kicker": "Decide: where do you spend your safety budget first?",
+    "fullText": "A NIOSH study counted 41 robot-related deaths in the US from 1992 to 2017.\n\nAbout 83% involved stationary robots and about 78% involved a robot striking a worker. Many happened during maintenance. The Midwest accounted for 46%, which the study tied to motor vehicle manufacturing.\n\nThe pattern points to the moment people step inside the cell.",
+    "sources": [
+     {
+      "url": "https://safetyandhealthmagazine.com/articles/24242-study-of-robot-related-worker-deaths-highlights-safety-challenges",
+      "label": "Safety+Health, study of robot-related worker deaths"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "buildChain",
+    "prompt": "Order safe entry into a robot cell.",
+    "steps": [
+     "Stop the robot",
+     "Lock out its power",
+     "Release stored energy",
+     "Enter the cell"
+    ],
+    "explanation": "Stop, lock out, release energy, then enter."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "What share of the 41 deaths happened in the Midwest?",
+    "min": 0,
+    "max": 100,
+    "value": 46,
+    "unit": "%",
+    "explanation": "About 46%, tied to motor vehicle manufacturing."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your boss asks for the top safety priority.",
+      "prompt": "What do you pick?",
+      "options": [
+       "Faster robot speeds",
+       "Lockout steps for maintenance entry",
+       "New warning paint on the robot cells"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Speed raises risk.",
+       "That is when many deaths happened.",
+       "Paint does not stop strikes."
+      ],
+      "explanation": "Many deaths happened during maintenance. Lockout is the biggest lever."
+     },
+     "proReasoning": "Safety staff who aim at the data earn credibility.",
+     "commonMistake": "Spending on what looks safe instead of what is.",
+     "mentalModel": "Lock out first."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A plant reports strong safety but no lockout audits.",
+      "prompt": "How do you read it?",
+      "options": [
+       "Proof of a safe plant",
+       "Normal for robot plants",
+       "A gap at the riskiest moment"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "No audits means no proof.",
+       "Audits are standard practice.",
+       "Maintenance entry is where deaths clustered."
+      ],
+      "explanation": "Without lockout audits, the riskiest moment goes unchecked."
+     },
+     "proReasoning": "Investors look for controls at the riskiest point.",
+     "commonMistake": "Accepting safety claims without evidence.",
+     "mentalModel": "Audit the risky moment."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You make robot cells.",
+      "prompt": "What feature helps most?",
+      "options": [
+       "Easy, clear lockout points",
+       "More screens on the cell",
+       "Brighter lights only"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Workers can lock out quickly and correctly.",
+       "Screens do not stop strikes.",
+       "Lights alone do not stop motion."
+      ],
+      "explanation": "Make the safe step the easy step for maintenance workers."
+     },
+     "proReasoning": "Founders make safety easy to do right.",
+     "commonMistake": "Adding features that do not touch the main risk.",
+     "mentalModel": "Make safe easy."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend asks why a robot cell has a lock on its power.",
+      "prompt": "What's the best answer?",
+      "options": [
+       "To save power at night",
+       "So no one restarts it while someone is inside",
+       "To stop people stealing its electricity"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Saving power is not the goal.",
+       "Many deaths happened during maintenance.",
+       "Theft is not the reason."
+      ],
+      "explanation": "The lock keeps the robot off while a person is inside the cell."
+     },
+     "proReasoning": "Explain a device by the death it prevents.",
+     "commonMistake": "Seeing safety steps as red tape.",
+     "mentalModel": "Lock it, then enter."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:33bbe4ceb01e"
+  ]
+ },
+ {
+  "id": "d6d640ee-bb83-5d1a-b304-840c514fafc5",
+  "market_id": "robotics",
+  "day": 23,
+  "slot": 1,
+  "content": {
+   "id": "robotics-d23-c1",
+   "title": "Report a hack in 24 hours",
+   "lessonTitle": "Europe's new rulebook for smart machines",
+   "slot": 1,
+   "type": "apply",
+   "brief": {
+    "headline": "From September 11, 2026, makers of connected products in the EU must report actively exploited security holes. An early warning is due within 24 hours.",
+    "kicker": "Apply the new rulebook lesson: what does this mean for connected robots?",
+    "fullText": "The Cyber Resilience Act covers products with digital elements that connect to a device or network. Its reporting duties apply from September 11, 2026, and most other duties from December 11, 2027.\n\nMakers must send an early warning within 24 hours, a fuller notification within 72 hours, and a final report within a month.\n\nDay 23 showed that the Machinery Regulation also requires protection against hacking. Connected robots now answer to both rulebooks.",
+    "sources": [
+     {
+      "url": "https://www.mccannfitzgerald.com/knowledge/data-privacy-and-cyber-risk/cyber-resilience-act-reporting-obligations-apply-from-11-september-2026",
+      "label": "McCann FitzGerald, Cyber Resilience Act reporting obligations apply from 11 September 2026"
+     },
+     {
+      "url": "https://www.ul.com/resources/navigating-new-eu-machinery-regulation-eu-20231230",
+      "label": "UL Solutions, navigating the new EU Machinery Regulation"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "buildChain",
+    "prompt": "Order the reporting steps after an exploited hole is found.",
+    "steps": [
+     "Send an early warning",
+     "Send a fuller notification",
+     "Send a final report"
+    ],
+    "explanation": "24 hours, then 72 hours, then within a month."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "Within how many hours is the fuller notification due?",
+    "min": 0,
+    "max": 120,
+    "value": 72,
+    "unit": "hours",
+    "explanation": "Within 72 hours, after a 24-hour early warning."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A connected robot maker asks what changed in September 2026.",
+      "prompt": "What do you say?",
+      "options": [
+       "Exploited holes must be reported fast",
+       "Robots no longer need any updates",
+       "Only phones are covered now"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "The first warning is due within 24 hours.",
+       "Updates matter more than ever.",
+       "Connected products are covered."
+      ],
+      "explanation": "From September 11, 2026, makers must report exploited holes on a tight clock."
+     },
+     "proReasoning": "Candidates who know the new cyber duties are rare and useful.",
+     "commonMistake": "Treating robot security as optional.",
+     "mentalModel": "Report within 24 hours."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A robot company sells connected arms in Europe.",
+      "prompt": "What do you check?",
+      "options": [
+       "That it has a nice website",
+       "That it can report holes within 24 hours",
+       "That it can wait to report until it has a fix"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Websites do not meet duties.",
+       "That duty applies from September 2026.",
+       "The early warning is due within 24 hours."
+      ],
+      "explanation": "Fast reporting needs a team and process ready before a hole is found."
+     },
+     "proReasoning": "Investors check that new duties have owners.",
+     "commonMistake": "Assuming cyber rules apply only to software firms.",
+     "mentalModel": "Check readiness.",
+     "sources": [
+      {
+       "url": "https://www.mccannfitzgerald.com/knowledge/data-privacy-and-cyber-risk/cyber-resilience-act-reporting-obligations-apply-from-11-september-2026",
+       "label": "McCann FitzGerald, Cyber Resilience Act reporting obligations apply from 11 September 2026"
+      }
+     ]
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your robots connect to the cloud.",
+      "prompt": "What do you set up first?",
+      "options": [
+       "A bigger sales team for the EU launch",
+       "A plan to stop all updates",
+       "A process to spot and report exploits"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Sales do not meet the duty.",
+       "Updates fix holes.",
+       "You meet the 24-hour clock."
+      ],
+      "explanation": "The clock starts when you learn of an exploit. Have the process ready."
+     },
+     "proReasoning": "Founders build the process before the crisis.",
+     "commonMistake": "Waiting for a hack to design the response.",
+     "mentalModel": "Ready before the hack."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend asks why a robot maker must report hacks so fast.",
+      "prompt": "What's the best answer?",
+      "options": [
+       "So others can protect themselves quickly",
+       "To fine the maker as often as possible",
+       "Because robots are illegal"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Fast warning limits the damage.",
+       "The goal is protection.",
+       "Robots are legal."
+      ],
+      "explanation": "Quick reports let users and authorities act before more harm is done."
+     },
+     "proReasoning": "Explain a deadline by the harm it limits.",
+     "commonMistake": "Seeing reporting rules only as punishment.",
+     "mentalModel": "Speed limits harm."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:874a3ef23e1d"
+  ]
+ },
+ {
+  "id": "b3353817-c297-5452-a11a-087b25fff905",
+  "market_id": "robotics",
+  "day": 23,
+  "slot": 2,
+  "content": {
+   "id": "robotics-d23-c2",
+   "title": "Security becomes safety",
+   "lessonTitle": "Europe's new rulebook for smart machines",
+   "slot": 2,
+   "type": "connect",
+   "brief": {
+    "headline": "The revised ISO 10218 added cybersecurity in 2025. The EU Machinery Regulation requires machines to resist hacking from January 20, 2027.",
+    "kicker": "Connect day 23 and day 19: one standard and one law, the same new risk.",
+    "fullText": "Day 19 showed the 2025 revision of ISO 10218, the main industrial robot safety standard. It added cybersecurity because a hacked robot can become a physical hazard.\n\nDay 23 showed the EU Regulation 2023/1230, which applies from January 20, 2027. It requires protection against corruption, including hacking, along with limits, logs and a way for a human to intervene in AI machines.\n\nA voluntary standard and a binding law now point the same way.",
+    "sources": [
+     {
+      "url": "https://www.therobotreport.com/iso-10218-industrial-robot-safety-standard-receives-major-overhaul/",
+      "label": "The Robot Report, ISO 10218 receives major overhaul"
+     },
+     {
+      "url": "https://www.ul.com/resources/navigating-new-eu-machinery-regulation-eu-20231230",
+      "label": "UL Solutions, navigating the new EU Machinery Regulation"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "sortSignal",
+    "prompt": "Which one does it describe?",
+    "buckets": [
+     "ISO 10218 (day 19)",
+     "EU regulation (day 23)"
+    ],
+    "items": [
+     {
+      "text": "Revised in 2025 after about 8 years",
+      "bucket": 0
+     },
+     {
+      "text": "Split into robot and cell parts",
+      "bucket": 0
+     },
+     {
+      "text": "Applies from January 20, 2027",
+      "bucket": 1
+     },
+     {
+      "text": "Replaces Directive 2006/42/EC",
+      "bucket": 1
+     }
+    ],
+    "explanation": "ISO 10218 is the industry standard. The regulation is EU law."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "About how many years did the ISO 10218 revision take?",
+    "min": 0,
+    "max": 20,
+    "value": 8,
+    "unit": "years",
+    "explanation": "About eight years."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "An interviewer asks why safety engineers now study hacking.",
+      "prompt": "What do you say?",
+      "options": [
+       "It is a passing trend",
+       "Both the standard and EU law now require it",
+       "Hacking only affects data, not motion"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "It is written into rules.",
+       "ISO 10218 and the EU rules both cover it.",
+       "A hacked robot can move."
+      ],
+      "explanation": "The 2025 standard and the 2027 EU rules both treat security as part of safety."
+     },
+     "proReasoning": "Candidates who link security and safety stand out.",
+     "commonMistake": "Treating cyber and safety as separate fields.",
+     "mentalModel": "Security is safety."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A robot maker has a strong safety team but no security staff.",
+      "prompt": "What do you ask?",
+      "options": [
+       "Why it needs a safety team",
+       "Whether robots need power",
+       "How it will meet hacking rules"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Safety teams are required.",
+       "Not the issue.",
+       "Both rulebooks now expect protection."
+      ],
+      "explanation": "Hacking protection is now part of the safety rules it must meet."
+     },
+     "proReasoning": "Investors check that teams match the new rules.",
+     "commonMistake": "Assuming old team shapes fit new rules.",
+     "mentalModel": "Staff for the new risk.",
+     "sources": [
+      {
+       "url": "https://www.therobotreport.com/iso-10218-industrial-robot-safety-standard-receives-major-overhaul/",
+       "label": "The Robot Report, ISO 10218 receives major overhaul"
+      }
+     ]
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You design robot controllers.",
+      "prompt": "What do you add to your safety review?",
+      "options": [
+       "How someone could take control remotely",
+       "Only the robot’s top speed and reach",
+       "Only the paint color"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Both rulebooks expect it.",
+       "Speed is one part, not all.",
+       "Color is not a hazard check."
+      ],
+      "explanation": "A hacked controller is a hazard. Review it like any other."
+     },
+     "proReasoning": "Founders add new risks to the same review.",
+     "commonMistake": "Leaving security to a later release.",
+     "mentalModel": "Review the attack path."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend asks why a robot law cares about hackers.",
+      "prompt": "What's the best answer?",
+      "options": [
+       "It is only about privacy",
+       "A hacked robot could move and hurt people",
+       "Hackers mostly want to steal designs"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Physical harm is the point.",
+       "Control of motion is the danger.",
+       "Stolen designs are not the safety risk."
+      ],
+      "explanation": "If someone takes over a machine, it can cause physical harm."
+     },
+     "proReasoning": "Explain a rule by the harm.",
+     "commonMistake": "Thinking hacking stays on screens.",
+     "mentalModel": "Hacks can move metal."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:59e87dcdc430"
+  ]
+ },
+ {
+  "id": "2f2db0f2-4ac2-52f4-9b2e-575cc45d3be9",
+  "market_id": "robotics",
+  "day": 23,
+  "slot": 3,
+  "content": {
+   "id": "robotics-d23-c3",
+   "title": "Logs and an off switch",
+   "lessonTitle": "Europe's new rulebook for smart machines",
+   "slot": 3,
+   "type": "decide",
+   "brief": {
+    "headline": "You make AI-driven machines for Europe. From January 20, 2027, they must stay within limits, keep logs and let a human intervene.",
+    "kicker": "Decide: build the logs and override now, or after launch?",
+    "fullText": "Regulation 2023/1230 replaces the Machinery Directive 2006/42/EC from January 20, 2027.\n\nAs a regulation, it applies directly in every EU country, with no national rewrite. AI-driven machines must stay within set limits, keep logs and let a human intervene. They must also resist hacking.\n\nFeatures like logs and overrides are easier to design in than to bolt on.",
+    "sources": [
+     {
+      "url": "https://www.ul.com/resources/navigating-new-eu-machinery-regulation-eu-20231230",
+      "label": "UL Solutions, navigating the new EU Machinery Regulation"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "multipleChoice",
+    "prompt": "What is different about a regulation compared with a directive?",
+    "options": [
+     "It covers only Germany",
+     "Each country must rewrite it into law",
+     "It applies directly in every EU country"
+    ],
+    "correctIndex": 2,
+    "explanation": "A regulation applies directly, with no national rewrite needed."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "About how many years separate Directive 2006/42/EC and the 2027 regulation?",
+    "min": 0,
+    "max": 50,
+    "value": 21,
+    "unit": "years",
+    "explanation": "From 2006 to 2027, about 21 years."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your manager asks when to build logging and a human override.",
+      "prompt": "What do you recommend?",
+      "options": [
+       "After the first customer asks",
+       "Only if a regulator calls",
+       "Now, in the core design"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "The rule applies anyway.",
+       "Waiting risks a sales stop.",
+       "They are easier to design in."
+      ],
+      "explanation": "The rules require logs and human intervention. Building them in early costs less."
+     },
+     "proReasoning": "Engineers who design for rules early save rework.",
+     "commonMistake": "Bolting compliance on at the end.",
+     "mentalModel": "Design it in."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "An AI machine maker has no logging plan.",
+      "prompt": "How do you read it?",
+      "options": [
+       "A gap against the 2027 EU rules",
+       "A lean product choice to praise",
+       "Normal for AI firms"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Logs are required from 2027.",
+       "Lean does not excuse a required feature.",
+       "The rules apply to all."
+      ],
+      "explanation": "Missing logs mean the machine may not meet EU rules."
+     },
+     "proReasoning": "Investors check required features, not just nice ones.",
+     "commonMistake": "Ignoring a dated requirement.",
+     "mentalModel": "Check the must-haves."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You can add new features or required logs.",
+      "prompt": "What comes first?",
+      "options": [
+       "Neither, until 2027",
+       "The required logs and override",
+       "The new features customers like"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Waiting leaves no time.",
+       "Without them, you cannot sell in the EU.",
+       "Features do not fix compliance."
+      ],
+      "explanation": "Required features gate sales. Build them first."
+     },
+     "proReasoning": "Founders put sales-gating work ahead of extras.",
+     "commonMistake": "Polishing extras while a gate is open.",
+     "mentalModel": "Gates first."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend asks why an AI machine needs a log.",
+      "prompt": "What's the best answer?",
+      "options": [
+       "To make the machine faster",
+       "To store data to sell to advertisers",
+       "So people can see what it did and why"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Logs do not add speed.",
+       "Not their job.",
+       "Logs show what happened."
+      ],
+      "explanation": "Logs let people check what an AI machine did, especially after a problem."
+     },
+     "proReasoning": "Explain a feature by the question it answers.",
+     "commonMistake": "Thinking AI machines need no record.",
+     "mentalModel": "Logs answer why."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:f4c59961b1df"
+  ]
+ },
+ {
+  "id": "97c3859e-7ad8-5cc6-a684-62576562b65e",
+  "market_id": "robotics",
+  "day": 24,
+  "slot": 1,
+  "content": {
+   "id": "robotics-d24-c1",
+   "title": "A humanoid built to work near people",
+   "lessonTitle": "Safety rules for robots that can fall",
+   "slot": 1,
+   "type": "apply",
+   "brief": {
+    "headline": "In September 2026, Agility Robotics unveiled Digit 5, a humanoid built to work near people without barriers. It says it had more than $300 million in orders by May 2026.",
+    "kicker": "Apply the falling robot lesson: how does a humanoid earn a place beside workers?",
+    "fullText": "Agility says Digit 5 watches for people and can avoid them, stop or sit down. It uses visual and audio cues and an independent safety controller. It lifts up to 50 pounds and weighs 284 pounds.\n\nIts multi-year orders came from GXO, Schaeffler, Amazon and Toyota Canada. Early access is planned for the first half of 2027.\n\nDay 24 showed why sitting down matters: a walking robot cannot simply cut power, or it may fall on someone.",
+    "sources": [
+     {
+      "url": "https://www.robotics247.com/article/agility-robotics-debuts-digit-5-humanoid-robot-for-cooperatively-safe-work-at-scale",
+      "label": "Robotics 24/7, Agility Robotics debuts Digit 5, Sep 2026"
+     },
+     {
+      "url": "https://www.i-scoop.eu/iso-25785-1-explained-and-what-it-means-for-humanoid-robot-safety/",
+      "label": "i-SCOOP, ISO 25785-1 explained"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "faceOff",
+    "prompt": "Which is the safer stop for a walking humanoid?",
+    "left": {
+     "name": "Sit down under control",
+     "note": "Lowers itself"
+    },
+    "right": {
+     "name": "Cut all power",
+     "note": "May fall"
+    },
+    "correctIndex": 0,
+    "explanation": "A controlled descent avoids a heavy robot toppling onto someone."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "How many pounds does Digit 5 weigh?",
+    "min": 0,
+    "max": 500,
+    "value": 284,
+    "unit": "lb",
+    "explanation": "284 pounds, about 129 kg."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A warehouse robot team asks what makes a humanoid safe near people.",
+      "prompt": "What do you say?",
+      "options": [
+       "Turning it off when anyone is near",
+       "Stopping without falling, and seeing people",
+       "Making it as fast and strong as possible"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Cutting power may drop it.",
+       "Digit 5 can stop or sit and watches for people.",
+       "Speed adds risk."
+      ],
+      "explanation": "A humanoid must sense people and reach a safe state without toppling."
+     },
+     "proReasoning": "Candidates who understand the fall problem show depth.",
+     "commonMistake": "Treating a humanoid like a robot arm.",
+     "mentalModel": "Stop without falling."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Agility reports over $300 million in multi-year orders.",
+      "prompt": "How do you read it?",
+      "options": [
+       "Revenue already earned in full",
+       "Orders that can never be cancelled",
+       "Real demand, with delivery still ahead"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Orders are not revenue yet.",
+       "Terms are not stated.",
+       "General availability is planned for 2027."
+      ],
+      "explanation": "Orders show demand, but revenue depends on delivering at scale."
+     },
+     "proReasoning": "Investors separate orders from earned revenue.",
+     "commonMistake": "Counting orders as cash.",
+     "mentalModel": "Orders are promises.",
+     "sources": [
+      {
+       "url": "https://www.robotics247.com/article/agility-robotics-debuts-digit-5-humanoid-robot-for-cooperatively-safe-work-at-scale",
+       "label": "Robotics 24/7, Agility Robotics debuts Digit 5, Sep 2026"
+      }
+     ]
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You design a humanoid for warehouses.",
+      "prompt": "What safety feature comes first?",
+      "options": [
+       "A controlled way to stop and sit",
+       "A louder speaker for music",
+       "A bigger battery only"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "It avoids falling on people.",
+       "Not a safety feature.",
+       "Battery does not prevent falls."
+      ],
+      "explanation": "Humanoids can fall. A controlled stop is core to working near people."
+     },
+     "proReasoning": "Founders solve the hazard unique to their product.",
+     "commonMistake": "Copying arm safety onto a walking robot.",
+     "mentalModel": "Solve the fall."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend asks why a robot would sit down to be safe.",
+      "prompt": "What's the best answer?",
+      "options": [
+       "To save paint",
+       "So it does not fall over on someone",
+       "Because its legs get tired after a shift"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Not the reason.",
+       "A walking robot can topple.",
+       "Robots do not tire."
+      ],
+      "explanation": "Sitting down lowers the robot safely instead of letting it fall."
+     },
+     "proReasoning": "Explain a behavior by the danger it avoids.",
+     "commonMistake": "Thinking stopping is always simple.",
+     "mentalModel": "Sit, do not fall."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:9df378308dba"
+  ]
+ },
+ {
+  "id": "98913bb9-fdf2-5b40-b43f-f64bbc770a6f",
+  "market_id": "robotics",
+  "day": 24,
+  "slot": 2,
+  "content": {
+   "id": "robotics-d24-c2",
+   "title": "Cheap humanoids, rules still coming",
+   "lessonTitle": "Safety rules for robots that can fall",
+   "slot": 2,
+   "type": "connect",
+   "brief": {
+    "headline": "Unitree’s R1 humanoid was priced at about $5,900 in 2025. The first safety standard for humanoids, ISO 25785-1, was still a draft.",
+    "kicker": "Connect day 24 and day 12: humanoids getting cheaper, and safety rules catching up.",
+    "fullText": "Day 12 showed Unitree pricing its R1 humanoid at about $5,900, against about $16,000 for its G1 and over $90,000 for its H1.\n\nDay 24 showed ISO 25785-1, a draft safety standard for walking robots from May 2025, with publication expected in late 2026 or 2027. It covers controlled falls and a topple zone of about two meters.\n\nPrices are falling faster than the rules are being written.",
+    "sources": [
+     {
+      "url": "https://www.thestar.com.my/business/business-news/2025/07/28/unitree-offers-a-humanoid-robot-for-under-us6000",
+      "label": "The Star, Unitree offers a humanoid robot for under US$6,000"
+     },
+     {
+      "url": "https://www.i-scoop.eu/iso-25785-1-explained-and-what-it-means-for-humanoid-robot-safety/",
+      "label": "i-SCOOP, ISO 25785-1 explained"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "sortSignal",
+    "prompt": "Which day showed it?",
+    "buckets": [
+     "Day 12",
+     "Day 24"
+    ],
+    "items": [
+     {
+      "text": "R1 priced at about $5,900",
+      "bucket": 0
+     },
+     {
+      "text": "H1 priced over $90,000",
+      "bucket": 0
+     },
+     {
+      "text": "Draft standard from May 2025",
+      "bucket": 1
+     },
+     {
+      "text": "Topple zone about two meters",
+      "bucket": 1
+     }
+    ],
+    "explanation": "Day 12 covered prices. Day 24 covered the safety standard."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "About how many meters is the humanoid topple zone?",
+    "min": 0,
+    "max": 10,
+    "value": 2,
+    "unit": "m",
+    "explanation": "About two meters around the robot."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A humanoid firm asks what risk comes with cheaper robots.",
+      "prompt": "What do you say?",
+      "options": [
+       "Fewer robots overall",
+       "No risk, since cheap robots are always small",
+       "More robots near people before rules are final"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Cheaper usually means more robots.",
+       "Price says nothing about safety.",
+       "Prices fell while the standard was a draft."
+      ],
+      "explanation": "Cheap humanoids reach more places while the standard is still being written."
+     },
+     "proReasoning": "Candidates who link price and safety stand out.",
+     "commonMistake": "Assuming low price lowers risk.",
+     "mentalModel": "Cheap spreads fast."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A buyer plans 100 low-cost humanoids for a busy site.",
+      "prompt": "What do you ask?",
+      "options": [
+       "How it will handle falls near people",
+       "Whether they come in the company colors",
+       "How cheap the next model is"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "The topple zone is about two meters.",
+       "Color is not safety.",
+       "Price is not the risk."
+      ],
+      "explanation": "Without a final standard, buyers must plan fall zones themselves."
+     },
+     "proReasoning": "Investors ask about safety plans in new categories.",
+     "commonMistake": "Buying on price alone.",
+     "mentalModel": "Plan the fall zone.",
+     "sources": [
+      {
+       "url": "https://www.thestar.com.my/business/business-news/2025/07/28/unitree-offers-a-humanoid-robot-for-under-us6000",
+       "label": "The Star, Unitree offers a humanoid robot for under US$6,000"
+      }
+     ]
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You build a cheap humanoid.",
+      "prompt": "How do you handle unfinished rules?",
+      "options": [
+       "Ignore standards to save cost",
+       "Design to the draft standard now",
+       "Wait for the final text"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Buyers will ask for it.",
+       "You will be close when it is final.",
+       "You lose time."
+      ],
+      "explanation": "Following the draft keeps you close to the final rules."
+     },
+     "proReasoning": "Founders design to drafts so they are ready at publication.",
+     "commonMistake": "Waiting for the final rule to start.",
+     "mentalModel": "Follow the draft."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend asks if a $5,900 humanoid is safe to have around.",
+      "prompt": "What's the best answer?",
+      "options": [
+       "Yes, every cheap robot is safe by design",
+       "No, humanoids are banned",
+       "It depends on how it handles falls and people"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Price does not prove safety.",
+       "They are not banned.",
+       "The standard is still a draft."
+      ],
+      "explanation": "Safety depends on design, like controlled falls, not price."
+     },
+     "proReasoning": "Judge safety by design, not price.",
+     "commonMistake": "Assuming cheap means toy-safe.",
+     "mentalModel": "Design decides safety."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:af3ff0710a8d"
+  ]
+ },
+ {
+  "id": "c276a157-06d8-5484-9110-b7a468aafe31",
+  "market_id": "robotics",
+  "day": 24,
+  "slot": 3,
+  "content": {
+   "id": "robotics-d24-c3",
+   "title": "Mark the fall zone",
+   "lessonTitle": "Safety rules for robots that can fall",
+   "slot": 3,
+   "type": "decide",
+   "brief": {
+    "headline": "You run a warehouse pilot of humanoid robots. A heavy humanoid can topple onto anyone within about two meters.",
+    "kicker": "Decide: how do you lay out the floor before the standard is final?",
+    "fullText": "ISO 25785-1, a draft safety standard for walking robots, started in May 2025. Publication was expected in late 2026 or 2027.\n\nA US delegation including A3, Agility and Boston Dynamics took part. The draft focuses on controlled descent and on a topple zone of about two meters.\n\nUntil it is final, the operator must decide how much space to keep clear.",
+    "sources": [
+     {
+      "url": "https://www.i-scoop.eu/iso-25785-1-explained-and-what-it-means-for-humanoid-robot-safety/",
+      "label": "i-SCOOP, ISO 25785-1 explained"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "multipleChoice",
+    "prompt": "What does the draft standard focus on?",
+    "options": [
+     "Walking speed limits in aisles",
+     "Controlled descent and a fall zone",
+     "Battery size"
+    ],
+    "correctIndex": 1,
+    "explanation": "It focuses on controlled falls and a zone of about two meters."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "In what month of 2025 did the draft start? (1 = January)",
+    "min": 0,
+    "max": 12,
+    "value": 5,
+    "unit": "",
+    "explanation": "May 2025."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your boss asks how to set up the pilot area.",
+      "prompt": "What do you recommend?",
+      "options": [
+       "Keep about two meters clear around robots",
+       "Let workers walk anywhere they like",
+       "Wait for the final standard"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "That matches the draft topple zone.",
+       "People may stand where robots fall.",
+       "The pilot needs a plan now."
+      ],
+      "explanation": "Use the draft’s two-meter zone as your starting layout."
+     },
+     "proReasoning": "Operations staff who use drafts as a guide show judgment.",
+     "commonMistake": "Running a pilot with no fall plan.",
+     "mentalModel": "Clear the zone."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A pilot site has no fall zone marked.",
+      "prompt": "How do you read it?",
+      "options": [
+       "Normal for pilots",
+       "A safety gap to fix before scaling",
+       "A sign of strong trust in the robots"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Pilots still need safety.",
+       "A fall could hit a worker.",
+       "Trust is not a control."
+      ],
+      "explanation": "Without a marked zone, a fall could injure someone."
+     },
+     "proReasoning": "Investors look for safety basics in pilots.",
+     "commonMistake": "Accepting pilots without basic controls.",
+     "mentalModel": "Fix before scaling."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You run humanoid pilots for customers.",
+      "prompt": "What do you standardize?",
+      "options": [
+       "A different layout each time",
+       "No layout rules",
+       "A marked fall zone in every layout"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Inconsistency adds risk.",
+       "Customers need guidance.",
+       "Every site gets the same protection."
+      ],
+      "explanation": "A standard fall zone makes every pilot safer and easier to approve."
+     },
+     "proReasoning": "Founders turn safety into a repeatable step.",
+     "commonMistake": "Reinventing safety for every customer.",
+     "mentalModel": "Repeat what works."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend asks why there is tape on the floor around a humanoid.",
+      "prompt": "What's the best answer?",
+      "options": [
+       "It marks where the robot could fall",
+       "It is decoration",
+       "It shows where the robot parks to charge"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "The topple zone is about two meters.",
+       "It has a job.",
+       "Charging is separate."
+      ],
+      "explanation": "The tape marks the area a falling robot could reach."
+     },
+     "proReasoning": "Explain a sign by the hazard it marks.",
+     "commonMistake": "Ignoring floor markings.",
+     "mentalModel": "Tape marks the fall."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:0c72e7eb9109"
+  ]
+ },
+ {
+  "id": "72fbb5f3-e76f-5b06-819f-de2dd156bbb7",
+  "market_id": "robotics",
+  "day": 25,
+  "slot": 1,
+  "content": {
+   "id": "robotics-d25-c1",
+   "title": "When buyers can switch",
+   "lessonTitle": "Nobody owns the robot arm market",
+   "slot": 1,
+   "type": "apply",
+   "brief": {
+    "headline": "In July 2026, FANUC said long delivery times amid strong demand in China led some customers to adopt competitors’ products.",
+    "kicker": "Apply the fragmented market lesson: what happens when a leader cannot deliver?",
+    "fullText": "FANUC told investors that delivery times lengthened as demand grew in China. It said competition varies by application and customer, so it was not right to conclude its share was falling.\n\nIt said it would stress quality, reliability and service. It also said it had expanded capacity and had room to make more robots.\n\nDay 25 showed why buyers can switch: no maker owns the market. FANUC held about 11% by value in 2023.",
+    "sources": [
+     {
+      "url": "https://www.fanuc.co.jp/en/ir/announce/pdf/2026/qasummary202606_e.pdf",
+      "label": "FANUC, Q&A summary of Q1 results conference, Jul 2026"
+     },
+     {
+      "url": "https://statista.com/chart/32239/global-market-share-of-industrial-robotics-companies",
+      "label": "Statista, the giants of industrial robotics"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "spotFake",
+    "prompt": "One of these is false. Tap it.",
+    "statements": [
+     "FANUC cited long delivery times in China.",
+     "Some customers chose competitors.",
+     "FANUC said it had no spare capacity."
+    ],
+    "fakeIndex": 2,
+    "explanation": "FANUC said it had expanded capacity and had room to make more."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "About what share of the robot market by value did FANUC hold in 2023?",
+    "min": 0,
+    "max": 40,
+    "value": 11,
+    "unit": "%",
+    "explanation": "About 11%, behind ABB and Epson at about 13% each."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A robot maker asks what FANUC’s comment tells you.",
+      "prompt": "What do you say?",
+      "options": [
+       "FANUC owns the whole market",
+       "Demand in China has collapsed",
+       "Buyers switch when delivery is slow"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "It held about 11%.",
+       "Demand was strong.",
+       "Some customers chose competitors."
+      ],
+      "explanation": "In a fragmented market, a slow delivery sends buyers to rivals."
+     },
+     "proReasoning": "Candidates who read market structure from company comments stand out.",
+     "commonMistake": "Assuming a leader’s customers are locked in.",
+     "mentalModel": "Slow delivery loses buyers."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A robot leader admits some customers switched.",
+      "prompt": "What do you watch next?",
+      "options": [
+       "Whether delivery times come back down",
+       "Its logo and brand colors",
+       "Whether rivals will cut their prices"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Shorter delivery can win buyers back.",
+       "Branding does not fix delivery.",
+       "Rivals are part of the market."
+      ],
+      "explanation": "FANUC said it had room to make more. Delivery times will show if that helps."
+     },
+     "proReasoning": "Investors track the metric that caused the loss.",
+     "commonMistake": "Ignoring an admitted share risk.",
+     "mentalModel": "Watch delivery times.",
+     "sources": [
+      {
+       "url": "https://statista.com/chart/32239/global-market-share-of-industrial-robotics-companies",
+       "label": "Statista, the giants of industrial robotics"
+      }
+     ]
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You sell robots in a market with many makers.",
+      "prompt": "Where can you win?",
+      "options": [
+       "Only one product, sold nowhere else",
+       "Short delivery when leaders are slow",
+       "Higher prices than the leaders"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Narrow reach limits sales.",
+       "Buyers switched when FANUC was slow.",
+       "Price alone does not win."
+      ],
+      "explanation": "When a leader’s lead times grow, a fast rival can take orders."
+     },
+     "proReasoning": "Founders look for gaps that leaders leave open.",
+     "commonMistake": "Competing only on brand.",
+     "mentalModel": "Be there when they are not."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend asks why a top robot maker would lose customers in a boom.",
+      "prompt": "What's the best answer?",
+      "options": [
+       "People stopped buying robots",
+       "Robots became illegal",
+       "It could not deliver fast enough"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Demand was strong.",
+       "Robots are legal.",
+       "Delivery times lengthened in China."
+      ],
+      "explanation": "Strong demand stretched delivery, so some buyers went elsewhere."
+     },
+     "proReasoning": "Explain a loss by what buyers needed.",
+     "commonMistake": "Assuming booms help every company equally.",
+     "mentalModel": "Demand needs delivery."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:c6b6f0affadb"
+  ]
+ },
+ {
+  "id": "f54e5b82-f61e-54b7-bbc2-ff9bbc36ae6a",
+  "market_id": "robotics",
+  "day": 25,
+  "slot": 2,
+  "content": {
+   "id": "robotics-d25-c2",
+   "title": "Big abroad, bigger at home",
+   "lessonTitle": "Nobody owns the robot arm market",
+   "slot": 2,
+   "type": "connect",
+   "brief": {
+    "headline": "ABB and Epson each held about 13% of the global robot market in 2023. Chinese suppliers held 57% of their own home market by 2024.",
+    "kicker": "Connect day 25 and day 3: global shares, and the home market shift.",
+    "fullText": "Day 3 showed Chinese suppliers holding 57% of their home market, up from about 28% a few years earlier.\n\nDay 25 showed the global picture by value in 2023: ABB and Epson about 13% each, Fanuc 11%, Yaskawa and Kawasaki 8%, and KUKA about 6%. The top six held about 59%.\n\nGlobally no one dominates. In China, local makers now lead.",
+    "sources": [
+     {
+      "url": "https://ifr.org/ifr-press-releases/news/global-robot-demand-in-factories-doubles-over-10-years",
+      "label": "IFR, World Robotics 2025 press release"
+     },
+     {
+      "url": "https://statista.com/chart/32239/global-market-share-of-industrial-robotics-companies",
+      "label": "Statista, the giants of industrial robotics"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "faceOff",
+    "prompt": "Which share is larger?",
+    "left": {
+     "name": "Chinese suppliers in China",
+     "note": "About 57%"
+    },
+    "right": {
+     "name": "Top six makers worldwide",
+     "note": "About 59%"
+    },
+    "correctIndex": 1,
+    "explanation": "The top six held about 59% worldwide; Chinese suppliers held 57% in China."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "About what share did the top six robot makers hold worldwide?",
+    "min": 0,
+    "max": 100,
+    "value": 59,
+    "unit": "%",
+    "explanation": "About 59% by value in 2023."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A robot firm asks how the market is structured.",
+      "prompt": "What do you say?",
+      "options": [
+       "Fragmented globally, local makers lead in China",
+       "One maker controls it all",
+       "Japanese makers control most of every market"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "No maker passed about 13%.",
+       "Shares are spread out.",
+       "Chinese makers lead at home."
+      ],
+      "explanation": "No one owns the global market, and in China local makers now lead."
+     },
+     "proReasoning": "Candidates who describe structure with numbers stand out.",
+     "commonMistake": "Treating the market as one leader and followers.",
+     "mentalModel": "Fragmented, with a home shift."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A Japanese robot maker relies on China for growth.",
+      "prompt": "What risk do you check?",
+      "options": [
+       "Whether Japan makes robots",
+       "Local rivals taking share in China",
+       "Whether China buys many robots at all"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Japan is a major maker.",
+       "Chinese suppliers hold 57% at home.",
+       "China buys the most robots."
+      ],
+      "explanation": "Local makers already hold most of China’s market."
+     },
+     "proReasoning": "Investors check who wins the biggest market.",
+     "commonMistake": "Assuming the largest market favors incumbents.",
+     "mentalModel": "Check the home team.",
+     "sources": [
+      {
+       "url": "https://statista.com/chart/32239/global-market-share-of-industrial-robotics-companies",
+       "label": "Statista, the giants of industrial robotics"
+      }
+     ]
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You sell robot parts.",
+      "prompt": "Who do you target?",
+      "options": [
+       "Only one global leader",
+       "Only makers based outside of Asia",
+       "Both global leaders and Chinese makers"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "No maker passes about 13%.",
+       "Asia is the largest market.",
+       "Demand is spread across many makers."
+      ],
+      "explanation": "A fragmented market means many potential buyers for parts."
+     },
+     "proReasoning": "Founders sell to a spread market broadly.",
+     "commonMistake": "Betting on one customer in a split market.",
+     "mentalModel": "Sell broadly."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend asks who makes most of the world’s robots.",
+      "prompt": "What's the best answer?",
+      "options": [
+       "No single company, the market is split",
+       "One US company",
+       "Chinese firms, with most of the market"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "ABB and Epson led at about 13% each.",
+       "No US company leads.",
+       "Japanese makers held about 40%."
+      ],
+      "explanation": "The market is split among many makers, with none much above 13%."
+     },
+     "proReasoning": "Answer with the structure, not one name.",
+     "commonMistake": "Naming one company as the answer.",
+     "mentalModel": "Many makers share it."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:320ad3252c62"
+  ]
+ },
+ {
+  "id": "d2973b7e-27d9-5069-b0ed-c48d40f9edcc",
+  "market_id": "robotics",
+  "day": 25,
+  "slot": 3,
+  "content": {
+   "id": "robotics-d25-c3",
+   "title": "Many suppliers, one choice",
+   "lessonTitle": "Nobody owns the robot arm market",
+   "slot": 3,
+   "type": "decide",
+   "brief": {
+    "headline": "You run procurement for 300 new robot arms. The top six makers hold about 59% of the market, and no one passes about 13%.",
+    "kicker": "Decide: buy from one maker, or spread orders across two?",
+    "fullText": "In 2023, by value, ABB and Epson each held about 13%, Fanuc 11%, Yaskawa and Kawasaki 8%, and KUKA about 6%.\n\nJapanese makers Epson, Fanuc, Yaskawa and Kawasaki held about 40% between them. The top six held about 59%.\n\nWith many capable makers, buyers have choices, and a reason to compare.",
+    "sources": [
+     {
+      "url": "https://statista.com/chart/32239/global-market-share-of-industrial-robotics-companies",
+      "label": "Statista, the giants of industrial robotics"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "sortSignal",
+    "prompt": "Which maker held about this share in 2023?",
+    "buckets": [
+     "About 13%",
+     "About 8%"
+    ],
+    "items": [
+     {
+      "text": "ABB",
+      "bucket": 0
+     },
+     {
+      "text": "Epson",
+      "bucket": 0
+     },
+     {
+      "text": "Yaskawa",
+      "bucket": 1
+     },
+     {
+      "text": "Kawasaki",
+      "bucket": 1
+     }
+    ],
+    "explanation": "ABB and Epson about 13%; Yaskawa and Kawasaki about 8%."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "About what share did Japanese makers hold together?",
+    "min": 0,
+    "max": 100,
+    "value": 40,
+    "unit": "%",
+    "explanation": "About 40%, from Epson, Fanuc, Yaskawa and Kawasaki."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your boss asks how to buy 300 robots.",
+      "prompt": "What do you recommend?",
+      "options": [
+       "Build robots in-house",
+       "Compare bids from several makers",
+       "Buy from the first maker you call"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "That is costly and slow.",
+       "Many capable makers compete.",
+       "You lose pricing power."
+      ],
+      "explanation": "A fragmented market gives buyers bargaining power through competition."
+     },
+     "proReasoning": "Buyers who run real competitions save money.",
+     "commonMistake": "Skipping comparison in a competitive market.",
+     "mentalModel": "Make them compete."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A robot buyer uses only one supplier.",
+      "prompt": "What risk do you see?",
+      "options": [
+       "Lower prices than rivals",
+       "No risk at all",
+       "Delays if that supplier slips"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "One supplier usually means less bargaining power.",
+       "All suppliers can slip.",
+       "One supplier is a single point of failure."
+      ],
+      "explanation": "With so many makers, relying on one is a choice, and a risk."
+     },
+     "proReasoning": "Investors check supply concentration.",
+     "commonMistake": "Ignoring supplier risk.",
+     "mentalModel": "Spread the risk."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You plan a robot fleet for a new plant.",
+      "prompt": "What do you weigh?",
+      "options": [
+       "Two makers: more choice, more complexity",
+       "Only the cheapest robot",
+       "Only the most famous brand in the market"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "You balance supply risk and upkeep.",
+       "Cheap can cost more later.",
+       "Fame is not fit."
+      ],
+      "explanation": "Two suppliers cut risk but add training and spares. Weigh both."
+     },
+     "proReasoning": "Founders weigh trade-offs, not single factors.",
+     "commonMistake": "Choosing on one factor alone.",
+     "mentalModel": "Weigh the trade-off."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend asks why there are so many robot arm brands.",
+      "prompt": "What's the best answer?",
+      "options": [
+       "Each country bans imports",
+       "No maker has pulled far ahead",
+       "The law requires many brands"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Robots trade globally.",
+       "No one passes about 13%.",
+       "No such law."
+      ],
+      "explanation": "Many makers are good enough that none has pulled away."
+     },
+     "proReasoning": "Explain variety by competition.",
+     "commonMistake": "Assuming one brand must win.",
+     "mentalModel": "Many good makers."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:b26109b8de45"
+  ]
+ },
+ {
+  "id": "8ead28ef-8475-54bf-8220-2c3147bb764b",
+  "market_id": "robotics",
+  "day": 26,
+  "slot": 1,
+  "content": {
+   "id": "robotics-d26-c1",
+   "title": "Walmart sells its robot unit",
+   "lessonTitle": "The $5.4 billion robot unit sale",
+   "slot": 1,
+   "type": "apply",
+   "brief": {
+    "headline": "In January 2025, Symbotic agreed to buy Walmart’s robotics business for $200 million, plus up to $350 million more tied to orders.",
+    "kicker": "Apply the unit sale lesson: why structure a price around future orders?",
+    "fullText": "Symbotic agreed to pay $200 million in cash at closing, plus up to $350 million more based on how many systems Walmart orders.\n\nWalmart agreed to pay Symbotic $520 million for a development program. It committed to buy 400 automated pickup systems for its stores over several years, if performance criteria are met.\n\nDay 26 showed SoftBank paying about 17 times EBITDA for ABB Robotics. Here, part of the price waits for proof.",
+    "sources": [
+     {
+      "url": "https://ir.symbotic.com/news-releases/news-release-details/symbotic-acquire-walmarts-advanced-systems-and-robotics-business",
+      "label": "Symbotic, to acquire Walmart's Advanced Systems and Robotics business, Jan 2025"
+     },
+     {
+      "url": "https://builtin.com/articles/softbank-to-acquire-abb-robotics-business-for-5-billion-20251008",
+      "label": "Built In, SoftBank to acquire ABB Robotics business"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "sortSignal",
+    "prompt": "Which side of the deal is it?",
+    "buckets": [
+     "Symbotic pays",
+     "Walmart pays or commits"
+    ],
+    "items": [
+     {
+      "text": "$200 million cash at closing",
+      "bucket": 0
+     },
+     {
+      "text": "Up to $350 million more tied to orders",
+      "bucket": 0
+     },
+     {
+      "text": "$520 million for a development program",
+      "bucket": 1
+     },
+     {
+      "text": "400 store systems, if criteria are met",
+      "bucket": 1
+     }
+    ],
+    "explanation": "Symbotic pays for the unit. Walmart funds development and commits to orders."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "How many store systems did Walmart commit to buy, if criteria are met?",
+    "min": 0,
+    "max": 1000,
+    "value": 400,
+    "unit": "",
+    "explanation": "400 automated pickup systems over several years."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A robotics firm asks why part of the price depends on orders.",
+      "prompt": "What do you say?",
+      "options": [
+       "It ties the price to proven demand",
+       "It hides the real price from buyers",
+       "It lets Walmart avoid paying anything"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Up to $350 million depends on systems ordered.",
+       "The terms were published.",
+       "Walmart still funds $520 million of work."
+      ],
+      "explanation": "An earnout pays more only if the business delivers, which shares the risk."
+     },
+     "proReasoning": "Candidates who can read deal terms stand out in strategy roles.",
+     "commonMistake": "Treating the headline price as the whole deal.",
+     "mentalModel": "Price follows proof."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A robot maker buys a unit with a big contingent payment.",
+      "prompt": "What do you check?",
+      "options": [
+       "Whether the seller has a famous name",
+       "What must happen to trigger the extra pay",
+       "Only the headline total of the deal"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "A name does not set the price.",
+       "The triggers decide the real cost.",
+       "The total may never be paid."
+      ],
+      "explanation": "Contingent pay depends on future orders. The triggers matter more than the total."
+     },
+     "proReasoning": "Investors read the conditions behind the headline.",
+     "commonMistake": "Adding contingent pay to the price as if certain.",
+     "mentalModel": "Read the triggers.",
+     "sources": [
+      {
+       "url": "https://ir.symbotic.com/news-releases/news-release-details/symbotic-acquire-walmarts-advanced-systems-and-robotics-business",
+       "label": "Symbotic, to acquire Walmart's Advanced Systems and Robotics business, Jan 2025"
+      }
+     ]
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You sell your robot unit to a bigger company.",
+      "prompt": "How do you bridge a price gap?",
+      "options": [
+       "Insist on full cash or no deal",
+       "Accept any price to close fast",
+       "Part cash now, part tied to results"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Deals can die over gaps.",
+       "You may leave value behind.",
+       "Both sides share the risk."
+      ],
+      "explanation": "Tying part of the price to results can close a gap both sides accept."
+     },
+     "proReasoning": "Founders use deal structure, not just price, to close gaps.",
+     "commonMistake": "Walking away over a gap a structure could bridge.",
+     "mentalModel": "Structure closes gaps."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend asks why Walmart would sell its own robot team.",
+      "prompt": "What's the best answer?",
+      "options": [
+       "A specialist can run it while Walmart buys",
+       "Walmart has stopped using store robots",
+       "It needed cash to pay off its debts"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Walmart still committed to 400 systems.",
+       "It committed to buy 400 more systems.",
+       "The release ties the sale to orders, not debt."
+      ],
+      "explanation": "Walmart keeps buying the systems but lets a robot specialist build them."
+     },
+     "proReasoning": "Explain a sale by who is better placed to run it.",
+     "commonMistake": "Reading a sale as a retreat from robots.",
+     "mentalModel": "Sell the team, keep the robots."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:fd67d7cfdaae"
+  ]
+ },
+ {
+  "id": "923b7f71-764f-5962-8eb2-d1fdfbaf6ea7",
+  "market_id": "robotics",
+  "day": 26,
+  "slot": 2,
+  "content": {
+   "id": "robotics-d26-c2",
+   "title": "One-off sales, repeat sales",
+   "lessonTitle": "The $5.4 billion robot unit sale",
+   "slot": 2,
+   "type": "connect",
+   "brief": {
+    "headline": "ABB Robotics earned $313 million in EBITDA on $2.3 billion of revenue in 2024. Intuitive got about 75% of its 2025 revenue from instruments and services.",
+    "kicker": "Connect day 26 and day 2: how a robot business earns money, and what buyers pay for.",
+    "fullText": "Day 2 showed Intuitive, the surgical robot maker. Instruments and services, its recurring revenue, made about 75% of its $10.06 billion in 2025 revenue.\n\nDay 26 showed ABB Robotics, sold to SoftBank for about $5.4 billion. Its EBITDA fell from $385 million on $2.5 billion of revenue in 2023 to $313 million on $2.3 billion in 2024.\n\nRevenue that repeats with each use is steadier than revenue that waits for the next robot order.",
+    "sources": [
+     {
+      "url": "https://www.nasdaq.com/press-release/intuitive-announces-fourth-quarter-earnings-2026-01-22",
+      "label": "Intuitive, Q4 2025 earnings"
+     },
+     {
+      "url": "https://builtin.com/articles/softbank-to-acquire-abb-robotics-business-for-5-billion-20251008",
+      "label": "Built In, SoftBank to acquire ABB Robotics business"
+     },
+     {
+      "url": "https://www.forbes.com/sites/iansayson/2026/11/07/china-blocks-54-billion-abb-robotics-deal-with-billionaire-masayoshi-sons-softbank/",
+      "label": "Forbes, China blocks $5.4 billion ABB Robotics deal, Nov 2026"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "faceOff",
+    "prompt": "Which business relies more on repeat revenue?",
+    "left": {
+     "name": "Intuitive",
+     "note": "About 75% recurring"
+    },
+    "right": {
+     "name": "ABB Robotics",
+     "note": "Mostly robot sales"
+    },
+    "correctIndex": 0,
+    "explanation": "About 75% of Intuitive’s 2025 revenue came from instruments and services."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "About how many million dollars of EBITDA did ABB Robotics earn in 2024?",
+    "min": 0,
+    "max": 800,
+    "value": 313,
+    "unit": "M",
+    "explanation": "$313 million, down from $385 million in 2023."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "An interviewer asks why a robot maker’s profit can swing.",
+      "prompt": "What do you say?",
+      "options": [
+       "Profit depends only on paint costs",
+       "New robot orders rise and fall with demand",
+       "Robot makers never earn steady profit"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Paint is not the driver.",
+       "ABB’s EBITDA fell from $385M to $313M.",
+       "Intuitive shows steady models exist."
+      ],
+      "explanation": "Robot sales depend on new orders. Recurring revenue, as at Intuitive, smooths the swings."
+     },
+     "proReasoning": "Candidates who compare business models stand out.",
+     "commonMistake": "Assuming all robot companies earn alike.",
+     "mentalModel": "Repeat revenue smooths."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You compare ABB Robotics and Intuitive as investments.",
+      "prompt": "What is the key difference?",
+      "options": [
+       "Which one sells more robots each year",
+       "Which one has more staff on payroll",
+       "How much revenue repeats with each use"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Unit sales miss what each robot keeps earning.",
+       "Headcount says little about revenue quality.",
+       "Intuitive gets about 75% from repeat revenue."
+      ],
+      "explanation": "Recurring revenue usually earns a higher multiple than one-off sales."
+     },
+     "proReasoning": "Investors pay more for steady, repeating revenue.",
+     "commonMistake": "Comparing only revenue size.",
+     "mentalModel": "Count the repeat share.",
+     "sources": [
+      {
+       "url": "https://www.nasdaq.com/press-release/intuitive-announces-fourth-quarter-earnings-2026-01-22",
+       "label": "Intuitive, Q4 2025 earnings"
+      }
+     ]
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You sell industrial robots.",
+      "prompt": "How do you steady your revenue?",
+      "options": [
+       "Add service and parts revenue per robot",
+       "Only chase bigger one-time orders",
+       "Cut prices until orders come"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Revenue then repeats with each robot.",
+       "Orders still rise and fall.",
+       "Margins fall with prices."
+      ],
+      "explanation": "Service and parts turn each installed robot into repeat revenue."
+     },
+     "proReasoning": "Founders build revenue that repeats.",
+     "commonMistake": "Relying only on lumpy sales.",
+     "mentalModel": "Build the repeat."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend asks why investors like repeat revenue.",
+      "prompt": "What's the best answer?",
+      "options": [
+       "It needs no sales team to win it",
+       "It is steadier and easier to predict",
+       "It is always larger than robot sales"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Customers still have to be won and kept.",
+       "It grows with use, not new orders.",
+       "Size depends on the business."
+      ],
+      "explanation": "Revenue that comes back every month is easier to count on."
+     },
+     "proReasoning": "Explain value by how predictable it is.",
+     "commonMistake": "Thinking bigger sales always beat steady sales.",
+     "mentalModel": "Steady is valued."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:cc044fed656b"
+  ]
+ },
+ {
+  "id": "c13e06e2-abe2-5fc6-ae18-1c287086709c",
+  "market_id": "robotics",
+  "day": 26,
+  "slot": 3,
+  "content": {
+   "id": "robotics-d26-c3",
+   "title": "Paying 17 times profit",
+   "lessonTitle": "The $5.4 billion robot unit sale",
+   "slot": 3,
+   "type": "decide",
+   "brief": {
+    "headline": "You run corporate development at a robot maker. A rival unit is for sale at about 17 times EBITDA, like ABB Robotics.",
+    "kicker": "Decide: pay a high multiple for a unit whose profit is falling?",
+    "fullText": "SoftBank agreed in October 2025 to buy ABB Robotics for about $5.4 billion. That is about 17 times the unit’s 2024 EBITDA of $313 million.\n\nEBITDA had fallen from $385 million in 2023, and revenue from $2.5 billion to $2.3 billion. The unit employs about 7,000 people.\n\nIn November 2026, China’s investment security review blocked the purchase of the unit’s China business.",
+    "sources": [
+     {
+      "url": "https://builtin.com/articles/softbank-to-acquire-abb-robotics-business-for-5-billion-20251008",
+      "label": "Built In, SoftBank to acquire ABB Robotics business"
+     },
+     {
+      "url": "https://www.forbes.com/sites/iansayson/2026/11/07/china-blocks-54-billion-abb-robotics-deal-with-billionaire-masayoshi-sons-softbank/",
+      "label": "Forbes, China blocks $5.4 billion ABB Robotics deal, Nov 2026"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "buildChain",
+    "prompt": "Order the steps to judge a high price.",
+    "steps": [
+     "Find the profit measure",
+     "Compute the multiple",
+     "Check the profit trend",
+     "Ask what growth the price needs"
+    ],
+    "explanation": "Measure profit, compute the multiple, check the trend, then test the growth it implies."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "About how many times 2024 EBITDA was the $5.4 billion price?",
+    "min": 0,
+    "max": 40,
+    "value": 17,
+    "unit": "x",
+    "explanation": "About 17 times $313 million."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your boss asks if 17 times EBITDA is too much.",
+      "prompt": "What do you say?",
+      "options": [
+       "Never, high prices always win",
+       "Always, any price is fine",
+       "Only if growth can justify it"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Overpaying hurts returns.",
+       "Price matters.",
+       "Profit fell, so growth must return."
+      ],
+      "explanation": "At 17 times a falling profit, the deal needs a growth story you believe."
+     },
+     "proReasoning": "Analysts who test the growth behind a price earn trust.",
+     "commonMistake": "Judging a price without the profit trend.",
+     "mentalModel": "Price needs growth."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A buyer pays about 17 times EBITDA for a robot unit.",
+      "prompt": "What else do you check?",
+      "options": [
+       "Regulatory risk in key markets",
+       "Only the size of the price",
+       "How famous the buyer is"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "China blocked the China business.",
+       "Size alone hides risk.",
+       "Fame is not a check."
+      ],
+      "explanation": "Regulators can block parts of a deal, as China did in 2026."
+     },
+     "proReasoning": "Investors check approvals as well as price.",
+     "commonMistake": "Ignoring regulators in cross-border deals.",
+     "mentalModel": "Check the approvals.",
+     "sources": [
+      {
+       "url": "https://www.forbes.com/sites/iansayson/2026/11/07/china-blocks-54-billion-abb-robotics-deal-with-billionaire-masayoshi-sons-softbank/",
+       "label": "Forbes, China blocks $5.4 billion ABB Robotics deal, Nov 2026"
+      }
+     ]
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You consider buying a robot unit.",
+      "prompt": "What do you plan for?",
+      "options": [
+       "That profit will rise on its own",
+       "That some countries may block parts",
+       "That every regulator will approve"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Profit was falling.",
+       "China blocked ABB’s China piece.",
+       "Not guaranteed."
+      ],
+      "explanation": "Plan for parts of a deal to fail review in strategic industries."
+     },
+     "proReasoning": "Founders plan for blocked pieces in deals.",
+     "commonMistake": "Assuming deals close as signed.",
+     "mentalModel": "Plan for blocks."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend asks why someone pays billions for a unit with falling profit.",
+      "prompt": "What's the best answer?",
+      "options": [
+       "They did not check the numbers",
+       "Profit does not matter in deals",
+       "They bet profit will grow later"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "The numbers are public.",
+       "Profit drives price.",
+       "SoftBank paid for the future."
+      ],
+      "explanation": "A buyer pays for what the business could earn, not just what it earns now."
+     },
+     "proReasoning": "Explain a price by the future it assumes.",
+     "commonMistake": "Assuming high prices mean high profits.",
+     "mentalModel": "Price is a bet."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:5094ff397a4c"
+  ]
+ },
+ {
+  "id": "8b13f445-d18e-51d7-af84-7c9de847b9fe",
+  "market_id": "robotics",
+  "day": 27,
+  "slot": 1,
+  "content": {
+   "id": "robotics-d27-c1",
+   "title": "Germany lowers the bar",
+   "lessonTitle": "When China bought a German robot maker",
+   "slot": 1,
+   "type": "apply",
+   "brief": {
+    "headline": "In December 2018, Germany planned to review non-EU purchases of 10% of sensitive firms, down from 25%. Officials linked the move to Midea’s 2016 KUKA takeover.",
+    "kicker": "Apply the takeover lesson: how do countries respond after losing a strategic firm?",
+    "fullText": "The lower threshold was to cover defence and critical infrastructure, including IT security, power and large food producers.\n\nAFP reported that the change came after Midea bought KUKA. Germany’s state had also taken a minority stake in the grid operator 50Hertz to keep out Chinese investors.\n\nDay 27 showed the KUKA deal itself. This was Germany tightening its screening afterwards.",
+    "sources": [
+     {
+      "url": "https://www.thedailystar.net/business/global-business/news/eye-china-germany-toughens-rules-foreign-buyouts-1676047",
+      "label": "The Daily Star (AFP), Germany toughens rules on foreign buyouts, Dec 2018"
+     },
+     {
+      "url": "https://phys.org/news/2016-08-china-midea-near-stake-german.amp",
+      "label": "Phys.org, China's Midea near total stake in German robot maker"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "multipleChoice",
+    "prompt": "What did Germany plan to lower the review threshold to?",
+    "options": [
+     "50%",
+     "25%",
+     "10%"
+    ],
+    "correctIndex": 2,
+    "explanation": "From 25% to 10% for non-EU buyers in sensitive sectors."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "From what share did Germany plan to lower its review threshold?",
+    "min": 0,
+    "max": 60,
+    "value": 25,
+    "unit": "%",
+    "explanation": "From 25%, down to 10%."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A robotics firm asks why Germany tightened its rules.",
+      "prompt": "What do you say?",
+      "options": [
+       "It wanted to sell more German firms abroad",
+       "It wanted to review smaller foreign stakes",
+       "It wanted to ban all foreign buyers"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "The goal was more review.",
+       "The bar fell from 25% to 10%.",
+       "It screens; it does not ban all."
+      ],
+      "explanation": "Germany lowered the threshold so smaller stakes would be reviewed."
+     },
+     "proReasoning": "Candidates who know screening rules help in deal roles.",
+     "commonMistake": "Assuming any foreign buyer is fine.",
+     "mentalModel": "Smaller stakes, more review."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A foreign buyer seeks 15% of a German tech firm.",
+      "prompt": "What do you weigh?",
+      "options": [
+       "It is too small a stake to be checked",
+       "Only EU buyers face German reviews",
+       "It may face review in sensitive sectors"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "The bar was lowered to 10%.",
+       "The rule targets non-EU buyers.",
+       "10% can trigger review in some sectors."
+      ],
+      "explanation": "Under the lower threshold, stakes above 10% in sensitive sectors could face review."
+     },
+     "proReasoning": "Investors check screening thresholds before deals.",
+     "commonMistake": "Assuming minority stakes avoid review.",
+     "mentalModel": "Know the threshold.",
+     "sources": [
+      {
+       "url": "https://www.thedailystar.net/business/global-business/news/eye-china-germany-toughens-rules-foreign-buyouts-1676047",
+       "label": "The Daily Star (AFP), Germany toughens rules on foreign buyouts, Dec 2018"
+      }
+     ]
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You run a tech startup and get a foreign offer.",
+      "prompt": "What do you check first?",
+      "options": [
+       "Whether the stake triggers a review",
+       "Only the price per share on offer",
+       "Only how fast the deal can close"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Review can delay or block it.",
+       "Price means little if blocked.",
+       "Speed depends on review."
+      ],
+      "explanation": "Screening rules can stop a deal. Check them before celebrating."
+     },
+     "proReasoning": "Founders check approvals early.",
+     "commonMistake": "Signing before checking screening.",
+     "mentalModel": "Check the rules first."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend asks why a government cares who owns a company.",
+      "prompt": "What's the best answer?",
+      "options": [
+       "It only cares about the taxes paid",
+       "Some firms hold key skills or networks",
+       "It wants to own every large company"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Security was the concern.",
+       "KUKA and 50Hertz were seen as strategic.",
+       "It took a minority stake in one firm only."
+      ],
+      "explanation": "Some firms are seen as too important to let rivals control."
+     },
+     "proReasoning": "Explain screening by what is at stake.",
+     "commonMistake": "Thinking ownership is only a private matter.",
+     "mentalModel": "Some firms are strategic."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:e3fb762a48d9"
+  ]
+ },
+ {
+  "id": "7f5514ed-6bda-5cf0-a8af-8d7dd95adc8a",
+  "market_id": "robotics",
+  "day": 27,
+  "slot": 2,
+  "content": {
+   "id": "robotics-d27-c2",
+   "title": "Two ways to hold power",
+   "lessonTitle": "When China bought a German robot maker",
+   "slot": 2,
+   "type": "connect",
+   "brief": {
+    "headline": "China paused its widest rare earth controls until November 10, 2026. In November 2026, it blocked the sale of ABB Robotics’ China business.",
+    "kicker": "Connect day 27 and day 11: control over materials, and control over ownership.",
+    "fullText": "Day 11 showed China pausing its expanded rare earth export controls for one year, until November 10, 2026. Older rules from April 2025 still required licenses for some magnets.\n\nDay 27 showed China using its investment security review to block SoftBank from buying ABB Robotics’ China business, a decade after Midea bought KUKA.\n\nOne lever controls what leaves the country. The other controls who can buy what is inside it.",
+    "sources": [
+     {
+      "url": "https://thehumanoidgroup.com/news/article/china-rare-earth-export-pause-nears-expiry",
+      "label": "The Humanoid Group, China's rare earth export pause nears expiry"
+     },
+     {
+      "url": "https://www.forbes.com/sites/iansayson/2026/11/07/china-blocks-54-billion-abb-robotics-deal-with-billionaire-masayoshi-sons-softbank/",
+      "label": "Forbes, China blocks $5.4 billion ABB Robotics deal, Nov 2026"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "sortSignal",
+    "prompt": "Which lever does it describe?",
+    "buckets": [
+     "Export controls",
+     "Ownership screening"
+    ],
+    "items": [
+     {
+      "text": "Licenses for some magnets",
+      "bucket": 0
+     },
+     {
+      "text": "A pause until November 10, 2026",
+      "bucket": 0
+     },
+     {
+      "text": "Blocked sale of ABB’s China business",
+      "bucket": 1
+     },
+     {
+      "text": "A security review of a foreign buyer",
+      "bucket": 1
+     }
+    ],
+    "explanation": "Export controls cover goods leaving; screening covers who buys firms."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "About what share of KUKA did Midea take in 2016?",
+    "min": 0,
+    "max": 100,
+    "value": 95,
+    "unit": "%",
+    "explanation": "About 94.55%."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A robotics firm asks how China can affect its business.",
+      "prompt": "What do you say?",
+      "options": [
+       "Only through tariffs on its imports",
+       "It has no way to affect a foreign firm",
+       "Through export controls and deal reviews"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Tariffs are one tool, not the only one.",
+       "Both levers were used.",
+       "Magnet licenses and the ABB block both show it."
+      ],
+      "explanation": "China can limit both what leaves and who buys inside."
+     },
+     "proReasoning": "Candidates who know both levers think like strategists.",
+     "commonMistake": "Seeing only one kind of government risk.",
+     "mentalModel": "Two levers."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A robot company has suppliers and a business in China.",
+      "prompt": "What risks do you list?",
+      "options": [
+       "Parts supply and blocked deals",
+       "Only swings in exchange rates",
+       "Only rising shipping costs"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Both levers apply.",
+       "Currency is one risk among many.",
+       "Shipping misses the policy levers."
+      ],
+      "explanation": "Supply can face export controls, and deals can face review."
+     },
+     "proReasoning": "Investors map every lever a government holds.",
+     "commonMistake": "Pricing one risk and missing the other.",
+     "mentalModel": "Map the levers.",
+     "sources": [
+      {
+       "url": "https://thehumanoidgroup.com/news/article/china-rare-earth-export-pause-nears-expiry",
+       "label": "The Humanoid Group, China's rare earth export pause nears expiry"
+      }
+     ]
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You plan to sell your robot business someday.",
+      "prompt": "What do you plan for?",
+      "options": [
+       "Only the price will matter",
+       "Buyers may need approval in China",
+       "Any buyer will be approved quickly"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Approvals matter too.",
+       "The ABB China sale was blocked.",
+       "The ABB block shows approval is not certain."
+      ],
+      "explanation": "If part of your business is in China, a sale may need Chinese approval."
+     },
+     "proReasoning": "Founders plan exits around approvals.",
+     "commonMistake": "Assuming any buyer is allowed.",
+     "mentalModel": "Plan the approvals."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend asks how a country can block a deal between two foreign firms.",
+      "prompt": "What's the best answer?",
+      "options": [
+       "It cannot, so the report was a rumor",
+       "It owns shares in both companies",
+       "It reviews the business inside its borders"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Forbes reported the block in November 2026.",
+       "Ownership was not the lever used.",
+       "The block covered the China business."
+      ],
+      "explanation": "A country can review the part of a business that operates on its soil."
+     },
+     "proReasoning": "Explain power by where the business sits.",
+     "commonMistake": "Thinking deals are only between companies.",
+     "mentalModel": "Location gives power."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:cfafbb3c806f"
+  ]
+ },
+ {
+  "id": "a1478a9b-2db6-5bce-9ace-5d3042310774",
+  "market_id": "robotics",
+  "day": 27,
+  "slot": 3,
+  "content": {
+   "id": "robotics-d27-c3",
+   "title": "A foreign buyer knocks",
+   "lessonTitle": "When China bought a German robot maker",
+   "slot": 3,
+   "type": "decide",
+   "brief": {
+    "headline": "You run a robot software startup in Europe. A large foreign firm offers to buy you, as Midea bought KUKA in 2016.",
+    "kicker": "Decide: how do you weigh a foreign offer in a strategic industry?",
+    "fullText": "In 2016, Midea took about 94.55% of KUKA, valuing it at about €4.6 billion. It offered €115 per share.\n\nGerman officials, including Sigmar Gabriel and Günther Oettinger, raised concerns about technology transfer.\n\nIn 2026, China blocked a foreign buyer from taking ABB Robotics’ China business. Robot firms now count as strategic.",
+    "sources": [
+     {
+      "url": "https://phys.org/news/2016-08-china-midea-near-stake-german.amp",
+      "label": "Phys.org, China's Midea near total stake in German robot maker"
+     },
+     {
+      "url": "https://www.forbes.com/sites/iansayson/2026/11/07/china-blocks-54-billion-abb-robotics-deal-with-billionaire-masayoshi-sons-softbank/",
+      "label": "Forbes, China blocks $5.4 billion ABB Robotics deal, Nov 2026"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "spotFake",
+    "prompt": "One of these is false. Tap it.",
+    "statements": [
+     "Midea offered €115 per share.",
+     "German officials raised concerns.",
+     "KUKA stayed fully German-owned."
+    ],
+    "fakeIndex": 2,
+    "explanation": "Midea ended up with about 94.55% of KUKA."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "About how many billion euros was KUKA valued at in the deal?",
+    "min": 0,
+    "max": 10,
+    "value": 4.6,
+    "unit": "B",
+    "explanation": "About €4.6 billion."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your board asks about the foreign offer.",
+      "prompt": "What do you advise?",
+      "options": [
+       "Check screening rules before you agree",
+       "Sign fast before officials notice it",
+       "Refuse every foreign buyer outright"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Reviews can delay or block it.",
+       "Reviews happen anyway.",
+       "You may refuse a good deal."
+      ],
+      "explanation": "Robot firms are strategic. Screening may decide if the deal can close."
+     },
+     "proReasoning": "Advisers who flag approval risk early earn trust.",
+     "commonMistake": "Treating a strategic deal like any other.",
+     "mentalModel": "Check screening first."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A startup accepts a foreign takeover offer.",
+      "prompt": "What risk do you flag?",
+      "options": [
+       "Foreign buyers rarely pay in full",
+       "A government review could block it",
+       "The price is always too low for sellers"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Midea paid €115 a share for KUKA.",
+       "Robot firms count as strategic.",
+       "Price depends on the deal."
+      ],
+      "explanation": "In a strategic sector, approval is a real risk to closing."
+     },
+     "proReasoning": "Investors weigh closing risk, not just price.",
+     "commonMistake": "Counting a signed deal as closed.",
+     "mentalModel": "Signed is not closed."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You get two offers: one local, one foreign and higher.",
+      "prompt": "How do you compare them?",
+      "options": [
+       "The higher price, no questions",
+       "The local one, always",
+       "Price adjusted for approval risk"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Ignores the risk.",
+       "Ignores the price.",
+       "A blocked deal pays nothing."
+      ],
+      "explanation": "A higher offer that may be blocked can be worth less than a safe one."
+     },
+     "proReasoning": "Founders weigh offers by what will actually close.",
+     "commonMistake": "Comparing headline prices only.",
+     "mentalModel": "Risk-adjust offers."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend asks why politicians worried about a robot company sale.",
+      "prompt": "What's the best answer?",
+      "options": [
+       "They feared losing key technology",
+       "They wanted cheaper robots",
+       "They disliked the color of robots"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Concerns centered on technology transfer.",
+       "Officials raised technology, not prices.",
+       "Officials raised technology, not looks."
+      ],
+      "explanation": "Officials worried the know-how would leave with the company."
+     },
+     "proReasoning": "Explain politics by what is at stake.",
+     "commonMistake": "Assuming deals are only about money.",
+     "mentalModel": "Know-how is power."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:9b0da32ddd0d"
+  ]
+ },
+ {
+  "id": "d6ca25ab-9ea1-55a6-8ad3-e4a54ca3d0b7",
+  "market_id": "robotics",
+  "day": 28,
+  "slot": 1,
+  "content": {
+   "id": "robotics-d28-c1",
+   "title": "Humanoid costs fell 40%",
+   "lessonTitle": "What a humanoid costs to build",
+   "slot": 1,
+   "type": "apply",
+   "brief": {
+    "headline": "In February 2024, Goldman Sachs said humanoid manufacturing costs had fallen about 40%, to $30,000 to $150,000 per robot.",
+    "kicker": "Apply the bill of materials lesson: why do falling part costs matter so much?",
+    "fullText": "Goldman said the cost range fell from $50,000 to $250,000 per unit a year earlier, faster than it had expected.\n\nIt raised its 2035 market estimate to $38 billion and its shipment estimate fourfold, to 1.4 million units.\n\nDay 28 showed Morgan Stanley’s estimate of about $46,000 in parts for Optimus Gen 2. Cheaper parts open more uses.",
+    "sources": [
+     {
+      "url": "https://www.goldmansachs.com/insights/articles/the-global-market-for-robots-could-reach-38-billion-by-2035",
+      "label": "Goldman Sachs, the global market for humanoid robots could reach $38 billion by 2035, Feb 2024"
+     },
+     {
+      "url": "https://interestingengineering.com/ai-robotics/chinese-parts-cloud-tesla-humanoid-robot-growth",
+      "label": "Interesting Engineering, Chinese parts cloud Tesla humanoid robot growth"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "faceOff",
+    "prompt": "Which cost range came later?",
+    "left": {
+     "name": "$30,000 to $150,000",
+     "note": "After the drop"
+    },
+    "right": {
+     "name": "$50,000 to $250,000",
+     "note": "Before"
+    },
+    "correctIndex": 0,
+    "explanation": "Costs fell about 40%, to $30,000 to $150,000."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "By about what percent did humanoid costs fall, per Goldman?",
+    "min": 0,
+    "max": 100,
+    "value": 40,
+    "unit": "%",
+    "explanation": "About 40%."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A humanoid maker asks why falling costs matter.",
+      "prompt": "What do you say?",
+      "options": [
+       "Costs do not affect demand",
+       "Cheaper means worse robots",
+       "Cheaper robots fit more jobs"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Price drives demand.",
+       "Not necessarily.",
+       "Goldman raised shipments fourfold."
+      ],
+      "explanation": "As costs fall, more jobs make economic sense for a humanoid."
+     },
+     "proReasoning": "Candidates who link cost and demand think commercially.",
+     "commonMistake": "Ignoring cost in demand forecasts.",
+     "mentalModel": "Cheaper opens doors."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A forecast raises humanoid shipments fourfold.",
+      "prompt": "What do you check?",
+      "options": [
+       "What cost drop it assumes",
+       "Only the size of the forecast",
+       "How bold it sounds"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Costs drive the forecast.",
+       "Size alone says little.",
+       "Tone is not data."
+      ],
+      "explanation": "Goldman tied its forecast to falling costs. Check that assumption."
+     },
+     "proReasoning": "Investors test the assumption under a forecast.",
+     "commonMistake": "Trusting forecasts without assumptions.",
+     "mentalModel": "Test the assumption.",
+     "sources": [
+      {
+       "url": "https://www.goldmansachs.com/insights/articles/the-global-market-for-robots-could-reach-38-billion-by-2035",
+       "label": "Goldman Sachs, the global market for humanoid robots could reach $38 billion by 2035, Feb 2024"
+      }
+     ]
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You build a humanoid.",
+      "prompt": "Where do you focus first?",
+      "options": [
+       "Raising the price",
+       "Cutting the cost of key parts",
+       "Adding features buyers did not ask for"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "That narrows demand.",
+       "Costs set what jobs fit.",
+       "Features add cost."
+      ],
+      "explanation": "Lower part costs widen the market for your robot."
+     },
+     "proReasoning": "Founders attack the bill of materials early.",
+     "commonMistake": "Adding cost before proving demand.",
+     "mentalModel": "Cut the BOM."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend asks how a robot gets cheaper.",
+      "prompt": "What's the best answer?",
+      "options": [
+       "Makers shrink every robot in size",
+       "Governments drop taxes on robots",
+       "Its parts get cheaper as makers scale"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Size is not the driver.",
+       "Goldman cited part costs, not taxes.",
+       "Costs fell about 40% in a year."
+      ],
+      "explanation": "As parts are made in higher volume, they cost less."
+     },
+     "proReasoning": "Explain price by part costs.",
+     "commonMistake": "Thinking price is set by the brand.",
+     "mentalModel": "Parts drive price."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:78e5399c3b43"
+  ]
+ },
+ {
+  "id": "2663a660-9d87-5984-83cf-84034153b920",
+  "market_id": "robotics",
+  "day": 28,
+  "slot": 2,
+  "content": {
+   "id": "robotics-d28-c2",
+   "title": "The magnet behind the price",
+   "lessonTitle": "What a humanoid costs to build",
+   "slot": 2,
+   "type": "connect",
+   "brief": {
+    "headline": "China makes about 92% of the world’s rare earth magnets. Without Chinese parts, Optimus Gen 2 would cost about $131,000 to build, not $46,000.",
+    "kicker": "Connect day 28 and day 9: one choke point, and what it does to a humanoid’s cost.",
+    "fullText": "Day 9 showed that China makes about 92% of the world’s rare earth magnets, and that Musk said China’s magnet licenses affected Optimus in 2025.\n\nDay 28 showed Morgan Stanley’s estimate: about $46,000 in parts for Optimus Gen 2, rising to about $131,000 without Chinese suppliers. Most components are made in China.\n\nMagnets are one example of a wider dependence.",
+    "sources": [
+     {
+      "url": "https://www.fortune.com/article/elon-musk-tesla-optimus-robots-china-rare-earths",
+      "label": "Fortune, Musk says China's rare earth curbs hit Optimus"
+     },
+     {
+      "url": "https://interestingengineering.com/ai-robotics/chinese-parts-cloud-tesla-humanoid-robot-growth",
+      "label": "Interesting Engineering, Chinese parts cloud Tesla humanoid robot growth"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "sortSignal",
+    "prompt": "Which day showed it?",
+    "buckets": [
+     "Day 9",
+     "Day 28"
+    ],
+    "items": [
+     {
+      "text": "China makes about 92% of magnets",
+      "bucket": 0
+     },
+     {
+      "text": "Musk said licenses hit Optimus",
+      "bucket": 0
+     },
+     {
+      "text": "Parts cost about $46,000",
+      "bucket": 1
+     },
+     {
+      "text": "About $131,000 without China",
+      "bucket": 1
+     }
+    ],
+    "explanation": "Day 9 covered magnets; day 28 covered the full parts bill."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "About how many thousand dollars more would Optimus parts cost without China?",
+    "min": 0,
+    "max": 200,
+    "value": 85,
+    "unit": "K",
+    "explanation": "About $85,000 more, from $46,000 to $131,000."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A humanoid maker asks about supply risk.",
+      "prompt": "What do you say?",
+      "options": [
+       "Most parts, not just magnets, rely on China",
+       "Only the magnets come from China",
+       "Exposure ends once magnets are sourced"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Morgan Stanley said most parts are made in China.",
+       "Magnets are one part.",
+       "The exposure is large."
+      ],
+      "explanation": "Magnets are the famous choke point, but most parts rely on China."
+     },
+     "proReasoning": "Candidates who see the full supply picture stand out.",
+     "commonMistake": "Fixing only the headline dependency.",
+     "mentalModel": "Look at the whole BOM."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A humanoid maker claims a China-free supply chain.",
+      "prompt": "What do you check?",
+      "options": [
+       "How many robots it plans",
+       "Whether its costs reflect that",
+       "Its logo and colors"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Plans are not costs.",
+       "China-free parts cost far more.",
+       "Branding is not costs."
+      ],
+      "explanation": "Morgan Stanley put the gap near $85,000 per robot."
+     },
+     "proReasoning": "Investors test claims against costs.",
+     "commonMistake": "Accepting a claim without the cost math.",
+     "mentalModel": "Check the cost math.",
+     "sources": [
+      {
+       "url": "https://interestingengineering.com/ai-robotics/chinese-parts-cloud-tesla-humanoid-robot-growth",
+       "label": "Interesting Engineering, Chinese parts cloud Tesla humanoid robot growth"
+      }
+     ]
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You build a humanoid.",
+      "prompt": "How do you handle China dependence?",
+      "options": [
+       "Ignore it until a crisis",
+       "Move all parts out tomorrow",
+       "Find second sources for key parts"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Crises are costly.",
+       "Costs would nearly triple.",
+       "You cut risk step by step."
+      ],
+      "explanation": "Second sources reduce risk without tripling cost overnight."
+     },
+     "proReasoning": "Founders diversify the most exposed parts first.",
+     "commonMistake": "All or nothing on supply.",
+     "mentalModel": "Diversify step by step."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend asks why a robot would cost three times more without China.",
+      "prompt": "What's the best answer?",
+      "options": [
+       "China makes most parts at low cost",
+       "China adds a tax on robot exports",
+       "Other countries ban robot parts"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Most components are made in China.",
+       "The estimate is about parts, not taxes.",
+       "Others make parts, but at higher cost."
+      ],
+      "explanation": "Most parts come from China, where they are made cheaply at scale."
+     },
+     "proReasoning": "Explain cost by where parts come from.",
+     "commonMistake": "Assuming any country can build parts as cheaply.",
+     "mentalModel": "Supply sets cost."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:51b2f6727e06"
+  ]
+ },
+ {
+  "id": "8dffcfe1-3c60-57e8-a99c-f09fc33c7acd",
+  "market_id": "robotics",
+  "day": 28,
+  "slot": 3,
+  "content": {
+   "id": "robotics-d28-c3",
+   "title": "Price the bill of materials",
+   "lessonTitle": "What a humanoid costs to build",
+   "slot": 3,
+   "type": "decide",
+   "brief": {
+    "headline": "You run a humanoid startup. Morgan Stanley put Optimus Gen 2 parts at about $46,000, or about $131,000 without Chinese suppliers.",
+    "kicker": "Decide: which supply plan fits your product and price?",
+    "fullText": "Morgan Stanley estimated the bill of materials for Optimus Gen 2 at about $46,000. Without Chinese suppliers, it rose to about $131,000.\n\nThe bank said most components are made in China. The analysis was reported in February 2026.\n\nA bill of materials lists every part and its cost. It sets the floor for your price.",
+    "sources": [
+     {
+      "url": "https://interestingengineering.com/ai-robotics/chinese-parts-cloud-tesla-humanoid-robot-growth",
+      "label": "Interesting Engineering, Chinese parts cloud Tesla humanoid robot growth"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "multipleChoice",
+    "prompt": "What does a bill of materials list?",
+    "options": [
+     "Every part and its cost",
+     "Every customer order",
+     "Every employee and wage"
+    ],
+    "correctIndex": 0,
+    "explanation": "It lists the parts in a product and what each costs."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "About how many thousand dollars were Optimus Gen 2 parts, per Morgan Stanley?",
+    "min": 0,
+    "max": 150,
+    "value": 46,
+    "unit": "K",
+    "explanation": "About $46,000."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your CFO asks for the parts budget.",
+      "prompt": "What do you recommend?",
+      "options": [
+       "Assume no China parts at all",
+       "Plan both a China and a non-China case",
+       "Assume China costs will hold forever"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Costs nearly triple.",
+       "You see the risk and the price.",
+       "Rules can change."
+      ],
+      "explanation": "Two cases show the cost and the risk of each supply plan."
+     },
+     "proReasoning": "Finance staff who plan scenarios earn trust.",
+     "commonMistake": "Planning on one supply case.",
+     "mentalModel": "Plan two cases."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A humanoid startup prices its robot at $50,000.",
+      "prompt": "What do you check?",
+      "options": [
+       "Its marketing budget for launch",
+       "How many founders it has on board",
+       "Its bill of materials and supply plan"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Marketing does not fix thin margins.",
+       "Team size does not set margin.",
+       "Parts alone can be $46,000 or more."
+      ],
+      "explanation": "If parts cost near $46,000, a $50,000 price leaves little room."
+     },
+     "proReasoning": "Investors compare price to parts cost.",
+     "commonMistake": "Ignoring margins in hardware.",
+     "mentalModel": "Check the margin."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You set your humanoid’s price.",
+      "prompt": "What sets the floor?",
+      "options": [
+       "The bill of materials",
+       "What rivals hope to charge",
+       "Your favorite number"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Parts set the lowest price that works.",
+       "Hopes are not costs.",
+       "Not a method."
+      ],
+      "explanation": "Price must cover parts and more. The bill of materials is the floor."
+     },
+     "proReasoning": "Founders price above the floor with room for margin.",
+     "commonMistake": "Pricing below the parts cost.",
+     "mentalModel": "BOM is the floor."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend asks what a bill of materials is.",
+      "prompt": "What's the best answer?",
+      "options": [
+       "A tax form for factory goods",
+       "A list of every part and its cost",
+       "The invoice for shipping a robot"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "It is a cost list, not a tax filing.",
+       "That is the definition.",
+       "Shipping is one cost, not the parts list."
+      ],
+      "explanation": "It lists the parts in a product and their costs."
+     },
+     "proReasoning": "Define the term with an example.",
+     "commonMistake": "Confusing it with a bill to pay.",
+     "mentalModel": "Parts and costs."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:a4a82e58f521"
+  ]
+ },
+ {
+  "id": "07ed4e29-8fc3-575d-9e15-29ce8ea53712",
+  "market_id": "robotics",
+  "day": 29,
+  "slot": 1,
+  "content": {
+   "id": "robotics-d29-c1",
+   "title": "Making robots in Wisconsin",
+   "lessonTitle": "Robot tariffs, held back for talks",
+   "slot": 1,
+   "type": "apply",
+   "brief": {
+    "headline": "In June 2025, Yaskawa America said it would invest at least $180 million in a Wisconsin campus. It would make robots in the US for the first time.",
+    "kicker": "Apply the tariff lesson: what changes when a foreign maker builds locally?",
+    "fullText": "The campus in Franklin, Wisconsin is planned at over 800,000 square feet and more than 700 jobs. Yaskawa said it would consolidate operations there over eight to ten years.\n\nIts announcements did not say tariffs drove the move.\n\nDay 29 showed the US finding that robot imports threaten national security, while holding off on tariffs. Local production changes how exposed a maker is to that.",
+    "sources": [
+     {
+      "url": "https://plantservices.com/industry-news/news/55298080/yaskawa-america-invests-180m-to-expand-robotics-manufacturing-facility-in-wisconsin",
+      "label": "Plant Services, Yaskawa America invests $180M in Wisconsin, Jun 2025"
+     },
+     {
+      "url": "https://www.mayerbrown.com/en/insights/publications/2026/10/president-trump-issues-proclamation-on-imports-of-robotics-industrial-machinery-and-their-parts-and-components",
+      "label": "Mayer Brown, proclamation on imports of robotics and industrial machinery, Oct 2026"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "spotFake",
+    "prompt": "One of these is false. Tap it.",
+    "statements": [
+     "Yaskawa planned at least $180 million.",
+     "The plan includes more than 700 jobs.",
+     "Yaskawa said tariffs forced the move."
+    ],
+    "fakeIndex": 2,
+    "explanation": "Its announcements did not cite tariffs."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "How many million dollars did Yaskawa plan to invest, at least?",
+    "min": 0,
+    "max": 500,
+    "value": 180,
+    "unit": "M",
+    "explanation": "At least $180 million."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A robot maker asks what local production changes.",
+      "prompt": "What do you say?",
+      "options": [
+       "Less exposure to import rules",
+       "No change at all",
+       "Higher import tariffs for it"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Robots made in the US are not imports.",
+       "Location changes exposure.",
+       "Local output is not imported."
+      ],
+      "explanation": "Making robots in the US reduces exposure to import rules like Section 232."
+     },
+     "proReasoning": "Candidates who link location to trade risk stand out.",
+     "commonMistake": "Treating supply location as neutral.",
+     "mentalModel": "Build where you sell."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Yaskawa plans a US robot plant.",
+      "prompt": "What do you avoid assuming?",
+      "options": [
+       "That it creates jobs",
+       "That tariffs caused it",
+       "That it will make robots"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "It cited 700+ jobs.",
+       "The sources do not say so.",
+       "It said it would make robots."
+      ],
+      "explanation": "Stick to what was said. Yaskawa did not cite tariffs."
+     },
+     "proReasoning": "Investors separate stated reasons from guesses.",
+     "commonMistake": "Reading motives into a move.",
+     "mentalModel": "Do not guess motives.",
+     "sources": [
+      {
+       "url": "https://plantservices.com/industry-news/news/55298080/yaskawa-america-invests-180m-to-expand-robotics-manufacturing-facility-in-wisconsin",
+       "label": "Plant Services, Yaskawa America invests $180M in Wisconsin, Jun 2025"
+      }
+     ]
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You import robots to the US.",
+      "prompt": "What do you watch?",
+      "options": [
+       "Only ocean shipping prices",
+       "Only the dollar exchange rate",
+       "Rivals building plants in the US"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Shipping is one factor, not the shift.",
+       "Currency is one factor, not the shift.",
+       "Local rivals face fewer import risks."
+      ],
+      "explanation": "If rivals build locally, they may avoid future import costs."
+     },
+     "proReasoning": "Founders track where rivals build.",
+     "commonMistake": "Ignoring rival supply moves.",
+     "mentalModel": "Watch rival plants."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend asks why a Japanese firm would make robots in Wisconsin.",
+      "prompt": "What's the best answer?",
+      "options": [
+       "To be closer to US customers",
+       "Because Japan banned robots",
+       "Because robots cannot ship"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "It sells to US factories.",
+       "Japan still makes many robots.",
+       "Robots ship worldwide every day."
+      ],
+      "explanation": "Building near customers can cut delivery times and trade exposure."
+     },
+     "proReasoning": "Explain location by customers.",
+     "commonMistake": "Assuming factories stay in home countries.",
+     "mentalModel": "Build near buyers."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:9c1868d56ba5"
+  ]
+ },
+ {
+  "id": "c42dd410-181b-5305-80a2-142d54534b90",
+  "market_id": "robotics",
+  "day": 29,
+  "slot": 2,
+  "content": {
+   "id": "robotics-d29-c2",
+   "title": "Few robots, many imports",
+   "lessonTitle": "Robot tariffs, held back for talks",
+   "slot": 2,
+   "type": "connect",
+   "brief": {
+    "headline": "The US had 295 robots per 10,000 factory workers and installed 34,200 robots in 2024. In 2026, Commerce found it relies on imports for most robot types.",
+    "kicker": "Connect day 29 and day 4: low density, and why imports matter.",
+    "fullText": "Day 4 showed US robot density at 295 per 10,000 workers, far below South Korea’s 1,012. US installations fell 9% in 2024, to 34,200.\n\nDay 29 showed the Section 232 finding of October 28, 2026: robot imports threaten national security, and the US relies on imports for most robot types. Talks come first, with a report due within 180 days.\n\nA country that wants more robots and buys most of them abroad faces a trade-off.",
+    "sources": [
+     {
+      "url": "https://businesswire.com/news/home/20241120789594/en/China-Overtakes-Germany-and-Japan-in-Robot-Density-%e2%80%93-IFR-reports",
+      "label": "IFR, robot density (World Robotics 2024)"
+     },
+     {
+      "url": "https://ifr.org/ifr-press-releases/news/global-robot-demand-in-factories-doubles-over-10-years",
+      "label": "IFR, World Robotics 2025 press release"
+     },
+     {
+      "url": "https://www.mayerbrown.com/en/insights/publications/2026/10/president-trump-issues-proclamation-on-imports-of-robotics-industrial-machinery-and-their-parts-and-components",
+      "label": "Mayer Brown, proclamation on imports of robotics and industrial machinery, Oct 2026"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "faceOff",
+    "prompt": "Which country had higher robot density?",
+    "left": {
+     "name": "South Korea",
+     "note": "1,012 per 10,000"
+    },
+    "right": {
+     "name": "United States",
+     "note": "295 per 10,000"
+    },
+    "correctIndex": 0,
+    "explanation": "South Korea, at 1,012 per 10,000 workers."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "How many robots per 10,000 workers did the US have?",
+    "min": 0,
+    "max": 1000,
+    "value": 295,
+    "unit": "",
+    "explanation": "295, against 1,012 in South Korea."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A policy team asks what tariffs on robots would do.",
+      "prompt": "What do you say?",
+      "options": [
+       "Have no effect on what factories pay",
+       "Raise costs while the US needs more robots",
+       "Lower robot prices for US buyers"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Imports are most of supply.",
+       "The US relies on imports.",
+       "Tariffs raise import prices."
+      ],
+      "explanation": "Tariffs could slow automation in a country that already lags."
+     },
+     "proReasoning": "Candidates who see both sides of a trade policy stand out.",
+     "commonMistake": "Ignoring the cost side.",
+     "mentalModel": "Tariffs cut both ways."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A US factory plans a big robot purchase.",
+      "prompt": "What risk do you weigh?",
+      "options": [
+       "No risk, since the rules are final",
+       "Robot prices will surely fall soon",
+       "Possible tariffs after the talks"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Talks are ongoing for 180 days.",
+       "Tariffs could push prices up instead.",
+       "Tariffs remain an option."
+      ],
+      "explanation": "The 180-day talks could end in tariffs."
+     },
+     "proReasoning": "Investors price policy risk into capex.",
+     "commonMistake": "Assuming today’s rules last.",
+     "mentalModel": "Price the policy risk.",
+     "sources": [
+      {
+       "url": "https://www.mayerbrown.com/en/insights/publications/2026/10/president-trump-issues-proclamation-on-imports-of-robotics-industrial-machinery-and-their-parts-and-components",
+       "label": "Mayer Brown, proclamation on imports of robotics and industrial machinery, Oct 2026"
+      }
+     ]
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You sell robots in the US.",
+      "prompt": "Where is opportunity?",
+      "options": [
+       "Low density means room to grow",
+       "The US has too many robots",
+       "US factories stopped buying"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "295 versus 1,012.",
+       "Not true.",
+       "They bought 34,200."
+      ],
+      "explanation": "Low density points to room for more robots."
+     },
+     "proReasoning": "Founders see gaps as markets.",
+     "commonMistake": "Missing a growth gap.",
+     "mentalModel": "Gap is opportunity."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend asks why the US worries about robot imports.",
+      "prompt": "What's the best answer?",
+      "options": [
+       "Robots are illegal",
+       "It buys most robot types abroad",
+       "It makes all its own robots"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Robots are legal; imports are the worry.",
+       "Commerce found import reliance.",
+       "It relies on imports for most types."
+      ],
+      "explanation": "Relying on imports for key machines raises security concerns."
+     },
+     "proReasoning": "Explain policy by dependence.",
+     "commonMistake": "Assuming the US makes its own robots.",
+     "mentalModel": "Dependence drives policy."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:60f0cc7f4a6e"
+  ]
+ },
+ {
+  "id": "2166ad04-c59a-5059-9710-05e37d4b9acc",
+  "market_id": "robotics",
+  "day": 29,
+  "slot": 3,
+  "content": {
+   "id": "robotics-d29-c3",
+   "title": "Order now or wait",
+   "lessonTitle": "Robot tariffs, held back for talks",
+   "slot": 3,
+   "type": "decide",
+   "brief": {
+    "headline": "You import robot arms for US factories. On October 28, 2026, the US chose talks over tariffs, with 180 days to report back.",
+    "kicker": "Decide: order ahead of possible tariffs, or wait for the talks?",
+    "fullText": "A Section 232 investigation opened in September 2025 covered robots, industrial machinery such as CNC machines, and their parts. Drones were left out.\n\nOn October 28, 2026, the president found imports threaten national security but chose negotiations for now. Commerce and USTR must report within 180 days.\n\nTariffs remain an option.",
+    "sources": [
+     {
+      "url": "https://www.mayerbrown.com/en/insights/publications/2026/10/president-trump-issues-proclamation-on-imports-of-robotics-industrial-machinery-and-their-parts-and-components",
+      "label": "Mayer Brown, proclamation on imports of robotics and industrial machinery, Oct 2026"
+     },
+     {
+      "url": "https://www.whitecase.com/insight-alert/trump-administration-initiates-section-232-investigation-robotics-and-industrial",
+      "label": "White & Case, Section 232 investigation into robotics and industrial machinery"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "sortSignal",
+    "prompt": "Was it covered by the probe?",
+    "buckets": [
+     "Covered",
+     "Left out"
+    ],
+    "items": [
+     {
+      "text": "Industrial robots",
+      "bucket": 0
+     },
+     {
+      "text": "CNC machines",
+      "bucket": 0
+     },
+     {
+      "text": "Robot parts",
+      "bucket": 0
+     },
+     {
+      "text": "Drones",
+      "bucket": 1
+     }
+    ],
+    "explanation": "Robots, CNC machines and parts were covered; drones were not."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "How many days do officials have to report on the talks?",
+    "min": 0,
+    "max": 400,
+    "value": 180,
+    "unit": "days",
+    "explanation": "Within 180 days."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your boss asks whether to order early.",
+      "prompt": "What do you recommend?",
+      "options": [
+       "Order two full years of stock now",
+       "Stop all orders until the talks end",
+       "Order what you need soon, not a hoard"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Cash gets locked up.",
+       "Customers go unserved.",
+       "You cut risk without tying up cash."
+      ],
+      "explanation": "Tariffs are possible but not certain. Balance cost risk against cash."
+     },
+     "proReasoning": "Planners who balance risk and cash earn trust.",
+     "commonMistake": "Betting everything on one outcome.",
+     "mentalModel": "Hedge, do not hoard."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "An importer stockpiled robots before any tariff.",
+      "prompt": "How do you read it?",
+      "options": [
+       "A bet that ties up cash",
+       "A sure win",
+       "A legal requirement"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Tariffs may not come.",
+       "Not certain.",
+       "No such rule."
+      ],
+      "explanation": "Stockpiling only pays if tariffs arrive."
+     },
+     "proReasoning": "Investors weigh hedges against their cost.",
+     "commonMistake": "Treating a hedge as free.",
+     "mentalModel": "Hedges cost money."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You build machines that need imported robot parts.",
+      "prompt": "What do you prepare?",
+      "options": [
+       "A full move to US parts now",
+       "A cost plan for possible tariffs",
+       "Nothing, since tariffs are off"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Costly before you know.",
+       "You can act fast if needed.",
+       "They remain an option."
+      ],
+      "explanation": "Prepare for tariffs without paying for them early."
+     },
+     "proReasoning": "Founders plan for options, not just outcomes.",
+     "commonMistake": "Ignoring a live policy risk.",
+     "mentalModel": "Plan the option."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend asks why the US did not just add tariffs.",
+      "prompt": "What's the best answer?",
+      "options": [
+       "Tariffs on robots are illegal",
+       "The US already makes all of its own robots",
+       "It chose talks first, keeping tariffs open"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Section 232 allows import limits.",
+       "It relies on imports for most types.",
+       "Talks come first for 180 days."
+      ],
+      "explanation": "The US chose to negotiate first and keep tariffs as a later option."
+     },
+     "proReasoning": "Explain policy by its sequence.",
+     "commonMistake": "Thinking no tariff means no risk.",
+     "mentalModel": "Talks first."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:d6f43af209c6"
+  ]
+ },
+ {
+  "id": "13c953b8-d746-5f4e-9190-5920a2d807d2",
+  "market_id": "robotics",
+  "day": 30,
+  "slot": 1,
+  "content": {
+   "id": "robotics-d30-c1",
+   "title": "A humanoid’s 11 months at BMW",
+   "lessonTitle": "Optimus reaches the factory floor",
+   "slot": 1,
+   "type": "apply",
+   "brief": {
+    "headline": "In November 2025, Figure said its F.02 humanoids spent 11 months at BMW’s Spartanburg plant, helping make more than 30,000 cars.",
+    "kicker": "Apply the ramp lesson: what does real work reveal that a demo does not?",
+    "fullText": "Figure said the robots loaded more than 90,000 parts over more than 1,250 hours, on 10-hour shifts, Monday to Friday. The job required an 84-second cycle with a 37-second load.\n\nIt said the forearm was the top hardware failure point. Figure began retiring F.02 after launching Figure 03.\n\nDay 30 showed Optimus starting production. Figure’s report shows what paid factory work looks like.",
+    "sources": [
+     {
+      "url": "https://figure.ai/news/production-at-bmw",
+      "label": "Figure, F.02 contributed to the production of 30,000 cars at BMW, Nov 2025"
+     },
+     {
+      "url": "https://techcrunch.com/2026/10/21/tesla-stars-optimus-robot-production-in-california-as-profit-falls-43/",
+      "label": "TechCrunch, Tesla starts Optimus robot production in California, Oct 2026"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "buildChain",
+    "prompt": "Order how a humanoid proves itself.",
+    "steps": [
+     "Run a demo",
+     "Deploy on a real line",
+     "Log hours and failures",
+     "Redesign weak parts"
+    ],
+    "explanation": "Real work reveals failures, which drive the next design."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "About how many months did F.02 work at BMW?",
+    "min": 0,
+    "max": 24,
+    "value": 11,
+    "unit": "months",
+    "explanation": "11 months, with more than 1,250 hours of runtime."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A humanoid team asks what matters most in a factory pilot.",
+      "prompt": "What do you say?",
+      "options": [
+       "How many views its videos get",
+       "Cycle time, uptime and failure points",
+       "How human it looks while on the line"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Videos are not output.",
+       "Figure reported all three.",
+       "Looks do not load parts."
+      ],
+      "explanation": "Factories judge robots by output and reliability."
+     },
+     "proReasoning": "Candidates who name factory metrics stand out.",
+     "commonMistake": "Judging robots by demos.",
+     "mentalModel": "Measure the work."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Figure reports 30,000+ cars and 1,250+ hours.",
+      "prompt": "How do you read it?",
+      "options": [
+       "Proof of humanoid mass production",
+       "Numbers too small to mean anything",
+       "Real work, at a scale to verify"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "One plant is not mass production.",
+       "Months of paid work are meaningful.",
+       "It is a deployment, not a ramp."
+      ],
+      "explanation": "It shows paid work over months, not volume production."
+     },
+     "proReasoning": "Investors separate pilots from scale.",
+     "commonMistake": "Reading a pilot as a ramp.",
+     "mentalModel": "Pilot is not scale.",
+     "sources": [
+      {
+       "url": "https://figure.ai/news/production-at-bmw",
+       "label": "Figure, F.02 contributed to the production of 30,000 cars at BMW, Nov 2025"
+      }
+     ]
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You build humanoids for factories.",
+      "prompt": "What do you do with failure data?",
+      "options": [
+       "Fix the weakest part next",
+       "Hide it from customers",
+       "Ignore it until later"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Figure named the forearm.",
+       "Customers find out.",
+       "Failures repeat."
+      ],
+      "explanation": "Field failures show what to redesign first."
+     },
+     "proReasoning": "Founders design from field data.",
+     "commonMistake": "Treating failures as PR problems.",
+     "mentalModel": "Fix what breaks."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend asks if humanoids already work in car factories.",
+      "prompt": "What's the best answer?",
+      "options": [
+       "Yes, they now run whole factories",
+       "Some did paid work at BMW for months",
+       "No, they only dance in videos"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "They did one loading task.",
+       "Figure reported 11 months at BMW.",
+       "They loaded 90,000+ parts."
+      ],
+      "explanation": "A few humanoids have done real jobs, like loading parts at BMW."
+     },
+     "proReasoning": "Answer with a real example.",
+     "commonMistake": "Overstating or dismissing progress.",
+     "mentalModel": "Real but narrow."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:a1eccab57400"
+  ]
+ },
+ {
+  "id": "2248ea7d-4d78-55c7-89ea-2a8e8f49ccb9",
+  "market_id": "robotics",
+  "day": 30,
+  "slot": 2,
+  "content": {
+   "id": "robotics-d30-c2",
+   "title": "Plans and ramps",
+   "lessonTitle": "Optimus reaches the factory floor",
+   "slot": 2,
+   "type": "connect",
+   "brief": {
+    "headline": "Figure plans to ship 100,000 humanoids over four years. Tesla started Optimus production in October 2026 after missing a 2025 goal of about 10,000.",
+    "kicker": "Connect day 30 and day 6: humanoid production plans, and how ramps go.",
+    "fullText": "Day 6 showed Figure raising over $1 billion at a $39 billion valuation and planning 100,000 humanoids over four years through BotQ.\n\nDay 30 showed Tesla starting Optimus production in Fremont on October 21, 2026. Musk warned the ramp would be slow and bumpy. He had predicted about 10,000 robots in 2025, and Tesla did not reach that.\n\nPlans set the target. Ramps show what is real.",
+    "sources": [
+     {
+      "url": "https://www.therobotreport.com/figure-ai-raises-1b-in-series-c-funding-toward-humanoid-robot-development/",
+      "label": "The Robot Report, Figure AI raises $1B in Series C funding"
+     },
+     {
+      "url": "https://techcrunch.com/2026/10/21/tesla-stars-optimus-robot-production-in-california-as-profit-falls-43/",
+      "label": "TechCrunch, Tesla starts Optimus robot production in California, Oct 2026"
+     },
+     {
+      "url": "https://electrek.co/2026/04/22/tesla-optimus-production/",
+      "label": "Electrek, Tesla Optimus production"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "sortSignal",
+    "prompt": "Which company does it describe?",
+    "buckets": [
+     "Figure",
+     "Tesla"
+    ],
+    "items": [
+     {
+      "text": "100,000 humanoids over four years",
+      "bucket": 0
+     },
+     {
+      "text": "Builds through BotQ",
+      "bucket": 0
+     },
+     {
+      "text": "Production began in Fremont",
+      "bucket": 1
+     },
+     {
+      "text": "Missed a goal of about 10,000 in 2025",
+      "bucket": 1
+     }
+    ],
+    "explanation": "Figure has the plan; Tesla has started production after a missed goal."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "About how many Optimus robots had Musk predicted for 2025, in thousands?",
+    "min": 0,
+    "max": 50,
+    "value": 10,
+    "unit": "K",
+    "explanation": "About 10,000. Tesla did not reach that."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A humanoid firm asks how to judge production plans.",
+      "prompt": "What do you say?",
+      "options": [
+       "By how big the target is",
+       "By the valuation",
+       "By units shipped, not targets"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Targets slip.",
+       "Value is not output.",
+       "Tesla missed its 2025 goal."
+      ],
+      "explanation": "Track what ships. Targets have slipped before."
+     },
+     "proReasoning": "Candidates who track output show realism.",
+     "commonMistake": "Taking targets at face value.",
+     "mentalModel": "Count what ships."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A humanoid maker announces a huge production target.",
+      "prompt": "What do you ask?",
+      "options": [
+       "What it has shipped so far",
+       "How confident it sounds",
+       "How large its offices are"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Output shows the real ramp.",
+       "Tone is not output.",
+       "Not output."
+      ],
+      "explanation": "Shipped units are the best check on a target."
+     },
+     "proReasoning": "Investors compare targets with delivery.",
+     "commonMistake": "Paying for promises.",
+     "mentalModel": "Ask for shipments.",
+     "sources": [
+      {
+       "url": "https://www.therobotreport.com/figure-ai-raises-1b-in-series-c-funding-toward-humanoid-robot-development/",
+       "label": "The Robot Report, Figure AI raises $1B in Series C funding"
+      }
+     ]
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You plan a humanoid production line.",
+      "prompt": "How do you set targets?",
+      "options": [
+       "Set no targets at all",
+       "Expect a slow, bumpy ramp",
+       "Assume full speed on day one"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Teams need goals.",
+       "Musk warned of exactly that.",
+       "Ramps take time."
+      ],
+      "explanation": "Plan for the ramp to take time."
+     },
+     "proReasoning": "Founders plan for slow ramps.",
+     "commonMistake": "Assuming instant volume.",
+     "mentalModel": "Ramps are slow."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend asks when there will be 100,000 humanoids.",
+      "prompt": "What's the best answer?",
+      "options": [
+       "Within weeks, since plans are set",
+       "Never, since they do not work",
+       "Plans exist, but ramps often slip"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Production has only just begun.",
+       "Some work already.",
+       "Tesla missed its 2025 goal."
+      ],
+      "explanation": "Companies plan big numbers, but production usually takes longer."
+     },
+     "proReasoning": "Answer with plans and track records.",
+     "commonMistake": "Believing every target.",
+     "mentalModel": "Plans slip."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:daa94d512817"
+  ]
+ },
+ {
+  "id": "a3ed157b-5c04-54e1-ad0f-a1bc848ebab1",
+  "market_id": "robotics",
+  "day": 30,
+  "slot": 3,
+  "content": {
+   "id": "robotics-d30-c3",
+   "title": "Judge it by useful work",
+   "lessonTitle": "Optimus reaches the factory floor",
+   "slot": 3,
+   "type": "decide",
+   "brief": {
+    "headline": "You run a factory considering humanoids. Tesla began Optimus production in October 2026; in January, Musk said none did useful work yet.",
+    "kicker": "Decide: how do you judge whether to buy?",
+    "fullText": "Tesla said on October 21, 2026 that it had started producing Optimus at Fremont, calling them its first production-quality bots. Musk claimed capacity of 20,000 a week by the end of 2027.\n\nIn January 2026, he had said no Optimus robots were doing useful work yet. Optimus has more than 10,000 unique parts.\n\nStarting production is not the same as doing useful work at scale.",
+    "sources": [
+     {
+      "url": "https://techcrunch.com/2026/10/21/tesla-stars-optimus-robot-production-in-california-as-profit-falls-43/",
+      "label": "TechCrunch, Tesla starts Optimus robot production in California, Oct 2026"
+     },
+     {
+      "url": "https://electrek.co/2026/04/22/tesla-optimus-production/",
+      "label": "Electrek, Tesla Optimus production"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "multipleChoice",
+    "prompt": "What did Musk say in January 2026?",
+    "options": [
+     "Optimus was already sold out",
+     "No Optimus did useful work yet",
+     "Optimus had been cancelled"
+    ],
+    "correctIndex": 1,
+    "explanation": "He said none were doing useful work yet."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "About how many thousand unique parts does Optimus have?",
+    "min": 0,
+    "max": 30,
+    "value": 10,
+    "unit": "K",
+    "explanation": "More than 10,000."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your boss asks if you should order humanoids now.",
+      "prompt": "What do you recommend?",
+      "options": [
+       "Pilot one task and measure output",
+       "Order a full fleet all at once",
+       "Ignore humanoids for good"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "You see real value first.",
+       "Risky before proof.",
+       "You may fall behind."
+      ],
+      "explanation": "Pilot on a real task and judge by work done."
+     },
+     "proReasoning": "Planners who pilot first save money.",
+     "commonMistake": "Buying on announcements.",
+     "mentalModel": "Pilot, then scale."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Tesla claims 20,000 robots a week by end of 2027.",
+      "prompt": "How do you weigh it?",
+      "options": [
+       "As irrelevant to buyers",
+       "As a target with a mixed record",
+       "As a sure thing for the end of 2027"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "It shapes buyer expectations.",
+       "Past goals slipped.",
+       "The 2025 goal was missed."
+      ],
+      "explanation": "Targets have slipped before. Track actual output."
+     },
+     "proReasoning": "Investors weigh claims by track record.",
+     "commonMistake": "Taking claims at face value.",
+     "mentalModel": "Track record matters."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You make a factory robot.",
+      "prompt": "How do you compete with Optimus hype?",
+      "options": [
+       "Match its marketing spend",
+       "Claim bigger targets",
+       "Show paid work on real lines"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Costly and empty.",
+       "Credibility suffers.",
+       "Buyers want proof."
+      ],
+      "explanation": "Paid work on real lines beats announcements."
+     },
+     "proReasoning": "Founders compete with proof.",
+     "commonMistake": "Fighting hype with hype.",
+     "mentalModel": "Proof beats hype."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend asks if Optimus robots are already working.",
+      "prompt": "What's the best answer?",
+      "options": [
+       "Production began, but useful work is early",
+       "Yes, in car factories all over the world",
+       "No, it is only a concept"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Musk said none did useful work in January.",
+       "Production only began in October.",
+       "Tesla is building them in Fremont."
+      ],
+      "explanation": "Tesla started building them, but real useful work is still early."
+     },
+     "proReasoning": "Answer with what is known.",
+     "commonMistake": "Overstating progress.",
+     "mentalModel": "Early days."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:7a8c65bb324c"
+  ]
  }
 ];
 
