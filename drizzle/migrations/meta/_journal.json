@@ -456,6 +456,13 @@
       "when": 1794500000067,
       "tag": "0067_eternal_flame_150",
       "breakpoints": true
+    },
+    {
+      "idx": 65,
+      "version": "7",
+      "when": 1794500000068,
+      "tag": "0068_shop_catalog_stethoscope",
+      "breakpoints": true
     }
   ]
 }
