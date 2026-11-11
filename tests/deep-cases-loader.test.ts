@@ -3,7 +3,7 @@ import { readFileSync, readdirSync, mkdtempSync } from 'node:fs';
 import { execFileSync } from 'node:child_process';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { pathToFileURL } from 'node:url';
+import { createRequire } from 'node:module';
 import { batches, dayProblems, rowsToWrite, type CaseRow } from '../supabase/functions/_shared/deep-cases-plan';
 
 const FNS = readdirSync('supabase/functions').filter(f => /^load-deep-cases(-\d+)?$/.test(f)).map(f => `supabase/functions/${f}`);
@@ -94,10 +94,10 @@ describe('the function, run against an in-memory table', () => {
 
   beforeAll(async () => {
     // Bundle the Deno function with its supabase-js import swapped for an in-memory client.
-    const out = join(mkdtempSync(join(tmpdir(), 'loader-')), 'fn.mjs');
+    const out = join(mkdtempSync(join(tmpdir(), 'loader-')), 'fn.cjs');
     execFileSync(process.execPath, ['--input-type=module', '-e', `
       import { build } from 'esbuild';
-      await build({ stdin: { contents: ${JSON.stringify(FNS.map(fn => `import './${fn}/index.ts';`).join('\n'))}, resolveDir: process.cwd(), loader: 'ts' }, bundle: true, format: 'esm', platform: 'neutral', outfile: ${JSON.stringify(out)}, logLevel: 'error',
+      await build({ stdin: { contents: ${JSON.stringify(FNS.map(fn => `import './${fn}/index.ts';`).join('\n'))}, resolveDir: process.cwd(), loader: 'ts' }, bundle: true, format: 'cjs', platform: 'neutral', outfile: ${JSON.stringify(out)}, logLevel: 'error',
         plugins: [{ name: 'mock', setup(b) { b.onResolve({ filter: /^https:\\/\\/esm\\.sh\\// }, () => ({ path: 'supabase', namespace: 'mock' }));
           b.onLoad({ filter: /.*/, namespace: 'mock' }, () => ({ contents: 'export const createClient = (...a) => globalThis.__createClient(...a);', loader: 'js' })); } }] });
     `], { encoding: 'utf8' });
@@ -128,8 +128,8 @@ describe('the function, run against an in-memory table', () => {
       },
     });
     (globalThis as any).Deno = { env: { get: () => 'x' }, serve: (h: any) => { handlers.push(h); } };
-    console.log("DBG", require("node:fs").existsSync(out), out);
-    await import(pathToFileURL(out).href);
+    // Plain Node require: the bundle is several MB, which Vite's module loader refuses.
+    createRequire(import.meta.url)(out);
   }, 120000);
 
   it('explains a missing table instead of failing silently', async () => {
