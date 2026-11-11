@@ -62,3 +62,6 @@ verify_jwt = false
 
 [functions.load-weekly-cases]
 verify_jwt = false
+
+[functions.load-handwritten]
+verify_jwt = false

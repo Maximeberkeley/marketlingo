@@ -1,5 +1,11 @@
 # MarketLingo roadmap
 
+## Nov 11 — Catch-up on past work
+- [ ] Load hand-written lessons days 6–30 for 10 industries (0028–0037 were skipped by migrations).
+- [ ] Split the oversized Deep Case loader so it deploys.
+- [ ] Verify the XP Shop end to end as a signed-in learner.
+- [ ] Bring key players up to 15 companies + 5 startups per market.
+
 ## Nov 11 — Completed-day streak reminder
 - [x] Identify the unconditional 20:30 phone fallback despite Max's credited Nov 10 lesson.
 - [x] Replace repeating fallbacks with dated alerts, cancel today's fallbacks on completion, verify credit before app-open scheduling and synchronize the JavaScript twin; 17 reminder/lesson-banking tests passed. Preview build OK. Native build tests unavailable here because Expo dependencies are absent.
