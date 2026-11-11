@@ -6513,6 +6513,6537 @@ const rows: unknown[] = [
    "handwritten-v1",
    "src:c18f24beba50"
   ]
+ },
+ {
+  "id": "91216c51-0118-529e-9f20-b14243bd71ae",
+  "market_id": "healthtech",
+  "day": 16,
+  "slot": 1,
+  "content": {
+   "id": "healthtech-d16-c1",
+   "title": "Discount security for rural hospitals",
+   "lessonTitle": "The price of a security upgrade",
+   "slot": 1,
+   "type": "apply",
+   "brief": {
+    "headline": "Working with the White House, Microsoft and Google offered free and low-cost cybersecurity help to rural hospitals. About 1,800 to 2,100 rural hospitals could qualify.",
+    "kicker": "Apply the cost lesson: who pays for security at small hospitals?",
+    "fullText": "Microsoft offered discounts of up to 75% on security products for rural emergency and critical access hospitals, plus free assessments and staff training. Google offered free endpoint security advice and a pool of funding for software migration.\n\nRural hospitals serve over 60 million Americans and often lack security staff. Many are more than 35 miles from another hospital, so diverting patients during an attack is hard.",
+    "sources": [
+     {
+      "url": "https://www.fiercehealthcare.com/health-tech/microsoft-rolls-out-program-help-rural-hospitals-defend-against-cyberattacks",
+      "label": "Fierce Healthcare, Microsoft and Google offer cybersecurity help to rural hospitals"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "sortSignal",
+    "prompt": "Which company offered each one?",
+    "buckets": [
+     "Microsoft",
+     "Google"
+    ],
+    "items": [
+     {
+      "text": "Discounts up to 75% on security products",
+      "bucket": 0
+     },
+     {
+      "text": "Free endpoint security advice",
+      "bucket": 1
+     },
+     {
+      "text": "Funding to help migrate software",
+      "bucket": 1
+     },
+     {
+      "text": "A year of free Windows 10 security updates",
+      "bucket": 0
+     },
+     {
+      "text": "Free cybersecurity assessments",
+      "bucket": 0
+     }
+    ],
+    "explanation": "Microsoft focused on discounts, assessments and training. Google offered advice, migration funding and a pilot."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "Up to what discount did Microsoft offer on security products?",
+    "min": 0,
+    "max": 100,
+    "value": 75,
+    "unit": "%",
+    "explanation": "Up to 75% for rural emergency and critical access hospitals."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You are the only IT lead at a rural critical access hospital.",
+      "prompt": "What do you do with these offers first?",
+      "options": [
+       "Wait for a bigger budget next year",
+       "Buy the priciest tool on the market",
+       "Take the free security assessment"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Attacks will not wait for your budget.",
+       "Spending big before knowing gaps wastes money.",
+       "It shows your biggest gaps at no cost."
+      ],
+      "explanation": "A free assessment shows where the risk is before you spend scarce money."
+     },
+     "proReasoning": "Small IT teams start with a free map of their gaps.",
+     "commonMistake": "Buying tools before knowing the weak spots.",
+     "mentalModel": "Map gaps before you buy."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Big tech firms discount security for rural hospitals.",
+      "prompt": "What do they likely gain?",
+      "options": [
+       "Long-term customers on their platforms",
+       "Immediate large profits",
+       "Ownership of the rural hospitals"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Hospitals that adopt tools often stay on them.",
+       "Steep discounts limit near-term profit.",
+       "The offers are services, not purchases."
+      ],
+      "explanation": "Discounts can turn rural hospitals into long-term platform customers."
+     },
+     "proReasoning": "Investors look for the later payoff behind a discount.",
+     "commonMistake": "Reading a discount as pure charity or pure profit.",
+     "mentalModel": "Discounts can buy future customers."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You sell security services to small hospitals.",
+      "prompt": "How do you compete with discounted big tech tools?",
+      "options": [
+       "Ignore rural hospitals",
+       "Offer hands-on help they lack staff for",
+       "Match the 75% discount on every tool"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "There are about 1,800 or more of them.",
+       "Rural hospitals often lack trained security staff.",
+       "A startup cannot outspend big tech on price."
+      ],
+      "explanation": "Tools are discounted, but rural hospitals still lack people to run them."
+     },
+     "proReasoning": "Founders compete where the giants leave a gap.",
+     "commonMistake": "Fighting giants on price.",
+     "mentalModel": "Fill the gap the giants leave."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You wonder why rural hospitals need special security help.",
+      "prompt": "What is one key reason?",
+      "options": [
+       "They have no patient data",
+       "Hackers ignore small rural hospitals",
+       "They often lack trained security staff"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "They hold the same kinds of records.",
+       "Ransomware hits hospitals of all sizes.",
+       "Small teams struggle to defend systems."
+      ],
+      "explanation": "Rural hospitals often lack IT security resources and trained staff."
+     },
+     "proReasoning": "Notice how distance makes outages riskier in rural areas.",
+     "commonMistake": "Thinking small hospitals are too small to target.",
+     "mentalModel": "Small teams face big risks."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:edf940d3728b"
+  ]
+ },
+ {
+  "id": "c1d094c0-9233-52ed-86b0-3e49f70ae4ca",
+  "market_id": "healthtech",
+  "day": 16,
+  "slot": 2,
+  "content": {
+   "id": "healthtech-d16-c2",
+   "title": "Pay now or pay later",
+   "lessonTitle": "The price of a security upgrade",
+   "slot": 2,
+   "type": "connect",
+   "brief": {
+    "headline": "Day 14 showed healthcare breaches cost $7.42 million on average. The proposed HIPAA Security Rule overhaul was estimated to cost about $9 billion in its first year.",
+    "kicker": "Connect day 14 and day 16: the cost of breaches versus the cost of rules.",
+    "fullText": "The proposal, issued in January 2025, would require multi-factor authentication and restoring critical systems within 72 hours. After the first year, it was estimated to cost about $6 billion a year.\n\nHospitals said they lacked staff for required testing. Supporters point to breaches that cost more than any other industry, 14 years in a row.",
+    "sources": [
+     {
+      "url": "https://www.techtarget.com/healthtechsecurity/news/366628031/Healthcare-remains-costliest-industry-for-breaches-at-742M",
+      "label": "TechTarget, healthcare remains costliest industry for breaches"
+     },
+     {
+      "url": "https://www.axios.com/2025/01/13/hospitals-cyber-security-rule-upgrade",
+      "label": "Axios, hospitals and the HIPAA Security Rule upgrade"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "spotFake",
+    "prompt": "One of these is false. Tap it.",
+    "statements": [
+     "The proposal would require multi-factor login.",
+     "Year one was estimated at about $9 billion.",
+     "Systems would need restoring within 30 days."
+    ],
+    "fakeIndex": 2,
+    "explanation": "The proposal called for restoring critical systems within 72 hours."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "About how many billions would the rule cost in its first year?",
+    "min": 0,
+    "max": 15,
+    "value": 9,
+    "unit": "B",
+    "explanation": "About $9 billion in year one, then about $6 billion a year."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your hospital CFO calls the proposed rule too expensive.",
+      "prompt": "Which point links day 14 and day 16?",
+      "options": [
+       "Breaches already cost millions each",
+       "Breaches are free to fix",
+       "The rule bans all hospital computers"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "$7.42 million per breach on average.",
+       "Breaches are the costliest in any industry.",
+       "It sets safeguards, not bans."
+      ],
+      "explanation": "The rule costs money, but breaches already cost healthcare more than any industry."
+     },
+     "proReasoning": "Weigh a rule's cost against the cost it aims to prevent.",
+     "commonMistake": "Judging a rule's cost with nothing to compare it to.",
+     "mentalModel": "Compare the rule to the risk."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You hold shares in a health security vendor.",
+      "prompt": "What would the rule likely do to demand?",
+      "options": [
+       "Have no effect on hospital spending",
+       "Raise it, through required controls",
+       "End it, by banning vendors"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "It would apply to covered entities.",
+       "Multi-factor login and testing would be required.",
+       "The rule sets safeguards, not vendor bans."
+      ],
+      "explanation": "Required safeguards would push hospitals to buy security tools and services."
+     },
+     "proReasoning": "Investors track rules that turn optional spending into required spending.",
+     "commonMistake": "Ignoring proposed rules until they are final.",
+     "mentalModel": "Rules can turn wants into musts."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You build backup tools for hospitals.",
+      "prompt": "Which proposed requirement fits your pitch?",
+      "options": [
+       "Print every patient record on paper",
+       "Delete old patient records",
+       "Restore critical systems within 72 hours"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Not part of the proposal.",
+       "Not part of the proposal.",
+       "Fast recovery is exactly what backups enable."
+      ],
+      "explanation": "The proposal would require restoring critical systems within 72 hours."
+     },
+     "proReasoning": "Founders tie products to a specific proposed requirement.",
+     "commonMistake": "Pitching generic security instead of a named requirement.",
+     "mentalModel": "Tie your pitch to a requirement."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You read that a security rule could cost $9 billion.",
+      "prompt": "Why would anyone propose it?",
+      "options": [
+       "Breaches in health care cost the most",
+       "To make hospitals buy paper",
+       "To slow down all of health care"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Healthcare led all industries in breach costs.",
+       "It focuses on electronic safeguards.",
+       "Its goal is protecting data."
+      ],
+      "explanation": "Healthcare breaches are the costliest of any industry, which drives tougher rules."
+     },
+     "proReasoning": "Ask what problem a costly rule is meant to solve.",
+     "commonMistake": "Judging a rule only by its price tag.",
+     "mentalModel": "Costs make sense only next to risks."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:5ff75d78b73c"
+  ]
+ },
+ {
+  "id": "230465f6-5f87-5def-957d-1b60c2d5b596",
+  "market_id": "healthtech",
+  "day": 16,
+  "slot": 3,
+  "content": {
+   "id": "healthtech-d16-c3",
+   "title": "Two people, one deadline",
+   "lessonTitle": "The price of a security upgrade",
+   "slot": 3,
+   "type": "decide",
+   "brief": {
+    "headline": "You run IT for a small critical access hospital with two staff. A proposed rule would require multi-factor login and restoring critical systems within 72 hours.",
+    "kicker": "Decide: what do you do before the rule is final?",
+    "fullText": "Hospitals said they lacked staff for required testing, and multi-factor logins could slow care in some settings. The rule was a proposal, not yet final.\n\nYou can wait, start on the basics now, or ask for outside help. Breaches cost healthcare more than any other industry.",
+    "sources": [
+     {
+      "url": "https://www.axios.com/2025/01/13/hospitals-cyber-security-rule-upgrade",
+      "label": "Axios, hospitals and the HIPAA Security Rule upgrade"
+     },
+     {
+      "url": "https://www.techtarget.com/healthtechsecurity/news/366628031/Healthcare-remains-costliest-industry-for-breaches-at-742M",
+      "label": "TechTarget, healthcare remains costliest industry for breaches"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "faceOff",
+    "prompt": "Which plan leaves you safer either way?",
+    "left": {
+     "name": "Start the basics now",
+     "note": "Multi-factor login and tested backups"
+    },
+    "right": {
+     "name": "Wait for the final rule",
+     "note": "No changes until it is law"
+    },
+    "correctIndex": 0,
+    "explanation": "Multi-factor login and backups reduce risk whether or not the rule is finalized."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "Within how many hours would critical systems need restoring?",
+    "min": 0,
+    "max": 168,
+    "value": 72,
+    "unit": "hours",
+    "explanation": "72 hours, or three days."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your CEO asks if the hospital should act before the rule is final.",
+      "prompt": "What do you recommend?",
+      "options": [
+       "Rebuild every system at the same time",
+       "Start with multi-factor login and backups",
+       "Do nothing until it is law"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Two staff cannot rebuild everything.",
+       "These cut risk now and fit the proposal.",
+       "Attacks will not wait for the rule."
+      ],
+      "explanation": "The basics help today and match what the rule would require."
+     },
+     "proReasoning": "IT leaders do the no-regret steps first.",
+     "commonMistake": "Waiting for a mandate to do the basics.",
+     "mentalModel": "Do no-regret steps first."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You rate bonds of small rural hospitals.",
+      "prompt": "What does the proposed rule add to your view?",
+      "options": [
+       "A sudden windfall of cash",
+       "Nothing about their finances",
+       "A cost burden on thin budgets"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Rules add costs, not cash.",
+       "Compliance costs hit budgets.",
+       "Small hospitals said they lack staff and money."
+      ],
+      "explanation": "Required safeguards would cost small hospitals more as a share of budget."
+     },
+     "proReasoning": "Investors check who can afford a new rule.",
+     "commonMistake": "Assuming every hospital absorbs rules equally.",
+     "mentalModel": "Rules weigh most on the small."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You offer managed security for small hospitals.",
+      "prompt": "Which pitch fits a two-person IT team?",
+      "options": [
+       "We run testing and recovery for you",
+       "Hire ten more security staff",
+       "Buy software and set it up alone"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "They lack staff for required testing.",
+       "They cannot afford that.",
+       "They lack time to run it."
+      ],
+      "explanation": "Small hospitals lack staff, so managed help fits."
+     },
+     "proReasoning": "Founders sell the missing people, not just the tool.",
+     "commonMistake": "Selling tools to teams with no time to use them.",
+     "mentalModel": "Sell the people they lack."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your rural hospital adds a code step at login.",
+      "prompt": "Why might they be doing it?",
+      "options": [
+       "Because computers need it to start up",
+       "To block attackers using stolen passwords",
+       "To slow down doctors on purpose"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "It is about access, not startup.",
+       "Multi-factor login stops many break-ins.",
+       "It is a security step."
+      ],
+      "explanation": "Multi-factor login adds a step that blocks many attacks."
+     },
+     "proReasoning": "Turn on multi-factor login for your own health accounts.",
+     "commonMistake": "Seeing security steps only as hassle.",
+     "mentalModel": "Small hassle, big protection."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:26e99eb1e231"
+  ]
+ },
+ {
+  "id": "4abc52c7-aeb1-5c17-b8af-f14f5893d0c3",
+  "market_id": "healthtech",
+  "day": 17,
+  "slot": 1,
+  "content": {
+   "id": "healthtech-d17-c1",
+   "title": "A state law fills the gap",
+   "lessonTitle": "A privacy rule struck down",
+   "slot": 1,
+   "type": "apply",
+   "brief": {
+    "headline": "On February 10, 2025, a Washington resident sued Amazon under the state's My Health My Data Act. It was the first lawsuit using the law's private right of action.",
+    "kicker": "Apply the privacy lesson: when federal rules fall short, states act.",
+    "fullText": "The suit alleges Amazon's software kit, built into thousands of apps, collected location data without the consent the law requires. Location can reveal health information, such as visits to a cancer clinic.\n\nThe Washington law covers consumer health data outside HIPAA, including precise location that could show someone seeking care. These are allegations; the case was at an early stage.",
+    "sources": [
+     {
+      "url": "https://www.orrick.com/en/Insights/2025/02/First-Lawsuit-Filed-Under-Washingtons-My-Health-My-Data-Act",
+      "label": "Orrick, first lawsuit under Washington's My Health My Data Act"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "multipleChoice",
+    "prompt": "What kind of data is central to the suit against Amazon?",
+    "options": [
+     "Hospital billing records from Washington",
+     "Insurance claims files",
+     "Location data that can reveal health visits"
+    ],
+    "correctIndex": 2,
+    "explanation": "The suit says location data collected through apps can show visits to places like a cancer clinic."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "How many elements must a plaintiff usually prove under Washington's consumer protection law?",
+    "min": 0,
+    "max": 8,
+    "value": 5,
+    "unit": "elements",
+    "explanation": "Five. With a My Health My Data violation, the first three are presumed."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You join an app company as privacy counsel.",
+      "prompt": "Which Washington law do you add to your checklist?",
+      "options": [
+       "My Health My Data, for non-HIPAA data",
+       "HIPAA only, for every app",
+       "No state law applies to any apps"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "It covers consumer health data outside HIPAA.",
+       "Most apps are outside HIPAA.",
+       "Washington's law reaches many apps."
+      ],
+      "explanation": "The law covers consumer health data that HIPAA does not, including location."
+     },
+     "proReasoning": "Privacy staff track state laws that fill federal gaps.",
+     "commonMistake": "Watching only federal rules.",
+     "mentalModel": "States fill federal gaps."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You review an ad-tech firm whose software runs inside many apps.",
+      "prompt": "What risk does this lawsuit flag?",
+      "options": [
+       "Prices that are too low",
+       "Collecting location without consent",
+       "Too few apps using its software"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Price is not the issue.",
+       "The suit alleges exactly this.",
+       "Wide reach raises the risk."
+      ],
+      "explanation": "Software that collects location inside apps faces suits under state health data law."
+     },
+     "proReasoning": "Investors check data practices hidden inside partner apps.",
+     "commonMistake": "Treating embedded software as low risk.",
+     "mentalModel": "Hidden data flows carry risk."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your app uses location for nearby clinic search.",
+      "prompt": "What should you do for Washington users?",
+      "options": [
+       "Collect it quietly to save some time",
+       "Sell it to cover costs",
+       "Get clear consent before collecting it"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "That is the conduct alleged here.",
+       "Selling raises the risk further.",
+       "The law requires consent for health data."
+      ],
+      "explanation": "The law treats location linked to care as health data that needs consent."
+     },
+     "proReasoning": "Founders ask for consent in plain words before collecting.",
+     "commonMistake": "Assuming location is not health data.",
+     "mentalModel": "Location can be health data."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You allow an app to use your location.",
+      "prompt": "What could that reveal?",
+      "options": [
+       "Visits to clinics or other care",
+       "Only the weather where you are",
+       "Nothing about your health"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Location can show trips to a cancer clinic.",
+       "Location shows much more than weather.",
+       "Location can hint at health."
+      ],
+      "explanation": "Location can show where you seek care, which some states treat as health data."
+     },
+     "proReasoning": "Review which apps can see your location.",
+     "commonMistake": "Thinking location data is harmless.",
+     "mentalModel": "Where you go can reveal your health."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:3297a1fdd874"
+  ]
+ },
+ {
+  "id": "e11a3aea-46f3-57ed-bf05-a95115357f65",
+  "market_id": "healthtech",
+  "day": 17,
+  "slot": 2,
+  "content": {
+   "id": "healthtech-d17-c2",
+   "title": "Two Texas rulings against HHS",
+   "lessonTitle": "A privacy rule struck down",
+   "slot": 2,
+   "type": "connect",
+   "brief": {
+    "headline": "Day 15 covered a 2024 Texas ruling that vacated HHS web tracking guidance. On June 18, 2025, another Texas federal court vacated a 2024 HIPAA rule protecting reproductive health information.",
+    "kicker": "Connect day 15 and day 17: courts keep limiting HHS privacy moves.",
+    "fullText": "In both cases, the court said HHS went beyond its authority. The 2025 ruling applied nationwide, cancelling the rule for everyone, not just the parties.\n\nNot everything fell. Changes to notices of privacy practices for substance use disorder records stayed in effect.",
+    "sources": [
+     {
+      "url": "https://www.fiercehealthcare.com/regulatory/hhs-reverses-course-will-no-longer-appeal-federal-courts-hospital-web-tracker-decision",
+      "label": "Fierce Healthcare, HHS drops appeal in web tracker case"
+     },
+     {
+      "url": "https://www.hklaw.com/en/insights/publications/2025/06/hipaas-reproductive-health-rule-is-vacated-nationally",
+      "label": "Holland & Knight, HIPAA's reproductive health rule is vacated nationally"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "sortSignal",
+    "prompt": "What happened to each one?",
+    "buckets": [
+     "Vacated",
+     "Still in effect"
+    ],
+    "items": [
+     {
+      "text": "HHS web tracking guidance for hospitals",
+      "bucket": 0
+     },
+     {
+      "text": "The 2024 reproductive health privacy rule",
+      "bucket": 0
+     },
+     {
+      "text": "Notice updates for substance use disorder records",
+      "bucket": 1
+     },
+     {
+      "text": "HIPAA's core right of access",
+      "bucket": 1
+     }
+    ],
+    "explanation": "The tracking guidance and reproductive rule were vacated. The notice updates and the right of access remain."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "About how many months apart were the two Texas rulings?",
+    "min": 0,
+    "max": 30,
+    "value": 12,
+    "unit": "months",
+    "explanation": "About a year: June 2024 and June 2025."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You brief a hospital privacy team on 2024 and 2025 court rulings.",
+      "prompt": "What pattern do you highlight?",
+      "options": [
+       "Courts banned health websites",
+       "Courts found HHS overstepped HIPAA",
+       "Courts expanded HHS powers"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "No ban was issued.",
+       "Both rulings said HHS exceeded its authority.",
+       "The rulings limited HHS."
+      ],
+      "explanation": "Two Texas courts said HHS went beyond what HIPAA allows."
+     },
+     "proReasoning": "Privacy staff spot patterns across rulings, not just single cases.",
+     "commonMistake": "Treating each ruling as unrelated.",
+     "mentalModel": "Look for the pattern."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You track health privacy compliance vendors.",
+      "prompt": "What do repeated rulings against HHS suggest?",
+      "options": [
+       "Rules are fixed for a decade",
+       "Privacy no longer matters",
+       "Federal rules may stay unsettled"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Two major rules fell within a year.",
+       "State laws and trust still matter.",
+       "Rules keep changing in court."
+      ],
+      "explanation": "When courts strike rules, compliance targets shift, which keeps uncertainty high."
+     },
+     "proReasoning": "Investors price regulatory churn into compliance businesses.",
+     "commonMistake": "Assuming a rule will last once issued.",
+     "mentalModel": "Rules can fall in court."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your compliance tool is built around one HHS rule.",
+      "prompt": "What do these rulings teach you?",
+      "options": [
+       "Design for rules that may change",
+       "Build only for one rule forever",
+       "Ignore court cases"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Two rules fell within a year.",
+       "A single rule can be vacated.",
+       "Courts reshape the rules."
+      ],
+      "explanation": "Products tied to one rule are exposed if a court vacates it."
+     },
+     "proReasoning": "Founders build flexible products that survive rule changes.",
+     "commonMistake": "Betting the company on one regulation.",
+     "mentalModel": "Build for change."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You hear a federal privacy rule was \"vacated.\"",
+      "prompt": "What does that mean?",
+      "options": [
+       "It is paused for one week",
+       "It is cancelled for everyone",
+       "It applies only in Texas"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "It is not a short pause.",
+       "The 2025 ruling applied nationwide.",
+       "Vacating is not limited to one state."
+      ],
+      "explanation": "Vacating a rule cancels it, not just for the parties in the case."
+     },
+     "proReasoning": "Check whether a ruling applies nationwide or locally.",
+     "commonMistake": "Assuming a ruling only affects the people who sued.",
+     "mentalModel": "Vacated means cancelled."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:91f46a9f68a3"
+  ]
+ },
+ {
+  "id": "add0169c-1e04-57ca-96c2-43ac8ad857c6",
+  "market_id": "healthtech",
+  "day": 17,
+  "slot": 3,
+  "content": {
+   "id": "healthtech-d17-c3",
+   "title": "After the rule is gone",
+   "lessonTitle": "A privacy rule struck down",
+   "slot": 3,
+   "type": "decide",
+   "brief": {
+    "headline": "You run privacy for a women's health app. A 2024 federal rule on reproductive health privacy was vacated nationwide on June 18, 2025.",
+    "kicker": "Decide: do you keep your stricter data limits?",
+    "fullText": "The vacated rule applied to HIPAA covered entities. Most apps fall under the FTC's Health Breach Notification Rule, which can bring penalties up to $51,744 per violation.\n\nYour users chose you partly for privacy. You can keep your limits, loosen them, or wait.",
+    "sources": [
+     {
+      "url": "https://www.hklaw.com/en/insights/publications/2025/06/hipaas-reproductive-health-rule-is-vacated-nationally",
+      "label": "Holland & Knight, HIPAA's reproductive health rule is vacated nationally"
+     },
+     {
+      "url": "https://www.ftc.gov/business-guidance/resources/health-breach-notification-rule-basics-business",
+      "label": "FTC, Health Breach Notification Rule basics"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "faceOff",
+    "prompt": "Which choice better protects users and the app?",
+    "left": {
+     "name": "Keep strict limits",
+     "note": "Share no health data without clear consent"
+    },
+    "right": {
+     "name": "Loosen limits",
+     "note": "Share more now that the rule is gone"
+    },
+    "correctIndex": 0,
+    "explanation": "The FTC rule still applies to apps, and users chose the app for privacy."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "Up to how many thousand dollars per violation can the FTC rule bring?",
+    "min": 0,
+    "max": 80,
+    "value": 51.7,
+    "unit": "K",
+    "explanation": "Up to $51,744 per violation."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your growth team wants to share more data now the rule is gone.",
+      "prompt": "What do you say?",
+      "options": [
+       "Go ahead; no rules remain for us",
+       "Delete the whole app",
+       "The FTC rule still applies to us"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "The FTC rule still covers apps.",
+       "That ends the business.",
+       "Apps fall under the FTC breach rule."
+      ],
+      "explanation": "The vacated rule covered HIPAA entities. Apps still face the FTC."
+     },
+     "proReasoning": "Privacy leads check which rule applies before reacting to news.",
+     "commonMistake": "Reading one rule's fall as freedom from all rules.",
+     "mentalModel": "One rule gone, others stay."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Two similar health apps react differently to the ruling.",
+      "prompt": "Which is the safer bet?",
+      "options": [
+       "The one that kept strict limits",
+       "The one that loosened them fastest",
+       "Neither; both are equal"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "It keeps trust and FTC compliance.",
+       "It invites FTC action and user loss.",
+       "Their risks differ."
+      ],
+      "explanation": "Keeping limits protects trust and avoids FTC risk."
+     },
+     "proReasoning": "Investors back companies that keep their privacy promises.",
+     "commonMistake": "Rewarding the fastest to loosen protections.",
+     "mentalModel": "Kept promises lower risk."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your users say privacy is why they joined.",
+      "prompt": "How do you use the moment?",
+      "options": [
+       "Stop talking about privacy at all",
+       "Say clearly that your limits stay",
+       "Quietly change the policy"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Silence wastes your edge.",
+       "It builds trust when others waver.",
+       "Hidden changes break trust."
+      ],
+      "explanation": "Clear privacy promises can set you apart."
+     },
+     "proReasoning": "Founders turn a trust promise into an edge.",
+     "commonMistake": "Changing policies quietly.",
+     "mentalModel": "Trust can be an edge."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You use a period tracker app.",
+      "prompt": "Did the 2025 ruling change its rules?",
+      "options": [
+       "Yes; apps now have no rules at all",
+       "Yes; apps must share data",
+       "Mostly no; apps follow the FTC rule"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "The FTC rule still applies.",
+       "No rule requires sharing.",
+       "The vacated rule applied to covered entities."
+      ],
+      "explanation": "The vacated rule covered HIPAA entities. Most apps follow the FTC rule."
+     },
+     "proReasoning": "Read your app's privacy policy and settings.",
+     "commonMistake": "Assuming every headline changes your app.",
+     "mentalModel": "Know which rule covers your app."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:88fc04b66b2b"
+  ]
+ },
+ {
+  "id": "1ef7e21e-28a8-5845-a600-caa3b2c40635",
+  "market_id": "healthtech",
+  "day": 18,
+  "slot": 1,
+  "content": {
+   "id": "healthtech-d18-c1",
+   "title": "Fined for weak logins",
+   "lessonTitle": "Selling a genetic database",
+   "slot": 1,
+   "type": "apply",
+   "brief": {
+    "headline": "On June 19, 2025, the UK's Information Commissioner's Office fined 23andMe £2.31 million over its 2023 breach. Data on 155,592 UK users was affected.",
+    "kicker": "Apply the genetic data lesson: what made the breach possible?",
+    "fullText": "From April to September 2023, attackers used credential stuffing: logins reused from other breaches. The regulator found no mandatory multi-factor authentication, weak password rules and poor monitoring.\n\n23andMe dismissed an August 2023 theft claim as a hoax. It confirmed the breach in October 2023, after an employee found the data advertised for sale on Reddit.",
+    "sources": [
+     {
+      "url": "https://www.scl.org/23andme-fined-2-31-million-for-failing-to-protect-uk-users-genetic-data/",
+      "label": "Society for Computers and Law, 23andMe fined £2.31 million"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "buildChain",
+    "prompt": "Put the 23andMe breach in order.",
+    "steps": [
+     "Attackers try reused logins in April 2023",
+     "A theft claim is dismissed as a hoax",
+     "Stolen data appears for sale on Reddit",
+     "The company confirms the breach",
+     "The UK regulator fines it in 2025"
+    ],
+    "explanation": "Reused logins got attackers in, warnings were missed, and a fine followed."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "How many thousand UK users were affected?",
+    "min": 0,
+    "max": 400,
+    "value": 155.6,
+    "unit": "K",
+    "explanation": "155,592 UK users."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You join a genetic testing company's security team.",
+      "prompt": "What control do you push first?",
+      "options": [
+       "Longer marketing emails",
+       "Mandatory multi-factor login",
+       "A new logo for the login page"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Emails do not stop attackers.",
+       "Its absence was a key failing in the 23andMe case.",
+       "A logo does not stop attackers."
+      ],
+      "explanation": "The regulator found 23andMe lacked mandatory multi-factor authentication."
+     },
+     "proReasoning": "Security teams close the gap regulators named in past cases.",
+     "commonMistake": "Ignoring lessons from a rival's breach.",
+     "mentalModel": "Learn from others' fines."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You value a consumer genetics company.",
+      "prompt": "What does the 23andMe fine highlight?",
+      "options": [
+       "Genetic data carries no real legal risk",
+       "Only US regulators act",
+       "Security gaps bring fines in many countries"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Genetic data is highly sensitive.",
+       "The UK regulator acted.",
+       "A UK regulator fined a US firm."
+      ],
+      "explanation": "Regulators outside the US can fine companies serving their users."
+     },
+     "proReasoning": "Investors count every country a company's users live in.",
+     "commonMistake": "Assuming only home-country rules apply.",
+     "mentalModel": "Users abroad bring rules abroad."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your app stores users' DNA results.",
+      "prompt": "What do you build before launch?",
+      "options": [
+       "Required multi-factor login and monitoring",
+       "A share-to-social button for DNA results",
+       "Simple passwords for ease"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "These were the 23andMe failings.",
+       "Sharing DNA widely raises risk.",
+       "Weak passwords enabled the attack."
+      ],
+      "explanation": "Required multi-factor login and threat monitoring address the failings the regulator found."
+     },
+     "proReasoning": "Founders treat sensitive data as a day-one security duty.",
+     "commonMistake": "Choosing convenience over security for DNA.",
+     "mentalModel": "Sensitive data needs strong locks."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You reuse one password on many sites.",
+      "prompt": "Why is that risky?",
+      "options": [
+       "Sites share your passwords legally",
+       "Leaked logins can open other accounts",
+       "Passwords expire if reused"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Sites do not share passwords.",
+       "That is how the 23andMe attack worked.",
+       "Reuse does not cause expiry."
+      ],
+      "explanation": "Credential stuffing uses logins leaked elsewhere to break into other sites."
+     },
+     "proReasoning": "Use unique passwords and turn on multi-factor login.",
+     "commonMistake": "Thinking one strong password is enough everywhere.",
+     "mentalModel": "Reused passwords spread risk."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:656f2524b27d"
+  ]
+ },
+ {
+  "id": "1f36c056-5904-54a5-9998-b8c8b3ab1f19",
+  "market_id": "healthtech",
+  "day": 18,
+  "slot": 2,
+  "content": {
+   "id": "healthtech-d18-c2",
+   "title": "Genetic data outside HIPAA",
+   "lessonTitle": "Selling a genetic database",
+   "slot": 2,
+   "type": "connect",
+   "brief": {
+    "headline": "Day 5 showed HIPAA covers providers, health plans and clearinghouses. 23andMe sold its genetic data in 2025 to a nonprofit led by its co-founder for $305 million.",
+    "kicker": "Connect day 5 and day 18: who protects data a consumer company holds?",
+    "fullText": "In bankruptcy, customer data can be sold like any other asset. A bankruptcy judge approved the sale to the nonprofit led by Anne Wojcicki.\n\n27 states and D.C. argued genetic data is uniquely sensitive and pushed for explicit consent before it could be sold. A 2023 breach had already affected about seven million 23andMe users.",
+    "sources": [
+     {
+      "url": "https://www.hhs.gov/hipaa/for-professionals/covered-entities/index.html",
+      "label": "HHS, HIPAA covered entities"
+     },
+     {
+      "url": "https://www.mobihealthnews.com/news/judge-approves-23andme-sale-amid-privacy-dispute",
+      "label": "MobiHealthNews, judge approves 23andMe sale amid privacy dispute"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "spotFake",
+    "prompt": "One of these is false. Tap it.",
+    "statements": [
+     "The sale price was $305 million.",
+     "Genetic test firms are always HIPAA covered.",
+     "About seven million users were hit in 2023."
+    ],
+    "fakeIndex": 1,
+    "explanation": "HIPAA covers providers, plans and clearinghouses. Consumer genetic test companies are generally outside that list."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "About how many million users did the 2023 breach affect?",
+    "min": 0,
+    "max": 20,
+    "value": 7,
+    "unit": "M",
+    "explanation": "About seven million users."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A state attorney general's office hires you after the 23andMe sale.",
+      "prompt": "What protection do you push for?",
+      "options": [
+       "Faster bankruptcy sales",
+       "Lower prices for every consumer DNA test",
+       "Explicit consent before genetic data is sold"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Speed does not protect customers.",
+       "Price is not the privacy issue.",
+       "States pushed for exactly this."
+      ],
+      "explanation": "States argued customers should consent before their genetic data is sold."
+     },
+     "proReasoning": "Policy staff aim rules at the gap a case exposed.",
+     "commonMistake": "Proposing fixes unrelated to the problem.",
+     "mentalModel": "Aim rules at the exposed gap."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A genetics company's data was its key asset in bankruptcy.",
+      "prompt": "What does that tell you?",
+      "options": [
+       "Data can be sold like other assets",
+       "Data is worthless in bankruptcy",
+       "Data is destroyed by law"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "The data sold for $305 million.",
+       "It drew a $305 million price.",
+       "The court approved a sale."
+      ],
+      "explanation": "In bankruptcy, customer data can be sold like any other asset."
+     },
+     "proReasoning": "Investors count data as an asset and a liability.",
+     "commonMistake": "Ignoring data's value in a downside case.",
+     "mentalModel": "Data is an asset and a risk."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You start a consumer DNA testing company.",
+      "prompt": "What promise builds the most trust?",
+      "options": [
+       "We follow HIPAA, so all is safe",
+       "No sale of data without new consent",
+       "We may sell data to anyone"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "HIPAA may not cover you.",
+       "That answers the 23andMe fear directly.",
+       "That scares users away."
+      ],
+      "explanation": "Users fear their DNA being sold. A consent promise answers that."
+     },
+     "proReasoning": "Founders make promises that hold even if the company is sold.",
+     "commonMistake": "Claiming HIPAA protection that may not apply.",
+     "mentalModel": "Make promises that survive a sale."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You took a DNA test years ago.",
+      "prompt": "Does HIPAA protect that data?",
+      "options": [
+       "Always; HIPAA covers all DNA test data",
+       "Only if you paid by card",
+       "Often not; consumer firms are outside it"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "HIPAA depends on who holds the data.",
+       "Payment method does not matter.",
+       "HIPAA covers providers, plans and clearinghouses."
+      ],
+      "explanation": "Consumer genetic test companies are generally outside HIPAA."
+     },
+     "proReasoning": "Check whether you can delete your data from DNA services.",
+     "commonMistake": "Assuming all health data is HIPAA data.",
+     "mentalModel": "DNA at a consumer firm may lack HIPAA."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:bf402353ec69"
+  ]
+ },
+ {
+  "id": "9de408f9-aedd-5db3-9941-08ba6c6026bf",
+  "market_id": "healthtech",
+  "day": 18,
+  "slot": 3,
+  "content": {
+   "id": "healthtech-d18-c3",
+   "title": "What happens to the data if we fail?",
+   "lessonTitle": "Selling a genetic database",
+   "slot": 3,
+   "type": "decide",
+   "brief": {
+    "headline": "You run a consumer DNA testing startup. A new investor asks what happens to customer data if the company fails. 27 states and D.C. fought the 23andMe data sale.",
+    "kicker": "Decide: how do you answer the investor?",
+    "fullText": "23andMe's genetic data was sold for $305 million in bankruptcy. States argued genetic data is uniquely sensitive and pushed for explicit consent before a sale.\n\nYour answer shapes your privacy policy, your customers' trust and your investor's risk.",
+    "sources": [
+     {
+      "url": "https://www.mobihealthnews.com/news/judge-approves-23andme-sale-amid-privacy-dispute",
+      "label": "MobiHealthNews, judge approves 23andMe sale amid privacy dispute"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "multipleChoice",
+    "prompt": "Which policy best protects customers in a sale?",
+    "options": [
+     "Require new consent before any transfer",
+     "Let any buyer take all the data",
+     "Say nothing about it in the policy"
+    ],
+    "correctIndex": 0,
+    "explanation": "States pushed for explicit consent before genetic data could be sold."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "How many states, plus D.C., opposed the 23andMe data sale?",
+    "min": 0,
+    "max": 50,
+    "value": 27,
+    "unit": "states",
+    "explanation": "27 states and D.C."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You are the startup's first lawyer. The CEO asks for a policy.",
+      "prompt": "What do you draft?",
+      "options": [
+       "Consent required before any data transfer",
+       "Data goes to whoever buys us",
+       "No policy until we are a larger company"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "It answers what states demanded.",
+       "That is the scenario states fought.",
+       "Policies matter from day one."
+      ],
+      "explanation": "A consent rule protects customers if the company is sold."
+     },
+     "proReasoning": "Lawyers write the downside case into the policy early.",
+     "commonMistake": "Waiting until a sale to decide.",
+     "mentalModel": "Plan the downside early."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Two DNA startups pitch you. One promises consent before any data sale.",
+      "prompt": "How does that affect your view?",
+      "options": [
+       "No difference at all",
+       "Lower legal and trust risk",
+       "Lower value; data is less sellable"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "The promise changes the risk.",
+       "States fought sales without consent.",
+       "Trust supports growth more than resale."
+      ],
+      "explanation": "A consent promise lowers the risk of a 23andMe-style fight."
+     },
+     "proReasoning": "Investors weigh trust risk against resale value.",
+     "commonMistake": "Valuing data only by its resale price.",
+     "mentalModel": "Trust can be worth more than resale."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Customers ask what happens to their DNA if you fail.",
+      "prompt": "What do you build?",
+      "options": [
+       "A hidden clause allowing a data sale",
+       "No way to delete data",
+       "Easy data deletion and a consent rule"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Hidden terms destroy trust.",
+       "Lack of control scares users.",
+       "Gives customers control."
+      ],
+      "explanation": "Deletion and consent give customers control over their DNA."
+     },
+     "proReasoning": "Founders build controls that answer the top customer fear.",
+     "commonMistake": "Hiding sale terms in fine print.",
+     "mentalModel": "Answer the top fear in the product."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You wonder what happens to your DNA if a test company goes bankrupt.",
+      "prompt": "What can happen?",
+      "options": [
+       "It can be sold as an asset",
+       "It is always deleted by law",
+       "It goes to the government"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "23andMe's data was sold for $305 million.",
+       "No law always requires deletion.",
+       "It went to a nonprofit buyer."
+      ],
+      "explanation": "In bankruptcy, customer data can be sold like other assets."
+     },
+     "proReasoning": "Read a DNA company's policy on sales before testing.",
+     "commonMistake": "Assuming data disappears when a company fails.",
+     "mentalModel": "Data can outlive the company."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:fe737dc30bdc"
+  ]
+ },
+ {
+  "id": "fd50dc5c-a214-52c1-b7f7-fa35a155ae53",
+  "market_id": "healthtech",
+  "day": 19,
+  "slot": 1,
+  "content": {
+   "id": "healthtech-d19-c1",
+   "title": "Leaving Oracle for Epic",
+   "lessonTitle": "The software every hospital runs on",
+   "slot": 1,
+   "type": "apply",
+   "brief": {
+    "headline": "Union Health, a two-hospital system in Terre Haute, Indiana, is switching from Oracle Health to Epic. It plans to go live in January 2027.",
+    "kicker": "Apply the EHR lesson: why do hospitals keep choosing Epic?",
+    "fullText": "Union Health had used Oracle Health, formerly Cerner, since 2017. Its CEO said many major Indiana systems use Epic, which helps coordinate care. It also aims to cut operating costs and improve cybersecurity after a 2025 Oracle Health hack exposed its patient data.\n\nThe system is putting more than two-thirds of its 66-person IT team on the project.",
+    "sources": [
+     {
+      "url": "https://www.beckershospitalreview.com/healthcare-information-technology/ehrs/union-healths-epic-switch-cost-interoperability-and-ai",
+      "label": "Becker's, Union Health's Epic switch"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "multipleChoice",
+    "prompt": "Which reason did Union Health give for choosing Epic?",
+    "options": [
+     "Many nearby Indiana systems use Epic",
+     "Epic offered to run it for free",
+     "A law requires Epic in Indiana"
+    ],
+    "correctIndex": 0,
+    "explanation": "Its CEO said many major Indiana systems use Epic, which helps coordinate care."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "How many people are on Union Health's IT team?",
+    "min": 0,
+    "max": 120,
+    "value": 66,
+    "unit": "people",
+    "explanation": "66, with more than two-thirds working on the switch."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You interview for an EHR project role at Union Health.",
+      "prompt": "What do you say the switch is really about?",
+      "options": [
+       "Buying newer office chairs",
+       "Cutting the IT team down to zero",
+       "Sharing data with nearby Epic systems"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Furniture is unrelated.",
+       "Most of the team is on the project.",
+       "Its CEO named care coordination with Epic peers."
+      ],
+      "explanation": "Union Health wants to share data easily with the Epic systems around it."
+     },
+     "proReasoning": "Strong candidates name the business reason behind a tech choice.",
+     "commonMistake": "Describing a switch as only a software upgrade.",
+     "mentalModel": "Tech choices have business reasons."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A small Oracle Health customer moves to Epic.",
+      "prompt": "What does that add to the market picture?",
+      "options": [
+       "Epic's network pulls in neighbors",
+       "Oracle is gaining in Indiana",
+       "EHR choice no longer matters"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Nearby Epic systems were a stated reason.",
+       "This is a loss for Oracle.",
+       "The choice shapes data sharing."
+      ],
+      "explanation": "When neighbors use Epic, switching to Epic makes sharing easier."
+     },
+     "proReasoning": "Investors watch network effects in software markets.",
+     "commonMistake": "Treating each hospital choice as independent.",
+     "mentalModel": "Networks pull in neighbors."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You sell tools that connect to hospital EHRs.",
+      "prompt": "What does Union Health's move suggest?",
+      "options": [
+       "Skip EHR connections",
+       "Build for Epic first",
+       "Build only for Oracle Health"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "EHR links are how tools fit in.",
+       "More hospitals are landing on Epic.",
+       "Oracle is losing customers."
+      ],
+      "explanation": "Hospitals keep moving to Epic, so tools that connect to it reach more buyers."
+     },
+     "proReasoning": "Founders build for the platform customers are moving to.",
+     "commonMistake": "Building for the platform customers are leaving.",
+     "mentalModel": "Build where customers are heading."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your hospital says it is changing its record system.",
+      "prompt": "Why might it bother?",
+      "options": [
+       "Because old systems turn off yearly",
+       "To delete patient records",
+       "To share records with nearby hospitals"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Systems do not shut off yearly.",
+       "Records are moved, not deleted.",
+       "Union Health cited care coordination."
+      ],
+      "explanation": "Hospitals often switch to match the systems their neighbors use."
+     },
+     "proReasoning": "Ask whether your hospitals use the same record system.",
+     "commonMistake": "Thinking a system switch is only about new screens.",
+     "mentalModel": "Matching neighbors helps sharing."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:89540ffeff1f"
+  ]
+ },
+ {
+  "id": "53022c40-a5d3-5c4c-adb1-46ae117b531a",
+  "market_id": "healthtech",
+  "day": 19,
+  "slot": 2,
+  "content": {
+   "id": "healthtech-d19-c2",
+   "title": "Concentrated power, again",
+   "lessonTitle": "The software every hospital runs on",
+   "slot": 2,
+   "type": "connect",
+   "brief": {
+    "headline": "Day 3 showed three PBMs handle nearly 80% of prescriptions. In 2025, Epic held 43.7% of US acute care hospitals and 56.9% of hospital beds, per KLAS Research.",
+    "kicker": "Connect day 3 and day 19: a few firms sit at key choke points.",
+    "fullText": "Epic's bed share is higher than its hospital share because large hospitals tend to use it. Oracle Health lost a net 56 hospitals and 14,676 beds in 2025.\n\nLike PBMs in drug benefits, a leading EHR vendor sits where much of the data and money flows.",
+    "sources": [
+     {
+      "url": "https://www.arnoldporter.com/en/perspectives/advisories/2024/07/ftc-interim-staff-report-on-prescription-drug-middlemen",
+      "label": "Arnold & Porter on the FTC PBM report"
+     },
+     {
+      "url": "https://www.beckershospitalreview.com/healthcare-information-technology/ehrs/epic-up-by-77-hospitals-8-things-to-know/",
+      "label": "Becker's, Epic up by 77 hospitals"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "faceOff",
+    "prompt": "Which share is higher for Epic?",
+    "left": {
+     "name": "Share of beds",
+     "note": "56.9% of US hospital beds"
+    },
+    "right": {
+     "name": "Share of hospitals",
+     "note": "43.7% of US acute care hospitals"
+    },
+    "correctIndex": 0,
+    "explanation": "Large hospitals tend to run Epic, so its bed share beats its hospital share."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "What share of US hospital beds did Epic hold in 2025?",
+    "min": 0,
+    "max": 100,
+    "value": 56.9,
+    "unit": "%",
+    "explanation": "56.9% of beds, against 43.7% of hospitals."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A policy interviewer asks where power sits in health tech.",
+      "prompt": "Which comparison do you draw?",
+      "options": [
+       "Epic in EHRs, like the top PBMs in drugs",
+       "Small clinics in all health markets",
+       "Patients in every market"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Both are concentrated choke points.",
+       "Small clinics hold little power.",
+       "Patients rarely control these systems."
+      ],
+      "explanation": "Like the top three PBMs, Epic holds a large share of a key system."
+     },
+     "proReasoning": "Policy answers compare concentration across markets.",
+     "commonMistake": "Discussing one market in isolation.",
+     "mentalModel": "Compare choke points."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You compare Epic's bed share and hospital share.",
+      "prompt": "Why does bed share matter more?",
+      "options": [
+       "It ignores big hospitals",
+       "It tracks larger hospitals and more patients",
+       "It counts parking spaces at each hospital"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Bed share weights large hospitals.",
+       "Beds reflect scale and patient volume.",
+       "Beds are patient capacity."
+      ],
+      "explanation": "Bed share weights large hospitals, which carry more patients and data."
+     },
+     "proReasoning": "Investors use the share that tracks revenue and influence.",
+     "commonMistake": "Counting hospitals as if all were the same size.",
+     "mentalModel": "Weight share by size."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your startup needs EHR data to work.",
+      "prompt": "What does Epic's share mean for you?",
+      "options": [
+       "Epic is too small to matter for you",
+       "You can ignore EHRs",
+       "Access to Epic decides much of your reach"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "It leads the market.",
+       "Your data lives in EHRs.",
+       "It covers 56.9% of beds."
+      ],
+      "explanation": "With over half of beds on Epic, Epic access shapes your market."
+     },
+     "proReasoning": "Founders plan around the dominant platform early.",
+     "commonMistake": "Assuming access to data is easy.",
+     "mentalModel": "Plan around the gatekeeper."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You notice several hospitals near you use Epic's MyChart.",
+      "prompt": "Why is that common?",
+      "options": [
+       "Epic runs a large share of US hospitals",
+       "MyChart is required by law",
+       "Hospitals all share one parent owner"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "43.7% of hospitals and 56.9% of beds.",
+       "No law requires MyChart.",
+       "They often have different owners."
+      ],
+      "explanation": "Epic leads the US hospital EHR market, so many hospitals use MyChart."
+     },
+     "proReasoning": "Notice which apps your hospitals share.",
+     "commonMistake": "Thinking each hospital builds its own software.",
+     "mentalModel": "A few vendors run most hospitals."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:da1c0af02b26"
+  ]
+ },
+ {
+  "id": "3fa8a13f-7e10-5549-a5a5-161e912e127c",
+  "market_id": "healthtech",
+  "day": 19,
+  "slot": 3,
+  "content": {
+   "id": "healthtech-d19-c3",
+   "title": "Picking a record system",
+   "lessonTitle": "The software every hospital runs on",
+   "slot": 3,
+   "type": "decide",
+   "brief": {
+    "headline": "You are CIO of a 300-bed hospital choosing an EHR. In 2025, Epic gained 77 hospitals and TruBridge two, while Oracle Health lost 56 and Meditech seven.",
+    "kicker": "Decide: what do you weigh beyond features?",
+    "fullText": "An EHR holds charts, orders, results and billing, and switching is costly. The system your neighbors use affects how easily you share records.\n\nYou can pick on price, on features, or on where the market and your neighbors are moving.",
+    "sources": [
+     {
+      "url": "https://www.beckershospitalreview.com/healthcare-information-technology/ehrs/epic-up-by-77-hospitals-8-things-to-know/",
+      "label": "Becker's, Epic up by 77 hospitals"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "sortSignal",
+    "prompt": "Did each vendor gain or lose hospitals in 2025?",
+    "buckets": [
+     "Gained",
+     "Lost"
+    ],
+    "items": [
+     {
+      "text": "Epic",
+      "bucket": 0
+     },
+     {
+      "text": "TruBridge",
+      "bucket": 0
+     },
+     {
+      "text": "Oracle Health",
+      "bucket": 1
+     },
+     {
+      "text": "Meditech",
+      "bucket": 1
+     }
+    ],
+    "explanation": "Epic gained 77 and TruBridge two; Oracle Health lost 56 and Meditech seven."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "How many hospitals did Epic gain in 2025?",
+    "min": 0,
+    "max": 200,
+    "value": 77,
+    "unit": "hospitals",
+    "explanation": "77 hospitals, the largest gain."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your board asks what matters most in the EHR choice.",
+      "prompt": "What do you add beyond features?",
+      "options": [
+       "The color of the login screen",
+       "Which systems our neighbors use",
+       "The vendor's office location"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Design is minor.",
+       "It decides how easily records flow.",
+       "Location does not affect sharing."
+      ],
+      "explanation": "Matching neighbors makes sharing records easier."
+     },
+     "proReasoning": "CIOs weigh the network, not just the product.",
+     "commonMistake": "Choosing on features alone.",
+     "mentalModel": "Weigh the network."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You compare EHR vendors for a long-term view.",
+      "prompt": "What do the 2025 shifts suggest?",
+      "options": [
+       "Oracle is gaining fastest",
+       "The market is frozen",
+       "Momentum favors Epic"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Oracle lost 56.",
+       "Dozens of hospitals switched.",
+       "Epic gained 77 hospitals."
+      ],
+      "explanation": "Epic gained the most while Oracle Health lost the most."
+     },
+     "proReasoning": "Investors read net gains as momentum.",
+     "commonMistake": "Ignoring customer flows between vendors.",
+     "mentalModel": "Customer flows show momentum."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You build an add-on for one EHR.",
+      "prompt": "Which vendor is the safer base?",
+      "options": [
+       "The one gaining hospitals",
+       "The one losing hospitals",
+       "Any; it makes no difference"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "A growing base means more buyers.",
+       "A shrinking base means fewer buyers.",
+       "Base size changes your market."
+      ],
+      "explanation": "Building on a growing platform grows your market with it."
+     },
+     "proReasoning": "Founders ride platforms that are gaining users.",
+     "commonMistake": "Building on a shrinking base.",
+     "mentalModel": "Ride the growing platform."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You hear hospitals are \"switching EHRs.\"",
+      "prompt": "Which direction was most common in 2025?",
+      "options": [
+       "Toward paper records",
+       "Toward Epic",
+       "Toward Oracle Health"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Hospitals are digital.",
+       "Epic gained 77 hospitals.",
+       "Oracle Health lost 56."
+      ],
+      "explanation": "In 2025, Epic gained the most hospitals."
+     },
+     "proReasoning": "Look at gains and losses, not just totals.",
+     "commonMistake": "Assuming the market is stable.",
+     "mentalModel": "Watch the net moves."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:c4751f310550"
+  ]
+ },
+ {
+  "id": "e23fd4dd-60a7-5af4-ad59-38a3f6390d47",
+  "market_id": "healthtech",
+  "day": 20,
+  "slot": 1,
+  "content": {
+   "id": "healthtech-d20-c1",
+   "title": "Oracle's rebuilt EHR",
+   "lessonTitle": "Oracle's $28 billion bet",
+   "slot": 1,
+   "type": "apply",
+   "brief": {
+    "headline": "On November 18, 2025, Oracle said its next-generation EHR had earned federal health IT certification. It said the system was ready for US ambulatory clinics.",
+    "kicker": "Apply the Oracle lesson: can a rebuild win back ground?",
+    "fullText": "The new Oracle Health EHR earned ONC certification on October 3, 2025, and DEA certification for prescribing controlled substances on October 8. Oracle said it was built from the ground up on a modern cloud architecture, with AI in every workflow and voice commands for clinicians.\n\nOracle bought Cerner in 2022 for about $28.3 billion. The new EHR is its attempt to compete again.",
+    "sources": [
+     {
+      "url": "https://www.oracle.com/news/announcement/onc-certification-oracle-ehr-marks-turning-point-for-healthcare-industry-2025-11-18/",
+      "label": "Oracle, ONC certification of Oracle Health EHR"
+     },
+     {
+      "url": "https://www.torys.com/en/work/2022/06/6f849441-8ab8-403f-ae7f-e548e5ea173a",
+      "label": "Torys, Oracle's acquisition of Cerner"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "buildChain",
+    "prompt": "Put Oracle's path in order.",
+    "steps": [
+     "Oracle completes its Cerner purchase",
+     "Oracle builds a new cloud EHR",
+     "The EHR earns ONC certification",
+     "It earns DEA prescribing certification",
+     "Oracle says it is ready for clinics"
+    ],
+    "explanation": "Oracle bought Cerner, rebuilt the EHR, certified it, then launched it for ambulatory clinics."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "How many billions did Oracle pay for Cerner?",
+    "min": 0,
+    "max": 50,
+    "value": 28.3,
+    "unit": "B",
+    "explanation": "About $28.3 billion in equity value, all cash."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You interview at Oracle Health in 2026.",
+      "prompt": "What do you say its main challenge is?",
+      "options": [
+       "Winning customers back from Epic",
+       "Getting its first ONC certification",
+       "Finding any hospitals in the US"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "It lost a net 56 hospitals in 2025.",
+       "It earned certification in October 2025.",
+       "It still serves many hospitals."
+      ],
+      "explanation": "Oracle rebuilt its EHR, but it must reverse customer losses."
+     },
+     "proReasoning": "Candidates name the business problem, not just the product.",
+     "commonMistake": "Praising the product without the market context.",
+     "mentalModel": "Name the business problem."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Oracle launched a certified EHR for clinics first.",
+      "prompt": "What should you watch next?",
+      "options": [
+       "How many logos it has",
+       "Whether customers adopt it",
+       "Its press release word count"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Logos do not show demand.",
+       "Adoption shows if the rebuild works.",
+       "Words do not show demand."
+      ],
+      "explanation": "Certification is a start. Customer adoption proves the bet."
+     },
+     "proReasoning": "Investors watch adoption after launch, not launch itself.",
+     "commonMistake": "Treating a launch as success.",
+     "mentalModel": "Adoption proves a launch."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You build AI tools for clinics.",
+      "prompt": "How does Oracle's AI-first EHR affect you?",
+      "options": [
+       "It ends all AI startups now",
+       "It has no AI at all",
+       "Another EHR rival builds AI in"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Startups can still find gaps.",
+       "Oracle says AI is in every workflow.",
+       "EHRs are adding AI features directly."
+      ],
+      "explanation": "EHR vendors building AI in raises the bar for standalone tools."
+     },
+     "proReasoning": "Founders watch when platforms add their feature.",
+     "commonMistake": "Ignoring platform moves into your space.",
+     "mentalModel": "Watch the platform's roadmap."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your clinic might switch to a new Oracle EHR.",
+      "prompt": "What is new about it?",
+      "options": [
+       "Built on modern cloud with AI and voice",
+       "It is printed on paper",
+       "It works without any computer at all"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Oracle described cloud, AI and voice features.",
+       "It is digital.",
+       "It runs on computers."
+      ],
+      "explanation": "Oracle says the EHR was rebuilt on modern cloud with AI and voice commands."
+     },
+     "proReasoning": "Ask your clinic how a new system affects visits.",
+     "commonMistake": "Assuming new software means no change for patients.",
+     "mentalModel": "New systems change visits."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:cf915093ccde"
+  ]
+ },
+ {
+  "id": "a91c6e2f-0d5c-5081-8823-b4f93c6fbcff",
+  "market_id": "healthtech",
+  "day": 20,
+  "slot": 2,
+  "content": {
+   "id": "healthtech-d20-c2",
+   "title": "Bought share, lost share",
+   "lessonTitle": "Oracle's $28 billion bet",
+   "slot": 2,
+   "type": "connect",
+   "brief": {
+    "headline": "Oracle paid about $28.3 billion for Cerner in June 2022. Day 19 showed Oracle Health lost a net 56 hospitals and 14,676 beds in 2025, while Epic gained 77.",
+    "kicker": "Connect day 19 and day 20: buying customers is not keeping them.",
+    "fullText": "Cerner was the second-largest US hospital EHR vendor when Oracle bought it, at $95 a share. A large acquisition brings customers, but they can leave when contracts end.\n\nThe market data shows the cost of losing ground after a big purchase.",
+    "sources": [
+     {
+      "url": "https://www.torys.com/en/work/2022/06/6f849441-8ab8-403f-ae7f-e548e5ea173a",
+      "label": "Torys, Oracle's acquisition of Cerner"
+     },
+     {
+      "url": "https://www.beckershospitalreview.com/healthcare-information-technology/ehrs/epic-up-by-77-hospitals-8-things-to-know/",
+      "label": "Becker's, Epic up by 77 hospitals"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "spotFake",
+    "prompt": "One of these is false. Tap it.",
+    "statements": [
+     "Oracle paid about $28.3 billion for Cerner.",
+     "Oracle Health gained hospitals in 2025.",
+     "Epic gained 77 hospitals in 2025."
+    ],
+    "fakeIndex": 1,
+    "explanation": "Oracle Health lost a net 56 hospitals in 2025."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "How many thousand beds did Oracle Health lose in 2025?",
+    "min": 0,
+    "max": 25,
+    "value": 14.7,
+    "unit": "K",
+    "explanation": "14,676 beds, along with a net 56 hospitals."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You join a company after a big acquisition.",
+      "prompt": "What lesson from Oracle do you apply?",
+      "options": [
+       "Cut support to save money",
+       "Keep acquired customers happy early",
+       "Assume customers will stay forever"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Weak support drives customers away.",
+       "Customers can leave when contracts end.",
+       "Oracle lost a net 56 hospitals."
+      ],
+      "explanation": "Acquired customers can leave at renewal, so retention matters from day one."
+     },
+     "proReasoning": "Integration teams focus on keeping acquired customers.",
+     "commonMistake": "Treating an acquisition as owning customers forever.",
+     "mentalModel": "You rent customers; you do not own them."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A company buys a rival for its customer base.",
+      "prompt": "What risk does Oracle illustrate?",
+      "options": [
+       "Customers are locked in forever",
+       "Revenue always doubles",
+       "Customers leave at contract renewal"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Contracts end and customers move.",
+       "Losses can shrink revenue.",
+       "Oracle lost hospitals after the deal."
+      ],
+      "explanation": "Bought customers can leave, which erodes the deal's value."
+     },
+     "proReasoning": "Investors model churn after an acquisition.",
+     "commonMistake": "Valuing a deal as if customers never leave.",
+     "mentalModel": "Model churn after a deal."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A hospital leaving Oracle Health asks for migration help.",
+      "prompt": "Is that a market for you?",
+      "options": [
+       "Yes, switching hospitals need help",
+       "No, nobody switches EHRs",
+       "No, migration is fully automatic"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Dozens of hospitals left Oracle in 2025.",
+       "Many switched in 2025.",
+       "Migration takes big projects."
+      ],
+      "explanation": "Hospitals leaving Oracle need data migration and training."
+     },
+     "proReasoning": "Founders serve the flow of customers between platforms.",
+     "commonMistake": "Missing the work a market shift creates.",
+     "mentalModel": "Shifts create work."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You wonder if spending billions guarantees success.",
+      "prompt": "What does Oracle's Cerner deal show?",
+      "options": [
+       "Price sets market share",
+       "Customers can still leave",
+       "Big deals always win"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Customers chose other vendors.",
+       "Oracle Health lost a net 56 hospitals.",
+       "It lost ground after the deal."
+      ],
+      "explanation": "Oracle paid $28.3 billion but kept losing hospitals."
+     },
+     "proReasoning": "Watch what happens years after a big deal.",
+     "commonMistake": "Judging a deal by its price.",
+     "mentalModel": "Price is not a guarantee."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:78baa5ac41eb"
+  ]
+ },
+ {
+  "id": "c642f94a-207d-50fe-bd97-41f0bac8e572",
+  "market_id": "healthtech",
+  "day": 20,
+  "slot": 3,
+  "content": {
+   "id": "healthtech-d20-c3",
+   "title": "Renew, rebuild or leave",
+   "lessonTitle": "Oracle's $28 billion bet",
+   "slot": 3,
+   "type": "decide",
+   "brief": {
+    "headline": "You run IT at a hospital on Oracle Health. Your contract ends next year. Oracle's new EHR was certified in 2025, launched first for ambulatory clinics.",
+    "kicker": "Decide: renew, wait for the new system, or switch?",
+    "fullText": "Oracle Health lost a net 56 hospitals in 2025, mostly to Epic. Oracle says its rebuilt EHR uses modern cloud architecture and AI in every workflow.\n\nSwitching is costly and slow. Staying means betting on Oracle's new system reaching hospitals like yours.",
+    "sources": [
+     {
+      "url": "https://www.beckershospitalreview.com/healthcare-information-technology/ehrs/epic-up-by-77-hospitals-8-things-to-know/",
+      "label": "Becker's, Epic up by 77 hospitals"
+     },
+     {
+      "url": "https://www.oracle.com/news/announcement/onc-certification-oracle-ehr-marks-turning-point-for-healthcare-industry-2025-11-18/",
+      "label": "Oracle, ONC certification of Oracle Health EHR"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "faceOff",
+    "prompt": "Which approach gives the clearest answer?",
+    "left": {
+     "name": "A scored side-by-side test",
+     "note": "Compare Oracle's new EHR and Epic on your needs"
+    },
+    "right": {
+     "name": "Renew automatically",
+     "note": "Stay without comparing options"
+    },
+    "correctIndex": 0,
+    "explanation": "A structured test shows which system fits your hospital before you commit."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "How many dollars per share did Oracle pay for Cerner?",
+    "min": 0,
+    "max": 150,
+    "value": 95,
+    "unit": "$",
+    "explanation": "$95 a share, about $28.3 billion in total."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your CEO asks for your recommendation.",
+      "prompt": "What do you propose?",
+      "options": [
+       "Renew without looking",
+       "Switch tomorrow without a plan",
+       "Run a scored test before renewing"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "You may miss a better fit.",
+       "Rushed switches fail.",
+       "Facts guide a costly, long-term choice."
+      ],
+      "explanation": "A structured comparison guides a decision that lasts years."
+     },
+     "proReasoning": "CIOs make big platform choices with a scored process.",
+     "commonMistake": "Deciding by habit or by panic.",
+     "mentalModel": "Score big choices."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Many hospitals face Oracle renewals soon.",
+      "prompt": "What should you watch for Oracle?",
+      "options": [
+       "Renewal rates against Epic",
+       "Its stock ticker symbol",
+       "Office lease costs"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Renewals show whether the rebuild works.",
+       "Symbols do not change.",
+       "Leases are minor."
+      ],
+      "explanation": "Renewal decisions show whether Oracle's rebuild keeps customers."
+     },
+     "proReasoning": "Investors watch renewal waves as test moments.",
+     "commonMistake": "Ignoring contract timing.",
+     "mentalModel": "Renewals are test moments."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You help hospitals compare EHRs.",
+      "prompt": "What service fits this moment?",
+      "options": [
+       "Hospital cafeteria apps",
+       "Side-by-side EHR evaluations",
+       "EHR logo design"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Unrelated.",
+       "Hospitals facing renewals need comparisons.",
+       "Logos do not guide choices."
+      ],
+      "explanation": "Renewal decisions create demand for neutral evaluations."
+     },
+     "proReasoning": "Founders sell at the moment buyers must decide.",
+     "commonMistake": "Selling when buyers are not deciding.",
+     "mentalModel": "Sell at decision time."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your hospital says it is \"evaluating\" its EHR.",
+      "prompt": "Why now?",
+      "options": [
+       "EHRs expire every month",
+       "A law bans its EHR",
+       "Its contract may be ending"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "EHRs do not expire monthly.",
+       "No law bans Oracle Health.",
+       "Contracts ending trigger reviews."
+      ],
+      "explanation": "Hospitals often review their EHR when contracts come up for renewal."
+     },
+     "proReasoning": "Contract dates often drive big tech changes.",
+     "commonMistake": "Assuming changes come from nowhere.",
+     "mentalModel": "Contracts drive change."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:8d2df4f5553d"
+  ]
+ },
+ {
+  "id": "fe9fdf2f-f33c-58fd-898e-5163e670e6e5",
+  "market_id": "healthtech",
+  "day": 21,
+  "slot": 1,
+  "content": {
+   "id": "healthtech-d21-c1",
+   "title": "Texas sues Epic",
+   "lessonTitle": "Epic in an antitrust fight",
+   "slot": 1,
+   "type": "apply",
+   "brief": {
+    "headline": "In December 2025, the Texas attorney general sued Epic Systems, alleging it uses its market dominance to control hospitals' data. Epic called the suit flawed and misguided.",
+    "kicker": "Apply the antitrust lesson: what does Texas claim, and what does Epic say?",
+    "fullText": "The suit alleges Epic can veto other vendors' access to hospital data by refusing to provide the needed APIs, and that it raises switching costs. It says Epic holds at least partial records for 90% of the US population.\n\nEpic said it handles over 725 million record exchanges a month, more than half with non-Epic systems. It was the third major case filed against Epic in 2025. These are allegations, not findings.",
+    "sources": [
+     {
+      "url": "https://www.hfma.org/fast-finance/epic-lawsuit-filed-by-texas-aims-to-help-health-system-finances/",
+      "label": "HFMA, Epic lawsuit filed by Texas"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "sortSignal",
+    "prompt": "Who made each claim?",
+    "buckets": [
+     "The Texas suit",
+     "Epic"
+    ],
+    "items": [
+     {
+      "text": "Epic can veto access by withholding APIs",
+      "bucket": 0
+     },
+     {
+      "text": "Over 725 million record exchanges a month",
+      "bucket": 1
+     },
+     {
+      "text": "Switching away from Epic is very costly",
+      "bucket": 0
+     },
+     {
+      "text": "The lawsuit is flawed and misguided",
+      "bucket": 1
+     }
+    ],
+    "explanation": "Texas alleges control over access and high switching costs. Epic points to the volume of data it shares."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "The suit says Epic holds partial records for what share of the US population?",
+    "min": 0,
+    "max": 100,
+    "value": 90,
+    "unit": "%",
+    "explanation": "At least 90%, according to the Texas complaint."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You join a hospital legal team as the Texas case unfolds.",
+      "prompt": "How do you describe the case internally?",
+      "options": [
+       "A case Epic already lost",
+       "Allegations Epic disputes, not findings",
+       "Proof that Epic broke antitrust law"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "No ruling had been made.",
+       "The case had just been filed.",
+       "No court had ruled on the merits."
+      ],
+      "explanation": "A filed suit states allegations. Epic disputes them, and no court has ruled."
+     },
+     "proReasoning": "Legal staff separate claims from findings in every briefing.",
+     "commonMistake": "Repeating allegations as facts.",
+     "mentalModel": "Claims are not findings."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Epic faced three major cases in 2025.",
+      "prompt": "How do you read that for health IT?",
+      "options": [
+       "A sign Epic is shrinking fast",
+       "No effect on the market",
+       "Rising scrutiny of dominant EHRs"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Epic was gaining hospitals.",
+       "Cases can reshape data access.",
+       "Particle, CureIS and Texas all sued."
+      ],
+      "explanation": "Several suits signal growing scrutiny of how Epic controls access."
+     },
+     "proReasoning": "Investors track legal pressure on market leaders.",
+     "commonMistake": "Ignoring repeated suits against a leader.",
+     "mentalModel": "Repeated suits signal scrutiny."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your app needs hospital data from Epic systems.",
+      "prompt": "What does the Texas suit mean for you?",
+      "options": [
+       "Access rules may change, so track the case",
+       "You will get free access to all data tomorrow",
+       "You should stop building"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Outcomes could change how vendors get APIs.",
+       "Cases take years to resolve.",
+       "Access may improve over time."
+      ],
+      "explanation": "The case targets API access, which could shape your path to data."
+     },
+     "proReasoning": "Founders track cases that could change their access.",
+     "commonMistake": "Assuming a lawsuit fixes access quickly.",
+     "mentalModel": "Track cases that shape access."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You hear Texas is suing the company behind MyChart.",
+      "prompt": "What is the core claim?",
+      "options": [
+       "Epic makes medical devices",
+       "Epic controls who can access hospital data",
+       "Epic charges patients for using MyChart"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Epic makes software.",
+       "The suit says Epic can veto API access.",
+       "The suit is about vendors and hospitals."
+      ],
+      "explanation": "Texas alleges Epic uses its position to control access to hospital data."
+     },
+     "proReasoning": "Follow how courts treat claims over time.",
+     "commonMistake": "Thinking the suit is about patient fees.",
+     "mentalModel": "Data access is the fight."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:afcbdcaea482"
+  ]
+ },
+ {
+  "id": "ca57006d-7f76-5234-bb98-670c6f6f54ad",
+  "market_id": "healthtech",
+  "day": 21,
+  "slot": 2,
+  "content": {
+   "id": "healthtech-d21-c2",
+   "title": "Market share meets access",
+   "lessonTitle": "Epic in an antitrust fight",
+   "slot": 2,
+   "type": "connect",
+   "brief": {
+    "headline": "Day 19 showed Epic held 43.7% of US hospitals and 56.9% of beds. In September 2025, a federal judge let Particle Health's core antitrust claims against Epic proceed.",
+    "kicker": "Connect day 19 and day 21: whoever holds records controls access.",
+    "fullText": "Particle, a data startup, says Epic told a customer that access would return if it dropped Particle. The court denied Epic's motion to dismiss the core monopolization claims.\n\nLetting claims proceed means the case continues. It does not mean Epic has been found liable.",
+    "sources": [
+     {
+      "url": "https://www.beckershospitalreview.com/healthcare-information-technology/ehrs/epic-up-by-77-hospitals-8-things-to-know/",
+      "label": "Becker's, Epic up by 77 hospitals"
+     },
+     {
+      "url": "https://hitconsultant.net/2025/09/08/us-court-allows-particles-antitrust-claims-against-epic-to-proceed/",
+      "label": "HIT Consultant, court allows Particle's antitrust claims against Epic to proceed"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "spotFake",
+    "prompt": "One of these is false. Tap it.",
+    "statements": [
+     "The court found Epic liable in 2025.",
+     "Epic held 43.7% of US acute care hospitals.",
+     "The judge denied Epic's motion to dismiss core claims."
+    ],
+    "fakeIndex": 0,
+    "explanation": "The judge let the claims proceed. That is not a finding of liability."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "What share of US acute care hospitals did Epic hold in 2025?",
+    "min": 0,
+    "max": 100,
+    "value": 43.7,
+    "unit": "%",
+    "explanation": "43.7% of hospitals and 56.9% of beds."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A reporter asks you, a health IT analyst, about the Particle ruling.",
+      "prompt": "What is the accurate summary?",
+      "options": [
+       "Epic lost and must now pay damages",
+       "Particle lost and must close",
+       "The case continues; nothing is decided"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "There was no finding of liability.",
+       "Particle's claims survived.",
+       "The motion to dismiss was denied."
+      ],
+      "explanation": "Denying a motion to dismiss lets the case continue. It decides nothing on the merits."
+     },
+     "proReasoning": "Analysts state exactly what stage a case is at.",
+     "commonMistake": "Overstating an early ruling.",
+     "mentalModel": "Name the stage of the case."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Epic holds 56.9% of beds and faces an antitrust case.",
+      "prompt": "Why does market share matter here?",
+      "options": [
+       "High share draws monopoly claims",
+       "Share has no legal meaning",
+       "Low share causes lawsuits"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Monopolization claims focus on dominant firms.",
+       "Share is central to antitrust.",
+       "It is the reverse."
+      ],
+      "explanation": "Antitrust claims focus on firms with dominant shares."
+     },
+     "proReasoning": "Investors link market share to antitrust exposure.",
+     "commonMistake": "Treating dominance as risk-free.",
+     "mentalModel": "Dominance invites scrutiny."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your startup depends on data from Epic hospitals, like Particle.",
+      "prompt": "What lesson do you take?",
+      "options": [
+       "Avoid all hospital data",
+       "Use formal, regulated access channels",
+       "Rely on informal favors from IT staff"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Your product needs data.",
+       "Formal channels are more durable.",
+       "Favors can be withdrawn."
+      ],
+      "explanation": "Access through formal, regulated channels is harder to cut off."
+     },
+     "proReasoning": "Founders build on rights and frameworks, not goodwill.",
+     "commonMistake": "Depending on a gatekeeper's goodwill.",
+     "mentalModel": "Build on rights, not favors."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You read that a judge \"let claims proceed\" against Epic.",
+      "prompt": "What does that mean?",
+      "options": [
+       "Epic was found guilty",
+       "The whole case was thrown out of court",
+       "The lawsuit continues to the next stage"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "No liability was found.",
+       "The core claims survived.",
+       "It moves on, toward discovery."
+      ],
+      "explanation": "Letting claims proceed means the case continues. It does not decide who is right."
+     },
+     "proReasoning": "Learn the stages of a lawsuit to read headlines well.",
+     "commonMistake": "Reading \"proceed\" as \"lost.\"",
+     "mentalModel": "Proceed is not a verdict."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:b46d281303d2"
+  ]
+ },
+ {
+  "id": "ac531374-f934-5ed9-9489-d2d76fb6c63f",
+  "market_id": "healthtech",
+  "day": 21,
+  "slot": 3,
+  "content": {
+   "id": "healthtech-d21-c3",
+   "title": "Building on a gatekeeper",
+   "lessonTitle": "Epic in an antitrust fight",
+   "slot": 3,
+   "type": "decide",
+   "brief": {
+    "headline": "You run a startup that pulls patient records for clinics. Most of your records come from Epic hospitals. The Texas suit says Epic's profit margin is at least 30%.",
+    "kicker": "Decide: how do you secure access you can rely on?",
+    "fullText": "Particle Health says Epic cut off its access through a customer. Its case continues, with no finding yet.\n\nYou can rely on informal deals, push for formal regulated channels, or diversify sources. Access through formal channels is more durable.",
+    "sources": [
+     {
+      "url": "https://hitconsultant.net/2025/09/08/us-court-allows-particles-antitrust-claims-against-epic-to-proceed/",
+      "label": "HIT Consultant, court allows Particle's antitrust claims against Epic to proceed"
+     },
+     {
+      "url": "https://www.hfma.org/fast-finance/epic-lawsuit-filed-by-texas-aims-to-help-health-system-finances/",
+      "label": "HFMA, Epic lawsuit filed by Texas"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "faceOff",
+    "prompt": "Which access path is more durable?",
+    "left": {
+     "name": "Formal, regulated channels",
+     "note": "Networks and rules that govern exchange"
+    },
+    "right": {
+     "name": "Informal deals",
+     "note": "Access that depends on goodwill"
+    },
+    "correctIndex": 0,
+    "explanation": "Formal channels come with rules that protect access. Informal deals can end anytime."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "The Texas suit says Epic's EBITDA margin is at least what share?",
+    "min": 0,
+    "max": 80,
+    "value": 30,
+    "unit": "%",
+    "explanation": "At least 30%, double the average health IT company, per the suit."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You lead partnerships at the startup.",
+      "prompt": "What do you prioritize?",
+      "options": [
+       "Access through regulated networks",
+       "Side deals with single IT staff",
+       "Scraping hospital websites"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Rules protect access over time.",
+       "Side deals can vanish.",
+       "Scraping is fragile and risky."
+      ],
+      "explanation": "Regulated channels give access that a gatekeeper cannot easily cut."
+     },
+     "proReasoning": "Partnership leads secure access that survives disputes.",
+     "commonMistake": "Building on fragile workarounds.",
+     "mentalModel": "Secure durable access."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A data startup gets 90% of its records through one vendor.",
+      "prompt": "What risk do you flag?",
+      "options": [
+       "Data that is too cheap to buy",
+       "A single gatekeeper can cut access",
+       "Too many data sources"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Cost is not the issue.",
+       "Particle alleges exactly that happened.",
+       "It has too few sources."
+      ],
+      "explanation": "Dependence on one gatekeeper is a key risk for data startups."
+     },
+     "proReasoning": "Investors check concentration in a startup's supply.",
+     "commonMistake": "Ignoring supplier concentration.",
+     "mentalModel": "One gate, one risk."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You plan your data strategy for the next two years.",
+      "prompt": "What is the strongest plan?",
+      "options": [
+       "One informal side deal with Epic",
+       "Wait for all the lawsuits to end first",
+       "Regulated channels plus several sources"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Fragile if Epic objects.",
+       "Cases take years.",
+       "Durable and spread across sources."
+      ],
+      "explanation": "Regulated channels and several sources reduce dependence on one gatekeeper."
+     },
+     "proReasoning": "Founders reduce single points of failure.",
+     "commonMistake": "Waiting for courts to clear the path.",
+     "mentalModel": "Spread and formalize access."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You wonder why startups fight Epic in court.",
+      "prompt": "What is the core issue?",
+      "options": [
+       "Access to records Epic systems hold",
+       "Who designs hospital logos",
+       "The price of MyChart for patients"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Startups need data held in Epic systems.",
+       "Unrelated.",
+       "MyChart is not the issue."
+      ],
+      "explanation": "Startups need data from Epic hospitals, and access is the fight."
+     },
+     "proReasoning": "Ask who controls the data a product needs.",
+     "commonMistake": "Thinking these fights are about fees to patients.",
+     "mentalModel": "Data access drives the fight."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:77516638393f"
+  ]
+ },
+ {
+  "id": "707804d8-8ab2-567a-af8b-4f7f0ef31289",
+  "market_id": "healthtech",
+  "day": 22,
+  "slot": 1,
+  "content": {
+   "id": "healthtech-d22-c1",
+   "title": "The military finishes its rollout",
+   "lessonTitle": "The VA's costly EHR switch",
+   "slot": 1,
+   "type": "apply",
+   "brief": {
+    "headline": "The Defense Department finished deploying its MHS GENESIS health record on March 9, 2024. The global rollout had started in February 2017, seven years earlier.",
+    "kicker": "Apply the VA lesson: what does finishing a federal EHR take?",
+    "fullText": "The last site was the Captain James A. Lovell Federal Health Care Center in North Chicago, a joint VA and Defense facility. MHS GENESIS now runs at 138 parent military hospitals and clinics and more than 3,600 locations.\n\nAbout 194,000 people actively use it. The VA, using a related Oracle Health system, had paused its own rollout in 2023.",
+    "sources": [
+     {
+      "url": "https://health.mil/News/Dvids-Articles/2024/04/29/news469758",
+      "label": "Health.mil, MHS GENESIS rollout enters new phase after final go-live"
+     },
+     {
+      "url": "https://www.nextgov.com/modernization/2025/12/lawmakers-question-va-health-records-costs-and-batched-deployments/410188/?oref=ng-next-story",
+      "label": "Nextgov, lawmakers question VA health records costs"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "buildChain",
+    "prompt": "Put the MHS GENESIS rollout in order.",
+    "steps": [
+     "The rollout starts in February 2017",
+     "It reaches military sites in waves",
+     "The last site goes live in March 2024",
+     "The program enters a new phase"
+    ],
+    "explanation": "The rollout took seven years, from the Pacific Northwest to North Chicago."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "How many parent military hospitals and clinics use MHS GENESIS?",
+    "min": 0,
+    "max": 250,
+    "value": 138,
+    "unit": "facilities",
+    "explanation": "138, plus more than 3,600 locations worldwide."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You join a federal EHR project team.",
+      "prompt": "What lesson from MHS GENESIS do you bring?",
+      "options": [
+       "Rollouts finish in one weekend",
+       "Training is optional",
+       "Large rollouts take years of waves"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Big systems roll out in stages.",
+       "Users need training.",
+       "It took seven years to finish."
+      ],
+      "explanation": "MHS GENESIS took seven years, rolled out in waves."
+     },
+     "proReasoning": "Project staff plan big rollouts as multi-year programs.",
+     "commonMistake": "Expecting a big rollout to be quick.",
+     "mentalModel": "Plan big rollouts in waves."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You follow Oracle Health's government business.",
+      "prompt": "What does the DoD finish signal?",
+      "options": [
+       "A large federal reference site",
+       "The end of all federal work",
+       "A failed project"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "It runs at 138 parent facilities.",
+       "The program enters a new phase.",
+       "It reached full deployment."
+      ],
+      "explanation": "A finished military rollout is a large reference for Oracle Health."
+     },
+     "proReasoning": "Investors count reference customers in long sales cycles.",
+     "commonMistake": "Ignoring finished deployments.",
+     "mentalModel": "Big wins are references."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You sell training tools for EHR rollouts.",
+      "prompt": "Who is your best federal buyer now?",
+      "options": [
+       "No federal buyers remain",
+       "The VA, restarting its rollout",
+       "The DoD, starting from zero"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "The VA still needs help.",
+       "The VA has many sites left to go.",
+       "The DoD already finished."
+      ],
+      "explanation": "The DoD finished. The VA still has most of its sites to go."
+     },
+     "proReasoning": "Founders sell to the program that is still deploying.",
+     "commonMistake": "Pitching the program that already finished.",
+     "mentalModel": "Sell where work remains."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend in the military mentions MHS GENESIS.",
+      "prompt": "What is it?",
+      "options": [
+       "A new fighter jet built for the Navy",
+       "A recruiting app",
+       "The military's electronic health record"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "It is health software.",
+       "It is a health record.",
+       "It runs at military hospitals and clinics."
+      ],
+      "explanation": "MHS GENESIS is the Defense Department's electronic health record."
+     },
+     "proReasoning": "Ask how records move between military and VA care.",
+     "commonMistake": "Guessing what a program is from its name.",
+     "mentalModel": "Look up acronyms."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:72ccc9289867"
+  ]
+ },
+ {
+  "id": "702f9e9b-cc5a-5eb9-87fb-ebe2376c52e8",
+  "market_id": "healthtech",
+  "day": 22,
+  "slot": 2,
+  "content": {
+   "id": "healthtech-d22-c2",
+   "title": "From $10 billion to $37 billion",
+   "lessonTitle": "The VA's costly EHR switch",
+   "slot": 2,
+   "type": "connect",
+   "brief": {
+    "headline": "Day 20 showed Oracle buying Cerner for about $28.3 billion in 2022. The VA's EHR program, begun with a $10 billion Cerner contract in 2018, now has a lifecycle estimate of about $37 billion.",
+    "kicker": "Connect day 20 and day 22: Oracle inherited the VA project.",
+    "fullText": "Lifecycle cost includes building, running and maintaining a system for years. The VA paused rollouts in April 2023, with six of 170 medical centers live by late 2025.\n\nThe VA lifted its pause in December 2025 and planned four Michigan sites for April 2026, then nine more.",
+    "sources": [
+     {
+      "url": "https://www.torys.com/en/work/2022/06/6f849441-8ab8-403f-ae7f-e548e5ea173a",
+      "label": "Torys, Oracle's acquisition of Cerner"
+     },
+     {
+      "url": "https://www.nextgov.com/modernization/2025/12/lawmakers-question-va-health-records-costs-and-batched-deployments/410188/?oref=ng-next-story",
+      "label": "Nextgov, lawmakers question VA health records costs"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "faceOff",
+    "prompt": "Which is the bigger number?",
+    "left": {
+     "name": "Lifecycle estimate",
+     "note": "About $37 billion"
+    },
+    "right": {
+     "name": "Original contract",
+     "note": "$10 billion in 2018"
+    },
+    "correctIndex": 0,
+    "explanation": "Lifecycle costs include years of running and maintenance, so they exceed the first contract."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "About how many billions is the VA EHR lifecycle estimate?",
+    "min": 0,
+    "max": 60,
+    "value": 37,
+    "unit": "B",
+    "explanation": "About $37 billion, up from a $10 billion starting contract."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You brief a congressional staffer on the VA EHR.",
+      "prompt": "Which point links day 20 and day 22?",
+      "options": [
+       "Oracle took on the VA project with Cerner",
+       "The VA chose Epic as its vendor in 2018",
+       "The VA never used Cerner"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "The contract began with Cerner in 2018.",
+       "It began with Cerner.",
+       "Cerner was the original vendor."
+      ],
+      "explanation": "Oracle inherited the VA program when it bought Cerner."
+     },
+     "proReasoning": "Briefers link a project to the deal that changed its owner.",
+     "commonMistake": "Discussing a contract without its history.",
+     "mentalModel": "Deals carry old projects."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "The VA estimate rose from $10 billion to about $37 billion.",
+      "prompt": "What does that teach about contracts?",
+      "options": [
+       "Costs end at go-live",
+       "Lifecycle costs dwarf first contracts",
+       "Contracts always fall in cost over time"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Maintenance continues.",
+       "Running and upkeep add years of cost.",
+       "This one rose sharply."
+      ],
+      "explanation": "Lifecycle costs include years of running and maintenance."
+     },
+     "proReasoning": "Investors look at lifetime cost, not the headline contract.",
+     "commonMistake": "Comparing the first contract to final cost.",
+     "mentalModel": "Count the whole lifecycle."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You pitch a federal agency on new software.",
+      "prompt": "What cost view should you offer?",
+      "options": [
+       "Only the first-year license fee",
+       "No cost at all",
+       "Full lifecycle cost over the years"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "That hides later costs.",
+       "Unbelievable.",
+       "Agencies have seen first contracts balloon."
+      ],
+      "explanation": "Agencies burned by rising costs want full lifecycle estimates."
+     },
+     "proReasoning": "Founders win trust with honest long-term costs.",
+     "commonMistake": "Quoting only the entry price.",
+     "mentalModel": "Quote the lifecycle."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You read the VA EHR may cost $37 billion.",
+      "prompt": "Why so much more than $10 billion?",
+      "options": [
+       "It counts years of running and upkeep",
+       "The VA bought new hospitals with it",
+       "It includes veterans' benefits"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Lifecycle cost includes operation and maintenance.",
+       "It is software cost.",
+       "Benefits are separate."
+      ],
+      "explanation": "A lifecycle estimate counts building, running and maintaining the system."
+     },
+     "proReasoning": "Ask what a cost estimate includes.",
+     "commonMistake": "Comparing different kinds of cost.",
+     "mentalModel": "Know what a number counts."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:4d5dbcdd2973"
+  ]
+ },
+ {
+  "id": "1254e5a8-56de-5f0c-930e-1465e982f6a5",
+  "market_id": "healthtech",
+  "day": 22,
+  "slot": 3,
+  "content": {
+   "id": "healthtech-d22-c3",
+   "title": "Restarting the rollout",
+   "lessonTitle": "The VA's costly EHR switch",
+   "slot": 3,
+   "type": "decide",
+   "brief": {
+    "headline": "You help lead the VA's EHR restart. Six of 170 medical centers were live by late 2025. Four Michigan sites are planned for April 2026, then nine more.",
+    "kicker": "Decide: how do you restart without repeating past problems?",
+    "fullText": "Rollouts were paused in April 2023. Lawmakers questioned costs and the plan to deploy sites in batches.\n\nYou can go fast, go slow, or go in batches with readiness checks.",
+    "sources": [
+     {
+      "url": "https://www.nextgov.com/modernization/2025/12/lawmakers-question-va-health-records-costs-and-batched-deployments/410188/?oref=ng-next-story",
+      "label": "Nextgov, lawmakers question VA health records costs"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "multipleChoice",
+    "prompt": "What should gate each batch of sites?",
+    "options": [
+     "A fixed date, no matter what happens",
+     "Whichever site asks first",
+     "Readiness checks and fixes from past sites"
+    ],
+    "correctIndex": 2,
+    "explanation": "Checks before each batch help avoid repeating problems that led to the pause."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "How many VA medical centers are there in total?",
+    "min": 0,
+    "max": 300,
+    "value": 170,
+    "unit": "centers",
+    "explanation": "170, with six live by late 2025."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your boss asks how to keep the Michigan launch on track.",
+      "prompt": "What do you propose?",
+      "options": [
+       "Skip staff training to save time",
+       "Clear go/no-go checks before launch",
+       "Launch on schedule regardless"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Training is essential.",
+       "Checks catch problems before patients feel them.",
+       "Rushing caused trouble before."
+      ],
+      "explanation": "Go/no-go checks reduce risk at each batch."
+     },
+     "proReasoning": "Program leads set clear launch gates.",
+     "commonMistake": "Holding a date over readiness.",
+     "mentalModel": "Gate launches on readiness."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "The VA restarts with batches of sites.",
+      "prompt": "What metric matters for Oracle Health?",
+      "options": [
+       "Press releases issued",
+       "Staff headcount",
+       "Sites live and working well"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Words are not results.",
+       "Headcount is not progress.",
+       "Working sites show progress."
+      ],
+      "explanation": "Live, working sites show whether the restart succeeds."
+     },
+     "proReasoning": "Investors track delivered milestones.",
+     "commonMistake": "Counting announcements as progress.",
+     "mentalModel": "Count delivered sites."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You sell go-live support services.",
+      "prompt": "When should you engage the VA?",
+      "options": [
+       "Before each batch of sites",
+       "After all 170 are live",
+       "Never; it is too big"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Support matters most at go-live.",
+       "Too late to help.",
+       "Batches create clear openings."
+      ],
+      "explanation": "Each batch is a go-live that needs support."
+     },
+     "proReasoning": "Founders time sales to a program's milestones.",
+     "commonMistake": "Missing the moments when help is needed.",
+     "mentalModel": "Sell at milestones."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your local VA hospital will switch systems soon.",
+      "prompt": "Why might it go in batches?",
+      "options": [
+       "To confuse veterans",
+       "To learn from each group of sites",
+       "Because computers arrive slowly"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "The goal is safer rollout.",
+       "Batches let teams fix issues between waves.",
+       "Hardware is not the reason."
+      ],
+      "explanation": "Batches let teams find and fix problems before the next group."
+     },
+     "proReasoning": "Ask your VA hospital how the switch affects visits.",
+     "commonMistake": "Assuming rollouts happen everywhere at once.",
+     "mentalModel": "Batches allow learning."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:2a43c4ef4d10"
+  ]
+ },
+ {
+  "id": "a207940e-10e9-5ac9-98ed-0ce506ca97cd",
+  "market_id": "healthtech",
+  "day": 23,
+  "slot": 1,
+  "content": {
+   "id": "healthtech-d23-c1",
+   "title": "$34.7 billion to go digital",
+   "lessonTitle": "The law that digitized hospitals",
+   "slot": 1,
+   "type": "apply",
+   "brief": {
+    "headline": "By May 2016, CMS had paid about $34.69 billion in meaningful use incentives. The HITECH Act created these payments to push providers onto electronic records.",
+    "kicker": "Apply the HITECH lesson: where did the incentive money go?",
+    "fullText": "Eligible hospitals received $20.6 billion. Medicare eligible professionals got $9 billion and Medicaid eligible professionals $4.6 billion. Medicare Advantage organizations received nearly $500 million.\n\nThe payments rewarded using certified EHRs in meaningful ways, not just buying them.",
+    "sources": [
+     {
+      "url": "https://www.hcinnovationgroup.com/policy-value-based-care/news/13027074/report-meaningful-use-payments-total-347-billion",
+      "label": "Healthcare Innovation, meaningful use payments total $34.7 billion"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "faceOff",
+    "prompt": "Who received more incentive money by May 2016?",
+    "left": {
+     "name": "Eligible hospitals",
+     "note": "$20.6 billion"
+    },
+    "right": {
+     "name": "Medicare professionals",
+     "note": "$9 billion"
+    },
+    "correctIndex": 0,
+    "explanation": "Hospitals received $20.6 billion, more than twice what Medicare professionals got."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "About how many billions in incentives had CMS paid by May 2016?",
+    "min": 0,
+    "max": 60,
+    "value": 34.7,
+    "unit": "B",
+    "explanation": "About $34.69 billion."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You interview for a health policy role.",
+      "prompt": "How do you explain why hospitals went digital so fast?",
+      "options": [
+       "Federal incentives paid billions to adopt",
+       "Patients demanded paper records be kept",
+       "A ban on paper in 2009"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "$34.69 billion had been paid by 2016.",
+       "The push came from policy.",
+       "There was no paper ban."
+      ],
+      "explanation": "HITECH paid billions in incentives to adopt certified EHRs."
+     },
+     "proReasoning": "Policy answers tie a big shift to the incentive behind it.",
+     "commonMistake": "Explaining adoption without the money.",
+     "mentalModel": "Incentives drive adoption."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Hospitals received $20.6 billion in incentives.",
+      "prompt": "Who else gained from that spending?",
+      "options": [
+       "Fax machine makers",
+       "EHR vendors selling certified systems",
+       "Paper suppliers for medical charts"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "The goal was digital records.",
+       "Hospitals bought certified EHRs.",
+       "Paper use fell."
+      ],
+      "explanation": "Incentive money flowed through hospitals to EHR vendors."
+     },
+     "proReasoning": "Investors follow subsidy money to the sellers.",
+     "commonMistake": "Ignoring who sells to subsidized buyers.",
+     "mentalModel": "Follow subsidies to sellers."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A new federal incentive program targets your product area.",
+      "prompt": "What lesson does HITECH teach?",
+      "options": [
+       "Incentives never change behavior",
+       "Only patients buy software",
+       "Incentives can create a market fast"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Behavior changed sharply.",
+       "Providers bought EHRs.",
+       "HITECH moved hospitals from 9% to over 99%."
+      ],
+      "explanation": "HITECH incentives moved most hospitals onto certified EHRs."
+     },
+     "proReasoning": "Founders watch for incentives that create demand.",
+     "commonMistake": "Ignoring policy that funds buyers.",
+     "mentalModel": "Policy can create demand."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You wonder why your doctor switched to a computer.",
+      "prompt": "What is one big reason?",
+      "options": [
+       "Federal incentives for certified EHRs",
+       "Computers became free for every clinic",
+       "Paper became illegal"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "HITECH paid billions for adoption.",
+       "Computers were not free.",
+       "Paper was not banned."
+      ],
+      "explanation": "The HITECH Act paid providers to adopt certified EHRs."
+     },
+     "proReasoning": "Ask how your doctor shares records with others.",
+     "commonMistake": "Thinking the switch happened on its own.",
+     "mentalModel": "Money moved the switch."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:1c86570a5e34"
+  ]
+ },
+ {
+  "id": "211b5166-d245-5aa5-95ad-6c3520cb9350",
+  "market_id": "healthtech",
+  "day": 23,
+  "slot": 2,
+  "content": {
+   "id": "healthtech-d23-c2",
+   "title": "The law behind the market",
+   "lessonTitle": "The law that digitized hospitals",
+   "slot": 2,
+   "type": "connect",
+   "brief": {
+    "headline": "Day 19 showed Epic leading the hospital EHR market. That market grew after HITECH: just 9% of hospitals had a basic EHR in 2008, against over 99% using certified EHRs by 2024.",
+    "kicker": "Connect day 19 and day 23: the law built the market Epic leads.",
+    "fullText": "Office-based physicians adopting certified EHRs rose from 17% in 2008 to 91% in 2024. The HITECH Act of 2009 created a certification program to set common standards.\n\nAlmost every hospital now runs certified software. Competition moved from whether to adopt to which vendor to choose.",
+    "sources": [
+     {
+      "url": "https://www.beckershospitalreview.com/healthcare-information-technology/ehrs/epic-up-by-77-hospitals-8-things-to-know/",
+      "label": "Becker's, Epic up by 77 hospitals"
+     },
+     {
+      "url": "https://www.healthit.gov/data/quickstats/national-trends-hospital-and-physician-adoption-electronic-health-records",
+      "label": "ONC, hospital and physician EHR adoption trends"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "sortSignal",
+    "prompt": "Which year does each fact describe?",
+    "buckets": [
+     "2008",
+     "2024"
+    ],
+    "items": [
+     {
+      "text": "9% of hospitals had a basic EHR",
+      "bucket": 0
+     },
+     {
+      "text": "17% of office doctors used a certified EHR",
+      "bucket": 0
+     },
+     {
+      "text": "Over 99% of hospitals used a certified EHR",
+      "bucket": 1
+     },
+     {
+      "text": "91% of office doctors used a certified EHR",
+      "bucket": 1
+     }
+    ],
+    "explanation": "Adoption went from rare in 2008 to nearly universal by 2024."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "What share of office-based physicians used a certified EHR in 2024?",
+    "min": 0,
+    "max": 100,
+    "value": 91,
+    "unit": "%",
+    "explanation": "91%, up from 17% in 2008."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "An interviewer asks why Epic grew so large.",
+      "prompt": "Which point connects day 19 and day 23?",
+      "options": [
+       "Hospitals stopped using any software at all",
+       "HITECH pushed nearly all hospitals to adopt",
+       "Epic was the only vendor"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Adoption rose.",
+       "Adoption went from 9% to over 99%.",
+       "Several vendors compete."
+      ],
+      "explanation": "HITECH created a near-universal market, and Epic won a large share of it."
+     },
+     "proReasoning": "Strong answers tie a company's rise to the policy that grew its market.",
+     "commonMistake": "Crediting the company alone.",
+     "mentalModel": "Policy grows markets."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Hospital EHR adoption is now over 99%.",
+      "prompt": "What does that mean for EHR vendors?",
+      "options": [
+       "Many new first-time buyers",
+       "Adoption is still rare",
+       "Growth comes from taking share"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Few first-time buyers remain.",
+       "It is nearly universal.",
+       "Almost every hospital already has one."
+      ],
+      "explanation": "With near-universal adoption, vendors grow by winning customers from rivals."
+     },
+     "proReasoning": "Investors spot when a market shifts from adoption to share fights.",
+     "commonMistake": "Projecting growth from first-time adoption.",
+     "mentalModel": "Mature markets are share fights."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You build an EHR add-on.",
+      "prompt": "What does near-universal adoption mean for you?",
+      "options": [
+       "Almost every hospital has a platform",
+       "Hospitals lack any software to connect to",
+       "Paper is still the norm"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "You can plug into existing systems.",
+       "Over 99% use certified EHRs.",
+       "Paper is rare now."
+      ],
+      "explanation": "Nearly all hospitals have an EHR to plug into."
+     },
+     "proReasoning": "Founders build on platforms customers already have.",
+     "commonMistake": "Pitching a full EHR replacement first.",
+     "mentalModel": "Plug into what exists."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You wonder how common electronic records are now.",
+      "prompt": "What share of hospitals use certified EHRs?",
+      "options": [
+       "About 9%",
+       "Over 99% by 2024",
+       "About half"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "That was 2008, for basic EHRs.",
+       "Per federal data.",
+       "Much higher."
+      ],
+      "explanation": "Over 99% of non-federal acute care hospitals used certified EHRs by 2024."
+     },
+     "proReasoning": "Compare then and now to see how fast change happened.",
+     "commonMistake": "Using old numbers for today.",
+     "mentalModel": "Check the year of a number."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:f25a61bf7ffe"
+  ]
+ },
+ {
+  "id": "71931e47-94ad-54c0-a6ca-042532e98e03",
+  "market_id": "healthtech",
+  "day": 23,
+  "slot": 3,
+  "content": {
+   "id": "healthtech-d23-c3",
+   "title": "Certified or cheap?",
+   "lessonTitle": "The law that digitized hospitals",
+   "slot": 3,
+   "type": "decide",
+   "brief": {
+    "headline": "You run a new three-doctor clinic. A cheap record system is not federally certified; a certified one costs more. 91% of office doctors used certified EHRs in 2024.",
+    "kicker": "Decide: which system do you pick?",
+    "fullText": "Certified EHRs meet federal standards for features and data exchange. The HITECH Act created the certification program to set common standards.\n\nA cheaper system saves money now but may struggle to share records with others.",
+    "sources": [
+     {
+      "url": "https://www.healthit.gov/data/quickstats/national-trends-hospital-and-physician-adoption-electronic-health-records",
+      "label": "ONC, hospital and physician EHR adoption trends"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "multipleChoice",
+    "prompt": "Why choose a certified EHR?",
+    "options": [
+     "It needs no internet",
+     "It meets federal standards for data exchange",
+     "It is always the cheapest option around"
+    ],
+    "correctIndex": 1,
+    "explanation": "Certification sets common standards for features and data exchange."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "What share of hospitals had a basic EHR in 2008?",
+    "min": 0,
+    "max": 50,
+    "value": 9,
+    "unit": "%",
+    "explanation": "Just 9%, before HITECH."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You manage the new clinic. The doctors ask your advice.",
+      "prompt": "What do you recommend?",
+      "options": [
+       "The cheap one, to save some money",
+       "Paper for the first year",
+       "The certified EHR, for data exchange"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "It may not share records well.",
+       "Paper blocks sharing.",
+       "It meets standards for sharing records."
+      ],
+      "explanation": "Certified EHRs meet standards that help share data with others."
+     },
+     "proReasoning": "Clinic managers weigh long-term sharing over short-term savings.",
+     "commonMistake": "Choosing on price alone.",
+     "mentalModel": "Standards save trouble later."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You fund clinics in a growing group.",
+      "prompt": "What policy do you set for record systems?",
+      "options": [
+       "Certified systems for all clinics",
+       "Any system each clinic likes",
+       "No electronic records"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Shared standards make data flow.",
+       "Mixed systems may not connect.",
+       "That blocks sharing."
+      ],
+      "explanation": "Certified systems follow common standards across clinics."
+     },
+     "proReasoning": "Investors set standards that keep a portfolio connected.",
+     "commonMistake": "Letting each site choose freely.",
+     "mentalModel": "Standardize across sites."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You build a low-cost EHR for small clinics.",
+      "prompt": "What should you prioritize?",
+      "options": [
+       "Paper printouts",
+       "Getting federal certification",
+       "Skipping data exchange features"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Clinics want digital.",
+       "Most clinics expect certified systems.",
+       "Exchange is a core standard."
+      ],
+      "explanation": "Certification is expected and signals data exchange support."
+     },
+     "proReasoning": "Founders meet the standards buyers expect.",
+     "commonMistake": "Competing on price without meeting standards.",
+     "mentalModel": "Meet the standard first."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your new clinic says its EHR is \"certified.\"",
+      "prompt": "What does that mean?",
+      "options": [
+       "It is the cheapest system",
+       "It works only offline",
+       "It meets federal standards"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Price is unrelated.",
+       "It is unrelated to offline use.",
+       "Certification sets common standards."
+      ],
+      "explanation": "Certified EHRs meet federal standards for features and data exchange."
+     },
+     "proReasoning": "Ask whether your records can be shared with other doctors.",
+     "commonMistake": "Assuming all record systems are the same.",
+     "mentalModel": "Certified means standards."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:2a36c920a99f"
+  ]
+ },
+ {
+  "id": "a1ae23ab-0f89-5bb1-892c-bcfa0e42f86f",
+  "market_id": "healthtech",
+  "day": 24,
+  "slot": 1,
+  "content": {
+   "id": "healthtech-d24-c1",
+   "title": "A $5.3 billion note taker",
+   "lessonTitle": "The EHR that writes your notes",
+   "slot": 1,
+   "type": "apply",
+   "brief": {
+    "headline": "On June 24, 2025, Abridge closed a $300 million round at a $5.3 billion valuation, led by Andreessen Horowitz. Its AI drafts clinical notes from visits.",
+    "kicker": "Apply the AI scribe lesson: how big did the standalone leader get?",
+    "fullText": "Abridge said more than 150 health systems use its ambient listening technology, including Kaiser Permanente, UPMC and Sutter Health. It planned to use the money for new products, including software for medical billing.\n\nThe company said its tool reduces burnout, a company claim. Months later, Epic released its own AI Charting tool.",
+    "sources": [
+     {
+      "url": "https://www.beckershospitalreview.com/healthcare-information-technology/innovation/abridge-closes-300m-in-series-e-funding-hits-5-3b-valuation/",
+      "label": "Becker's, Abridge closes $300M Series E at $5.3B valuation"
+     },
+     {
+      "url": "https://www.fiercehealthcare.com/ai-and-machine-learning/epic-rolls-out-ai-charting-and-more-built-automation-clinicians-and",
+      "label": "Fierce Healthcare, Epic rolls out AI Charting"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "spotFake",
+    "prompt": "One of these is false. Tap it.",
+    "statements": [
+     "Abridge raised $300 million in June 2025.",
+     "The round valued Abridge at $5.3 billion.",
+     "Abridge is owned by Epic."
+    ],
+    "fakeIndex": 2,
+    "explanation": "Abridge is an independent startup. Epic later released its own AI Charting tool."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "At how many billions was Abridge valued in June 2025?",
+    "min": 0,
+    "max": 12,
+    "value": 5.3,
+    "unit": "B",
+    "explanation": "$5.3 billion, after a $300 million round."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You interview at Abridge in 2026.",
+      "prompt": "What do you name as its biggest challenge?",
+      "options": [
+       "Getting its first funding",
+       "Competing with EHR vendors' own AI",
+       "Finding any health system users"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "It raised $300 million.",
+       "Epic released AI Charting in 2026.",
+       "It has more than 150 health systems."
+      ],
+      "explanation": "With Epic building its own AI scribe, Abridge faces a powerful rival."
+     },
+     "proReasoning": "Candidates name the threat, not just the strength.",
+     "commonMistake": "Praising growth without naming the rival.",
+     "mentalModel": "Name the rival."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Abridge hit $5.3 billion, then Epic launched a rival tool.",
+      "prompt": "What risk does that raise?",
+      "options": [
+       "Too few clinicians using AI tools",
+       "A ban on AI scribes",
+       "A platform owner entering the market"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Adoption is growing fast.",
+       "No ban exists.",
+       "Epic is already where clinicians work."
+      ],
+      "explanation": "When the EHR vendor builds the feature, standalone startups face pressure."
+     },
+     "proReasoning": "Investors watch for platforms adding a startup's feature.",
+     "commonMistake": "Ignoring platform entry risk.",
+     "mentalModel": "Platforms can enter your market."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You run an AI scribe startup after Epic's launch.",
+      "prompt": "How do you stay valuable?",
+      "options": [
+       "Go deeper, as in billing and specialties",
+       "Match Epic on price alone",
+       "Stop selling to any Epic hospitals"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Abridge planned billing software too.",
+       "Price wars favor the platform.",
+       "Most beds run Epic."
+      ],
+      "explanation": "Going deeper into workflows like billing gives value the platform may not match."
+     },
+     "proReasoning": "Founders move to where the platform is weakest.",
+     "commonMistake": "Fighting the platform head-on.",
+     "mentalModel": "Go where the platform is weak."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your doctor uses an app that listens during the visit.",
+      "prompt": "What does it do?",
+      "options": [
+       "Diagnoses you on its own",
+       "Drafts the clinical note",
+       "Records you for social media"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Clinicians make decisions.",
+       "Ambient AI scribes draft notes.",
+       "It is a documentation tool."
+      ],
+      "explanation": "Ambient AI scribes listen and draft notes for the clinician to review."
+     },
+     "proReasoning": "You can ask your doctor how the tool is used.",
+     "commonMistake": "Assuming the AI makes medical decisions.",
+     "mentalModel": "The AI drafts; the clinician decides."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:08fa83f6ebce"
+  ]
+ },
+ {
+  "id": "69f2c00b-aab2-5842-94da-f59c0be683ec",
+  "market_id": "healthtech",
+  "day": 24,
+  "slot": 2,
+  "content": {
+   "id": "healthtech-d24-c2",
+   "title": "When the platform builds it",
+   "lessonTitle": "The EHR that writes your notes",
+   "slot": 2,
+   "type": "connect",
+   "brief": {
+    "headline": "Day 19 showed Epic runs 56.9% of US hospital beds. In early 2026 it released AI Charting, which listens during visits and drafts the clinician's note.",
+    "kicker": "Connect day 19 and day 24: market share becomes distribution.",
+    "fullText": "Epic said 85% of its customers were live with generative AI across its tools. Because Epic is already where clinicians work, its tools are easy to adopt.\n\nNuance and Abridge were already strong players before Epic entered.",
+    "sources": [
+     {
+      "url": "https://www.beckershospitalreview.com/healthcare-information-technology/ehrs/epic-up-by-77-hospitals-8-things-to-know/",
+      "label": "Becker's, Epic up by 77 hospitals"
+     },
+     {
+      "url": "https://www.fiercehealthcare.com/ai-and-machine-learning/epic-rolls-out-ai-charting-and-more-built-automation-clinicians-and",
+      "label": "Fierce Healthcare, Epic rolls out AI Charting"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "faceOff",
+    "prompt": "Which tool is easier for an Epic hospital to adopt?",
+    "left": {
+     "name": "Epic AI Charting",
+     "note": "Built into the EHR clinicians use"
+    },
+    "right": {
+     "name": "A new standalone scribe",
+     "note": "Needs a separate contract and setup"
+    },
+    "correctIndex": 0,
+    "explanation": "Epic is already where clinicians work, so its tools are easy to adopt."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "What share of Epic customers were live with generative AI?",
+    "min": 0,
+    "max": 100,
+    "value": 85,
+    "unit": "%",
+    "explanation": "85%, according to Epic."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A strategy interviewer asks why Epic can win in AI scribes.",
+      "prompt": "Which point connects day 19 and day 24?",
+      "options": [
+       "It has no competitors in AI at all",
+       "It invented AI",
+       "Its large share gives built-in reach"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Nuance and Abridge compete.",
+       "Many built AI tools.",
+       "56.9% of beds already run Epic."
+      ],
+      "explanation": "Epic's installed base gives it instant distribution for new features."
+     },
+     "proReasoning": "Strategists treat market share as a channel for new products.",
+     "commonMistake": "Ignoring distribution advantages.",
+     "mentalModel": "Share is distribution."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Epic says 85% of customers use generative AI.",
+      "prompt": "What does that mean for AI startups?",
+      "options": [
+       "Harder sales inside Epic hospitals",
+       "Easier sales for startups everywhere",
+       "No change"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "The platform offers its own tools.",
+       "Competition rose.",
+       "A platform rival matters."
+      ],
+      "explanation": "Epic's own AI makes selling standalone tools to its customers harder."
+     },
+     "proReasoning": "Investors discount startups when the platform competes.",
+     "commonMistake": "Assuming startup growth continues unchanged.",
+     "mentalModel": "Platform rivals slow startups."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You plan an AI tool for clinicians.",
+      "prompt": "Where should you focus?",
+      "options": [
+       "Only Epic's biggest hospitals",
+       "Needs Epic does not serve well",
+       "Exactly what Epic just launched"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "That is where Epic is strongest.",
+       "Gaps leave room for startups.",
+       "Head-on with the platform is hard."
+      ],
+      "explanation": "Startups do best where the platform is weak or absent."
+     },
+     "proReasoning": "Founders find the gaps a platform leaves.",
+     "commonMistake": "Building what the platform just shipped.",
+     "mentalModel": "Find the gaps."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your hospital's EHR now drafts notes with AI.",
+      "prompt": "Why did it adopt this so fast?",
+      "options": [
+       "It is required by law",
+       "Patients demanded it",
+       "It is built into the EHR"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "No law requires it.",
+       "Adoption is driven by clinicians and vendors.",
+       "No new vendor is needed."
+      ],
+      "explanation": "Built-in tools are easier to turn on than new vendors."
+     },
+     "proReasoning": "Notice how built-in features spread fastest.",
+     "commonMistake": "Assuming adoption is about the best tool alone.",
+     "mentalModel": "Built-in spreads fast."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:e1d7f553d498"
+  ]
+ },
+ {
+  "id": "94bc59e7-f6ea-5a30-bd1b-3328c91a9a8a",
+  "market_id": "healthtech",
+  "day": 24,
+  "slot": 3,
+  "content": {
+   "id": "healthtech-d24-c3",
+   "title": "Epic or a standalone scribe?",
+   "lessonTitle": "The EHR that writes your notes",
+   "slot": 3,
+   "type": "decide",
+   "brief": {
+    "headline": "You are chief medical information officer at an Epic hospital. You must choose between Epic's AI Charting and a standalone scribe used by more than 150 health systems.",
+    "kicker": "Decide: how do you pick an AI scribe?",
+    "fullText": "Epic's tool is built into the EHR. The standalone tool is widely used and has raised large funding.\n\nA fair pilot compares note quality, editing time and clinician feedback before you commit.",
+    "sources": [
+     {
+      "url": "https://www.fiercehealthcare.com/ai-and-machine-learning/epic-rolls-out-ai-charting-and-more-built-automation-clinicians-and",
+      "label": "Fierce Healthcare, Epic rolls out AI Charting"
+     },
+     {
+      "url": "https://www.beckershospitalreview.com/healthcare-information-technology/innovation/abridge-closes-300m-in-series-e-funding-hits-5-3b-valuation/",
+      "label": "Becker's, Abridge closes $300M Series E at $5.3B valuation"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "buildChain",
+    "prompt": "Order a fair pilot of two AI scribes.",
+    "steps": [
+     "Pick a few specialties to test",
+     "Run both tools with real clinicians",
+     "Measure note quality and edit time",
+     "Gather clinician feedback",
+     "Decide on one tool"
+    ],
+    "explanation": "A structured pilot gives evidence before a long-term choice."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "How many health systems used Abridge as of June 2025?",
+    "min": 0,
+    "max": 250,
+    "value": 150,
+    "unit": "systems",
+    "explanation": "More than 150 health systems."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your CEO wants a decision next week.",
+      "prompt": "What do you propose?",
+      "options": [
+       "A short, measured pilot of both",
+       "Pick whichever is cheapest now",
+       "Pick the one with more ads"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Evidence beats guessing for a key tool.",
+       "Cost alone ignores quality.",
+       "Ads are not evidence."
+      ],
+      "explanation": "A measured pilot shows which tool works for your clinicians."
+     },
+     "proReasoning": "Clinical IT leaders decide with pilot data.",
+     "commonMistake": "Choosing by price or hype.",
+     "mentalModel": "Pilot before you commit."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Hospitals run pilots between Epic and standalone scribes.",
+      "prompt": "What would favor the standalone?",
+      "options": [
+       "A bigger logo",
+       "Clearly better notes or specialty fit",
+       "Being newer than Epic's own tool"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Branding is minor.",
+       "Quality can beat convenience.",
+       "Newness is not value."
+      ],
+      "explanation": "Standalone tools win when they clearly outperform on quality or fit."
+     },
+     "proReasoning": "Investors back startups with measurable edges.",
+     "commonMistake": "Betting on startups without a clear edge.",
+     "mentalModel": "Edges must be measurable."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your scribe is in a pilot against Epic's tool.",
+      "prompt": "What should you show?",
+      "options": [
+       "Your funding total and investor list",
+       "Your office photos",
+       "Measured gains in note quality and time"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Funding is not performance.",
+       "Irrelevant.",
+       "Evidence wins pilots."
+      ],
+      "explanation": "Pilots are won on measured results."
+     },
+     "proReasoning": "Founders bring data to every pilot.",
+     "commonMistake": "Selling on funding instead of results.",
+     "mentalModel": "Win pilots with data."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your doctor tries two AI note tools.",
+      "prompt": "Why test both?",
+      "options": [
+       "To see which drafts better notes",
+       "Because one is required by law",
+       "To use both forever"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Pilots compare quality.",
+       "No law requires either.",
+       "Pilots end in a choice."
+      ],
+      "explanation": "Hospitals pilot tools to compare quality before choosing."
+     },
+     "proReasoning": "Ask how your doctor checks AI-drafted notes.",
+     "commonMistake": "Assuming all AI tools are the same.",
+     "mentalModel": "Tools differ; test them."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:08840e8b60c9"
+  ]
+ },
+ {
+  "id": "c7a5022f-017d-5dbc-996b-30a363e4ff7c",
+  "market_id": "healthtech",
+  "day": 25,
+  "slot": 1,
+  "content": {
+   "id": "healthtech-d25-c1",
+   "title": "Medicare claims through an API",
+   "lessonTitle": "The API standard for health data",
+   "slot": 1,
+   "type": "apply",
+   "brief": {
+    "headline": "On March 6, 2018, CMS launched Blue Button 2.0, an API giving Medicare patients access to four years of claims data. It uses the FHIR standard.",
+    "kicker": "Apply FHIR: what happens when a payer opens an API?",
+    "fullText": "Beneficiaries opt in through their Medicare accounts to share their data with vetted apps. Early participants included Verily, 23andMe and PillPack.\n\nMedicare served about 53 million people at the time. FHIR let apps read the data using common web standards.",
+    "sources": [
+     {
+      "url": "https://www.nextgov.com/digital-government/2018/03/cms-launches-api-for-medicare-claims-data/196672/?oref=ng-next-story",
+      "label": "Nextgov, CMS launches API for Medicare claims data"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "spotFake",
+    "prompt": "One of these is false. Tap it.",
+    "statements": [
+     "Blue Button 2.0 uses the FHIR standard.",
+     "It offered four years of Medicare data.",
+     "Patients must mail forms to use it."
+    ],
+    "fakeIndex": 2,
+    "explanation": "Beneficiaries opt in online through their Medicare accounts."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "About how many million Medicare patients were there at launch?",
+    "min": 0,
+    "max": 80,
+    "value": 53,
+    "unit": "M",
+    "explanation": "About 53 million, per the article."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You join a payer's API team.",
+      "prompt": "What lesson from Blue Button 2.0 do you apply?",
+      "options": [
+       "Build a custom format only you use",
+       "Send data by fax",
+       "Use FHIR so many apps can connect"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Custom formats block apps.",
+       "Fax is not an API.",
+       "FHIR uses common web standards."
+      ],
+      "explanation": "Blue Button 2.0 used FHIR so vetted apps could read the data."
+     },
+     "proReasoning": "API teams pick standards that many developers know.",
+     "commonMistake": "Inventing a private format.",
+     "mentalModel": "Use the common standard."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Medicare opened claims data through a FHIR API.",
+      "prompt": "Which companies benefit most?",
+      "options": [
+       "Apps that help patients use their data",
+       "Fax machine makers",
+       "Paper chart suppliers for hospitals"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "They can connect to the API.",
+       "APIs replace fax.",
+       "Data is digital."
+      ],
+      "explanation": "Open APIs create room for patient-facing apps."
+     },
+     "proReasoning": "Investors watch when large data sources open APIs.",
+     "commonMistake": "Missing new data access as an opportunity.",
+     "mentalModel": "Open data creates markets."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You build an app for Medicare patients.",
+      "prompt": "What does Blue Button 2.0 give you?",
+      "options": [
+       "Doctors' private notes",
+       "Claims data with patient consent",
+       "Free hospital contracts for your app"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "It covers claims data.",
+       "Patients can opt in to share claims.",
+       "It is a data API."
+      ],
+      "explanation": "With patient consent, your app can read Medicare claims through the API."
+     },
+     "proReasoning": "Founders build on official data access points.",
+     "commonMistake": "Scraping data an API already offers.",
+     "mentalModel": "Use official APIs."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "An app asks to connect to your Medicare account.",
+      "prompt": "What might it be using?",
+      "options": [
+       "Your bank account details",
+       "Your phone contacts",
+       "Medicare's Blue Button API"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Different system.",
+       "Unrelated.",
+       "Blue Button lets apps read claims with consent."
+      ],
+      "explanation": "Blue Button 2.0 lets vetted apps read Medicare claims if you opt in."
+     },
+     "proReasoning": "Only connect apps you trust, and review what they access.",
+     "commonMistake": "Connecting without checking what is shared.",
+     "mentalModel": "Know what you share."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:d0cba610313e"
+  ]
+ },
+ {
+  "id": "42a70573-7ec6-50cf-b1db-a9368b199068",
+  "market_id": "healthtech",
+  "day": 25,
+  "slot": 2,
+  "content": {
+   "id": "healthtech-d25-c2",
+   "title": "The right meets the pipe",
+   "lessonTitle": "The API standard for health data",
+   "slot": 2,
+   "type": "connect",
+   "brief": {
+    "headline": "Day 13 showed patients have a right to their own records under HIPAA. FHIR, a standard from HL7, gives that right a pipe: web APIs apps can use.",
+    "kicker": "Connect day 13 and day 25: a legal right plus a technical standard.",
+    "fullText": "FHIR uses REST, JSON, HTTP and OAuth, the same technologies as everyday apps. A FHIR resource is a standard chunk of data, like a patient or a lab result.\n\nOCR has enforced the right of access in dozens of cases. FHIR makes access faster than paper or fax.",
+    "sources": [
+     {
+      "url": "https://www.techtarget.com/healthtechsecurity/news/366594714/OCR-Settles-11-HIPAA-Right-of-Access-Cases",
+      "label": "TechTarget, OCR settles 11 right of access cases"
+     },
+     {
+      "url": "https://healthit.gov/sites/default/files/page/2021-04/What Is FHIR Fact Sheet.pdf",
+      "label": "ONC, What is FHIR? fact sheet"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "sortSignal",
+    "prompt": "Is each one part of FHIR?",
+    "buckets": [
+     "Part of FHIR",
+     "Not FHIR"
+    ],
+    "items": [
+     {
+      "text": "RESTful APIs",
+      "bucket": 0
+     },
+     {
+      "text": "JSON data format",
+      "bucket": 0
+     },
+     {
+      "text": "Faxing paper charts",
+      "bucket": 1
+     },
+     {
+      "text": "One vendor's private format",
+      "bucket": 1
+     }
+    ],
+    "explanation": "FHIR uses open web standards like REST and JSON."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "How many years of claims did Blue Button 2.0 offer?",
+    "min": 0,
+    "max": 10,
+    "value": 4,
+    "unit": "years",
+    "explanation": "Four years of Medicare claims data.",
+    "sources": [
+     "ng_bluebutton"
+    ]
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You join a hospital's records team.",
+      "prompt": "How do you speed up access requests?",
+      "options": [
+       "Offer access through FHIR apps",
+       "Mail paper copies only",
+       "Ask patients to visit in person"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "APIs deliver records fast.",
+       "Paper is slow.",
+       "Visits add delay."
+      ],
+      "explanation": "FHIR lets patients get records through apps, faster than paper."
+     },
+     "proReasoning": "Records teams use technology to meet legal duties.",
+     "commonMistake": "Treating access as a paper process.",
+     "mentalModel": "Use the pipe for the right."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Patients have a legal right to records, and FHIR is the standard.",
+      "prompt": "What market does that support?",
+      "options": [
+       "Records storage in boxes and file rooms",
+       "Apps that gather records for patients",
+       "Fax services"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Paper is declining.",
+       "Rights plus APIs enable these apps.",
+       "Fax is fading."
+      ],
+      "explanation": "A legal right plus a standard API creates room for patient apps."
+     },
+     "proReasoning": "Investors look for rights paired with technical rails.",
+     "commonMistake": "Missing how rights create markets.",
+     "mentalModel": "Rights plus rails make markets."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your app gathers patients' records from many hospitals.",
+      "prompt": "Which combination powers it?",
+      "options": [
+       "Hospital goodwill alone, nothing else",
+       "Screenshots of portals",
+       "The right of access plus FHIR APIs"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Goodwill is fragile.",
+       "Screenshots are fragile.",
+       "The law grants access; FHIR delivers it."
+      ],
+      "explanation": "The right of access gives the legal basis, and FHIR gives the technical path."
+     },
+     "proReasoning": "Founders combine legal rights and standards.",
+     "commonMistake": "Relying on informal access.",
+     "mentalModel": "Law plus standards."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You get your lab results in an app within minutes.",
+      "prompt": "What likely made that possible?",
+      "options": [
+       "A FHIR API",
+       "A fax machine",
+       "A mailed letter"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "FHIR uses web APIs.",
+       "Fax is slower.",
+       "Mail is slower."
+      ],
+      "explanation": "FHIR APIs let apps pull records quickly."
+     },
+     "proReasoning": "You can ask your provider which apps connect to its records.",
+     "commonMistake": "Assuming fast access is magic.",
+     "mentalModel": "APIs make access fast."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:53ccd1d90774"
+  ]
+ },
+ {
+  "id": "83c07dd2-ca28-5e2d-9473-58a3000b54c0",
+  "market_id": "healthtech",
+  "day": 25,
+  "slot": 3,
+  "content": {
+   "id": "healthtech-d25-c3",
+   "title": "API or screen scraping?",
+   "lessonTitle": "The API standard for health data",
+   "slot": 3,
+   "type": "decide",
+   "brief": {
+    "headline": "You build a patient app that pulls records from hospitals. You can use FHIR APIs or scrape patient portals. HIPAA generally gives providers 30 days to answer records requests.",
+    "kicker": "Decide: how do you get the data?",
+    "fullText": "FHIR uses standard web technologies and is supported by many EHRs. Scraping copies data from screens and can break when a site changes.\n\nYour choice affects reliability, security and trust with hospitals.",
+    "sources": [
+     {
+      "url": "https://healthit.gov/sites/default/files/page/2021-04/What Is FHIR Fact Sheet.pdf",
+      "label": "ONC, What is FHIR? fact sheet"
+     },
+     {
+      "url": "https://www.hhs.gov/press-room/ocr-settles-with-concentra.html",
+      "label": "HHS, OCR settles with Concentra"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "faceOff",
+    "prompt": "Which path is more reliable?",
+    "left": {
+     "name": "FHIR APIs",
+     "note": "Standard, documented web interfaces"
+    },
+    "right": {
+     "name": "Screen scraping",
+     "note": "Copies data from portal pages"
+    },
+    "correctIndex": 0,
+    "explanation": "Standard APIs are built for apps. Scraping breaks when pages change."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "How many days does HIPAA generally give to answer a records request?",
+    "min": 0,
+    "max": 90,
+    "value": 30,
+    "unit": "days",
+    "explanation": "Generally 30 days."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You are the app's lead engineer.",
+      "prompt": "Which approach do you choose?",
+      "options": [
+       "Ask patients to type it in",
+       "FHIR APIs, with patient consent",
+       "Scrape portals with stored logins"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Slow and error-prone.",
+       "Standard and built for apps.",
+       "Fragile and risky."
+      ],
+      "explanation": "FHIR APIs are standard and designed for this."
+     },
+     "proReasoning": "Engineers choose documented interfaces over workarounds.",
+     "commonMistake": "Building on fragile scraping.",
+     "mentalModel": "Use documented interfaces."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A patient app relies on scraping portals.",
+      "prompt": "What risk do you see?",
+      "options": [
+       "Too much reliability in its data",
+       "Too few users",
+       "Breakage and security concerns"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "It is less reliable.",
+       "Users are not the issue.",
+       "Scraping breaks and stores logins."
+      ],
+      "explanation": "Scraping is fragile and raises security concerns."
+     },
+     "proReasoning": "Investors prefer data access built on standards.",
+     "commonMistake": "Ignoring how a startup gets its data.",
+     "mentalModel": "Check how data is obtained."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A hospital you need lacks a working FHIR endpoint.",
+      "prompt": "What do you do?",
+      "options": [
+       "Use its records process, then push for an API",
+       "Scrape it using the patients' portal logins",
+       "Drop all hospitals"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "The right of access still applies.",
+       "Scraping adds risk.",
+       "Others have APIs."
+      ],
+      "explanation": "The right of access still works while you push for an API."
+     },
+     "proReasoning": "Founders use lawful fallbacks, not risky shortcuts.",
+     "commonMistake": "Taking risky shortcuts.",
+     "mentalModel": "Lawful fallbacks first."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "An app asks for your hospital portal password.",
+      "prompt": "Why might that be a concern?",
+      "options": [
+       "It is required by FHIR",
+       "It may scrape your account with it",
+       "Passwords make apps run faster for you"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "FHIR uses OAuth, not your password.",
+       "Sharing passwords adds risk.",
+       "Speed is not the reason."
+      ],
+      "explanation": "FHIR apps use OAuth, so you do not hand over your password."
+     },
+     "proReasoning": "Prefer apps that connect without your password.",
+     "commonMistake": "Sharing passwords with apps.",
+     "mentalModel": "Never share portal passwords."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:92cdd9023477"
+  ]
+ },
+ {
+  "id": "6edb27b9-6fbe-5e90-bfb4-fc03573b7c39",
+  "market_id": "healthtech",
+  "day": 26,
+  "slot": 1,
+  "content": {
+   "id": "healthtech-d26-c1",
+   "title": "Insurers promise faster approvals",
+   "lessonTitle": "$15 billion from faster approvals",
+   "slot": 1,
+   "type": "apply",
+   "brief": {
+    "headline": "In June 2025, major health insurers pledged to simplify prior authorization for plans covering 257 million Americans. By April 2026, a survey said plans had cut 11% of requirements.",
+    "kicker": "Apply the approvals lesson: do voluntary pledges move fast enough?",
+    "fullText": "The commitments included a standard electronic submission process by 2027 and real-time answers for at least 80% of electronic approvals. Elevance Health, UnitedHealthcare, Humana, Aetna and Cigna announced cuts or goals.\n\nIn September 2025, the American Hospital Association said 95% of hospitals reported staff time on prior authorization had increased over the past year.",
+    "sources": [
+     {
+      "url": "https://www.beckerspayer.com/policy-updates/insurers-prior-authorization-commitments-1-year-in/",
+      "label": "Becker's Payer, insurers' prior authorization commitments, 1 year in"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "spotFake",
+    "prompt": "One of these is false. Tap it.",
+    "statements": [
+     "The pledge covered plans for 257 million Americans.",
+     "Plans said they cut 11% of requirements.",
+     "Hospitals said prior authorization work fell."
+    ],
+    "fakeIndex": 2,
+    "explanation": "The AHA said 95% of hospitals reported staff time on prior authorization had increased."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "How many million Americans were in plans covered by the pledge?",
+    "min": 0,
+    "max": 400,
+    "value": 257,
+    "unit": "M",
+    "explanation": "257 million."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You work in a hospital revenue office in 2026.",
+      "prompt": "How do you judge the insurer pledge?",
+      "options": [
+       "Track your own approval times",
+       "Trust the press release",
+       "Assume nothing has changed"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Your data shows real effects.",
+       "Claims need checking.",
+       "Some requirements were cut."
+      ],
+      "explanation": "Insurers reported cuts, while hospitals reported more work. Your own data settles it."
+     },
+     "proReasoning": "Revenue staff measure promises against their own numbers.",
+     "commonMistake": "Taking pledges at face value.",
+     "mentalModel": "Measure promises yourself."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Insurers pledge real-time answers for 80% of electronic approvals.",
+      "prompt": "What does that mean for health IT?",
+      "options": [
+       "A return to fax approvals",
+       "Demand for electronic approval tools",
+       "Less need for any approval software"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "The goal is electronic.",
+       "Real-time answers need electronic systems.",
+       "It needs more software."
+      ],
+      "explanation": "Real-time electronic approvals need new tools at insurers and providers."
+     },
+     "proReasoning": "Investors follow pledges that need new technology.",
+     "commonMistake": "Ignoring the tech a pledge requires.",
+     "mentalModel": "Pledges can need tech."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You build electronic prior authorization tools.",
+      "prompt": "Which goal fits your pitch?",
+      "options": [
+       "More paper forms for each health plan",
+       "Longer review times",
+       "Real-time answers for 80% of requests"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "The goal is fewer forms.",
+       "The goal is faster.",
+       "Insurers committed to this target."
+      ],
+      "explanation": "Insurers set a target of real-time answers for at least 80% of electronic approvals."
+     },
+     "proReasoning": "Founders pitch to a target the buyer has publicly set.",
+     "commonMistake": "Pitching against the buyer's stated goal.",
+     "mentalModel": "Pitch to public targets."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You hear insurers promised easier approvals.",
+      "prompt": "What did hospitals report later?",
+      "options": [
+       "More staff time spent on approvals",
+       "No approvals needed at all",
+       "Approvals became instant everywhere"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "95% said time had increased.",
+       "Approvals still exist.",
+       "Not everywhere."
+      ],
+      "explanation": "Hospitals said staff time on prior authorization had increased."
+     },
+     "proReasoning": "Compare what each side reports.",
+     "commonMistake": "Believing one side only.",
+     "mentalModel": "Hear both sides."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:843dc38eeeb9"
+  ]
+ },
+ {
+  "id": "b0eea57d-fdf9-5545-95ea-899286654059",
+  "market_id": "healthtech",
+  "day": 26,
+  "slot": 2,
+  "content": {
+   "id": "healthtech-d26-c2",
+   "title": "Two approval tracks",
+   "lessonTitle": "$15 billion from faster approvals",
+   "slot": 2,
+   "type": "connect",
+   "brief": {
+    "headline": "Day 12 showed WISeR adding AI prior authorization to traditional Medicare in six states. A January 2024 CMS rule requires many other plans to decide faster and build data-sharing APIs.",
+    "kicker": "Connect day 12 and day 26: one rule speeds approvals, one test adds them.",
+    "fullText": "The 2024 rule covers Medicare Advantage, Medicaid, CHIP and federal exchange plans. Urgent requests must be decided within 72 hours and standard ones within 7 days. CMS estimated $15 billion in savings over 10 years.\n\nWISeR, by contrast, adds prior authorization for some services in traditional Medicare, with vendors paid on savings.",
+    "sources": [
+     {
+      "url": "https://www.dinsmore.com/publications/is-ai-wiser-cms-models-ai-based-prior-authorization-process-in-six-states/",
+      "label": "Dinsmore, CMS models AI-based prior authorization in six states"
+     },
+     {
+      "url": "https://www.beckershospitalreview.com/finance/cms-finalizes-prior-authorization-rule-expected-to-save-15b/",
+      "label": "Becker's, CMS finalizes prior authorization rule expected to save $15B"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "sortSignal",
+    "prompt": "Which program covers each one?",
+    "buckets": [
+     "CMS 2024 rule",
+     "WISeR test"
+    ],
+    "items": [
+     {
+      "text": "Medicare Advantage plans",
+      "bucket": 0
+     },
+     {
+      "text": "Medicaid and CHIP",
+      "bucket": 0
+     },
+     {
+      "text": "Traditional Medicare in six states",
+      "bucket": 1
+     },
+     {
+      "text": "Vendors paid on savings",
+      "bucket": 1
+     }
+    ],
+    "explanation": "The rule speeds approvals for government-linked plans. WISeR adds AI review in traditional Medicare."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "How many billions did CMS estimate the rule saves over 10 years?",
+    "min": 0,
+    "max": 25,
+    "value": 15,
+    "unit": "B",
+    "explanation": "About $15 billion over 10 years."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You brief a hospital on Medicare approvals in 2026.",
+      "prompt": "Which point links day 12 and day 26?",
+      "options": [
+       "Both apply only to Medicaid",
+       "Rules speed some approvals, WISeR adds others",
+       "Prior authorization ended everywhere in 2026"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "They cover different plans.",
+       "They push in different directions.",
+       "Approvals still exist."
+      ],
+      "explanation": "The 2024 rule speeds approvals in some plans, while WISeR adds review in traditional Medicare."
+     },
+     "proReasoning": "Briefers show how two policies interact.",
+     "commonMistake": "Treating all prior authorization policy as one trend.",
+     "mentalModel": "Policies can pull both ways."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Plans must build prior authorization APIs.",
+      "prompt": "Which firms gain?",
+      "options": [
+       "Paper form printers for plans",
+       "Fax machine makers",
+       "Vendors that build payer APIs"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "The rule moves to electronic.",
+       "Fax is the old way.",
+       "Plans must add API capabilities."
+      ],
+      "explanation": "Required APIs create demand for vendors who build them."
+     },
+     "proReasoning": "Investors follow mandates to the vendors who fulfill them.",
+     "commonMistake": "Missing who sells to mandated buyers.",
+     "mentalModel": "Mandates create vendors."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You build prior authorization software.",
+      "prompt": "Which customers must change first?",
+      "options": [
+       "Medicare Advantage and Medicaid plans",
+       "Employer plans only, nothing else",
+       "Cash-only clinics"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "They are covered by the 2024 rule.",
+       "The rule targets government-linked plans.",
+       "They do not use prior authorization."
+      ],
+      "explanation": "The rule covers Medicare Advantage, Medicaid, CHIP and federal exchange plans."
+     },
+     "proReasoning": "Founders sell first to buyers with a deadline.",
+     "commonMistake": "Selling to buyers with no deadline.",
+     "mentalModel": "Sell to buyers with deadlines."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your Medicare Advantage plan says approvals now have time limits.",
+      "prompt": "What are they?",
+      "options": [
+       "No limits at all",
+       "72 hours urgent, 7 days standard",
+       "30 days for every kind of request"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "The rule sets limits.",
+       "Set by the 2024 CMS rule.",
+       "Far slower than the rule."
+      ],
+      "explanation": "Urgent requests: 72 hours. Standard requests: 7 days."
+     },
+     "proReasoning": "Ask your plan when a decision is due.",
+     "commonMistake": "Waiting without knowing the deadline.",
+     "mentalModel": "Know the deadline."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:8f87d56a3a6a"
+  ]
+ },
+ {
+  "id": "b6d423f3-6297-5262-83cf-0be506cef315",
+  "market_id": "healthtech",
+  "day": 26,
+  "slot": 3,
+  "content": {
+   "id": "healthtech-d26-c3",
+   "title": "Meeting the deadline",
+   "lessonTitle": "$15 billion from faster approvals",
+   "slot": 3,
+   "type": "decide",
+   "brief": {
+    "headline": "You run approvals at a Medicare Advantage plan. Standard requests need decisions within 7 days and urgent ones within 72 hours. Required APIs are due January 1, 2027.",
+    "kicker": "Decide: where do you invest first?",
+    "fullText": "The CMS rule also requires APIs that share prior authorization data with patients and providers. Your team still handles many requests by fax and phone.\n\nYou can hire reviewers, automate intake, or wait until the API deadline.",
+    "sources": [
+     {
+      "url": "https://www.beckershospitalreview.com/finance/cms-finalizes-prior-authorization-rule-expected-to-save-15b/",
+      "label": "Becker's, CMS finalizes prior authorization rule expected to save $15B"
+     },
+     {
+      "url": "https://www.beckerspayer.com/policy-updates/insurers-prior-authorization-commitments-1-year-in/",
+      "label": "Becker's Payer, insurers' prior authorization commitments, 1 year in"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "multipleChoice",
+    "prompt": "What helps meet both deadlines and API rules?",
+    "options": [
+     "Waiting until late 2026",
+     "Electronic intake connected to an API",
+     "More fax machines and more staff"
+    ],
+    "correctIndex": 1,
+    "explanation": "Electronic intake speeds decisions and builds toward the required APIs."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "How many days do plans have for standard requests?",
+    "min": 0,
+    "max": 30,
+    "value": 7,
+    "unit": "days",
+    "explanation": "Seven days for standard requests, 72 hours for urgent ones."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your COO asks for a plan to meet the rule.",
+      "prompt": "What do you propose?",
+      "options": [
+       "Hire more fax clerks",
+       "Ignore the rule until audited",
+       "Automate intake and build the API"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Fax will not meet API rules.",
+       "Non-compliance brings risk.",
+       "It speeds decisions and meets API duties."
+      ],
+      "explanation": "Electronic intake and APIs meet both the timing and data-sharing rules."
+     },
+     "proReasoning": "Operations leaders meet several rules with one investment.",
+     "commonMistake": "Solving today's backlog with yesterday's tools.",
+     "mentalModel": "One fix, several rules."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A Medicare Advantage plan still uses fax for approvals.",
+      "prompt": "What risk do you flag?",
+      "options": [
+       "Missing deadlines and API rules",
+       "Too much automation in approvals",
+       "Too few requests"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Fax slows decisions and lacks APIs.",
+       "It has too little.",
+       "Volume is not the issue."
+      ],
+      "explanation": "Fax-based processes risk missing the rule's deadlines and API duties."
+     },
+     "proReasoning": "Investors check readiness for known deadlines.",
+     "commonMistake": "Ignoring a firm's compliance readiness.",
+     "mentalModel": "Check readiness for deadlines."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You sell API tools to health plans.",
+      "prompt": "When is the best time to sell?",
+      "options": [
+       "Never; plans build in-house",
+       "Well before January 1, 2027",
+       "The day after the deadline"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Many plans buy tools.",
+       "Plans need time to build and test.",
+       "Too late for a smooth rollout."
+      ],
+      "explanation": "Plans need lead time before the January 2027 API deadline."
+     },
+     "proReasoning": "Founders sell ahead of a buyer's deadline.",
+     "commonMistake": "Arriving after the deadline.",
+     "mentalModel": "Sell before the deadline."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your plan approves a request in two days.",
+      "prompt": "Why might it be faster than before?",
+      "options": [
+       "Approvals were cancelled",
+       "Doctors approve their own",
+       "New federal time limits"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Approvals still exist.",
+       "The plan still decides.",
+       "The 2024 rule set 7-day and 72-hour limits."
+      ],
+      "explanation": "The CMS rule set time limits for many plans."
+     },
+     "proReasoning": "Track your approval timing to know your rights.",
+     "commonMistake": "Assuming faster means less careful.",
+     "mentalModel": "Rules can speed approvals."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:71b8627e8808"
+  ]
+ },
+ {
+  "id": "8ed42874-e8fe-5999-859a-829a0b7a3a16",
+  "market_id": "healthtech",
+  "day": 27,
+  "slot": 1,
+  "content": {
+   "id": "healthtech-d27-c1",
+   "title": "A thousand hospitals on TEFCA",
+   "lessonTitle": "The national network of networks",
+   "slot": 1,
+   "type": "apply",
+   "brief": {
+    "headline": "In June 2025, Epic said more than 1,000 hospitals and 22,000 clinics using its software were live on TEFCA, the national exchange framework, through Epic Nexus.",
+    "kicker": "Apply the TEFCA lesson: how fast is the network filling in?",
+    "fullText": "Epic Nexus was one of the original networks approved at TEFCA's launch in December 2023. Surescripts joined in spring 2025, bringing the number of approved networks to nine.\n\nAt the time, 41% of Epic customers were live, 43% were implementing and 16% were planning. Epic aimed to move all customers to TEFCA by the end of 2025.",
+    "sources": [
+     {
+      "url": "https://www.healthcaredive.com/news/epic-nexus-tefca-1000-hospitals/749598/",
+      "label": "Healthcare Dive, Epic Nexus connects 1,000 hospitals to TEFCA"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "multipleChoice",
+    "prompt": "What is Epic Nexus in TEFCA?",
+    "options": [
+     "A federal agency that runs hospitals",
+     "An approved network for exchange (a QHIN)",
+     "A new hospital chain run by Epic"
+    ],
+    "correctIndex": 1,
+    "explanation": "Epic Nexus is a QHIN, a network approved to exchange data under TEFCA."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "How many thousand clinics using Epic were live on TEFCA?",
+    "min": 0,
+    "max": 40,
+    "value": 22,
+    "unit": "K",
+    "explanation": "22,000 clinics, plus more than 1,000 hospitals."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You join a hospital's interoperability team.",
+      "prompt": "What do you check first about TEFCA?",
+      "options": [
+       "Whether TEFCA is a vendor",
+       "Whether your EHR's network is live",
+       "Whether TEFCA needs a fax machine"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "It is a framework of networks.",
+       "Epic customers join through Epic Nexus.",
+       "TEFCA is electronic."
+      ],
+      "explanation": "Most hospitals join TEFCA through a network such as their EHR vendor's QHIN."
+     },
+     "proReasoning": "Interop teams map their path into the network first.",
+     "commonMistake": "Assuming each hospital must connect alone.",
+     "mentalModel": "Join through your network."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Epic connects 1,000 hospitals to TEFCA.",
+      "prompt": "What does that do for TEFCA's value?",
+      "options": [
+       "It reduces TEFCA's reach",
+       "Nothing changes for TEFCA's overall value",
+       "More members make the network more useful"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "It expands reach.",
+       "Exchange grew sharply.",
+       "Each new member adds connections."
+      ],
+      "explanation": "Networks grow more valuable as members join."
+     },
+     "proReasoning": "Investors watch network effects in data exchange.",
+     "commonMistake": "Ignoring how scale changes a network's value.",
+     "mentalModel": "Networks gain value with members."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your app needs records from many hospitals.",
+      "prompt": "What does TEFCA growth mean for you?",
+      "options": [
+       "A formal route to many hospitals",
+       "No way to reach hospitals",
+       "You must build your own network"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Over 1,000 Epic hospitals were live.",
+       "TEFCA adds routes.",
+       "Networks exist already."
+      ],
+      "explanation": "TEFCA gives a formal, regulated route to records across networks."
+     },
+     "proReasoning": "Founders use national frameworks to reach scale.",
+     "commonMistake": "Building one-off connections forever.",
+     "mentalModel": "Use the national rails."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your hospital says it is \"live on TEFCA.\"",
+      "prompt": "What does that mean?",
+      "options": [
+       "It changed its name",
+       "It can exchange records nationally",
+       "It closed its emergency room"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Unrelated.",
+       "TEFCA links networks across the US.",
+       "Unrelated."
+      ],
+      "explanation": "TEFCA links health networks so records can move across them."
+     },
+     "proReasoning": "Ask whether your records can reach a doctor in another state.",
+     "commonMistake": "Assuming records stay inside one hospital.",
+     "mentalModel": "Networks link hospitals."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:4af16a54582d"
+  ]
+ },
+ {
+  "id": "e4402449-12b6-59cf-9bd2-c13351210e91",
+  "market_id": "healthtech",
+  "day": 27,
+  "slot": 2,
+  "content": {
+   "id": "healthtech-d27-c2",
+   "title": "Formal rails for data",
+   "lessonTitle": "The national network of networks",
+   "slot": 2,
+   "type": "connect",
+   "brief": {
+    "headline": "Day 21 showed a startup fighting Epic over access, and noted formal channels are more durable. TEFCA, such a channel, had exchanged 464 million documents by the end of 2025.",
+    "kicker": "Connect day 21 and day 27: regulated networks as durable access.",
+    "fullText": "TEFCA went live in December 2023. Exchange grew from about 10 million documents before 2025 to 464 million by the end of 2025.\n\nThe 21st Century Cures Act of 2016 called for a trusted national exchange framework. Access through it rests on shared rules, not one company's goodwill.",
+    "sources": [
+     {
+      "url": "https://hitconsultant.net/2025/09/08/us-court-allows-particles-antitrust-claims-against-epic-to-proceed/",
+      "label": "HIT Consultant, court allows Particle's antitrust claims against Epic to proceed"
+     },
+     {
+      "url": "https://healthit.gov/resources/data-liquidity-affordability-and-access-the-history-growth-of-tefca/",
+      "label": "ONC, the history and growth of TEFCA"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "buildChain",
+    "prompt": "Put TEFCA's history in order.",
+    "steps": [
+     "The 21st Century Cures Act passes in 2016",
+     "TEFCA goes live in December 2023",
+     "About 10 million documents are exchanged",
+     "Exchange reaches 464 million by end of 2025"
+    ],
+    "explanation": "A 2016 law led to TEFCA, which grew fast once it went live."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "How many million documents had TEFCA exchanged by the end of 2025?",
+    "min": 0,
+    "max": 800,
+    "value": 464,
+    "unit": "M",
+    "explanation": "464 million, up from about 10 million before 2025."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You advise a data startup like Particle.",
+      "prompt": "Which point links day 21 and day 27?",
+      "options": [
+       "TEFCA is owned and run by Epic",
+       "TEFCA bans startups",
+       "TEFCA is a rule-based route to data"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "It is a federal framework.",
+       "Startups can take part.",
+       "Shared rules govern access."
+      ],
+      "explanation": "TEFCA offers access governed by shared rules, not one vendor's goodwill."
+     },
+     "proReasoning": "Advisers steer clients toward durable access routes.",
+     "commonMistake": "Relying on private deals that can be cut.",
+     "mentalModel": "Rules beat goodwill."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "TEFCA exchange grew from about 10 million to 464 million documents.",
+      "prompt": "How do you read that?",
+      "options": [
+       "Fast adoption of national exchange",
+       "TEFCA is shrinking year over year",
+       "A one-time spike"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Growth followed the 2023 launch.",
+       "It grew sharply.",
+       "Members kept joining."
+      ],
+      "explanation": "Rapid growth shows national exchange taking hold."
+     },
+     "proReasoning": "Investors read growth curves, not single numbers.",
+     "commonMistake": "Dismissing fast growth as noise.",
+     "mentalModel": "Read the curve."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You decide how to get data for your product.",
+      "prompt": "Which path is most durable?",
+      "options": [
+       "Scrape public websites",
+       "Join TEFCA through a QHIN",
+       "Private deals with each IT team"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Fragile and limited.",
+       "Access governed by shared rules.",
+       "Deals can be withdrawn."
+      ],
+      "explanation": "TEFCA access rests on shared rules that one company cannot easily cut."
+     },
+     "proReasoning": "Founders choose rails that survive disputes.",
+     "commonMistake": "Building on fragile private deals.",
+     "mentalModel": "Choose durable rails."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You hear TEFCA came from a 2016 law.",
+      "prompt": "Which law?",
+      "options": [
+       "The HITECH Act",
+       "The Inflation Reduction Act",
+       "The 21st Century Cures Act"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "HITECH was 2009, for EHR adoption.",
+       "That law covers drug prices.",
+       "It called for a trusted national framework."
+      ],
+      "explanation": "The 21st Century Cures Act of 2016 called for TEFCA."
+     },
+     "proReasoning": "Link programs to the laws that created them.",
+     "commonMistake": "Mixing up health laws.",
+     "mentalModel": "Know which law did what."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:066a963f7142"
+  ]
+ },
+ {
+  "id": "3faa31f2-1e5c-5504-9eed-7d8fed8a2413",
+  "market_id": "healthtech",
+  "day": 27,
+  "slot": 3,
+  "content": {
+   "id": "healthtech-d27-c3",
+   "title": "Joining the network",
+   "lessonTitle": "The national network of networks",
+   "slot": 3,
+   "type": "decide",
+   "brief": {
+    "headline": "You run IT at a small independent hospital not yet on TEFCA. Nine networks were approved by spring 2025. TEFCA exchange reached 464 million documents by the end of 2025.",
+    "kicker": "Decide: how do you join, and when?",
+    "fullText": "Hospitals usually join TEFCA through a QHIN, often tied to their EHR vendor. Joining takes setup and policy work.\n\nWaiting saves effort now, but leaves your clinicians without records from other networks.",
+    "sources": [
+     {
+      "url": "https://www.healthcaredive.com/news/epic-nexus-tefca-1000-hospitals/749598/",
+      "label": "Healthcare Dive, Epic Nexus connects 1,000 hospitals to TEFCA"
+     },
+     {
+      "url": "https://healthit.gov/resources/data-liquidity-affordability-and-access-the-history-growth-of-tefca/",
+      "label": "ONC, the history and growth of TEFCA"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "faceOff",
+    "prompt": "Which plan serves your patients better?",
+    "left": {
+     "name": "Join through a QHIN now",
+     "note": "Use your EHR vendor's network if it has one"
+    },
+    "right": {
+     "name": "Wait a few years",
+     "note": "Avoid setup work for now"
+    },
+    "correctIndex": 0,
+    "explanation": "Joining brings outside records to your clinicians, and the network keeps growing."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "How many networks were approved under TEFCA by spring 2025?",
+    "min": 0,
+    "max": 20,
+    "value": 9,
+    "unit": "QHINs",
+    "explanation": "Nine, after Surescripts joined."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your CEO asks if joining TEFCA is worth it.",
+      "prompt": "What do you say?",
+      "options": [
+       "Yes, through our vendor's network",
+       "No, we can fax records",
+       "Only after every rival joins"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "It brings outside records at low effort.",
+       "Fax is slow and partial.",
+       "Waiting delays the benefit."
+      ],
+      "explanation": "Joining through a vendor's QHIN is the simplest route."
+     },
+     "proReasoning": "IT leaders pick the lowest-effort route to the network.",
+     "commonMistake": "Waiting for everyone else first.",
+     "mentalModel": "Join through the easiest door."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Small hospitals lag on joining networks.",
+      "prompt": "What service has demand?",
+      "options": [
+       "Paper record storage for hospitals",
+       "Help connecting small hospitals",
+       "Fax upgrades"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Paper is fading.",
+       "They need setup help.",
+       "Fax is fading."
+      ],
+      "explanation": "Small hospitals need help joining national exchange."
+     },
+     "proReasoning": "Investors look for laggards who must catch up.",
+     "commonMistake": "Ignoring the late majority.",
+     "mentalModel": "Laggards are a market."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You help small hospitals join TEFCA.",
+      "prompt": "What is your pitch?",
+      "options": [
+       "Build your own national network first",
+       "Skip TEFCA entirely",
+       "Fast setup through an approved network"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Too costly for small hospitals.",
+       "They miss outside records.",
+       "Uses existing QHINs."
+      ],
+      "explanation": "Small hospitals want a quick path through an approved network."
+     },
+     "proReasoning": "Founders reduce effort for small buyers.",
+     "commonMistake": "Asking small buyers to build big systems.",
+     "mentalModel": "Make joining easy."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You visit a small hospital far from home.",
+      "prompt": "How could it see your records?",
+      "options": [
+       "Through a TEFCA network",
+       "It cannot, ever",
+       "Only by mail, weeks later"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "TEFCA links networks nationally.",
+       "TEFCA makes it possible.",
+       "Networks are faster."
+      ],
+      "explanation": "If both sides are on TEFCA networks, records can be exchanged."
+     },
+     "proReasoning": "Ask whether your hospitals are on TEFCA.",
+     "commonMistake": "Assuming records cannot travel.",
+     "mentalModel": "Records can travel."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:24514d944914"
+  ]
+ },
+ {
+  "id": "fcb981a5-b1f0-5f72-aa88-aa3d30779f44",
+  "market_id": "healthtech",
+  "day": 28,
+  "slot": 1,
+  "content": {
+   "id": "healthtech-d28-c1",
+   "title": "Access is not use",
+   "lessonTitle": "How connected hospitals really are",
+   "slot": 1,
+   "type": "apply",
+   "brief": {
+    "headline": "In 2023, 71% of US hospitals routinely had electronic access to outside clinical information at the point of care. But only 42% of clinicians used that information.",
+    "kicker": "Apply the connection lesson: is having data the same as using it?",
+    "fullText": "The figures come from federal data on 2023 hospital interoperability. About three-quarters of hospitals integrated received information into their EHRs.\n\nRoutine exchange rose to 43% of hospitals, from 29% in 2021. Having data available does not mean clinicians see or use it.",
+    "sources": [
+     {
+      "url": "https://www.beckershospitalreview.com/healthcare-information-technology/hospital-interoperability-by-the-numbers-8-things-to-know",
+      "label": "Becker's, hospital interoperability by the numbers"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "faceOff",
+    "prompt": "Which number was higher in 2023?",
+    "left": {
+     "name": "Hospitals with access",
+     "note": "Outside data available at the point of care"
+    },
+    "right": {
+     "name": "Clinicians using it",
+     "note": "Actually used that outside data"
+    },
+    "correctIndex": 0,
+    "explanation": "71% of hospitals had access, but only 42% of clinicians used the information."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "What share of clinicians used outside information available to them?",
+    "min": 0,
+    "max": 100,
+    "value": 42,
+    "unit": "%",
+    "explanation": "42%, against 71% of hospitals with access."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You lead clinical informatics at a hospital.",
+      "prompt": "How do you raise use of outside data?",
+      "options": [
+       "Email clinicians a PDF file each week",
+       "Add more data sources first",
+       "Show it inside the clinician's workflow"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Separate files are often ignored.",
+       "More unused data does not help.",
+       "Data in the workflow gets used."
+      ],
+      "explanation": "Clinicians use outside data when it appears where they already work."
+     },
+     "proReasoning": "Informatics leaders put data where decisions happen.",
+     "commonMistake": "Adding data that nobody sees.",
+     "mentalModel": "Put data in the workflow."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Hospitals have access, but clinicians rarely use outside data.",
+      "prompt": "Where is the opportunity?",
+      "options": [
+       "Tools that surface data at the right moment",
+       "More fax lines",
+       "Bigger servers only, with no new tools"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "The gap is use, not access.",
+       "Fax adds friction.",
+       "Storage is not the gap."
+      ],
+      "explanation": "The gap between 71% access and 42% use is a market."
+     },
+     "proReasoning": "Investors look for gaps between capability and use.",
+     "commonMistake": "Funding more access when use is the gap.",
+     "mentalModel": "Find the use gap."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You build interoperability software.",
+      "prompt": "What metric should you promise?",
+      "options": [
+       "Size of the database",
+       "Clinician use of outside data",
+       "Number of data feeds added"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Size is not outcomes.",
+       "Use is where the gap is.",
+       "Feeds are not outcomes."
+      ],
+      "explanation": "Raising clinician use is the outcome that matters."
+     },
+     "proReasoning": "Founders promise outcomes, not inputs.",
+     "commonMistake": "Promising more feeds.",
+     "mentalModel": "Promise outcomes."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your new doctor did not see your old test results.",
+      "prompt": "Why could that happen?",
+      "options": [
+       "Your results were deleted",
+       "Doctors cannot read records",
+       "The data was there but not used"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Records are kept.",
+       "They can, when shown.",
+       "Only 42% of clinicians used outside data."
+      ],
+      "explanation": "Many hospitals have access, but outside data is not always seen or used."
+     },
+     "proReasoning": "Bring up key past results at visits.",
+     "commonMistake": "Assuming every doctor sees everything.",
+     "mentalModel": "Speak up about past results."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:50efeb365f02"
+  ]
+ },
+ {
+  "id": "4811eec5-f171-50c5-b658-933c9bb4be27",
+  "market_id": "healthtech",
+  "day": 28,
+  "slot": 2,
+  "content": {
+   "id": "healthtech-d28-c2",
+   "title": "Big network, uneven use",
+   "lessonTitle": "How connected hospitals really are",
+   "slot": 2,
+   "type": "connect",
+   "brief": {
+    "headline": "Day 27 showed TEFCA exchanging 464 million documents by the end of 2025. Yet in 2023, only 43% of hospitals routinely engaged in interoperable exchange, though 70% did at least sometimes.",
+    "kicker": "Connect day 27 and day 28: networks grow faster than routine use.",
+    "fullText": "Full interoperability needs four steps: find, send, receive and integrate data. The 70% figure counts hospitals that at least sometimes exchange, up from 46% in 2018.\n\nNational networks add routes, but hospitals still have to use them every day.",
+    "sources": [
+     {
+      "url": "https://healthit.gov/resources/data-liquidity-affordability-and-access-the-history-growth-of-tefca/",
+      "label": "ONC, the history and growth of TEFCA"
+     },
+     {
+      "url": "https://www.beckershospitalreview.com/healthcare-information-technology/hospital-interoperability-by-the-numbers-8-things-to-know",
+      "label": "Becker's, hospital interoperability by the numbers"
+     },
+     {
+      "url": "https://healthit.gov/news/70-hospitals-participate-healthcare-interoperability/",
+      "label": "ONC, 70% of hospitals participate in interoperability"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "spotFake",
+    "prompt": "One of these is false. Tap it.",
+    "statements": [
+     "70% of hospitals at least sometimes exchanged data.",
+     "Most hospitals routinely did all four steps.",
+     "TEFCA exchanged 464 million documents by 2025."
+    ],
+    "fakeIndex": 1,
+    "explanation": "Only 43% routinely exchanged data interoperably in 2023."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "What share of hospitals routinely exchanged data interoperably in 2023?",
+    "min": 0,
+    "max": 100,
+    "value": 43,
+    "unit": "%",
+    "explanation": "43%, up from 29% in 2021."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A policy interviewer asks if interoperability is solved.",
+      "prompt": "Which point links day 27 and day 28?",
+      "options": [
+       "Networks grew, but routine use lags",
+       "Every hospital now shares always",
+       "Networks are shrinking"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "43% routinely exchanged in 2023.",
+       "Many only sometimes exchange.",
+       "TEFCA grew sharply."
+      ],
+      "explanation": "Network volume rose fast, but routine exchange is still under half of hospitals."
+     },
+     "proReasoning": "Policy answers separate capacity from daily use.",
+     "commonMistake": "Calling a problem solved from one big number.",
+     "mentalModel": "Capacity is not use."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You see TEFCA volume soar.",
+      "prompt": "What caution do you add?",
+      "options": [
+       "Volume does not matter",
+       "Routine hospital use still lags",
+       "Volume proves full adoption"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "It shows growth.",
+       "Only 43% routinely exchanged in 2023.",
+       "Volume can concentrate in big systems."
+      ],
+      "explanation": "Volume can grow while many hospitals still exchange only sometimes."
+     },
+     "proReasoning": "Investors check breadth, not just volume.",
+     "commonMistake": "Equating volume with universal adoption.",
+     "mentalModel": "Check breadth too."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You sell tools that help hospitals integrate outside data.",
+      "prompt": "Which of the four steps is your focus?",
+      "options": [
+       "Printing data on paper",
+       "Deleting duplicates only",
+       "Integrating data into the EHR"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Paper breaks the chain.",
+       "That is a small part.",
+       "Integration is the step that makes data usable."
+      ],
+      "explanation": "Integration turns received data into data clinicians can use."
+     },
+     "proReasoning": "Founders target the weakest step in a chain.",
+     "commonMistake": "Solving steps that already work.",
+     "mentalModel": "Fix the weakest step."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You hear 70% of hospitals exchange data.",
+      "prompt": "What does that number count?",
+      "options": [
+       "Hospitals that at least sometimes exchange",
+       "Hospitals that always exchange all data",
+       "All hospitals in the world"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "It includes occasional exchange.",
+       "Routine was 43%.",
+       "It is US data."
+      ],
+      "explanation": "The 70% counts hospitals that at least sometimes exchange data."
+     },
+     "proReasoning": "Ask what a percentage actually measures.",
+     "commonMistake": "Reading \"sometimes\" as \"always.\"",
+     "mentalModel": "Read the definition."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:fd38c4de4543"
+  ]
+ },
+ {
+  "id": "eba2e920-ac33-5449-9bf2-f970cc9d1e4e",
+  "market_id": "healthtech",
+  "day": 28,
+  "slot": 3,
+  "content": {
+   "id": "healthtech-d28-c3",
+   "title": "The independent rural hospital",
+   "lessonTitle": "How connected hospitals really are",
+   "slot": 3,
+   "type": "decide",
+   "brief": {
+    "headline": "You run a small, rural, independent hospital. In 2023, 53% of system-affiliated hospitals routinely did all four interoperability steps, against 22% of independent ones.",
+    "kicker": "Decide: how do you close the gap?",
+    "fullText": "Urban hospitals also beat rural ones, 47% to 36%, on routine exchange. About 2 in 5 rural and critical access hospitals were not fully interoperable.\n\nYou can join a network, partner with a system, or wait for your vendor.",
+    "sources": [
+     {
+      "url": "https://www.beckershospitalreview.com/healthcare-information-technology/hospital-interoperability-by-the-numbers-8-things-to-know",
+      "label": "Becker's, hospital interoperability by the numbers"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "sortSignal",
+    "prompt": "Which hospitals were more likely to exchange routinely?",
+    "buckets": [
+     "More likely",
+     "Less likely"
+    ],
+    "items": [
+     {
+      "text": "System-affiliated hospitals",
+      "bucket": 0
+     },
+     {
+      "text": "Independent hospitals",
+      "bucket": 1
+     },
+     {
+      "text": "Large hospitals",
+      "bucket": 0
+     },
+     {
+      "text": "Rural hospitals",
+      "bucket": 1
+     }
+    ],
+    "explanation": "Large, urban, system-affiliated hospitals exchanged more than small, rural, independent ones."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "What share of independent hospitals routinely did all four steps?",
+    "min": 0,
+    "max": 100,
+    "value": 22,
+    "unit": "%",
+    "explanation": "22%, against 53% of system-affiliated hospitals."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your board asks how to catch up with system hospitals.",
+      "prompt": "What do you propose first?",
+      "options": [
+       "Do nothing; we are too small to matter",
+       "Join a national network through our vendor",
+       "Buy a brand new EHR at once"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "The gap will grow.",
+       "A network adds routes with modest effort.",
+       "Costly and slow for a small hospital."
+      ],
+      "explanation": "Joining a network is the fastest, cheapest way to add exchange."
+     },
+     "proReasoning": "Small hospital leaders pick high-impact, low-cost steps.",
+     "commonMistake": "Assuming size makes the gap permanent.",
+     "mentalModel": "Small steps close gaps."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Independent hospitals lag on exchange.",
+      "prompt": "What does that suggest about consolidation?",
+      "options": [
+       "Independents always lead",
+       "Ownership does not matter",
+       "Systems offer a tech advantage"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "They lag.",
+       "The data shows a gap.",
+       "53% versus 22% on routine exchange."
+      ],
+      "explanation": "System affiliation comes with stronger data exchange."
+     },
+     "proReasoning": "Investors note capability gaps that drive mergers.",
+     "commonMistake": "Ignoring operating gaps between owners.",
+     "mentalModel": "Gaps can drive mergers."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You sell interoperability help.",
+      "prompt": "Which hospitals need you most?",
+      "options": [
+       "Small, rural, independent hospitals",
+       "Large academic systems",
+       "Hospitals already fully connected"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "They lag the most.",
+       "They already lead.",
+       "They do not need help."
+      ],
+      "explanation": "Small, rural and independent hospitals lag the most."
+     },
+     "proReasoning": "Founders serve the segment furthest behind.",
+     "commonMistake": "Selling to leaders who already have it.",
+     "mentalModel": "Serve the laggards."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You live near a small rural hospital.",
+      "prompt": "Why might it share records less often?",
+      "options": [
+       "Rural patients have no records",
+       "Fewer resources than big systems",
+       "A law forbids rural sharing"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Everyone has records.",
+       "Independent and rural hospitals lag.",
+       "No such law."
+      ],
+      "explanation": "Small, rural, independent hospitals often have fewer resources for exchange."
+     },
+     "proReasoning": "Carry key records when you see a new provider.",
+     "commonMistake": "Assuming every hospital is equally connected.",
+     "mentalModel": "Connection varies by hospital."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:c0097c008e09"
+  ]
+ },
+ {
+  "id": "f3887515-3b2a-5510-b276-e045c6f0ed9d",
+  "market_id": "healthtech",
+  "day": 29,
+  "slot": 1,
+  "content": {
+   "id": "healthtech-d29-c1",
+   "title": "Penalties for providers too",
+   "lessonTitle": "The ban on blocking health data",
+   "slot": 1,
+   "type": "apply",
+   "brief": {
+    "headline": "On June 24, 2024, HHS finalized a rule setting penalties for health care providers that commit information blocking. Hospitals, clinicians, groups and ACOs are covered.",
+    "kicker": "Apply the blocking ban: who pays when providers block data?",
+    "fullText": "Penalties limit what hospitals, clinicians and groups can earn from a Medicare interoperability program. ACOs found blocking may be barred from the Medicare Shared Savings Program.\n\nThe rule built on an earlier action setting penalties of up to $1 million for developers and networks that block data.",
+    "sources": [
+     {
+      "url": "https://www.statnews.com/2024/06/24/information-blocking-penalties-hhs-final-rule/",
+      "label": "STAT, HHS final rule on information blocking penalties"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "sortSignal",
+    "prompt": "Who faces each penalty?",
+    "buckets": [
+     "Developers and networks",
+     "Providers"
+    ],
+    "items": [
+     {
+      "text": "Fines of up to $1 million per violation",
+      "bucket": 0
+     },
+     {
+      "text": "Lower Medicare interoperability earnings",
+      "bucket": 1
+     },
+     {
+      "text": "Possible removal from Shared Savings",
+      "bucket": 1
+     }
+    ],
+    "explanation": "Developers and networks face fines. Providers face cuts to Medicare program earnings or participation."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "Up to how many millions per violation can developers be fined?",
+    "min": 0,
+    "max": 3,
+    "value": 1,
+    "unit": "M",
+    "explanation": "Up to $1 million per violation."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You join a hospital compliance team in 2026.",
+      "prompt": "What new risk do you add?",
+      "options": [
+       "Medicare penalties for blocking data",
+       "Fines for using an EHR",
+       "Bans on running patient portals"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Providers face disincentives under the 2024 rule.",
+       "Using EHRs is expected.",
+       "Portals support access."
+      ],
+      "explanation": "Providers that block information can lose Medicare program earnings."
+     },
+     "proReasoning": "Compliance staff track new penalties as they take effect.",
+     "commonMistake": "Assuming blocking rules apply only to vendors.",
+     "mentalModel": "Providers face penalties too."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "An ACO is found to have blocked information.",
+      "prompt": "What could it lose?",
+      "options": [
+       "Its patients' records",
+       "Its place in the Shared Savings Program",
+       "Its hospital licenses in every state"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Records are not taken.",
+       "The rule can bar ACOs from the program.",
+       "Licenses are a state matter."
+      ],
+      "explanation": "ACOs found blocking may be barred from the Shared Savings Program."
+     },
+     "proReasoning": "Investors model penalties on the revenue stream most at risk.",
+     "commonMistake": "Ignoring program eligibility risk.",
+     "mentalModel": "Penalties hit eligibility."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your tool helps providers share data on request.",
+      "prompt": "What makes it urgent for buyers?",
+      "options": [
+       "Lower prices for blocking data access",
+       "No rules on sharing",
+       "Penalties for providers that block"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Blocking is penalized.",
+       "Rules now apply.",
+       "The 2024 rule added disincentives."
+      ],
+      "explanation": "New provider penalties make sharing tools more urgent."
+     },
+     "proReasoning": "Founders tie urgency to a new penalty.",
+     "commonMistake": "Pitching without the rule that makes it urgent.",
+     "mentalModel": "Tie urgency to penalties."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your doctor's office refuses to share your records with another doctor.",
+      "prompt": "Is that allowed?",
+      "options": [
+       "Often not; blocking can bring penalties",
+       "Always allowed",
+       "Only allowed on weekends and holidays"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Unreasonable blocking is banned.",
+       "It is restricted.",
+       "Days do not matter."
+      ],
+      "explanation": "Unreasonably restricting access to electronic health information is information blocking."
+     },
+     "proReasoning": "You can report suspected blocking through ONC's portal.",
+     "commonMistake": "Accepting refusals without asking why.",
+     "mentalModel": "Blocking is restricted."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:4746d1a71932"
+  ]
+ },
+ {
+  "id": "99d9f92e-5f75-5664-800f-4128cb5ad47b",
+  "market_id": "healthtech",
+  "day": 29,
+  "slot": 2,
+  "content": {
+   "id": "healthtech-d29-c2",
+   "title": "Blocking, alleged and banned",
+   "lessonTitle": "The ban on blocking health data",
+   "slot": 2,
+   "type": "connect",
+   "brief": {
+    "headline": "Day 21 covered Particle Health alleging Epic cut off its access. In September 2025, HHS announced a crackdown on information blocking, the practice of restricting access to electronic health information.",
+    "kicker": "Connect day 21 and day 29: private suits and public enforcement.",
+    "fullText": "Developers and health information networks can be fined up to $1 million per violation. Patients, providers and others can report suspected blocking through ONC's portal.\n\nParticle's case is a private antitrust suit, with no finding yet. The information blocking ban comes from the 21st Century Cures Act of 2016.",
+    "sources": [
+     {
+      "url": "https://hitconsultant.net/2025/09/08/us-court-allows-particles-antitrust-claims-against-epic-to-proceed/",
+      "label": "HIT Consultant, court allows Particle's antitrust claims against Epic to proceed"
+     },
+     {
+      "url": "https://www.dlapiper.com/en-us/insights/publications/2025/09/hhs-steps-up-enforcement-on-health-information-blocking",
+      "label": "DLA Piper, HHS steps up enforcement on information blocking"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "multipleChoice",
+    "prompt": "What is information blocking?",
+    "options": [
+     "Unreasonably restricting health data access",
+     "Encrypting data to protect it from theft",
+     "Charging for a premium app"
+    ],
+    "correctIndex": 0,
+    "explanation": "Information blocking means unreasonably restricting access to or exchange of electronic health information."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "How many years passed from the Cures Act to the 2025 crackdown?",
+    "min": 0,
+    "max": 15,
+    "value": 9,
+    "unit": "years",
+    "explanation": "Nine years: 2016 to 2025."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You advise a startup that says a vendor blocked its access.",
+      "prompt": "Which point links day 21 and day 29?",
+      "options": [
+       "Nothing can be done",
+       "It can report blocking to ONC too",
+       "Only a lawsuit is possible for it"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Rules ban blocking.",
+       "ONC runs a portal for reports.",
+       "Federal enforcement also exists."
+      ],
+      "explanation": "Besides private suits, suspected blocking can be reported to ONC."
+     },
+     "proReasoning": "Advisers use both private and public remedies.",
+     "commonMistake": "Relying only on lawsuits.",
+     "mentalModel": "Use every remedy."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "HHS steps up information blocking enforcement.",
+      "prompt": "Who faces the biggest fines?",
+      "options": [
+       "Individual patients who ask",
+       "Pharmacies only",
+       "Developers and health networks"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Patients are protected, not fined.",
+       "Developers and networks face fines.",
+       "Up to $1 million per violation."
+      ],
+      "explanation": "Developers and networks face fines of up to $1 million per violation."
+     },
+     "proReasoning": "Investors check which firms face the highest penalties.",
+     "commonMistake": "Assuming enforcement hits everyone equally.",
+     "mentalModel": "Know who faces the biggest fines."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A hospital refuses your app's data request.",
+      "prompt": "What do you do?",
+      "options": [
+       "Ask the reason, then report if unjustified",
+       "Scrape the data anyway",
+       "Give up on that hospital for good now"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Some exceptions apply; blocking without one is banned.",
+       "Scraping adds risk.",
+       "You have options."
+      ],
+      "explanation": "Exceptions exist, but unreasonable blocking can be reported to ONC."
+     },
+     "proReasoning": "Founders use the rules before workarounds.",
+     "commonMistake": "Taking risky shortcuts.",
+     "mentalModel": "Use the rules first."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You hear about the \"information blocking\" ban.",
+      "prompt": "Where does it come from?",
+      "options": [
+       "HIPAA, passed back in 1996",
+       "The 21st Century Cures Act",
+       "The HITECH Act"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "HIPAA set privacy rules.",
+       "The 2016 law created the ban.",
+       "HITECH pushed EHR adoption."
+      ],
+      "explanation": "The information blocking ban comes from the 21st Century Cures Act of 2016."
+     },
+     "proReasoning": "Link each rule to its law.",
+     "commonMistake": "Mixing up health laws.",
+     "mentalModel": "Know the source law."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:1f2b08850af5"
+  ]
+ },
+ {
+  "id": "4e69aba3-dc5f-5497-8843-499a839b5474",
+  "market_id": "healthtech",
+  "day": 29,
+  "slot": 3,
+  "content": {
+   "id": "healthtech-d29-c3",
+   "title": "A request to move data out",
+   "lessonTitle": "The ban on blocking health data",
+   "slot": 3,
+   "type": "decide",
+   "brief": {
+    "headline": "You run compliance at a health IT developer. A hospital customer asks you to send its data to a rival's app. Epic says over half of its 725 million monthly record exchanges involve non-Epic systems.",
+    "kicker": "Decide: how do you respond to the request?",
+    "fullText": "Developers can be fined up to $1 million per violation for information blocking. Some exceptions exist, such as for security or privacy.\n\nRefusing to help a competitor may feel safe, but it can be blocking.",
+    "sources": [
+     {
+      "url": "https://www.dlapiper.com/en-us/insights/publications/2025/09/hhs-steps-up-enforcement-on-health-information-blocking",
+      "label": "DLA Piper, HHS steps up enforcement on information blocking"
+     },
+     {
+      "url": "https://www.hfma.org/fast-finance/epic-lawsuit-filed-by-texas-aims-to-help-health-system-finances/",
+      "label": "HFMA, Epic lawsuit filed by Texas"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "faceOff",
+    "prompt": "Which response carries less risk?",
+    "left": {
+     "name": "Support the request",
+     "note": "Unless a real exception applies"
+    },
+    "right": {
+     "name": "Refuse because it helps a rival",
+     "note": "Protects your business"
+    },
+    "correctIndex": 0,
+    "explanation": "Refusing to help a rival is not an exception and can be information blocking."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "How many million record exchanges a month does Epic report?",
+    "min": 0,
+    "max": 1000,
+    "value": 725,
+    "unit": "M",
+    "explanation": "Over 725 million a month, per Epic."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your sales chief wants to refuse the rival's app.",
+      "prompt": "What do you advise?",
+      "options": [
+       "Refuse to protect our market share",
+       "Delay for months quietly",
+       "Support it unless an exception applies"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "That risks fines.",
+       "Delays can also be blocking.",
+       "Refusing for business reasons can be blocking."
+      ],
+      "explanation": "Business reasons alone do not justify blocking. Exceptions are narrow."
+     },
+     "proReasoning": "Compliance leaders test refusals against the exceptions.",
+     "commonMistake": "Treating competition as a valid reason to block.",
+     "mentalModel": "Competition is not an exception."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A developer is accused of blocking rival apps.",
+      "prompt": "What exposure do you flag?",
+      "options": [
+       "Fines up to $1 million per violation",
+       "No exposure at all",
+       "Only reputation risk, no fines"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Developers face civil penalties.",
+       "Rules apply to developers.",
+       "Fines also apply."
+      ],
+      "explanation": "Developers can face fines of up to $1 million per violation."
+     },
+     "proReasoning": "Investors size penalties by count of violations.",
+     "commonMistake": "Ignoring per-violation penalties.",
+     "mentalModel": "Per-violation fines add up."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You build an EHR used by small clinics.",
+      "prompt": "What policy do you set?",
+      "options": [
+       "Answer requests at random times",
+       "Clear process to honor data requests",
+       "Block all rival apps"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Inconsistency invites complaints.",
+       "Reduces blocking risk.",
+       "Invites penalties."
+      ],
+      "explanation": "A clear, consistent process reduces information blocking risk."
+     },
+     "proReasoning": "Founders write policies before the first dispute.",
+     "commonMistake": "Deciding case by case under pressure.",
+     "mentalModel": "Write the policy first."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You want your records sent to a new app.",
+      "prompt": "Can the software company refuse because it is a rival?",
+      "options": [
+       "Yes, always",
+       "Only if you pay an extra fee",
+       "Generally no; that can be blocking"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Rules restrict refusals.",
+       "Fees do not change the rule.",
+       "Competition is not an exception."
+      ],
+      "explanation": "Refusing to share because an app is a rival can be information blocking."
+     },
+     "proReasoning": "Report suspected blocking through ONC's portal.",
+     "commonMistake": "Accepting a refusal without asking why.",
+     "mentalModel": "Rivalry is not a reason to block."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:3c47549acc1d"
+  ]
+ },
+ {
+  "id": "c9763c94-1aa5-500f-bc43-375d4709a4a4",
+  "market_id": "healthtech",
+  "day": 30,
+  "slot": 1,
+  "content": {
+   "id": "healthtech-d30-c1",
+   "title": "A Medicare app library",
+   "lessonTitle": "Big Tech pledges to fix health data",
+   "slot": 1,
+   "type": "apply",
+   "brief": {
+    "headline": "On February 23, 2026, CMS announced a Medicare App Library, a directory of digital health tools linked to CMS Aligned Networks. It grew out of CMS's health tech ecosystem.",
+    "kicker": "Apply the pledge lesson: what does follow-through look like?",
+    "fullText": "The library has three categories: \"kill the clipboard\" apps that replace check-in forms, conversational AI assistants, and diabetes and obesity tools.\n\nTo be listed, an app must sign the interoperability pledge, verify identity through ID.me or CLEAR, connect to CMS Aligned Networks and pass an outside evaluation before CMS review.",
+    "sources": [
+     {
+      "url": "https://www.aha.org/news/headline/2026-02-24-cms-announces-library-digital-health-apps-medicare-beneficiaries",
+      "label": "AHA News, CMS announces library of digital health apps for Medicare"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "sortSignal",
+    "prompt": "Is each one an app category or a listing requirement?",
+    "buckets": [
+     "App category",
+     "Requirement"
+    ],
+    "items": [
+     {
+      "text": "Kill the clipboard check-in apps",
+      "bucket": 0
+     },
+     {
+      "text": "Diabetes and obesity tools",
+      "bucket": 0
+     },
+     {
+      "text": "Identity checks through ID.me or CLEAR",
+      "bucket": 1
+     },
+     {
+      "text": "Signing the interoperability pledge",
+      "bucket": 1
+     }
+    ],
+    "explanation": "Three categories of apps, with requirements on pledges, identity, networks and evaluation."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "How many app categories did the Medicare App Library launch with?",
+    "min": 0,
+    "max": 10,
+    "value": 3,
+    "unit": "categories",
+    "explanation": "Three: kill the clipboard, conversational AI and diabetes and obesity tools."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You join a digital health company targeting Medicare users.",
+      "prompt": "What do you check first?",
+      "options": [
+       "Whether apps are banned",
+       "The library's listing requirements",
+       "The color of Medicare's logo"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Apps are invited.",
+       "Pledge, identity, networks and evaluation.",
+       "Branding is irrelevant."
+      ],
+      "explanation": "Listing needs the pledge, identity checks, network links and an outside evaluation."
+     },
+     "proReasoning": "Product staff read the entry rules before building.",
+     "commonMistake": "Building before knowing the listing rules.",
+     "mentalModel": "Read the entry rules."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "CMS launches an app library for Medicare users.",
+      "prompt": "Which apps gain most?",
+      "options": [
+       "Apps with the most downloads overall",
+       "Apps outside health",
+       "Those meeting all listing requirements"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Downloads alone do not qualify.",
+       "The library is for health.",
+       "Listing gives reach to Medicare users."
+      ],
+      "explanation": "Apps that meet the requirements can reach Medicare users through the library."
+     },
+     "proReasoning": "Investors watch for new distribution channels.",
+     "commonMistake": "Ignoring government channels.",
+     "mentalModel": "New channels create winners."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You build a digital check-in app.",
+      "prompt": "What should you do?",
+      "options": [
+       "Meet the rules for the clipboard category",
+       "Wait for CMS to call you about it first",
+       "Skip identity checks"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "It is one of the three categories.",
+       "Listing requires action.",
+       "Identity checks are required."
+      ],
+      "explanation": "\"Kill the clipboard\" is a named category in the library."
+     },
+     "proReasoning": "Founders align products with a named government category.",
+     "commonMistake": "Waiting to be discovered.",
+     "mentalModel": "Fit the named category."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You hear Medicare will list approved health apps.",
+      "prompt": "What is one category?",
+      "options": [
+       "Ride-share apps",
+       "Apps that replace check-in forms",
+       "Video game apps for seniors"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Not a category.",
+       "\"Kill the clipboard\" apps.",
+       "Not a category."
+      ],
+      "explanation": "One category is \"kill the clipboard\" apps that replace manual check-in forms."
+     },
+     "proReasoning": "Look for apps that meet Medicare's listing rules.",
+     "commonMistake": "Assuming any app is approved.",
+     "mentalModel": "Check the listing."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:38d1153dc8b0"
+  ]
+ },
+ {
+  "id": "afe7e291-3485-588a-8edc-82d9a41bb8e9",
+  "market_id": "healthtech",
+  "day": 30,
+  "slot": 2,
+  "content": {
+   "id": "healthtech-d30-c2",
+   "title": "Mandates and pledges",
+   "lessonTitle": "Big Tech pledges to fix health data",
+   "slot": 2,
+   "type": "connect",
+   "brief": {
+    "headline": "Day 29 showed the information blocking ban, with fines up to $1 million. In July 2025, more than 60 companies, including Amazon, Apple and Google, pledged to work with CMS on a patient-centered health tech ecosystem.",
+    "kicker": "Connect day 29 and day 30: mandates force, pledges invite.",
+    "fullText": "CMS set voluntary criteria rather than new mandates for the ecosystem. Results were targeted for the first quarter of 2026.\n\nThe blocking ban is the law, with penalties. The pledge depends on companies delivering.",
+    "sources": [
+     {
+      "url": "https://www.dlapiper.com/en-us/insights/publications/2025/09/hhs-steps-up-enforcement-on-health-information-blocking",
+      "label": "DLA Piper, HHS steps up enforcement on information blocking"
+     },
+     {
+      "url": "https://www.cms.gov/newsroom/press-releases/white-house-tech-leaders-commit-create-patient-centric-healthcare-ecosystem",
+      "label": "CMS, tech leaders commit to a patient-centric health ecosystem"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "faceOff",
+    "prompt": "Which carries legal penalties?",
+    "left": {
+     "name": "Information blocking ban",
+     "note": "Fines up to $1 million per violation"
+    },
+    "right": {
+     "name": "The 2025 tech pledge",
+     "note": "Voluntary criteria set by CMS"
+    },
+    "correctIndex": 0,
+    "explanation": "The ban carries penalties. The pledge is voluntary."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "More than how many companies joined the July 2025 pledge?",
+    "min": 0,
+    "max": 100,
+    "value": 60,
+    "unit": "companies",
+    "explanation": "More than 60, including Amazon, Apple, Google, OpenAI and Anthropic."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A policy interviewer asks how the pledge differs from rules.",
+      "prompt": "Which point links day 29 and day 30?",
+      "options": [
+       "Both are voluntary",
+       "Both carry fines of up to $1 million",
+       "Rules carry penalties; the pledge does not"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "The ban is mandatory.",
+       "Only the ban has fines.",
+       "The ban is law; the pledge is voluntary."
+      ],
+      "explanation": "The blocking ban is enforced with penalties. The pledge relies on follow-through."
+     },
+     "proReasoning": "Policy answers separate binding rules from voluntary commitments.",
+     "commonMistake": "Treating pledges like laws.",
+     "mentalModel": "Pledges are not laws."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Big tech firms pledge to improve health data.",
+      "prompt": "How should you weigh it?",
+      "options": [
+       "Watch for delivered results",
+       "Assume results are guaranteed",
+       "Ignore it completely"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Pledges depend on follow-through.",
+       "Voluntary means no guarantee.",
+       "It may still create change."
+      ],
+      "explanation": "Voluntary pledges matter only if companies deliver."
+     },
+     "proReasoning": "Investors track delivery against pledges.",
+     "commonMistake": "Pricing in promises as results.",
+     "mentalModel": "Track delivery."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You could join the CMS ecosystem as a small app.",
+      "prompt": "Why might you?",
+      "options": [
+       "To avoid all regulation",
+       "Access to networks and Medicare users",
+       "Because it is required by federal law"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Other rules still apply.",
+       "The ecosystem offers networks and a library.",
+       "It is voluntary."
+      ],
+      "explanation": "Joining can bring network access and reach, though it is voluntary."
+     },
+     "proReasoning": "Founders join voluntary programs when they open doors.",
+     "commonMistake": "Joining for the wrong reasons.",
+     "mentalModel": "Join when doors open."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You read that Apple and Google pledged to fix health data.",
+      "prompt": "Must they deliver by law?",
+      "options": [
+       "Yes, with $1 million fines",
+       "Yes, or they lose Medicare",
+       "No, the pledge is voluntary"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Those fines are for blocking.",
+       "That is not part of the pledge.",
+       "CMS set voluntary criteria."
+      ],
+      "explanation": "The pledge is voluntary; the blocking ban is the law."
+     },
+     "proReasoning": "Watch whether pledged results arrive.",
+     "commonMistake": "Assuming a pledge is a promise backed by law.",
+     "mentalModel": "Pledges need follow-through."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:dc61821e6622"
+  ]
+ },
+ {
+  "id": "2741b8f9-d776-5fe9-9209-9ed9c18fe409",
+  "market_id": "healthtech",
+  "day": 30,
+  "slot": 3,
+  "content": {
+   "id": "healthtech-d30-c3",
+   "title": "Join the ecosystem?",
+   "lessonTitle": "Big Tech pledges to fix health data",
+   "slot": 3,
+   "type": "decide",
+   "brief": {
+    "headline": "You run a startup with a diabetes app. CMS's new Medicare App Library includes a diabetes and obesity category, but listing has requirements.",
+    "kicker": "Decide: do you apply for the library?",
+    "fullText": "Listing requires signing the interoperability pledge, verifying identity through ID.me or CLEAR, connecting to CMS Aligned Networks and passing an outside evaluation.\n\nThe work takes time, but the library could reach Medicare users directly.",
+    "sources": [
+     {
+      "url": "https://www.aha.org/news/headline/2026-02-24-cms-announces-library-digital-health-apps-medicare-beneficiaries",
+      "label": "AHA News, CMS announces library of digital health apps for Medicare"
+     },
+     {
+      "url": "https://www.cms.gov/newsroom/press-releases/white-house-tech-leaders-commit-create-patient-centric-healthcare-ecosystem",
+      "label": "CMS, tech leaders commit to a patient-centric health ecosystem"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "multipleChoice",
+    "prompt": "What is the main benefit of being listed?",
+    "options": [
+     "Reach to Medicare users via CMS",
+     "Exemption from privacy rules",
+     "Free government funding"
+    ],
+    "correctIndex": 0,
+    "explanation": "The library is a directory for Medicare beneficiaries. It does not exempt apps from rules."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "How many identity partners can apps use to verify users?",
+    "min": 0,
+    "max": 5,
+    "value": 2,
+    "unit": "partners",
+    "explanation": "Two: ID.me or CLEAR."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your CEO asks if applying is worth the work.",
+      "prompt": "What do you say?",
+      "options": [
+       "Yes, if we can meet each requirement",
+       "No, government programs never help",
+       "Yes, and skip the evaluation"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Listing reaches Medicare users.",
+       "This one offers direct reach.",
+       "Evaluation is required."
+      ],
+      "explanation": "If the requirements are achievable, listing offers direct reach."
+     },
+     "proReasoning": "Leaders weigh effort against a clear channel.",
+     "commonMistake": "Dismissing government channels outright.",
+     "mentalModel": "Weigh effort against reach."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A startup plans to list in the Medicare App Library.",
+      "prompt": "What should you check?",
+      "options": [
+       "Its logo color",
+       "Whether it can pass the evaluation",
+       "Its office location and lease"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Branding is irrelevant.",
+       "Listing needs an outside evaluation.",
+       "Location is irrelevant."
+      ],
+      "explanation": "Passing the evaluation is a key hurdle to listing."
+     },
+     "proReasoning": "Investors check the hardest requirement first.",
+     "commonMistake": "Assuming listing is automatic.",
+     "mentalModel": "Check the hardest hurdle."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You decide to apply.",
+      "prompt": "What do you build first?",
+      "options": [
+       "A new logo",
+       "A social media feed for all your users",
+       "Identity checks and network connection"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Not required.",
+       "Not required.",
+       "These are required for listing."
+      ],
+      "explanation": "Identity verification and network links are core requirements."
+     },
+     "proReasoning": "Founders build the required pieces before the nice-to-haves.",
+     "commonMistake": "Polishing before meeting requirements.",
+     "mentalModel": "Requirements before polish."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You see a diabetes app in Medicare's library.",
+      "prompt": "What does the listing suggest?",
+      "options": [
+       "It met CMS's listing requirements",
+       "It is free forever",
+       "It replaces your doctor's advice"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Listing requires several checks.",
+       "Price is not part of listing.",
+       "Apps support care."
+      ],
+      "explanation": "Listed apps met requirements such as an outside evaluation."
+     },
+     "proReasoning": "Still review an app's privacy settings.",
+     "commonMistake": "Treating a listing as medical advice.",
+     "mentalModel": "A listing is not advice."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:980f90169059"
+  ]
  }
 ];
 
