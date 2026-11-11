@@ -1,3 +1,4 @@
+-- ALREADY APPLIED (Nov 11, 2026): the full 0062/0063 files ran on the live database. Do not run this file again.
 -- Data half of 0062 (run after 0062a_weekly_medals_schema.sql). Only INSERT and UPDATE statements. Safe to run again.
 
 -- Backfill placements for Weekly Cases already released (once per learner per case; a re-run changes nothing).

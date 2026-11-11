@@ -1,3 +1,4 @@
+-- ALREADY APPLIED (Nov 11, 2026): the full 0062/0063 files ran on the live database. Do not run this file again.
 -- Split of 0063_double_xp_streak_repair.sql for tools that cannot run schema and data together.
 -- Run 0063a (schema) first, then 0063b (data). Both are safe to run again. Together they equal 0063.
 

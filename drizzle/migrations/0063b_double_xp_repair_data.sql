@@ -1,3 +1,4 @@
+-- ALREADY APPLIED (Nov 11, 2026): the full 0062/0063 files ran on the live database. Do not run this file again.
 -- Data half of 0063 (run after 0063a_double_xp_repair_schema.sql). Only an INSERT. Safe to run again.
 
 -- ── Catalog rows (power-ups are not sold through shop_purchase) ─────────────
