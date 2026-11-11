@@ -13,7 +13,7 @@ builder that turns them into one migration per industry.
   - When no valid row exists, the app builds a case from lessons instead (`buildCase`).
 - **XP:** A case pays 40, 30, 20 or 10 by grade, and counts in the race and the crown.
 
-## Status (November 10, 2026)
+## Status (November 11, 2026)
 
 | Market | Migration | Days done | Cases |
 |---|---|---|---|
@@ -28,12 +28,12 @@ builder that turns them into one migration per industry.
 | robotics | `0053_robotics_deep_cases.sql` | 1-30 | 90 of 90 |
 | spacetech | `0054_spacetech_deep_cases.sql` | 1-30 | 90 of 90 |
 | ev | `0051_ev_deep_cases.sql` | 1-30 | 90 of 90 |
-| web3 | `0055_web3_deep_cases.sql` | 1-15 | 45 of 90 |
+| web3 | `0055_web3_deep_cases.sql` | 1-30 | 90 of 90 |
 | cybersecurity | `0046_cybersecurity_deep_cases.sql` | 1-30 | 90 of 90 |
 | agtech | `0048_agtech_deep_cases.sql` | 1-30 | 90 of 90 |
 | logistics | `0052_logistics_deep_cases.sql` | 1-30 | 90 of 90 |
 
-The goal is days 1-30, three cases a day, for all 15 industries: 1,350 cases in all. 1,305 are done.
+The goal is days 1-30, three cases a day, for all 15 industries: 1,350 cases in all. All 1,350 are done.
 
 Known to go stale: biotech day 13 says the FDA decision on povetacicept is pending (due by November 30,
 2026). Update that case once the FDA rules.
