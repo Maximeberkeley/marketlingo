@@ -1,5 +1,10 @@
 # MarketLingo roadmap
 
+## Nov 11 — Completed-day streak reminder
+- [x] Identify the unconditional 20:30 phone fallback despite Max's credited Nov 10 lesson.
+- [x] Replace repeating fallbacks with dated alerts, cancel today's fallbacks on completion, verify credit before app-open scheduling and synchronize the JavaScript twin; 17 reminder/lesson-banking tests passed. Preview build OK. Native build tests unavailable here because Expo dependencies are absent.
+- [ ] Verify notification delivery on an installed iPhone (blocked: requires a new phone build and device).
+
 ## Nov 8 — Arena industry isolation
 - [x] Confirm screenshot questions belong to Aerospace in live data; scope industry loading by market/day, ignore late responses, and reject foreign-market Arena fallback rows.
 - [x] Synchronize both phone JavaScript twins; 47 regression checks passed across market switching, Neuroscience isolation, lesson-first/early-day Arena and explicit-chain selection. Preview build OK; grading, XP, timers and lesson content unchanged.
