@@ -442,6 +442,13 @@
       "when": 1794500000062,
       "tag": "0062_shop_catalog_weekly_medals",
       "breakpoints": true
+    },
+    {
+      "idx": 63,
+      "version": "7",
+      "when": 1794500000063,
+      "tag": "0063_apply_shop_public_looks",
+      "breakpoints": true
     }
   ]
 }

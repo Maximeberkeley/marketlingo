@@ -3222,6 +3222,41 @@ export type Database = {
         }
         Relationships: []
       }
+      weekly_case_placements: {
+        Row: {
+          board_size: number
+          case_id: string
+          created_at: string
+          rank: number
+          score: number | null
+          user_id: string
+        }
+        Insert: {
+          board_size: number
+          case_id: string
+          created_at?: string
+          rank: number
+          score?: number | null
+          user_id: string
+        }
+        Update: {
+          board_size?: number
+          case_id?: string
+          created_at?: string
+          rank?: number
+          score?: number | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "weekly_case_placements_case_id_fkey"
+            columns: ["case_id"]
+            isOneToOne: false
+            referencedRelation: "weekly_cases"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       weekly_case_scoring: {
         Row: {
           case_id: string
@@ -3758,6 +3793,14 @@ export type Database = {
           user_id: string
         }[]
       }
+      get_public_looks: {
+        Args: { p_market_id: string; p_user_ids: string[] }
+        Returns: {
+          look: Json
+          user_id: string
+          wears_crown: boolean
+        }[]
+      }
       get_weekly_case_board: {
         Args: { p_case_id: string }
         Returns: {
@@ -3813,6 +3856,10 @@ export type Database = {
       }
       record_app_open: {
         Args: { p_local_hour: number; p_utc_offset_minutes: number }
+        Returns: number
+      }
+      record_weekly_case_placements: {
+        Args: { p_case_id: string }
         Returns: number
       }
       release_curriculum_rewrite_lease: {
@@ -3921,6 +3968,14 @@ export type Database = {
       shop_wears_crown: {
         Args: { p_month?: string; p_user: string }
         Returns: boolean
+      }
+      shop_weekly_case_placement: {
+        Args: { p_case_id: string; p_user: string }
+        Returns: {
+          board_size: number
+          rank: number
+          score: number
+        }[]
       }
       shop_weekly_case_top3: { Args: { p_user: string }; Returns: boolean }
       shop_xp_earned: { Args: { p_user: string }; Returns: number }
