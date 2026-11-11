@@ -22,7 +22,7 @@ builder that turns them into one migration per industry.
 | biotech | `0040_biotech_deep_cases.sql` | 1-30 | 90 of 90 |
 | fintech | `0041_fintech_deep_cases.sql` | 1-30 | 90 of 90 |
 | neuroscience | `0042_neuroscience_deep_cases.sql` | 1-30 | 90 of 90 |
-| cleanenergy | `0049_cleanenergy_deep_cases.sql` | 1-15 | 45 of 90 |
+| cleanenergy | `0049_cleanenergy_deep_cases.sql` | 1-30 | 90 of 90 |
 | climatetech | `0050_climatetech_deep_cases.sql` | 1-30 | 90 of 90 |
 | healthtech | `0047_healthtech_deep_cases.sql` | 1-30 | 90 of 90 |
 | robotics | `0053_robotics_deep_cases.sql` | 1-15 | 45 of 90 |
