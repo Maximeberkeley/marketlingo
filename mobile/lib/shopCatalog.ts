@@ -37,6 +37,8 @@ export interface Cosmetic {
   hidden?: boolean;
   /** A founder-set price that overrides the rarity tier (purchase items only). */
   price?: number;
+  /** A named look this piece completes ("Goes with ..." on its try-on), ahead of its collection mates. */
+  pairsWith?: string[];
 }
 
 /** Bottom to top: the order layers are stacked. The base Leo sits between the cape and the outfit. */
@@ -103,7 +105,11 @@ export const COSMETICS: Cosmetic[] = [
   // Colour variants of the same capelet: a cheaper tier than the red royal one.
   { id: 'royal-mantle-blue', slot: 'outfit', name: 'Sapphire mantle', rarity: 'rare', acquisition: 'purchase', collection: 'royal' },
   { id: 'royal-mantle-green', slot: 'outfit', name: 'Emerald mantle', rarity: 'rare', acquisition: 'purchase', collection: 'royal' },
-  { id: 'sapphire-tiara', slot: 'hat', name: 'Sapphire tiara', rarity: 'legendary', acquisition: 'purchase', collection: 'royal', price: 10000 },
+  { id: 'sapphire-tiara', slot: 'hat', name: 'Sapphire tiara', rarity: 'legendary', acquisition: 'purchase', collection: 'royal', price: 10000, pairsWith: ['ermine-cape'] },
+  { id: 'ermine-cape', slot: 'outfit', name: 'Ermine cape', rarity: 'legendary', acquisition: 'purchase', collection: 'royal', price: 7000, pairsWith: ['sapphire-tiara'] },
+  { id: 'crow-cape', slot: 'outfit', name: 'Crow cape', rarity: 'legendary', acquisition: 'purchase', collection: 'royal', price: 7000, pairsWith: ['raven-crown', 'top-hat'] },
+  { id: 'raven-crown', slot: 'hat', name: 'Raven crown', rarity: 'legendary', acquisition: 'purchase', collection: 'royal', pairsWith: ['crow-cape'] },
+  { id: 'commander-coat', slot: 'outfit', name: 'Commander coat', rarity: 'legendary', acquisition: 'purchase', collection: 'aerospace', price: 10000 },
   { id: 'coffee-cup', slot: 'held', name: 'Coffee cup', rarity: 'common', acquisition: 'purchase', collection: 'startup' },
   { id: 'magnifier', slot: 'held', name: 'Magnifying glass', rarity: 'common', acquisition: 'purchase', collection: 'lab' },
   { id: 'test-tube', slot: 'held', name: 'Test tubes', rarity: 'uncommon', acquisition: 'purchase', collection: 'lab' },

@@ -36,7 +36,9 @@ import { CrownCard } from '../components/social/CrownCard';
 import { CrownBadge } from '../components/social/CrownBadge';
 import { LeoAvatar } from '../components/shop/LeoAvatar';
 import { useShop } from '../hooks/useShop';
-import { useEquippedLooks } from '../hooks/useEquippedLooks';
+import { useEquippedLooks, usePublicLooks } from '../hooks/useEquippedLooks';
+import { LeoPodium } from '../components/social/LeoPodium';
+import { MotionScope } from '../components/shop/Motion';
 import type { Look } from '../lib/shopEconomy';
 import { crownStatus } from '../lib/crown';
 
@@ -193,6 +195,10 @@ export default function FriendsScreen() {
     setGlobalLoading(false);
   }, [marketId, user]);
 
+  // The podium's sparkle and glow rest while another screen is on top.
+  const [focused, setFocused] = useState(true);
+  useFocusEffect(useCallback(() => { setFocused(true); return () => setFocused(false); }, []));
+
   useFocusEffect(useCallback(() => {
     if (!marketId || !user) return;
     void refetch();
@@ -209,6 +215,9 @@ export default function FriendsScreen() {
   // Leo looks for the board: yours from the shop, friends' from the server (letters until the shop is live).
   const shop = useShop();
   const looks = useEquippedLooks(friends.map(f => f.id));
+  // Global standings: anyone on the board, friend or not; no look known means the default Leo, never a letter.
+  const publicLooks = usePublicLooks(activeTab === 'global' ? marketId : null, globalEntries.map(e => e.user_id));
+  const globalLook = (id: string, isMe?: boolean): Look => (isMe && shop.available ? shop.look : publicLooks[id]?.look ?? looks[id]?.look ?? {});
   const friendsBoard = useMemo(() => {
     const rows = [
       {
@@ -660,25 +669,20 @@ export default function FriendsScreen() {
                 </View>
               )}
 
-              {/* Podium */}
+              {/* Podium: each of the top three's own Leo standing on their block */}
               {!globalLoading && globalEntries.length >= 3 && (
-                <View style={styles.podium}>
-                  {[1, 0, 2].map((i) => {
-                    const e = globalEntries[i];
-                    const m = MEDALS[i];
-                    const h = i === 0 ? 76 : i === 1 ? 60 : 50;
-                    return (
-                      <View key={e.user_id} style={styles.podiumCol}>
-                        <SocialAvatar name={e.isCurrentUser ? (myName || 'You') : e.username} size={44} ring={m.ring} ringWidth={3} />
-                        <Text style={styles.podiumName} numberOfLines={1}>{e.isCurrentUser ? 'You' : e.username}</Text>
-                        <View style={[styles.podiumBlock, { height: h, backgroundColor: m.bg, borderColor: m.ring + '55' }]}>
-                          <Text style={[styles.podiumRank, { color: m.text }]}>{i + 1}</Text>
-                          <Text style={[styles.podiumXP, { color: m.text }]}>{e.total_xp.toLocaleString()}</Text>
-                        </View>
-                      </View>
-                    );
-                  })}
-                </View>
+                <MotionScope active={focused}>
+                  <LeoPodium
+                    people={globalEntries.slice(0, 3).map(e => ({
+                      id: e.user_id,
+                      name: e.username,
+                      xp: e.total_xp,
+                      look: globalLook(e.user_id, e.isCurrentUser),
+                      crown: e.isCurrentUser ? shop.wearsCrown : !!publicLooks[e.user_id]?.wearsCrown,
+                      isMe: !!e.isCurrentUser,
+                    }))}
+                  />
+                </MotionScope>
               )}
 
               {globalLoading ? (
@@ -704,6 +708,7 @@ export default function FriendsScreen() {
                       rank={entry.rank}
                       name={entry.isCurrentUser ? 'You' : entry.username}
                       avatarName={entry.isCurrentUser ? myName : undefined}
+                      look={globalLook(entry.user_id, entry.isCurrentUser)}
                       xp={entry.total_xp}
                       streak={entry.current_streak}
                       isMe={entry.isCurrentUser}
@@ -940,14 +945,6 @@ const styles = StyleSheet.create({
   heroUnit: { fontSize: 14, fontWeight: '700', color: COLORS.textSecondary },
   heroLine: { fontSize: 12, color: COLORS.textSecondary, marginTop: 3, lineHeight: 17 },
   heroAccent: { color: COLORS.accent, fontWeight: '800' },
-
-  // Podium
-  podium: { flexDirection: 'row', alignItems: 'flex-end', gap: 8, marginBottom: 14 },
-  podiumCol: { flex: 1, alignItems: 'center' },
-  podiumName: { fontSize: 12, fontWeight: '800', color: COLORS.textPrimary, marginTop: 4, marginBottom: 4, maxWidth: '95%' },
-  podiumBlock: { width: '100%', borderRadius: 16, borderWidth: 1.5, alignItems: 'center', justifyContent: 'center', gap: 1 },
-  podiumRank: { fontSize: 18, fontWeight: '800' },
-  podiumXP: { fontSize: 11, fontWeight: '700' },
 
   // Empty state
   emptyState: { alignItems: 'center', paddingTop: 24, gap: 4 },

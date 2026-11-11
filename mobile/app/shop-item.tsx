@@ -65,9 +65,11 @@ export default function ShopItemScreen() {
   const full = bundle ? bundleFullPrice(bundle) : priceOf(lead);
   const price = bundle ? bundle.price : deal ? deal.dealPrice : full;
   const block = owned ? 'owned' : buyBlock({ price, balance: shop.balance.balance, hasArt: art, earnOnly, comingSoon: !shop.available && shop.ready });
-  const goesWith = !bundle && lead.collection
-    ? COSMETICS.filter(c => c.collection === lead.collection && c.id !== lead.id && c.slot !== lead.slot && hasArt(c.id)).slice(0, 2)
-    : [];
+  // Its named look first (Winter royal, Crow), then other drawn pieces from its collection in another slot.
+  const paired = (lead.pairsWith ?? []).map(id => cosmetic(id)).filter((c): c is Cosmetic => !!c && hasArt(c.id));
+  const goesWith = bundle ? [] : (paired.length ? paired : lead.collection
+    ? COSMETICS.filter(c => c.collection === lead.collection && c.id !== lead.id && c.slot !== lead.slot && hasArt(c.id))
+    : []).slice(0, 2);
 
   const wearAll = async () => {
     for (const p of parts) await shop.equip(p.slot, p.id);
