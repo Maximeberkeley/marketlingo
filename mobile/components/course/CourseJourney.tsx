@@ -146,6 +146,8 @@ interface CourseJourneyProps {
   onAskLeo: (day?: number) => void;
   /** Small card shown under today's lesson section (the learner's dossier progress). */
   belowToday?: React.ReactNode;
+  /** Opens the XP sheet (XP to spend, XP earned, milestones, the Shop). */
+  onXPPress?: () => void;
 }
 
 
@@ -551,6 +553,7 @@ export function CourseJourney({
   onOpenLesson,
   onAskLeo,
   belowToday,
+  onXPPress,
 }: CourseJourneyProps) {
   const { user } = useAuth();
   const [lessons, setLessons] = useState<CourseLesson[]>([]);
@@ -799,7 +802,9 @@ export function CourseJourney({
                 <StreakBadge count={streak} />
               </TouchableOpacity>
               {streakCountdown ? <Text style={styles.streakCountdown} accessibilityLabel={`${streakCountdown} left to study today`}>{streakCountdown}</Text> : null}
-              <XPBadge xp={totalXp} level={level} />
+              <TouchableOpacity disabled={!onXPPress} onPress={onXPPress} accessibilityRole="button" accessibilityLabel={`${totalXp.toLocaleString()} XP to spend. Open your XP`}>
+                <XPBadge xp={totalXp} level={level} />
+              </TouchableOpacity>
             </View>
           </View>
         )}

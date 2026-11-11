@@ -1,4 +1,5 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Tabs } from 'expo-router';
 import { View, StyleSheet, Animated, Easing } from 'react-native';
 import { Feather } from '@expo/vector-icons';
@@ -11,11 +12,12 @@ const TAB_ICONS: Record<string, keyof typeof Feather.glyphMap> = {
   home: 'home',
   roadmap: 'radio',
   practice: 'zap',
+  shop: 'shopping-bag',
   notebook: 'edit-3',
   profile: 'user',
 };
 
-function TabBarIcon({ name, focused }: { name: string; focused: boolean }) {
+function TabBarIcon({ name, focused, dot = false }: { name: string; focused: boolean; dot?: boolean }) {
   const scaleAnim = useRef(new Animated.Value(1)).current;
 
   useEffect(() => {
@@ -40,7 +42,7 @@ function TabBarIcon({ name, focused }: { name: string; focused: boolean }) {
           color={focused ? COLORS.textPrimary : COLORS.textMuted}
         />
       </Animated.View>
-      
+      {dot && <View style={styles.newDot} />}
     </View>
   );
 }
@@ -52,6 +54,11 @@ export default function TabLayout() {
 function TabNavigator() {
   const insets = useSafeAreaInsets();
   const { hidden } = useLessonNavigation();
+  // The Shop tab carries a "new" dot until it is opened once.
+  const [shopNew, setShopNew] = useState(false);
+  useEffect(() => {
+    AsyncStorage.getItem('ml_shop_tab_seen_v1').then(v => setShopNew(!v)).catch(() => {});
+  }, []);
 
   return (
     <Tabs
@@ -106,6 +113,14 @@ function TabNavigator() {
         listeners={{ tabPress: () => triggerHaptic('selection') }}
       />
       <Tabs.Screen
+        name="shop"
+        options={{
+          title: 'Shop',
+          tabBarIcon: ({ focused }) => <TabBarIcon name="shop" focused={focused} dot={shopNew && !focused} />,
+        }}
+        listeners={{ tabPress: () => { triggerHaptic('selection'); setShopNew(false); } }}
+      />
+      <Tabs.Screen
         name="notebook"
         options={{
           href: null,
@@ -124,6 +139,7 @@ function TabNavigator() {
 }
 
 const styles = StyleSheet.create({
+  newDot: { position: 'absolute', top: 0, right: -1, width: 8, height: 8, borderRadius: 4, backgroundColor: COLORS.error, borderWidth: 1.5, borderColor: COLORS.bg0 },
   tabIcon: {
     width: 28,
     height: 28,

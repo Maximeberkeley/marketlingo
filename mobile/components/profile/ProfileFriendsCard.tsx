@@ -5,6 +5,8 @@ import { COLORS } from '../../lib/constants';
 import { isDark } from '../../lib/theme';
 import { LeoAnimated } from '../mascot/LeoAnimated';
 import { SocialAvatar } from '../social/SocialAvatar';
+import { LeoAvatar } from '../shop/LeoAvatar';
+import type { FriendLook } from '../../hooks/useEquippedLooks';
 import { ChunkyButton } from '../social/ChunkyButton';
 import { Crown, crownCopy } from '../../lib/crown';
 
@@ -18,6 +20,8 @@ const STACK_TINTS = isDark
 
 export interface ProfileFriendsInfo {
   friendNames: string[];
+  /** Each friend's Leo look, aligned with friendNames, when the shop knows it. */
+  friendLooks?: (FriendLook | undefined)[];
   crown: Crown | null;
   myRank: number;
   boardSize: number;
@@ -77,7 +81,11 @@ export function ProfileFriendsCard({ info, onOpen, onAdd }: { info: ProfileFrien
             <View style={styles.stack}>
               {info.friendNames.slice(0, STACK_MAX).map((name, i) => (
                 <View key={`${name}-${i}`} style={[styles.stackItem, { marginLeft: i === 0 ? 0 : -10, zIndex: STACK_MAX - i }]}>
-                  <SocialAvatar name={name} size={30} ring={COLORS.bg2} ringWidth={2} tint={STACK_TINTS[i % STACK_TINTS.length]} />
+                  {info.friendLooks?.[i] ? (
+                    <LeoAvatar look={info.friendLooks[i]!.look} crown={info.friendLooks[i]!.wearsCrown} size={30} ring={COLORS.bg2} ringWidth={2} />
+                  ) : (
+                    <SocialAvatar name={name} size={30} ring={COLORS.bg2} ringWidth={2} tint={STACK_TINTS[i % STACK_TINTS.length]} />
+                  )}
                 </View>
               ))}
               {info.friendNames.length > STACK_MAX && (

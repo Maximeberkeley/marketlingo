@@ -2,13 +2,15 @@ import React, { useRef } from 'react';
 import { ActivityIndicator, Animated, Pressable, StyleSheet, Text, View, ViewStyle } from 'react-native';
 import { COLORS } from '../../lib/constants';
 
-export type ChunkyTone = 'accent' | 'streak' | 'success' | 'plain';
+export type ChunkyTone = 'accent' | 'streak' | 'success' | 'plain' | 'gold';
 
 const TONES: Record<ChunkyTone, { face: string; lip: string; text: string; border?: string }> = {
   accent: { face: COLORS.accent, lip: COLORS.courseCoinLip, text: '#FFFFFF' },
   streak: { face: COLORS.streak, lip: '#C2410C', text: '#FFFFFF' },
   success: { face: COLORS.success, lip: '#15803D', text: '#FFFFFF' },
   plain: { face: COLORS.bg2, lip: COLORS.courseMutedLip, text: COLORS.textPrimary, border: COLORS.border },
+  // The shop's price buttons: dark text on gold reads in both themes.
+  gold: { face: '#FFC83D', lip: '#D99A00', text: '#3A2600' },
 };
 
 const LIP = 4;

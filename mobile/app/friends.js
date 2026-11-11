@@ -42,6 +42,9 @@ import { StreakFlame } from "../components/ui/StreakFlame";
 import { nudgeOptions } from "../lib/nudges";
 import { CrownCard } from "../components/social/CrownCard";
 import { CrownBadge } from "../components/social/CrownBadge";
+import { LeoAvatar } from "../components/shop/LeoAvatar";
+import { useShop } from "../hooks/useShop";
+import { useEquippedLooks } from "../hooks/useEquippedLooks";
 import { crownStatus } from "../lib/crown";
 const SHEET_HANDOFF_MS = 380;
 const MEDALS = [
@@ -180,6 +183,8 @@ function FriendsScreen() {
   const currentUserRank = globalEntries.find((e) => e.isCurrentUser)?.rank ?? null;
   const marketName = marketId ? getMarketName(marketId) : "";
   const initial = (user?.email || "Y").charAt(0).toUpperCase();
+  const shop = useShop();
+  const looks = useEquippedLooks(friends.map((f) => f.id));
   const friendsBoard = useMemo(() => {
     const rows = [
       {
@@ -516,6 +521,7 @@ function FriendsScreen() {
         doneToday: row.friend ? row.friend.lessonDoneToday : false,
         last: idx === friendsBoard.length - 1,
         crowned: idx === 0 && row.xp > 0,
+        look: row.isMe ? shop.available ? shop.look : void 0 : looks[row.id]?.look,
         onPress: row.friend ? () => {
           triggerHaptic("light");
           setFriendSheetId(row.friend.id);
@@ -640,10 +646,14 @@ function BoardRow({
   crowned,
   onPress,
   nudge,
-  onNudge
+  onNudge,
+  look
 }) {
   const medal = rank <= 3 ? MEDALS[rank - 1] : null;
-  const body = /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(View, { style: [styles.rankBadge, medal && { backgroundColor: medal.bg, borderColor: medal.ring }] }, /* @__PURE__ */ React.createElement(Text, { style: [styles.rankNum, medal && { color: medal.text }] }, rank)), /* @__PURE__ */ React.createElement(View, null, /* @__PURE__ */ React.createElement(SocialAvatar, { name: avatarName || name, size: 42, ring: isMe ? COLORS.accent : void 0 }), online && /* @__PURE__ */ React.createElement(View, { style: styles.onlineDot }), crowned && /* @__PURE__ */ React.createElement(View, { style: styles.crown, pointerEvents: "none" }, /* @__PURE__ */ React.createElement(CrownBadge, { size: 26 }))), /* @__PURE__ */ React.createElement(View, { style: styles.rowInfo }, /* @__PURE__ */ React.createElement(Text, { style: [styles.rowName, isMe && { color: COLORS.accent }], numberOfLines: 1 }, name), (streak > 0 || doneToday) && /* @__PURE__ */ React.createElement(View, { style: styles.rowMetaLine }, streak > 0 && /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(StreakFlame, { size: 13 }), /* @__PURE__ */ React.createElement(Text, { style: styles.rowMetaStrong }, streak)), doneToday && /* @__PURE__ */ React.createElement(Text, { style: styles.rowMetaDone }, streak > 0 ? " \xB7 " : "", "done today"))), /* @__PURE__ */ React.createElement(Text, { style: [styles.xpValue, isMe && { color: COLORS.accent }] }, xp.toLocaleString(), " XP"), nudge && onNudge && /* @__PURE__ */ React.createElement(NudgeButton, { state: nudge, name, onPress: onNudge }));
+  const body = /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(View, { style: [styles.rankBadge, medal && { backgroundColor: medal.bg, borderColor: medal.ring }] }, /* @__PURE__ */ React.createElement(Text, { style: [styles.rankNum, medal && { color: medal.text }] }, rank)), /* @__PURE__ */ React.createElement(View, null, look ? (
+    // Their Leo; the month's leader wears the crown on Leo itself.
+    /* @__PURE__ */ React.createElement(LeoAvatar, { look, crown: crowned, size: 42, ring: isMe ? COLORS.accent : COLORS.border, ringWidth: isMe ? 2.5 : 1.5 })
+  ) : /* @__PURE__ */ React.createElement(SocialAvatar, { name: avatarName || name, size: 42, ring: isMe ? COLORS.accent : void 0 }), online && /* @__PURE__ */ React.createElement(View, { style: styles.onlineDot }), crowned && !look && /* @__PURE__ */ React.createElement(View, { style: styles.crown, pointerEvents: "none" }, /* @__PURE__ */ React.createElement(CrownBadge, { size: 26 }))), /* @__PURE__ */ React.createElement(View, { style: styles.rowInfo }, /* @__PURE__ */ React.createElement(Text, { style: [styles.rowName, isMe && { color: COLORS.accent }], numberOfLines: 1 }, name), (streak > 0 || doneToday) && /* @__PURE__ */ React.createElement(View, { style: styles.rowMetaLine }, streak > 0 && /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(StreakFlame, { size: 13 }), /* @__PURE__ */ React.createElement(Text, { style: styles.rowMetaStrong }, streak)), doneToday && /* @__PURE__ */ React.createElement(Text, { style: styles.rowMetaDone }, streak > 0 ? " \xB7 " : "", "done today"))), /* @__PURE__ */ React.createElement(Text, { style: [styles.xpValue, isMe && { color: COLORS.accent }] }, xp.toLocaleString(), " XP"), nudge && onNudge && /* @__PURE__ */ React.createElement(NudgeButton, { state: nudge, name, onPress: onNudge }));
   const style = [styles.row, isMe && styles.rowSelf, !last && styles.rowDivider];
   return onPress ? /* @__PURE__ */ React.createElement(TouchableOpacity, { style, onPress, activeOpacity: 0.75, accessibilityRole: "button", accessibilityLabel: `${name}, ${xp} XP. Open` }, body) : /* @__PURE__ */ React.createElement(View, { style }, body);
 }

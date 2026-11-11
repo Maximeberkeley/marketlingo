@@ -153,6 +153,11 @@ export default function RootLayout() {
                 <Stack.Screen name="passport" />
                 <Stack.Screen name="certificate" />
                 <Stack.Screen name="friends" />
+                <Stack.Screen name="wardrobe" />
+                <Stack.Screen name="shop-item" options={{ animation: 'slide_from_bottom' }} />
+                <Stack.Screen name="shop-freeze" options={{ animation: 'slide_from_bottom' }} />
+                <Stack.Screen name="shop-perk" options={{ animation: 'slide_from_bottom' }} />
+                <Stack.Screen name="shop-collection" />
                 <Stack.Screen name="legal" />
                 <Stack.Screen name="seminars" />
                 <Stack.Screen name="seminar-detail" />

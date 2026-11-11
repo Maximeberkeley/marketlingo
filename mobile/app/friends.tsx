@@ -34,6 +34,10 @@ import { StreakFlame } from '../components/ui/StreakFlame';
 import { NudgeId, NudgeResult, nudgeOptions } from '../lib/nudges';
 import { CrownCard } from '../components/social/CrownCard';
 import { CrownBadge } from '../components/social/CrownBadge';
+import { LeoAvatar } from '../components/shop/LeoAvatar';
+import { useShop } from '../hooks/useShop';
+import { useEquippedLooks } from '../hooks/useEquippedLooks';
+import type { Look } from '../lib/shopEconomy';
 import { crownStatus } from '../lib/crown';
 
 // Sheets are native modals; let one finish closing before the next opens.
@@ -202,6 +206,9 @@ export default function FriendsScreen() {
   const initial = (user?.email || 'Y').charAt(0).toUpperCase();
 
   // Friends board = me + friends, ranked on real XP
+  // Leo looks for the board: yours from the shop, friends' from the server (letters until the shop is live).
+  const shop = useShop();
+  const looks = useEquippedLooks(friends.map(f => f.id));
   const friendsBoard = useMemo(() => {
     const rows = [
       {
@@ -616,6 +623,7 @@ export default function FriendsScreen() {
                         doneToday={row.friend ? row.friend.lessonDoneToday : false}
                         last={idx === friendsBoard.length - 1}
                         crowned={idx === 0 && row.xp > 0}
+                        look={row.isMe ? (shop.available ? shop.look : undefined) : looks[row.id]?.look}
                         onPress={row.friend ? () => { triggerHaptic('light'); setFriendSheetId(row.friend!.id); } : undefined}
                         nudge={!row.friend ? undefined : row.friend.lessonDoneToday ? 'done' : isNudged(row.friend.id) ? 'nudged' : 'idle'}
                         onNudge={row.friend ? () => openNudge(row.friend!.id) : undefined}
@@ -775,9 +783,11 @@ export default function FriendsScreen() {
 
 // ── Board Row ───────────────────────────────────────
 function BoardRow({
-  rank, name, avatarName, xp, streak, isMe, online, doneToday, last, crowned, onPress, nudge, onNudge,
+  rank, name, avatarName, xp, streak, isMe, online, doneToday, last, crowned, onPress, nudge, onNudge, look,
 }: {
   rank: number; name: string; avatarName?: string; xp: number; streak: number;
+  /** Their Leo look, when the shop knows it; otherwise the letter avatar. */
+  look?: Look;
   isMe?: boolean; online?: boolean; doneToday?: boolean; last?: boolean;
   /** This month's leader among friends wears the crown. */
   crowned?: boolean;
@@ -792,9 +802,14 @@ function BoardRow({
         <Text style={[styles.rankNum, medal && { color: medal.text }]}>{rank}</Text>
       </View>
       <View>
-        <SocialAvatar name={avatarName || name} size={42} ring={isMe ? COLORS.accent : undefined} />
+        {look ? (
+          // Their Leo; the month's leader wears the crown on Leo itself.
+          <LeoAvatar look={look} crown={crowned} size={42} ring={isMe ? COLORS.accent : COLORS.border} ringWidth={isMe ? 2.5 : 1.5} />
+        ) : (
+          <SocialAvatar name={avatarName || name} size={42} ring={isMe ? COLORS.accent : undefined} />
+        )}
         {online && <View style={styles.onlineDot} />}
-        {crowned && <View style={styles.crown} pointerEvents="none"><CrownBadge size={26} /></View>}
+        {crowned && !look && <View style={styles.crown} pointerEvents="none"><CrownBadge size={26} /></View>}
       </View>
       <View style={styles.rowInfo}>
         <Text style={[styles.rowName, isMe && { color: COLORS.accent }]} numberOfLines={1}>{name}</Text>

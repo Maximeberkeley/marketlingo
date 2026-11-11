@@ -52,6 +52,8 @@ import { FoxMascot } from '../../components/mascot/FoxMascot';
 import { LeoPopup } from '../../components/mascot/LeoPopup';
 import { useLeoPopups } from '../../hooks/useLeoPopups';
 import { useSocialNudges } from '../../hooks/useSocialNudges';
+import { useShop } from '../../hooks/useShop';
+import { XPSheet } from '../../components/shop/XPSheet';
 import { trackEvent } from '../../lib/analytics';
 import { useAchievements } from '../../hooks/useAchievements';
 import { LeoVoiceChatOverlay } from '../../components/ai/LeoVoiceChatOverlay';
@@ -463,6 +465,32 @@ function HomeScreenContent() {
     duration: 9000,
   }));
 
+  // XP to spend on the pill once the shop is live (spending never lowers XP earned), and the XP sheet behind it.
+  const shop = useShop();
+  const [xpSheetOpen, setXpSheetOpen] = useState(false);
+  const pillXP = shop.available ? shop.balance.balance : (xpData?.total_xp || 0);
+  // Earn-only items unlock on the server; Leo announces each new one once, through his popup queue.
+  const shopCheckRewards = shop.checkRewards;
+  useEffect(() => {
+    if (!socialNudgesActive || !shop.available) return;
+    const t = setTimeout(() => {
+      void shopCheckRewards().then(granted => {
+        const first = granted[0];
+        if (!first) return;
+        leoPopups.enqueue({
+          category: 'achievement',
+          title: granted.length > 1 ? `${granted.length} new items unlocked!` : `You unlocked the ${first.name}!`,
+          body: granted.length > 1 ? `${granted.length} new items unlocked!` : `You unlocked the ${first.name}!`,
+          actionLabel: 'See it',
+          onAction: () => router.push(`/shop-item?id=${first.id}&claimed=1` as any),
+          duration: 9000,
+        });
+      });
+    }, 4000);
+    return () => clearTimeout(t);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [socialNudgesActive, shop.available]);
+
   // Opening a lesson cancels the dashboard-idle nudge lifecycle until Course
   // is visible again; completion also clears any queued in-app messages.
   useEffect(() => {
@@ -523,6 +551,7 @@ function HomeScreenContent() {
       {/* Pro interstitial ad */}
       {/* Leo popup overlay */}
       <LeoPopup message={leoPopups.currentMessage} onDismiss={leoPopups.dismiss} />
+      <XPSheet visible={xpSheetOpen} onClose={() => setXpSheetOpen(false)} />
 
       <WelcomeBackModal
         visible={returnVisit.isReturningVisit && !session.showReader}
@@ -630,7 +659,8 @@ function HomeScreenContent() {
             learningGoal={learningGoal}
             completedStackIds={(progress?.completed_stacks as string[]) || []}
             streak={streak}
-            totalXp={xpData?.total_xp || 0}
+            totalXp={pillXP}
+            onXPPress={() => { triggerHaptic('light'); setXpSheetOpen(true); }}
             level={xpData?.current_level || 1}
             lessonCompletedToday={completedOnClockDay}
             completedTodayStackId={completedOnClockDay ? dailyCompletion?.completed_stack_id : null}

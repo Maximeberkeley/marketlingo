@@ -6,6 +6,8 @@ import { router, useLocalSearchParams } from 'expo-router';
 
 import { markResultsSeen } from '../hooks/useWeeklyCase';
 import { useAuth } from '../hooks/useAuth';
+import { useEquippedLooks } from '../hooks/useEquippedLooks';
+import { LeoAvatar } from '../components/shop/LeoAvatar';
 import { COLORS, TYPE } from '../lib/constants';
 import { log } from '../lib/logger';
 import { triggerHaptic } from '../lib/haptics';
@@ -31,6 +33,8 @@ export default function WeeklyCaseResultsRoute() {
   const [weekly, setWeekly] = useState<WeeklyCase | null>(null);
   const [result, setResult] = useState<WeeklyResult | null>(null);
   const [board, setBoard] = useState<WeeklyBoardRow[]>([]);
+  // Leo for each person on the standings, when the shop knows their look (letters otherwise).
+  const looks = useEquippedLooks(board.map(r => r.user_id));
   const [answers, setAnswers] = useState<WeeklyAnswers | null>(null);
   const [loading, setLoading] = useState(true);
   const [failed, setFailed] = useState(false);
@@ -160,6 +164,7 @@ export default function WeeklyCaseResultsRoute() {
             : board.map(r => (
               <View key={r.user_id} style={[styles.rankRow, r.is_me && styles.rankMe]}>
                 <Text style={styles.rank}>{r.rank ?? '–'}</Text>
+                <LeoAvatar look={looks[r.user_id]?.look} crown={looks[r.user_id]?.wearsCrown} size={30} name={r.is_me ? 'You' : r.display_name || '?'} />
                 <Text style={styles.rankName} numberOfLines={1}>{r.is_me ? 'You' : r.display_name}</Text>
                 {r.friend_code && !r.is_me ? <Text style={styles.friendCode}>{r.friend_code}</Text> : null}
                 <Text style={styles.rankScore}>{r.score ?? '–'}</Text>
