@@ -5,9 +5,9 @@ import agtech from './agtech.ts';
 import cleanenergy from './cleanenergy.ts';
 import climatetech from './climatetech.ts';
 import ev from './ev.ts';
+import logistics from './logistics.ts';
 import robotics from './robotics.ts';
 import spacetech from './spacetech.ts';
-import web3 from './web3.ts';
 
 /** The hand-written Deep Cases bundled with this function, by market, as deep_cases rows. */
-export const DEEP_CASES = { cybersecurity, healthtech, agtech, cleanenergy, climatetech, ev, robotics, spacetech, web3 };
+export const DEEP_CASES = { cybersecurity, healthtech, agtech, cleanenergy, climatetech, ev, logistics, robotics, spacetech };
