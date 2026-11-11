@@ -38,8 +38,9 @@ import { inviteShareContent } from "../../lib/inviteLinks";
 import { redeemFriendCode } from "../../lib/invites";
 import { ProfileFriendsCard } from "../../components/profile/ProfileFriendsCard";
 import { MyCodeSheet } from "../../components/social/MyCodeSheet";
-import { SocialAvatar } from "../../components/social/SocialAvatar";
-import { CrownBadge } from "../../components/social/CrownBadge";
+import { LeoAvatar } from "../../components/shop/LeoAvatar";
+import { useShop } from "../../hooks/useShop";
+import { useEquippedLooks } from "../../hooks/useEquippedLooks";
 const MARKET_ILLUSTRATIONS = {
   aerospace: require("../../assets/illustrations/aerospace.png"),
   ai: require("../../assets/illustrations/ai.png"),
@@ -165,13 +166,16 @@ function ProfileScreen() {
     }
   };
   const board = [
-    { name: "You", xp: monthXP, isMe: true },
-    ...friendsData.friends.map((f) => ({ name: f.username, xp: f.totalXP, isMe: false }))
+    { id: user?.id ?? "me", name: "You", xp: monthXP, isMe: true },
+    ...friendsData.friends.map((f) => ({ id: f.id, name: f.username, xp: f.totalXP, isMe: false }))
   ].sort((a, b) => b.xp - a.xp);
+  const shop = useShop();
+  const friendLooks = useEquippedLooks(friendsData.friends.map((f) => f.id));
   const myFriendRank = board.findIndex((r) => r.isMe) + 1;
   const activeStreaks = social.social?.streaks.filter((s) => s.status === "active") ?? [];
   const friendsInfo = {
     friendNames: board.filter((r) => !r.isMe).map((r) => r.name),
+    friendLooks: board.filter((r) => !r.isMe).map((r) => friendLooks[r.id]),
     crown: friendsData.friends.length > 0 ? crownStatus(board) : null,
     myRank: myFriendRank,
     boardSize: board.length,
@@ -253,7 +257,10 @@ function ProfileScreen() {
       contentContainerStyle: [styles.scrollContent, { paddingTop: insets.top + 16, paddingBottom: insets.bottom + 100 }],
       showsVerticalScrollIndicator: false
     },
-    /* @__PURE__ */ React.createElement(Animated.View, { style: [styles.header, animStyle(headerAnim)] }, /* @__PURE__ */ React.createElement(View, { style: styles.headerTop }, /* @__PURE__ */ React.createElement(Text, { style: styles.title }, "Profile"), /* @__PURE__ */ React.createElement(TouchableOpacity, { style: styles.gear, onPress: openSettings, accessibilityLabel: "Settings" }, /* @__PURE__ */ React.createElement(Feather, { name: "settings", size: 19, color: COLORS.textSecondary }))), /* @__PURE__ */ React.createElement(View, { style: styles.idCard }, /* @__PURE__ */ React.createElement(View, null, /* @__PURE__ */ React.createElement(SocialAvatar, { name: displayName || user?.email || "You", size: 60, ring: COLORS.accent, ringWidth: 3 }), iWearCrown && /* @__PURE__ */ React.createElement(View, { style: styles.avatarCrown, pointerEvents: "none" }, /* @__PURE__ */ React.createElement(CrownBadge, { size: 28 }))), /* @__PURE__ */ React.createElement(View, { style: { flex: 1, minWidth: 0 } }, displayName ? /* @__PURE__ */ React.createElement(Text, { style: styles.name, numberOfLines: 1 }, displayName) : /* @__PURE__ */ React.createElement(TouchableOpacity, { onPress: () => router.push("/friends"), accessibilityRole: "button" }, /* @__PURE__ */ React.createElement(Text, { style: [styles.name, { color: COLORS.accent }], numberOfLines: 1 }, "Add your name")), /* @__PURE__ */ React.createElement(Text, { style: styles.industry, numberOfLines: 1 }, getMarketName(selectedMarket || "aerospace"))), !!friendsData.myFriendCode && /* @__PURE__ */ React.createElement(TouchableOpacity, { style: styles.qrBtn, onPress: openCode, accessibilityRole: "button", accessibilityLabel: `Your friend code ${friendsData.myFriendCode}. Show QR code` }, /* @__PURE__ */ React.createElement(MaterialCommunityIcons, { name: "qrcode", size: 24, color: COLORS.accent })))),
+    /* @__PURE__ */ React.createElement(Animated.View, { style: [styles.header, animStyle(headerAnim)] }, /* @__PURE__ */ React.createElement(View, { style: styles.headerTop }, /* @__PURE__ */ React.createElement(Text, { style: styles.title }, "Profile"), /* @__PURE__ */ React.createElement(TouchableOpacity, { style: styles.gear, onPress: openSettings, accessibilityLabel: "Settings" }, /* @__PURE__ */ React.createElement(Feather, { name: "settings", size: 19, color: COLORS.textSecondary }))), /* @__PURE__ */ React.createElement(View, { style: styles.idCard }, /* @__PURE__ */ React.createElement(TouchableOpacity, { onPress: () => {
+      triggerHaptic("light");
+      router.push("/wardrobe");
+    }, accessibilityRole: "button", accessibilityLabel: "Dress Leo" }, /* @__PURE__ */ React.createElement(LeoAvatar, { look: shop.look, crown: iWearCrown || shop.wearsCrown, size: 64, ring: COLORS.accent, ringWidth: 3, name: displayName || "You" }), /* @__PURE__ */ React.createElement(View, { style: styles.editBadge, pointerEvents: "none" }, /* @__PURE__ */ React.createElement(Feather, { name: "edit-2", size: 11, color: "#FFFFFF" }))), /* @__PURE__ */ React.createElement(View, { style: { flex: 1, minWidth: 0 } }, displayName ? /* @__PURE__ */ React.createElement(Text, { style: styles.name, numberOfLines: 1 }, displayName) : /* @__PURE__ */ React.createElement(TouchableOpacity, { onPress: () => router.push("/friends"), accessibilityRole: "button" }, /* @__PURE__ */ React.createElement(Text, { style: [styles.name, { color: COLORS.accent }], numberOfLines: 1 }, "Add your name")), /* @__PURE__ */ React.createElement(Text, { style: styles.industry, numberOfLines: 1 }, getMarketName(selectedMarket || "aerospace"))), !!friendsData.myFriendCode && /* @__PURE__ */ React.createElement(TouchableOpacity, { style: styles.qrBtn, onPress: openCode, accessibilityRole: "button", accessibilityLabel: `Your friend code ${friendsData.myFriendCode}. Show QR code` }, /* @__PURE__ */ React.createElement(MaterialCommunityIcons, { name: "qrcode", size: 24, color: COLORS.accent })))),
     /* @__PURE__ */ React.createElement(Animated.View, { style: animStyle(statsAnim) }, /* @__PURE__ */ React.createElement(
       ProfileFriendsCard,
       {
@@ -325,7 +332,7 @@ function MenuRow({ icon, title, subtitle, onPress, last, highlight }) {
 const styles = StyleSheet.create({
   headerTop: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginBottom: 16 },
   gear: { width: 40, height: 40, borderRadius: 20, backgroundColor: COLORS.bg2, borderWidth: 1, borderColor: COLORS.border, alignItems: "center", justifyContent: "center" },
-  avatarCrown: { position: "absolute", top: -15, left: 16 },
+  editBadge: { position: "absolute", right: -2, bottom: -2, width: 22, height: 22, borderRadius: 11, backgroundColor: COLORS.accent, borderWidth: 2, borderColor: COLORS.bg2, alignItems: "center", justifyContent: "center" },
   idCard: { flexDirection: "row", alignItems: "center", gap: 14, padding: 14, borderRadius: 22, backgroundColor: COLORS.bg2, borderWidth: 2, borderBottomWidth: 4, borderColor: COLORS.border },
   name: { fontSize: 22, fontWeight: "900", color: COLORS.textPrimary },
   industry: { fontSize: 14, color: COLORS.textSecondary, marginTop: 2 },

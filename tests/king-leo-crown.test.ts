@@ -34,7 +34,9 @@ describe("this month's crown", () => {
     expect(friends).toContain("{crown && <CrownCard crown={crown} onAction={() => { triggerHaptic('light'); router.push('/(tabs)/home' as any); }} />}");
     expect(friends).toContain('crowned={idx === 0 && row.xp > 0}');
     expect(friends.match(/crowned=/g)?.length).toBe(1);
-    expect(friends).toContain('{crowned && <View style={styles.crown} pointerEvents="none"><CrownBadge size={26} /></View>}');
+    // With a Leo look the leader wears the crown on Leo; the badge stays for letter avatars.
+    expect(friends).toContain('<LeoAvatar look={look} crown={crowned} size={42}');
+    expect(friends).toContain('{crowned && !look && <View style={styles.crown} pointerEvents="none"><CrownBadge size={26} /></View>}');
     expect(read('mobile/components/social/CrownCard.tsx')).toContain('<LeoAnimated clip="leo-king" size={138} fallback={LEO_KING} />');
     expect(statSync('mobile/assets/mascot/anim/leo-king.webp').size).toBeGreaterThan(100_000);
     expect(existsSync('mobile/assets/mascot/leo-king.png')).toBe(true);

@@ -10,8 +10,9 @@ const card = read('mobile/components/profile/ProfileFriendsCard.tsx');
 
 describe('Profile redesign', () => {
   it('leads with one clean card: avatar, name, industry, and a QR button for your code', () => {
-    expect(profile).toContain("<SocialAvatar name={displayName || user?.email || 'You'} size={60} ring={COLORS.accent} ringWidth={3} />");
-    expect(profile).toContain('{iWearCrown && <View style={styles.avatarCrown} pointerEvents="none"><CrownBadge size={28} /></View>}');
+    // Your Leo replaces the letter avatar, opens the wardrobe, and wears the crown while you hold it.
+    expect(profile).toContain("<LeoAvatar look={shop.look} crown={iWearCrown || shop.wearsCrown} size={64} ring={COLORS.accent} ringWidth={3} name={displayName || 'You'} />");
+    expect(profile).toContain("router.push('/wardrobe' as any)");
     expect(profile).toContain('<View style={styles.idCard}>');
     expect(profile).toContain('<TouchableOpacity style={styles.qrBtn} onPress={openCode}');
     // The old clutter: the goal sentence with "· Change" (Industry is under Your learning) and the # code chip.
@@ -23,7 +24,7 @@ describe('Profile redesign', () => {
 
   it('goes straight from you to Friends to the interview, with no stat tiles', () => {
     for (const gone of ['StatTile', 'Day streak', 'Total XP', 'XP this month', 'Among friends']) expect(profile, gone).not.toContain(gone);
-    const order = ['<SocialAvatar name={displayName', '<ProfileFriendsCard', '<InterviewTargetForm', 'title="Goal"'].map(t => profile.indexOf(t));
+    const order = ['<LeoAvatar look={shop.look}', '<ProfileFriendsCard', '<InterviewTargetForm', 'title="Goal"'].map(t => profile.indexOf(t));
     expect(order.every(i => i > 0)).toBe(true);
     expect([...order].sort((a, b) => a - b)).toEqual(order);
   });

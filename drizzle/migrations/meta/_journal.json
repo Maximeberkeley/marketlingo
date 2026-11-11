@@ -365,6 +365,13 @@
       "when": 1794500000055,
       "tag": "0055_web3_deep_cases",
       "breakpoints": true
+    },
+    {
+      "idx": 56,
+      "version": "7",
+      "when": 1794500000056,
+      "tag": "0056_xp_shop",
+      "breakpoints": true
     }
   ]
 }

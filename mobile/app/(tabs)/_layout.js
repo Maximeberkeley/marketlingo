@@ -1,4 +1,5 @@
-import React, { useRef, useEffect } from "react";
+import React, { useRef, useEffect, useState } from "react";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Tabs } from "expo-router";
 import { View, StyleSheet, Animated, Easing } from "react-native";
 import { Feather } from "@expo/vector-icons";
@@ -10,10 +11,11 @@ const TAB_ICONS = {
   home: "home",
   roadmap: "radio",
   practice: "zap",
+  shop: "shopping-bag",
   notebook: "edit-3",
   profile: "user"
 };
-function TabBarIcon({ name, focused }) {
+function TabBarIcon({ name, focused, dot = false }) {
   const scaleAnim = useRef(new Animated.Value(1)).current;
   useEffect(() => {
     if (focused) {
@@ -33,7 +35,7 @@ function TabBarIcon({ name, focused }) {
       size: 22,
       color: focused ? COLORS.textPrimary : COLORS.textMuted
     }
-  )));
+  )), dot && /* @__PURE__ */ React.createElement(View, { style: styles.newDot }));
 }
 function TabLayout() {
   return /* @__PURE__ */ React.createElement(LessonNavigationProvider, null, /* @__PURE__ */ React.createElement(TabNavigator, null));
@@ -41,6 +43,11 @@ function TabLayout() {
 function TabNavigator() {
   const insets = useSafeAreaInsets();
   const { hidden } = useLessonNavigation();
+  const [shopNew, setShopNew] = useState(false);
+  useEffect(() => {
+    AsyncStorage.getItem("ml_shop_tab_seen_v1").then((v) => setShopNew(!v)).catch(() => {
+    });
+  }, []);
   return /* @__PURE__ */ React.createElement(
     Tabs,
     {
@@ -106,6 +113,20 @@ function TabNavigator() {
     /* @__PURE__ */ React.createElement(
       Tabs.Screen,
       {
+        name: "shop",
+        options: {
+          title: "Shop",
+          tabBarIcon: ({ focused }) => /* @__PURE__ */ React.createElement(TabBarIcon, { name: "shop", focused, dot: shopNew && !focused })
+        },
+        listeners: { tabPress: () => {
+          triggerHaptic("selection");
+          setShopNew(false);
+        } }
+      }
+    ),
+    /* @__PURE__ */ React.createElement(
+      Tabs.Screen,
+      {
         name: "notebook",
         options: {
           href: null
@@ -126,6 +147,7 @@ function TabNavigator() {
   );
 }
 const styles = StyleSheet.create({
+  newDot: { position: "absolute", top: 0, right: -1, width: 8, height: 8, borderRadius: 4, backgroundColor: COLORS.error, borderWidth: 1.5, borderColor: COLORS.bg0 },
   tabIcon: {
     width: 28,
     height: 28,

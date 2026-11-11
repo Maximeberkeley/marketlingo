@@ -354,7 +354,8 @@ function CourseJourney({
   safeTop,
   onOpenLesson,
   onAskLeo,
-  belowToday
+  belowToday,
+  onXPPress
 }) {
   const { user } = useAuth();
   const [lessons, setLessons] = useState([]);
@@ -575,7 +576,7 @@ function CourseJourney({
           accessibilityLabel: `Current industry: ${marketName}. Open industry details`
         },
         /* @__PURE__ */ React.createElement(Image, { source: marketIllustration, style: styles.industryImage, resizeMode: "contain" })
-      ), /* @__PURE__ */ React.createElement(View, { style: styles.badges }, /* @__PURE__ */ React.createElement(TouchableOpacity, { disabled: !rescueAvailable, onPress: () => router.push("/streak-rescue"), accessibilityLabel: rescueAvailable ? `Streak rescue, ${streakCountdown || "available now"}` : `${streak}-day streak` }, /* @__PURE__ */ React.createElement(StreakBadge, { count: streak })), streakCountdown ? /* @__PURE__ */ React.createElement(Text, { style: styles.streakCountdown, accessibilityLabel: `${streakCountdown} left to study today` }, streakCountdown) : null, /* @__PURE__ */ React.createElement(XPBadge, { xp: totalXp, level }))),
+      ), /* @__PURE__ */ React.createElement(View, { style: styles.badges }, /* @__PURE__ */ React.createElement(TouchableOpacity, { disabled: !rescueAvailable, onPress: () => router.push("/streak-rescue"), accessibilityLabel: rescueAvailable ? `Streak rescue, ${streakCountdown || "available now"}` : `${streak}-day streak` }, /* @__PURE__ */ React.createElement(StreakBadge, { count: streak })), streakCountdown ? /* @__PURE__ */ React.createElement(Text, { style: styles.streakCountdown, accessibilityLabel: `${streakCountdown} left to study today` }, streakCountdown) : null, /* @__PURE__ */ React.createElement(TouchableOpacity, { disabled: !onXPPress, onPress: onXPPress, accessibilityRole: "button", accessibilityLabel: `${totalXp.toLocaleString()} XP to spend. Open your XP` }, /* @__PURE__ */ React.createElement(XPBadge, { xp: totalXp, level })))),
       renderItem: ({ item: section }) => {
         const activeSection = section.index === focusedSectionIndex;
         const creditedLesson = activeSection && lessonCompletedToday ? lessons.find((entry) => entry.stackId === completedTodayStackId) : void 0;

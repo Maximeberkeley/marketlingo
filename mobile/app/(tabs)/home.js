@@ -38,6 +38,8 @@ import { useDisplayName } from "../../hooks/useDisplayName";
 import { LeoPopup } from "../../components/mascot/LeoPopup";
 import { useLeoPopups } from "../../hooks/useLeoPopups";
 import { useSocialNudges } from "../../hooks/useSocialNudges";
+import { useShop } from "../../hooks/useShop";
+import { XPSheet } from "../../components/shop/XPSheet";
 import { trackEvent } from "../../lib/analytics";
 import { useAchievements } from "../../hooks/useAchievements";
 import { LeoVoiceChatOverlay } from "../../components/ai/LeoVoiceChatOverlay";
@@ -390,6 +392,28 @@ function HomeScreenContent() {
     },
     duration: 9e3
   }));
+  const shop = useShop();
+  const [xpSheetOpen, setXpSheetOpen] = useState(false);
+  const pillXP = shop.available ? shop.balance.balance : xpData?.total_xp || 0;
+  const shopCheckRewards = shop.checkRewards;
+  useEffect(() => {
+    if (!socialNudgesActive || !shop.available) return;
+    const t = setTimeout(() => {
+      void shopCheckRewards().then((granted) => {
+        const first = granted[0];
+        if (!first) return;
+        leoPopups.enqueue({
+          category: "achievement",
+          title: granted.length > 1 ? `${granted.length} new items unlocked!` : `You unlocked the ${first.name}!`,
+          body: granted.length > 1 ? `${granted.length} new items unlocked!` : `You unlocked the ${first.name}!`,
+          actionLabel: "See it",
+          onAction: () => router.push(`/shop-item?id=${first.id}&claimed=1`),
+          duration: 9e3
+        });
+      });
+    }, 4e3);
+    return () => clearTimeout(t);
+  }, [socialNudgesActive, shop.available]);
   useEffect(() => {
     if (session.showGoals || session.showReader || lessonCompletedToday) leoPopups.clear();
   }, [session.showGoals, session.showReader, lessonCompletedToday]);
@@ -434,7 +458,7 @@ function HomeScreenContent() {
   const marketGradient = MARKET_GRADIENTS[selectedMarket || "aerospace"] || MARKET_GRADIENTS.aerospace;
   const marketAccent = marketGradient[0];
   const journeyProgress = (currentDay || 1) / 180 * 100;
-  return /* @__PURE__ */ React.createElement(View, { style: styles.container }, /* @__PURE__ */ React.createElement(LeoPopup, { message: leoPopups.currentMessage, onDismiss: leoPopups.dismiss }), /* @__PURE__ */ React.createElement(
+  return /* @__PURE__ */ React.createElement(View, { style: styles.container }, /* @__PURE__ */ React.createElement(LeoPopup, { message: leoPopups.currentMessage, onDismiss: leoPopups.dismiss }), /* @__PURE__ */ React.createElement(XPSheet, { visible: xpSheetOpen, onClose: () => setXpSheetOpen(false) }), /* @__PURE__ */ React.createElement(
     WelcomeBackModal,
     {
       visible: returnVisit.isReturningVisit && !session.showReader,
@@ -543,7 +567,11 @@ function HomeScreenContent() {
       learningGoal,
       completedStackIds: progress?.completed_stacks || [],
       streak,
-      totalXp: xpData?.total_xp || 0,
+      totalXp: pillXP,
+      onXPPress: () => {
+        triggerHaptic("light");
+        setXpSheetOpen(true);
+      },
       level: xpData?.current_level || 1,
       lessonCompletedToday: completedOnClockDay,
       completedTodayStackId: completedOnClockDay ? dailyCompletion?.completed_stack_id : null,

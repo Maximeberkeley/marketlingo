@@ -31,8 +31,9 @@ import { inviteShareContent } from '../../lib/inviteLinks';
 import { redeemFriendCode } from '../../lib/invites';
 import { ProfileFriendsCard } from '../../components/profile/ProfileFriendsCard';
 import { MyCodeSheet } from '../../components/social/MyCodeSheet';
-import { SocialAvatar } from '../../components/social/SocialAvatar';
-import { CrownBadge } from '../../components/social/CrownBadge';
+import { LeoAvatar } from '../../components/shop/LeoAvatar';
+import { useShop } from '../../hooks/useShop';
+import { useEquippedLooks } from '../../hooks/useEquippedLooks';
 
 
 // Market illustrations for profile
@@ -191,13 +192,16 @@ export default function ProfileScreen() {
 
   // The Friends page in miniature: crown, friends, streaks, races and what needs you.
   const board = [
-    { name: 'You', xp: monthXP, isMe: true },
-    ...friendsData.friends.map(f => ({ name: f.username, xp: f.totalXP, isMe: false })),
+    { id: user?.id ?? 'me', name: 'You', xp: monthXP, isMe: true },
+    ...friendsData.friends.map(f => ({ id: f.id, name: f.username, xp: f.totalXP, isMe: false })),
   ].sort((a, b) => b.xp - a.xp);
+  const shop = useShop();
+  const friendLooks = useEquippedLooks(friendsData.friends.map(f => f.id));
   const myFriendRank = board.findIndex(r => r.isMe) + 1;
   const activeStreaks = social.social?.streaks.filter(s => s.status === 'active') ?? [];
   const friendsInfo = {
     friendNames: board.filter(r => !r.isMe).map(r => r.name),
+    friendLooks: board.filter(r => !r.isMe).map(r => friendLooks[r.id]),
     crown: friendsData.friends.length > 0 ? crownStatus(board) : null,
     myRank: myFriendRank,
     boardSize: board.length,
@@ -298,10 +302,11 @@ export default function ProfileScreen() {
             </TouchableOpacity>
           </View>
           <View style={styles.idCard}>
-            <View>
-              <SocialAvatar name={displayName || user?.email || 'You'} size={60} ring={COLORS.accent} ringWidth={3} />
-              {iWearCrown && <View style={styles.avatarCrown} pointerEvents="none"><CrownBadge size={28} /></View>}
-            </View>
+            <TouchableOpacity onPress={() => { triggerHaptic('light'); router.push('/wardrobe' as any); }} accessibilityRole="button" accessibilityLabel="Dress Leo">
+              {/* Your Leo replaces the letter avatar; the crown holder wears the crown on Leo. */}
+              <LeoAvatar look={shop.look} crown={iWearCrown || shop.wearsCrown} size={64} ring={COLORS.accent} ringWidth={3} name={displayName || 'You'} />
+              <View style={styles.editBadge} pointerEvents="none"><Feather name="edit-2" size={11} color="#FFFFFF" /></View>
+            </TouchableOpacity>
             <View style={{ flex: 1, minWidth: 0 }}>
               {displayName ? (
                 <Text style={styles.name} numberOfLines={1}>{displayName}</Text>
@@ -473,7 +478,7 @@ function MenuRow({ icon, title, subtitle, onPress, last, highlight }: {
 const styles = StyleSheet.create({
   headerTop: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 },
   gear: { width: 40, height: 40, borderRadius: 20, backgroundColor: COLORS.bg2, borderWidth: 1, borderColor: COLORS.border, alignItems: 'center', justifyContent: 'center' },
-  avatarCrown: { position: 'absolute', top: -15, left: 16 },
+  editBadge: { position: 'absolute', right: -2, bottom: -2, width: 22, height: 22, borderRadius: 11, backgroundColor: COLORS.accent, borderWidth: 2, borderColor: COLORS.bg2, alignItems: 'center', justifyContent: 'center' },
   idCard: { flexDirection: 'row', alignItems: 'center', gap: 14, padding: 14, borderRadius: 22, backgroundColor: COLORS.bg2, borderWidth: 2, borderBottomWidth: 4, borderColor: COLORS.border },
   name: { fontSize: 22, fontWeight: '900', color: COLORS.textPrimary },
   industry: { fontSize: 14, color: COLORS.textSecondary, marginTop: 2 },
