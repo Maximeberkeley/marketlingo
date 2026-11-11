@@ -109,6 +109,7 @@ function RootLayout() {
     /* @__PURE__ */ React.createElement(Stack.Screen, { name: "focus" }),
     /* @__PURE__ */ React.createElement(Stack.Screen, { name: "streak-rescue" }),
     /* @__PURE__ */ React.createElement(Stack.Screen, { name: "arena", options: { animation: "fade", gestureEnabled: false, fullScreenGestureEnabled: false } }),
+    /* @__PURE__ */ React.createElement(Stack.Screen, { name: "review", options: { animation: "fade", gestureEnabled: false, fullScreenGestureEnabled: false } }),
     /* @__PURE__ */ React.createElement(Stack.Screen, { name: "deep-case", options: { animation: "fade", gestureEnabled: false, fullScreenGestureEnabled: false } }),
     /* @__PURE__ */ React.createElement(Stack.Screen, { name: "trainer", options: { gestureEnabled: false, fullScreenGestureEnabled: false } }),
     /* @__PURE__ */ React.createElement(Stack.Screen, { name: "games", options: { gestureEnabled: false, fullScreenGestureEnabled: false } }),

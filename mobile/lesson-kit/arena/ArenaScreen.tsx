@@ -57,6 +57,8 @@ export interface ArenaResult {
   xp: number;
   /** Misses put right in the second chance. */
   recovered: number;
+  /** Questions missed the first time, for the review ledger. */
+  missed: Exercise[];
 }
 
 interface Props {
@@ -69,6 +71,8 @@ interface Props {
   onQuestionSeen?: (exercise: Exercise) => void;
   /** A second run the same day still plays in full, but pays reduced XP. */
   replay?: boolean;
+  /** A review round: no second chance, and a flat reward instead of the accuracy-based one. */
+  fixedXp?: number;
 }
 
 type Mark = 'right' | 'wrong' | undefined;
@@ -79,7 +83,7 @@ type Mark = 'right' | 'wrong' | undefined;
  * answers raise the score; a miss only resets the run, so every run reaches the
  * end and full credit comes from getting the questions right the first time.
  */
-export function ArenaScreen({ waves, marketId, marketName, bestScore, onExit, onFinish, onQuestionSeen, replay = false }: Props) {
+export function ArenaScreen({ waves, marketId, marketName, bestScore, onExit, onFinish, onQuestionSeen, replay = false, fixedXp }: Props) {
   useEffect(() => { trackEvent('quiz_started', { marketId: marketId ?? null }); }, []);
   const insets = useSafeAreaInsets();
   const world = getMarketWorld(marketId);
@@ -257,7 +261,7 @@ export function ArenaScreen({ waves, marketId, marketName, bestScore, onExit, on
       return;
     }
     // After the last round, the misses come back once before the summary.
-    const retry = again ? null : secondChanceWave(missed.current);
+    const retry = again || fixedXp !== undefined ? null : secondChanceWave(missed.current);
     if (retry) {
       setAgain(retry);
       setWaveIndex(i => i + 1);
@@ -289,7 +293,7 @@ export function ArenaScreen({ waves, marketId, marketName, bestScore, onExit, on
   if (ended) {
     const rank = rankForAccuracy(correct, graded);
     const recovered = recoveredIds.length;
-    const xp = arenaXp(correct, graded, replay, recovered);
+    const xp = fixedXp ?? arenaXp(correct, graded, replay, recovered);
     // The first run ever has no best to beat.
     const newBest = bestScore > 0 && score > bestScore;
     const perfect = graded > 0 && correct === graded;
@@ -394,6 +398,7 @@ export function ArenaScreen({ waves, marketId, marketName, bestScore, onExit, on
                 survived: ended.survived,
                 xp,
                 recovered,
+                missed: missed.current,
               });
             }}
           />
