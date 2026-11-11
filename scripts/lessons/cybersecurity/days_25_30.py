@@ -2,6 +2,7 @@
 SRC = {
     'nist_800207': {'url': 'https://csrc.nist.gov/Pubs/sp/800/207/Final', 'label': 'NIST SP 800-207, Zero Trust Architecture'},
     'omb_m2209': {'url': 'https://www.whitehouse.gov/wp-content/uploads/2022/01/M-22-09.pdf', 'label': 'OMB memo M-22-09, federal zero trust strategy'},
+    'sec_zs_fy25': {'url': 'https://www.sec.gov/Archives/edgar/data/1713683/000171368325000138/zs-07312025_991.htm', 'label': 'Zscaler fiscal 2025 results and fiscal 2026 outlook (SEC 8-K)'},
     'cr_zscaler': {'url': 'https://www.constellationr.com/insights/news/zscaler-delivers-strong-q4-fiscal-2026-outlook', 'label': 'Constellation Research, Zscaler fiscal 2025 results'},
     'tc_ivanti': {'url': 'https://techcrunch.com/2024/02/01/cisa-federal-agencies-disconnect-ivanti-vpn', 'label': 'TechCrunch, CISA orders agencies to disconnect Ivanti VPNs'},
     'bw_cs2025': {'url': 'https://www.businesswire.com/news/home/20250227012922/en', 'label': 'CrowdStrike 2025 Global Threat Report release'},
@@ -45,12 +46,12 @@ LESSONS = [
         'open': {
             'eyebrow': 'Day 26 · The money', 'kicker': 'Security moved into the cloud, and so did the bills.',
             'headline': 'Zscaler, a cloud zero trust vendor, earned $2.67 billion in fiscal 2025, up 23%.',
-            'fullText': "Instead of boxes in a company's server room, Zscaler routes users' traffic through its cloud, checking each connection. Customers pay by subscription. Its CEO said annual recurring revenue topped $3 billion, and it guided to about $3.7 billion in revenue for fiscal 2026.",
-            'sources': ['cr_zscaler'],
+            'fullText': "Instead of boxes in a company's server room, Zscaler routes users' traffic through its cloud, checking each connection. Customers pay by subscription. Its CEO said annual recurring revenue topped $3 billion, and it guided to about $3.27 to $3.28 billion in revenue for fiscal 2026.",
+            'sources': ['cr_zscaler', 'sec_zs_fy25'],
         },
         'cards': [
             {'kind': 'microInsight', 'id': 'subscription', 'eyebrow': 'The model', 'text': 'Customers rent security as a service instead of buying hardware.', 'highlight': 'That turns one-off sales into recurring revenue.', 'keyTerms': [{'term': 'ARR', 'definition': 'Annual recurring revenue: the yearly value of active subscriptions.'}], 'sources': ['cr_zscaler']},
-            {'kind': 'microInsight', 'id': 'growth', 'eyebrow': 'The growth', 'text': 'Revenue grew 23% in fiscal 2025.', 'highlight': 'The 2026 guidance was $3.68 to $3.7 billion.', 'sources': ['cr_zscaler']},
+            {'kind': 'microInsight', 'id': 'growth', 'eyebrow': 'The growth', 'text': 'Revenue grew 23% in fiscal 2025.', 'highlight': 'It guided to $3.27 to $3.28 billion of revenue for fiscal 2026.', 'sources': ['cr_zscaler', 'sec_zs_fy25']},
             {'kind': 'info', 'id': 'why', 'eyebrow': 'Why it sells', 'title': 'Remote work broke the perimeter', 'body': 'When staff work from anywhere, checking each connection in the cloud fits better than a wall around one office.', 'sources': ['cr_zscaler', 'nist_800207']},
         ],
         'checks': [
