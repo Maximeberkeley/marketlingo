@@ -330,6 +330,13 @@
       "when": 1794500000049,
       "tag": "0049_cleanenergy_deep_cases",
       "breakpoints": true
+    },
+    {
+      "idx": 54,
+      "version": "7",
+      "when": 1794500000054,
+      "tag": "0054_spacetech_deep_cases",
+      "breakpoints": true
     }
   ]
 }
