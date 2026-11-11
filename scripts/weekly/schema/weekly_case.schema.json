@@ -1,0 +1,125 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://marketlingo.app/schemas/weekly_case.schema.json",
+  "title": "MarketLingo Weekly Case",
+  "description": "Structure of one file in scripts/weekly/cases. The validator (lib/validate.mjs) enforces this plus the rules a schema cannot: figure traceability, derived-figure recomputation, length, dated claims and rotation.",
+  "type": "object",
+  "required": ["schema_version", "week_start", "market_id", "kind", "presented_by", "title", "topic", "hook", "tension", "as_of", "stale_after", "disclosure", "brief", "exhibits", "question", "response", "rubric", "model_answer", "common_traps", "sources", "facts", "time_sensitive"],
+  "properties": {
+    "schema_version": { "const": 1 },
+    "week_start": { "type": "string", "pattern": "^\\d{4}-\\d{2}-\\d{2}$", "description": "The Monday the case opens, 00:00 America/Los_Angeles. It closes the following Monday." },
+    "market_id": { "enum": ["aerospace", "neuroscience", "ai", "fintech", "ev", "biotech", "cleanenergy", "agtech", "climatetech", "cybersecurity", "spacetech", "robotics", "healthtech", "logistics", "web3"] },
+    "kind": { "enum": ["original", "startup"] },
+    "presented_by": { "type": "string", "description": "'MarketLingo', or the partner's name for a startup case." },
+    "partner": {
+      "type": "object",
+      "description": "Required when kind is startup.",
+      "required": ["name", "consent_to_publish", "reviewed_by_marketlingo", "provided_on", "confidential_figures_removed"],
+      "properties": {
+        "name": { "type": "string" },
+        "contact": { "type": "string" },
+        "consent_to_publish": { "const": true },
+        "reviewed_by_marketlingo": { "const": true },
+        "confidential_figures_removed": { "const": true },
+        "provided_on": { "type": "string" }
+      }
+    },
+    "title": { "type": "string", "maxLength": 80 },
+    "topic": { "type": "string" },
+    "hook": { "type": "string", "maxLength": 180 },
+    "tension": { "type": "string", "description": "One sentence: what pulls against what." },
+    "as_of": { "type": "string", "description": "Date the facts were last checked." },
+    "stale_after": { "type": "string", "description": "0 to 21 days after week_start. After this the case is flagged for re-checking." },
+    "disclosure": { "type": "string" },
+    "brief": { "type": "array", "minItems": 3, "maxItems": 7, "items": { "type": "string" } },
+    "exhibits": {
+      "type": "array", "minItems": 1, "maxItems": 3,
+      "items": {
+        "type": "object",
+        "required": ["id", "title", "columns", "rows", "source_ids"],
+        "properties": {
+          "id": { "type": "string" }, "title": { "type": "string" }, "note": { "type": "string" },
+          "columns": { "type": "array", "minItems": 2, "maxItems": 5, "items": { "type": "string" } },
+          "rows": { "type": "array", "minItems": 1, "maxItems": 9, "items": { "type": "array", "items": { "type": "string" } } },
+          "source_ids": { "type": "array", "minItems": 1, "items": { "type": "string" } }
+        }
+      }
+    },
+    "question": { "type": "object", "required": ["text"], "properties": { "text": { "type": "string" } } },
+    "response": {
+      "type": "object", "required": ["parts"],
+      "properties": {
+        "parts": {
+          "type": "array", "minItems": 3, "maxItems": 5,
+          "items": {
+            "type": "object", "required": ["id", "label", "prompt", "max_words", "minutes"],
+            "properties": {
+              "id": { "type": "string" }, "label": { "type": "string" }, "prompt": { "type": "string" },
+              "max_words": { "type": "integer", "minimum": 30, "maximum": 200 },
+              "minutes": { "type": "number", "minimum": 1, "maximum": 5 }
+            }
+          }
+        }
+      }
+    },
+    "rubric": {
+      "type": "array", "minItems": 4, "maxItems": 6,
+      "description": "Weights are whole numbers summing to 100.",
+      "items": {
+        "type": "object", "required": ["id", "name", "weight", "part_ids", "measures", "excellent", "weak"],
+        "properties": {
+          "id": { "type": "string" }, "name": { "type": "string" },
+          "weight": { "type": "integer", "minimum": 10, "maximum": 35 },
+          "part_ids": { "type": "array", "items": { "type": "string" }, "description": "Response part ids, or [\"all\"]." },
+          "measures": { "type": "string" }, "excellent": { "type": "string" }, "weak": { "type": "string" }
+        }
+      }
+    },
+    "model_answer": {
+      "type": "object", "required": ["summary", "parts", "alternatives", "key_fact_ids"],
+      "properties": {
+        "summary": { "type": "string" },
+        "parts": { "type": "array", "items": { "type": "object", "required": ["part_id", "text"], "properties": { "part_id": { "type": "string" }, "text": { "type": "string" } } } },
+        "alternatives": { "type": "array", "minItems": 2, "maxItems": 4, "description": "Other defensible answers, each with when it would be better. A case has no single right answer.", "items": { "type": "object", "required": ["option", "better_when"], "properties": { "option": { "type": "string" }, "better_when": { "type": "string" } } } },
+        "key_fact_ids": { "type": "array", "minItems": 3, "items": { "type": "string" } }
+      }
+    },
+    "common_traps": { "type": "array", "minItems": 3, "maxItems": 5, "items": { "type": "object", "required": ["trap", "why"], "properties": { "trap": { "type": "string" }, "why": { "type": "string" } } } },
+    "sources": {
+      "type": "array", "minItems": 2,
+      "items": {
+        "type": "object", "required": ["id", "title", "publisher", "url", "tier", "published", "accessed"],
+        "properties": {
+          "id": { "type": "string" }, "title": { "type": "string" }, "publisher": { "type": "string" },
+          "url": { "type": "string", "pattern": "^https://" },
+          "tier": { "enum": ["primary", "secondary", "partner"] },
+          "published": { "type": ["string", "null"] }, "published_note": { "type": "string", "description": "Required when published is null." },
+          "accessed": { "type": "string" }
+        }
+      }
+    },
+    "facts": {
+      "type": "array", "minItems": 4,
+      "description": "The ledger. Every figure in the case must match a fact's display string.",
+      "items": {
+        "type": "object", "required": ["id", "label", "kind", "display", "as_of"],
+        "properties": {
+          "id": { "type": "string" }, "label": { "type": "string" },
+          "kind": { "enum": ["reported", "derived"] },
+          "display": { "type": "string", "description": "Exactly as it appears in the case, for example \"$316.1M\"." },
+          "value": { "type": "number" }, "as_of": { "type": "string" },
+          "sources": { "type": "array", "items": { "type": "string" } },
+          "verified": {
+            "type": "array", "description": "Reported facts: two passes, pass 1 and pass 2, each with evidence.",
+            "items": { "type": "object", "required": ["pass", "source_id", "method", "checked_on", "evidence"], "properties": { "pass": { "enum": [1, 2] }, "source_id": { "type": "string" }, "method": { "enum": ["quote", "table_row", "verbatim_refetch", "second_source"] }, "checked_on": { "type": "string" }, "evidence": { "type": "string" } } }
+          },
+          "formula": { "type": "string", "description": "Derived facts: arithmetic over fact ids, recomputed by the validator." },
+          "inputs": { "type": "array", "items": { "type": "string" } },
+          "scale": { "type": "number" }, "decimals": { "type": "integer" }
+        }
+      }
+    },
+    "time_sensitive": { "type": "array", "minItems": 1, "items": { "type": "object", "required": ["claim", "as_of", "check_again_by"], "properties": { "claim": { "type": "string" }, "as_of": { "type": "string" }, "check_again_by": { "type": "string" } } } },
+    "numbers_allowlist": { "type": "array", "items": { "type": "string" }, "description": "Rare escape hatch for numerals that are labels, not statistics. Produces a warning." }
+  }
+}

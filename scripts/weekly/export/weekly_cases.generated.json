@@ -1,0 +1,1919 @@
+[
+  {
+    "weekly_case": {
+      "id": "bf24b9cb-23f9-5616-b31d-30174e118ffd",
+      "week_start": "2026-11-16",
+      "market_id": "cleanenergy",
+      "kind": "original",
+      "presented_by": "MarketLingo",
+      "title": "Norway Hits Pause on Data Centres",
+      "topic": "Allocating scarce grid capacity between data centres",
+      "status": "scheduled",
+      "opens_at": "2026-11-16T08:00:00.000Z",
+      "closes_at": "2026-11-23T08:00:00.000Z",
+      "content": {
+        "hook": "Norway's grid operator has 800 MW of data centres connected, 4,200 MW reserved and 9,100 MW queued. Then it hit pause. Who gets the next megawatt?",
+        "tension": "Norway wants data-centre investment but cannot connect everything requested without risking grid stability, and fairness to those already in the queue limits how it can choose.",
+        "disclosure": "Educational case built from public reporting as of November 10, 2026. It is not legal, investment or policy advice, and the rules described were still being drafted.",
+        "as_of": "2026-11-10",
+        "brief": [
+          "On Monday, November 9, 2026, Norway's grid operator Statnett said it was temporarily stopping new grid-capacity reservations for data centres. As of November 10, 2026, the pause runs until new technical requirements are approved by the regulator, and no later than August 1, 2027.",
+          "The reason is stability as much as supply. Large data centres can change their power use very quickly, which Statnett says creates challenges for stable operation of the grid. The requirements it is preparing cover when a data centre must stay connected during grid disturbances, how fast consumption may ramp up or down, and how to limit oscillations in the grid. The government announced a licensing scheme for existing and future data centres the same day.",
+          "The pause is not a general ban. Existing connections are unaffected, facilities that already have approved functional requirements can still connect, and regional-grid applications that are close to completion keep moving. Statnett also says it will not reassign capacity if that would disadvantage data centres ahead in the queue, and that it applies the measure in a neutral and non-discriminatory way.",
+          "The numbers explain the pressure. Data centres have 800 MW connected, 4,200 MW reserved and 9,100 MW in the connection queue, plus a further 18,000 MW of requests. Norway's peak national demand is a little over 25,000 MW. Reporting by Nordisk Post says ministers want new rules to favour facilities that provide essential services such as defence, healthcare and telecom, and are examining whether industry could help finance new generation, such as offshore wind, or whether the state should take stakes in projects judged especially valuable.",
+          "Industry groups warn that changing the rules could weaken investor confidence, and Google has said further expansion at one of its Norwegian sites could depend on the forthcoming rules."
+        ],
+        "exhibits": [
+          {
+            "id": "capacity",
+            "title": "Data-centre capacity requests in Norway",
+            "note": "The right-hand column adds each row to the rows above it. Peak demand is a little over 25,000 MW, so the shares are slightly overstated. Figures are megawatts of power capacity, not energy consumed.",
+            "columns": [
+              "Category",
+              "Capacity",
+              "Running total, and share of peak demand"
+            ],
+            "rows": [
+              [
+                "Connected",
+                "800 MW",
+                "—"
+              ],
+              [
+                "Reserved",
+                "4,200 MW",
+                "5,000 MW · 20%"
+              ],
+              [
+                "In the connection queue",
+                "9,100 MW",
+                "14,100 MW · 56%"
+              ],
+              [
+                "Further requests",
+                "18,000 MW",
+                "32,100 MW · 128%"
+              ],
+              [
+                "Norway's peak national demand",
+                "a little over 25,000 MW",
+                "—"
+              ]
+            ],
+            "source_ids": [
+              "unite",
+              "nordisk",
+              "techstartups"
+            ]
+          },
+          {
+            "id": "scope",
+            "title": "What the pause covers",
+            "note": "Capacity will not be reassigned if that would disadvantage data centres ahead in the queue.",
+            "columns": [
+              "Paused",
+              "Still moving"
+            ],
+            "rows": [
+              [
+                "New capacity reservations for data centres",
+                "Facilities with approved functional requirements"
+              ],
+              [
+                "New applications for technical approval",
+                "Existing grid connections"
+              ],
+              [
+                "Earlier applications to connect directly to the 420 kV grid",
+                "Regional-grid applications close to completion"
+              ],
+              [
+                "—",
+                "Some smaller facilities due to connect during the pause"
+              ]
+            ],
+            "source_ids": [
+              "unite",
+              "nordisk",
+              "energynews"
+            ]
+          }
+        ],
+        "question": {
+          "text": "You advise the working group that must draft the rule for who gets grid capacity once the pause ends. Statnett must stay neutral, queue positions matter, and the stability requirements are still being written. Recommend the allocation rule you would put in front of the minister, and defend it."
+        },
+        "response": {
+          "parts": [
+            {
+              "id": "constraint",
+              "label": "Name the constraint",
+              "prompt": "What is actually scarce: megawatts, grid stability, or something else? Use two figures from the exhibits.",
+              "max_words": 90,
+              "minutes": 2
+            },
+            {
+              "id": "rule",
+              "label": "Your allocation rule",
+              "prompt": "Who gets capacity first, on what condition, and what happens to capacity that is reserved but unused? Be specific enough that Statnett could apply it.",
+              "max_words": 150,
+              "minutes": 3
+            },
+            {
+              "id": "losers",
+              "label": "Who loses",
+              "prompt": "Name who is worse off under your rule, the investor-confidence risk the industry has raised, and one step that reduces it.",
+              "max_words": 100,
+              "minutes": 2
+            },
+            {
+              "id": "signals",
+              "label": "How you would know",
+              "prompt": "Give two signals you would track after launch and the result that would make you change the rule.",
+              "max_words": 70,
+              "minutes": 1.5
+            }
+          ]
+        },
+        "sources": [
+          {
+            "id": "unite",
+            "title": "Statnett Pauses Data Center Grid Reservations Pending New Technical Rules",
+            "publisher": "Unite.AI",
+            "url": "https://www.unite.ai/statnett-pauses-data-center-grid-reservations-pending-new-technical-rules/",
+            "published": null,
+            "accessed": "2026-11-10",
+            "tier": "secondary"
+          },
+          {
+            "id": "nordisk",
+            "title": "Norway pauses new grid reservations for data centres",
+            "publisher": "Nordisk Post",
+            "url": "https://www.nordiskpost.com/2026/11/10/norway-data-centres-grid-reservations-pause/",
+            "published": "2026-11-10",
+            "accessed": "2026-11-10",
+            "tier": "secondary"
+          },
+          {
+            "id": "techstartups",
+            "title": "Top Tech News Roundup for Today, November 9, 2026",
+            "publisher": "Tech Startups",
+            "url": "https://techstartups.com/2026/11/09/top-tech-news-roundup-for-today-november-9-2026-nvidias-200b-wipeout-googles-tpu-8tx-anthropic-ipo-tesla-refunds-more/",
+            "published": "2026-11-09",
+            "accessed": "2026-11-10",
+            "tier": "secondary"
+          },
+          {
+            "id": "energynews",
+            "title": "Statnett suspends new grid capacity reservations for data centers",
+            "publisher": "Energy News",
+            "url": "https://energynews.pro/en/statnett-suspends-new-grid-capacity-reservations-for-data-centers",
+            "published": "2026-11-09",
+            "accessed": "2026-11-10",
+            "tier": "secondary"
+          }
+        ]
+      }
+    },
+    "scoring": {
+      "case_id": "bf24b9cb-23f9-5616-b31d-30174e118ffd",
+      "rubric": [
+        {
+          "id": "diagnosis",
+          "name": "Diagnosis of the constraint",
+          "weight": 25,
+          "part_ids": [
+            "constraint"
+          ],
+          "measures": "Whether the answer separates the volume problem (generation and transmission) from the stability problem (fast, unpredictable load swings).",
+          "excellent": "Names both scarcities, says which one the pause targets, and uses two figures correctly to show requests cannot all be served.",
+          "weak": "Says only that there is not enough power, or restates the figures without saying what they imply."
+        },
+        {
+          "id": "rule",
+          "name": "A rule Statnett could apply",
+          "weight": 25,
+          "part_ids": [
+            "rule"
+          ],
+          "measures": "Whether the rule has an ordering principle, conditions, and a way to deal with reserved capacity that goes unused.",
+          "excellent": "States who goes first and why, attaches checkable conditions or milestones, respects queue positions or explains the exception, and says what happens to released capacity.",
+          "weak": "Offers a vague priority such as favouring important projects, with no test, decision-maker or treatment of the existing queue."
+        },
+        {
+          "id": "numbers",
+          "name": "Use of the numbers",
+          "weight": 15,
+          "part_ids": [
+            "all"
+          ],
+          "measures": "Whether figures are used correctly and where they matter, across all parts.",
+          "excellent": "Uses at least two figures correctly, separates connected from reserved from requested, and does the comparison with peak demand without error.",
+          "weak": "Treats all requests as real demand, mixes megawatts with energy, or misstates a figure."
+        },
+        {
+          "id": "tradeoffs",
+          "name": "Trade-offs and investor confidence",
+          "weight": 20,
+          "part_ids": [
+            "losers"
+          ],
+          "measures": "Whether the answer is honest about who loses and deals with the investor-confidence risk raised by industry groups.",
+          "excellent": "Names the specific losers, explains why confidence is at risk, and proposes a concrete mitigation such as grandfathering or publishing criteria early.",
+          "weak": "Claims the rule is fair to everyone, or names a risk with no response to it."
+        },
+        {
+          "id": "measure",
+          "name": "Measurability and a trigger to change course",
+          "weight": 15,
+          "part_ids": [
+            "signals"
+          ],
+          "measures": "Whether the answer chooses signals that can be observed and says what result would change the rule.",
+          "excellent": "Two observable signals tied to the rule's goals and a clear trigger for revising it.",
+          "weak": "Generic signals such as success or satisfaction, with no trigger."
+        }
+      ],
+      "model_answer": {
+        "summary": "Keep queue order, but make reservations use-it-or-lose-it, and give released capacity to essential services and to projects that bring their own generation or accept flexibility.",
+        "parts": [
+          {
+            "part_id": "constraint",
+            "text": "The total of requests cannot all be served: 32,100 MW of connected, reserved, queued and further requests is about 128% of Norway's peak national demand of a little over 25,000 MW. Two scarcities sit under that number. One is volume, meaning generation and transmission to serve the load. The other is stability, meaning how fast and how unpredictably a data centre's load can swing. The pause targets the second. The talk of financing new generation targets the first."
+          },
+          {
+            "part_id": "rule",
+            "text": "Honour reservations, but make them earn it. Only 800 MW is connected against 4,200 MW reserved, so unused reservations are the cheapest capacity to free. Keep queue order, because Statnett has said it will not disadvantage those ahead, but attach dated milestones: technical approval under the new stability requirements, a signed power contract, and construction start. A reservation that misses a milestone returns its capacity to a shared pool. Allocate the pool in rounds: first facilities providing essential services such as defence, healthcare and telecom, then projects that bring new generation or accept ramp limits and curtailment."
+          },
+          {
+            "part_id": "losers",
+            "text": "Speculative developers who reserved without a ready project lose, and so do later entrants with no essential-service claim. The confidence risk is real because the rules change after reservations were made. Reduce it by grandfathering every reservation that meets its milestones, publishing the criteria and the timetable well before the pause ends, no later than August 1, 2027, and giving near-ready projects a clear route in."
+          },
+          {
+            "part_id": "signals",
+            "text": "Track the share of reserved capacity that meets its milestones versus is released, and the time from approval to energisation. Change the rule if the shared pool stays empty because reservations are never released, or if essential-service projects crowd out everything else for a full allocation round."
+          }
+        ],
+        "alternatives": [
+          {
+            "option": "Pure queue order with technical requirements only",
+            "better_when": "Speed and legal certainty matter most and generation is not the binding limit."
+          },
+          {
+            "option": "An auction or pay-to-connect scheme that funds new generation",
+            "better_when": "New generation is the binding limit and the state wants the industry to pay for it."
+          },
+          {
+            "option": "State-led selection of a few strategic projects, possibly with state stakes",
+            "better_when": "The aim is a handful of nationally valuable projects rather than a broad market."
+          }
+        ],
+        "key_fact_ids": [
+          "conn",
+          "res",
+          "all",
+          "share_all",
+          "peak"
+        ]
+      },
+      "common_traps": [
+        {
+          "trap": "Writing as a data-centre operator asking for capacity",
+          "why": "The role is the allocator. The answer must be a rule that treats applicants even-handedly, not a pitch for one of them."
+        },
+        {
+          "trap": "Treating the 32,100 MW of requests as real demand",
+          "why": "Reservations and requests are options on capacity. Only 800 MW is connected. A good answer separates intent from load and plans for attrition."
+        },
+        {
+          "trap": "Ignoring queue positions and neutrality",
+          "why": "Statnett has said it will not reassign capacity to the disadvantage of those ahead in the queue and that it applies the pause neutrally. A rule that jumps the queue without a reason invites a challenge."
+        },
+        {
+          "trap": "Answering 'build more generation' and stopping",
+          "why": "That may be right in the long run, but the decision is who gets scarce capacity when the pause ends, no later than August 1, 2027."
+        },
+        {
+          "trap": "A priority list with no mechanism",
+          "why": "'Prioritise important projects' cannot be applied. Say who decides, on what test, and what happens to unused reservations."
+        }
+      ],
+      "facts": [
+        {
+          "id": "conn",
+          "label": "Data-centre capacity connected to the Norwegian grid",
+          "kind": "reported",
+          "display": "800 MW",
+          "value": 800,
+          "as_of": "2026-11-09",
+          "sources": [
+            "unite",
+            "nordisk",
+            "techstartups"
+          ],
+          "verified": [
+            {
+              "pass": 1,
+              "source_id": "unite",
+              "method": "quote",
+              "checked_on": "2026-11-10",
+              "evidence": "Connected to the grid: 800 MW"
+            },
+            {
+              "pass": 2,
+              "source_id": "nordisk",
+              "method": "quote",
+              "checked_on": "2026-11-10",
+              "evidence": "Connected: 800 MW"
+            }
+          ]
+        },
+        {
+          "id": "res",
+          "label": "Data-centre capacity reserved",
+          "kind": "reported",
+          "display": "4,200 MW",
+          "value": 4200,
+          "as_of": "2026-11-09",
+          "sources": [
+            "unite",
+            "nordisk",
+            "techstartups"
+          ],
+          "verified": [
+            {
+              "pass": 1,
+              "source_id": "unite",
+              "method": "quote",
+              "checked_on": "2026-11-10",
+              "evidence": "Reserved capacity: 4,200 MW"
+            },
+            {
+              "pass": 2,
+              "source_id": "nordisk",
+              "method": "quote",
+              "checked_on": "2026-11-10",
+              "evidence": "Reserved: 4,200 MW"
+            }
+          ]
+        },
+        {
+          "id": "queue",
+          "label": "Data-centre capacity in the connection queue",
+          "kind": "reported",
+          "display": "9,100 MW",
+          "value": 9100,
+          "as_of": "2026-11-09",
+          "sources": [
+            "unite",
+            "nordisk",
+            "techstartups"
+          ],
+          "verified": [
+            {
+              "pass": 1,
+              "source_id": "unite",
+              "method": "quote",
+              "checked_on": "2026-11-10",
+              "evidence": "In the capacity queue: 9,100 MW"
+            },
+            {
+              "pass": 2,
+              "source_id": "nordisk",
+              "method": "quote",
+              "checked_on": "2026-11-10",
+              "evidence": "Connection queue: 9,100 MW"
+            }
+          ]
+        },
+        {
+          "id": "enq",
+          "label": "Further capacity requested, separate from the above",
+          "kind": "reported",
+          "display": "18,000 MW",
+          "value": 18000,
+          "as_of": "2026-11-09",
+          "sources": [
+            "unite",
+            "nordisk",
+            "techstartups"
+          ],
+          "verified": [
+            {
+              "pass": 1,
+              "source_id": "unite",
+              "method": "quote",
+              "checked_on": "2026-11-10",
+              "evidence": "Additional requests submitted, separate from the above: 18,000 MW"
+            },
+            {
+              "pass": 2,
+              "source_id": "nordisk",
+              "method": "quote",
+              "checked_on": "2026-11-10",
+              "evidence": "Preliminary enquiries: a further 18,000 MW"
+            }
+          ]
+        },
+        {
+          "id": "peak",
+          "label": "Norway's peak national power demand (approximate)",
+          "kind": "reported",
+          "display": "25,000 MW",
+          "value": 25000,
+          "as_of": "2026-11-09",
+          "sources": [
+            "unite",
+            "techstartups"
+          ],
+          "verified": [
+            {
+              "pass": 1,
+              "source_id": "unite",
+              "method": "quote",
+              "checked_on": "2026-11-10",
+              "evidence": "Norway's maximum power consumption: a little over 25,000 MW (no exact figure given)"
+            },
+            {
+              "pass": 2,
+              "source_id": "techstartups",
+              "method": "quote",
+              "checked_on": "2026-11-10",
+              "evidence": "Norway's peak national demand slightly above 25,000 MW"
+            }
+          ]
+        },
+        {
+          "id": "kv",
+          "label": "Voltage of the transmission grid some paused applications target",
+          "kind": "reported",
+          "display": "420 kV",
+          "value": 420,
+          "as_of": "2026-11-09",
+          "sources": [
+            "unite",
+            "nordisk"
+          ],
+          "verified": [
+            {
+              "pass": 1,
+              "source_id": "unite",
+              "method": "quote",
+              "checked_on": "2026-11-10",
+              "evidence": "facilities connecting directly to the 420 kV network"
+            },
+            {
+              "pass": 2,
+              "source_id": "nordisk",
+              "method": "quote",
+              "checked_on": "2026-11-10",
+              "evidence": "direct connections to the 420-kV network"
+            }
+          ]
+        },
+        {
+          "id": "pause_start",
+          "label": "Date Statnett announced the pause",
+          "kind": "reported",
+          "display": "November 9, 2026",
+          "as_of": "2026-11-09",
+          "sources": [
+            "unite",
+            "nordisk"
+          ],
+          "verified": [
+            {
+              "pass": 1,
+              "source_id": "unite",
+              "method": "quote",
+              "checked_on": "2026-11-10",
+              "evidence": "Announcement date: November 9, 2026"
+            },
+            {
+              "pass": 2,
+              "source_id": "nordisk",
+              "method": "quote",
+              "checked_on": "2026-11-10",
+              "evidence": "Announcement date: Monday, 9 November 2026"
+            }
+          ]
+        },
+        {
+          "id": "pause_end",
+          "label": "Latest date the pause is expected to end",
+          "kind": "reported",
+          "display": "August 1, 2027",
+          "as_of": "2026-11-09",
+          "sources": [
+            "unite",
+            "nordisk"
+          ],
+          "verified": [
+            {
+              "pass": 1,
+              "source_id": "unite",
+              "method": "quote",
+              "checked_on": "2026-11-10",
+              "evidence": "Expected pause end: no later than August 1, 2027"
+            },
+            {
+              "pass": 2,
+              "source_id": "nordisk",
+              "method": "quote",
+              "checked_on": "2026-11-10",
+              "evidence": "Pause end: no later than 1 August 2027"
+            }
+          ]
+        },
+        {
+          "id": "reserved_connected",
+          "label": "Connected plus reserved",
+          "kind": "derived",
+          "display": "5,000 MW",
+          "value": 5000,
+          "formula": "conn + res",
+          "inputs": [
+            "conn",
+            "res"
+          ],
+          "decimals": 0,
+          "as_of": "2026-11-09"
+        },
+        {
+          "id": "committed",
+          "label": "Connected, reserved and queued",
+          "kind": "derived",
+          "display": "14,100 MW",
+          "value": 14100,
+          "formula": "conn + res + queue",
+          "inputs": [
+            "conn",
+            "res",
+            "queue"
+          ],
+          "decimals": 0,
+          "as_of": "2026-11-09"
+        },
+        {
+          "id": "all",
+          "label": "Connected, reserved, queued and further requests",
+          "kind": "derived",
+          "display": "32,100 MW",
+          "value": 32100,
+          "formula": "committed + enq",
+          "inputs": [
+            "committed",
+            "enq"
+          ],
+          "decimals": 0,
+          "as_of": "2026-11-09"
+        },
+        {
+          "id": "share_rc",
+          "label": "Connected plus reserved as a share of peak demand",
+          "kind": "derived",
+          "display": "20%",
+          "value": 20,
+          "formula": "reserved_connected / peak",
+          "scale": 100,
+          "inputs": [
+            "reserved_connected",
+            "peak"
+          ],
+          "decimals": 0,
+          "as_of": "2026-11-09"
+        },
+        {
+          "id": "share_c",
+          "label": "Connected, reserved and queued as a share of peak demand",
+          "kind": "derived",
+          "display": "56%",
+          "value": 56,
+          "formula": "committed / peak",
+          "scale": 100,
+          "inputs": [
+            "committed",
+            "peak"
+          ],
+          "decimals": 0,
+          "as_of": "2026-11-09"
+        },
+        {
+          "id": "share_all",
+          "label": "All requests as a share of peak demand",
+          "kind": "derived",
+          "display": "128%",
+          "value": 128,
+          "formula": "all / peak",
+          "scale": 100,
+          "inputs": [
+            "all",
+            "peak"
+          ],
+          "decimals": 0,
+          "as_of": "2026-11-09"
+        }
+      ],
+      "time_sensitive": [
+        {
+          "claim": "The pause lasts until regulator-approved technical requirements are in place, and no later than August 1, 2027.",
+          "as_of": "2026-11-10",
+          "check_again_by": "2026-11-23"
+        },
+        {
+          "claim": "The licensing scheme and any priority for essential services are announced intentions, not adopted rules.",
+          "as_of": "2026-11-10",
+          "check_again_by": "2026-11-23"
+        }
+      ],
+      "stale_after": "2026-11-30"
+    }
+  },
+  {
+    "weekly_case": {
+      "id": "5a9f4671-ea83-5e52-9578-df5dbebf99fb",
+      "week_start": "2026-11-23",
+      "market_id": "ai",
+      "kind": "original",
+      "presented_by": "MarketLingo",
+      "title": "Duolingo: Users Up 29%, Bookings Up 12%",
+      "topic": "Turning a fast-growing free user base into paying subscribers without hurting the free product",
+      "status": "scheduled",
+      "opens_at": "2026-11-23T08:00:00.000Z",
+      "closes_at": "2026-11-30T08:00:00.000Z",
+      "content": {
+        "hook": "Duolingo's daily users grew 29% in a year, but bookings grew 12%. Management says 2027 leans into monetization. Which lever goes first?",
+        "tension": "A much larger free base is a long-term asset only if it converts, yet pushing conversion too hard could damage the free experience that drives the growth.",
+        "disclosure": "Educational case built from public company reports as of November 10, 2026. It is not investment advice, and the ratios in Exhibit 2 are our arithmetic, not figures the company reports.",
+        "as_of": "2026-11-10",
+        "brief": [
+          "Duolingo reported third-quarter 2026 results on November 3, 2026. Daily active users reached 64.9M, up 29% from 50.5M a year earlier and faster than the 23% growth of the previous quarter. Paid subscribers reached 13.1M, up 14% from 11.5M. Total bookings, the money customers committed to spend in the quarter, were $316.1M, up 12% from $281.9M.",
+          "Users are growing faster than revenue. Subscription bookings rose 16% to $278.4M. Outside subscriptions the picture is weaker: advertising revenue was roughly flat at $20.8M, down 1%, and in-app purchase revenue fell 38% to $6.9M. Duolingo also accrued $11.4M in the quarter for a company-wide bonus tied to Q4 daily-user growth of 25% or greater.",
+          "Management says 2027 will lean more into monetization after a year focused on teaching quality and user growth, but with a firm internal rule not to make the free experience worse. It says a much larger active base is a long-term asset because some users take years to convert, and it gave no free-to-paid conversion rate. It also says paid subscriber growth is slowing and should bottom within a couple of quarters.",
+          "As of the November 3, 2026 call, the levers management has named are: longer free trials, which it says raise conversion and which it plans to expand; higher-quality advertising in place of low-quality ad networks, which it says will take time; in-app purchases such as avatar suits; Chess, which reached 10M daily users and which it calls under-monetized; a cheaper ad-supported tier, where tests have not been big wins; and the Family plan. Duolingo is also retiring its highest tier, Max, now a single-digit share of paid subscribers and bookings, because AI video calls that once cost about $0.30 each now cost under $0.01 and move into the Super tier.",
+          "Gross margin was 72.9% in the quarter. Duolingo guides to 72.0% for Q4 as video calls roll out to all paid subscribers."
+        ],
+        "exhibits": [
+          {
+            "id": "q3",
+            "title": "Exhibit 1. Third quarter, 2025 and 2026",
+            "note": "Daily and monthly users and subscribers are for the quarter or its end. Advertising and in-app purchases are revenue, not bookings.",
+            "columns": [
+              "Metric",
+              "Q3 2025",
+              "Q3 2026",
+              "Change"
+            ],
+            "rows": [
+              [
+                "Daily active users",
+                "50.5M",
+                "64.9M",
+                "29%"
+              ],
+              [
+                "Monthly active users",
+                "135.3M",
+                "153.1M",
+                "13%"
+              ],
+              [
+                "Paid subscribers",
+                "11.5M",
+                "13.1M",
+                "14%"
+              ],
+              [
+                "Total bookings",
+                "$281.9M",
+                "$316.1M",
+                "12%"
+              ],
+              [
+                "Subscription bookings",
+                "$240.3M",
+                "$278.4M",
+                "16%"
+              ],
+              [
+                "Advertising revenue",
+                "$21.0M",
+                "$20.8M",
+                "-1%"
+              ],
+              [
+                "In-app purchase revenue",
+                "$11.1M",
+                "$6.9M",
+                "-38%"
+              ]
+            ],
+            "source_ids": [
+              "letter",
+              "tenq"
+            ]
+          },
+          {
+            "id": "ratios",
+            "title": "Exhibit 2. Worked ratios (our arithmetic)",
+            "note": "Each ratio divides one reported figure by another for the same quarter. Read them as direction, not as a price or a conversion rate.",
+            "columns": [
+              "Ratio",
+              "Q3 2025",
+              "Q3 2026",
+              "Change"
+            ],
+            "rows": [
+              [
+                "Paid subscribers as a share of monthly users",
+                "8.5%",
+                "8.6%",
+                "—"
+              ],
+              [
+                "Paid subscribers as a share of daily users",
+                "22.8%",
+                "20.2%",
+                "—"
+              ],
+              [
+                "Total bookings per daily user",
+                "$5.58",
+                "$4.87",
+                "-12.7%"
+              ],
+              [
+                "Bookings outside subscriptions",
+                "$41.6M",
+                "$37.7M",
+                "-9.4%"
+              ]
+            ],
+            "source_ids": [
+              "letter"
+            ]
+          }
+        ],
+        "question": {
+          "text": "You lead monetization planning for Duolingo's 2027 plan. Management says it will lean further into monetization but will not make the free experience worse. Choose the one lever you would scale first, and defend the choice with the numbers."
+        },
+        "response": {
+          "parts": [
+            {
+              "id": "read",
+              "label": "Read the numbers",
+              "prompt": "What do the ratios say about the new daily users? Is the gap between user growth and bookings a problem, or a delay?",
+              "max_words": 90,
+              "minutes": 2
+            },
+            {
+              "id": "lever",
+              "label": "Your lever",
+              "prompt": "Pick one lever from the brief, or propose another. Say who it targets, what you expect to change, and why it goes first.",
+              "max_words": 140,
+              "minutes": 2.5
+            },
+            {
+              "id": "test",
+              "label": "Test and guardrail",
+              "prompt": "What would you measure, what protects the free experience, and what result would make you stop?",
+              "max_words": 100,
+              "minutes": 2
+            },
+            {
+              "id": "risk",
+              "label": "Biggest risk",
+              "prompt": "What is the most likely way this goes wrong, and what would you do about it?",
+              "max_words": 60,
+              "minutes": 1.5
+            }
+          ]
+        },
+        "sources": [
+          {
+            "id": "letter",
+            "title": "Duolingo Q3 2026 shareholder letter (Form 8-K exhibit)",
+            "publisher": "U.S. Securities and Exchange Commission, filed by Duolingo, Inc.",
+            "url": "https://www.sec.gov/Archives/edgar/data/1562088/000162828026069474/q3fy26duolingo9-30x26share.htm",
+            "published": "2026-11-03",
+            "accessed": "2026-11-10",
+            "tier": "primary"
+          },
+          {
+            "id": "tenq",
+            "title": "Duolingo Form 10-Q for the quarter ended September 30, 2026",
+            "publisher": "U.S. Securities and Exchange Commission, filed by Duolingo, Inc.",
+            "url": "https://www.sec.gov/Archives/edgar/data/0001562088/000162828026069692/duol-20260930.htm",
+            "published": null,
+            "accessed": "2026-11-10",
+            "tier": "primary"
+          },
+          {
+            "id": "yahoo",
+            "title": "Duolingo Inc (DUOL) Q3 2026 Earnings Call Highlights",
+            "publisher": "GuruFocus, syndicated on Yahoo Finance",
+            "url": "https://finance.yahoo.com/markets/stocks/articles/duolingo-inc-duol-q3-2026-050948751.html",
+            "published": null,
+            "accessed": "2026-11-10",
+            "tier": "secondary"
+          },
+          {
+            "id": "investing",
+            "title": "Earnings call transcript: Duolingo Q3 2026 revenue beats as users accelerate",
+            "publisher": "Investing.com",
+            "url": "https://www.investing.com/news/transcripts/earnings-call-transcript-duolingo-q3-2026-revenue-beats-as-users-accelerate-93CH-4996909",
+            "published": null,
+            "accessed": "2026-11-10",
+            "tier": "secondary"
+          },
+          {
+            "id": "aware",
+            "title": "Duolingo Q3 2026: DAUs Surge 29%, Guidance Raised, and Max Tier Sunsets",
+            "publisher": "AWARE",
+            "url": "https://awareinvest.com/terminal/intel/duolingo-q3-2026-daus-surge-29-guidance-raised-and-max-tier-sunsets-2026-11-03-1794c2336c295426f10bdaf6ea9ac27d",
+            "published": "2026-11-03",
+            "accessed": "2026-11-10",
+            "tier": "secondary"
+          }
+        ]
+      }
+    },
+    "scoring": {
+      "case_id": "5a9f4671-ea83-5e52-9578-df5dbebf99fb",
+      "rubric": [
+        {
+          "id": "reading",
+          "name": "Reading the data",
+          "weight": 25,
+          "part_ids": [
+            "read"
+          ],
+          "measures": "Whether the answer draws the right implication from user growth outpacing paid growth and bookings.",
+          "excellent": "Notes that bookings per daily user fell, compares the two denominators (daily and monthly users) and explains why they differ, and says whether the gap looks like a delay or a leak and what would tell them apart.",
+          "weak": "Restates the growth rates without saying what they imply, or declares the strategy a failure from one quarter."
+        },
+        {
+          "id": "lever",
+          "name": "Choice and sequencing of one lever",
+          "weight": 25,
+          "part_ids": [
+            "lever"
+          ],
+          "measures": "Whether one lever is chosen and ranked against the others using the economics in the case.",
+          "excellent": "Picks one lever, says who it targets and what should change, explains why it beats the others on the evidence, and says what would have to be true for another lever to win.",
+          "weak": "Lists several levers without choosing, or picks one with no link to the numbers."
+        },
+        {
+          "id": "numbers",
+          "name": "Use of the numbers",
+          "weight": 15,
+          "part_ids": [
+            "all"
+          ],
+          "measures": "Whether figures are used correctly across all parts, without inventing data.",
+          "excellent": "Uses at least two figures correctly, labels derived ratios as ratios, and does not invent a conversion rate or any figure that is not in the case.",
+          "weak": "Quotes a conversion rate the company has not disclosed, mixes up bookings and revenue, or misreads a ratio."
+        },
+        {
+          "id": "test",
+          "name": "Test design and guardrail",
+          "weight": 20,
+          "part_ids": [
+            "test"
+          ],
+          "measures": "Whether the answer defines what is measured, how it is compared, and what protects the free experience.",
+          "excellent": "A comparison group, a primary metric, a retention or growth guardrail for free users, and a clear stop condition.",
+          "weak": "Says to run an A/B test and watch the results, with no metric, guardrail or stop condition."
+        },
+        {
+          "id": "risk",
+          "name": "Risk and second-order effects",
+          "weight": 15,
+          "part_ids": [
+            "risk"
+          ],
+          "measures": "Whether the answer finds a plausible way the plan fails and responds to it.",
+          "excellent": "A specific failure such as cannibalising existing payers or margin pressure, with a concrete response.",
+          "weak": "A generic risk such as users may not like it, with no response."
+        }
+      ],
+      "model_answer": {
+        "summary": "Scale longer free trials first: they act on users already here, leave the free product alone, and management says they improve conversion. Test against a holdout with the daily-user growth goal as the guardrail.",
+        "parts": [
+          {
+            "part_id": "read",
+            "text": "Daily users grew 29% while paid subscribers grew 14% and bookings 12%, so bookings per daily user fell 12.7% to $4.87. Paid subscribers as a share of daily users fell from 22.8% to 20.2%, yet against monthly users the share is flat, 8.5% to 8.6%. The two denominators disagree because the growth is in how often existing users show up, not in how many users exist. That reads as a delay, not a failure, since management says some users take years to convert. The risk is that part of the delay is permanent, which is why the response has to be tested."
+          },
+          {
+            "part_id": "lever",
+            "text": "Scale longer free trials. They target users who are already engaged, so they do not touch the free experience. Management says trials of video calls make people more likely to subscribe and that longer trials improved conversion. The other levers are weaker first moves: advertising revenue was roughly flat at $20.8M and the better ad mix will take time, in-app purchases are small and shrinking at $6.9M, the cheaper tier has not been a big win, and Chess is a separate product to build. Trials act on the 64.9M daily users immediately."
+          },
+          {
+            "part_id": "test",
+            "text": "Run it as a holdout by country or cohort. Measure trial-to-paid conversion, retention after the first renewal, and bookings per new user against the holdout. The guardrail protects the free experience: daily-user growth must stay at or above the 25% the company has tied its bonus to, and free-user retention must not fall. Stop if bookings per new user do not beat the holdout once the cost of the trial, including AI usage, is counted."
+          },
+          {
+            "part_id": "risk",
+            "text": "Trial users cancel before paying, or existing payers wait for a trial instead of subscribing, and margin slips: Duolingo already guides to 72.0% for Q4, down from 72.9%, as video calls reach all paid subscribers. Cap the most AI-heavy features inside the trial and watch margin per trial user. If conversion rises but margin falls, shorten the trial for low-intent users."
+          }
+        ],
+        "alternatives": [
+          {
+            "option": "Monetize Chess",
+            "better_when": "The goal is a new revenue line and conversion in the core app is already healthy."
+          },
+          {
+            "option": "Raise the quality of advertising",
+            "better_when": "Willingness to pay is low in the markets that drive growth, so reach matters more than subscriptions."
+          },
+          {
+            "option": "Push the Family plan and tier pricing",
+            "better_when": "Conversion is healthy but revenue per payer is the gap."
+          }
+        ],
+        "key_fact_ids": [
+          "dau_g",
+          "paid_g",
+          "bpd26",
+          "bpd25",
+          "bpd_chg"
+        ]
+      },
+      "common_traps": [
+        {
+          "trap": "Quoting a conversion rate",
+          "why": "Duolingo has not disclosed one. Dividing paid subscribers by daily or monthly users gives a ratio, not a conversion rate, and the two denominators tell different stories: 22.8% to 20.2% against 8.5% to 8.6%."
+        },
+        {
+          "trap": "Calling slower paid growth proof the strategy failed",
+          "why": "Management says users can take years to convert, so paid growth lags user growth by design. The better question is whether the gap is a delay or a leak."
+        },
+        {
+          "trap": "Breaking the guardrail",
+          "why": "A paywall on core lessons or other cuts to the free product contradicts management's stated rule and risks the daily-user growth that the company has tied a bonus to."
+        },
+        {
+          "trap": "Listing every lever without choosing",
+          "why": "The task is to sequence. A strong answer says why one lever goes first and what would have to be true for another to win."
+        },
+        {
+          "trap": "Treating the in-app purchase decline as the whole story",
+          "why": "In-app purchase revenue of $6.9M is small next to subscription bookings of $278.4M. It is a signal, not the lever to fix first."
+        }
+      ],
+      "facts": [
+        {
+          "id": "dau26",
+          "label": "Daily active users, Q3 2026",
+          "kind": "reported",
+          "display": "64.9M",
+          "value": 64.9,
+          "as_of": "2026-09-30",
+          "sources": [
+            "letter",
+            "aware"
+          ],
+          "verified": [
+            {
+              "pass": 1,
+              "source_id": "letter",
+              "method": "table_row",
+              "checked_on": "2026-11-10",
+              "evidence": "Daily active users (DAUs) (1) | 50.5 | 64.9 | 29%"
+            },
+            {
+              "pass": 2,
+              "source_id": "aware",
+              "method": "second_source",
+              "checked_on": "2026-11-10",
+              "evidence": "Daily active users (DAUs): 64.9 million, up 29% year over year"
+            }
+          ]
+        },
+        {
+          "id": "dau25",
+          "label": "Daily active users, Q3 2025",
+          "kind": "reported",
+          "display": "50.5M",
+          "value": 50.5,
+          "as_of": "2025-09-30",
+          "sources": [
+            "letter"
+          ],
+          "verified": [
+            {
+              "pass": 1,
+              "source_id": "letter",
+              "method": "table_row",
+              "checked_on": "2026-11-10",
+              "evidence": "Daily active users (DAUs) (1) | 50.5 | 64.9 | 29%"
+            },
+            {
+              "pass": 2,
+              "source_id": "letter",
+              "method": "verbatim_refetch",
+              "checked_on": "2026-11-10",
+              "evidence": "Key metrics table: Daily active users | Q3 2025 50.5M | Q3 2026 64.9M | 29%"
+            }
+          ]
+        },
+        {
+          "id": "dau_g",
+          "label": "Daily active user growth, Q3 2026 year over year",
+          "kind": "reported",
+          "display": "29%",
+          "value": 29,
+          "as_of": "2026-09-30",
+          "sources": [
+            "letter",
+            "aware"
+          ],
+          "verified": [
+            {
+              "pass": 1,
+              "source_id": "letter",
+              "method": "table_row",
+              "checked_on": "2026-11-10",
+              "evidence": "Daily active users (DAUs) (1) | 50.5 | 64.9 | 29%"
+            },
+            {
+              "pass": 2,
+              "source_id": "aware",
+              "method": "second_source",
+              "checked_on": "2026-11-10",
+              "evidence": "Daily active users (DAUs): 64.9 million, up 29% year over year"
+            }
+          ]
+        },
+        {
+          "id": "dau_g_q2",
+          "label": "Daily active user growth, Q2 2026 year over year",
+          "kind": "reported",
+          "display": "23%",
+          "value": 23,
+          "as_of": "2026-06-30",
+          "sources": [
+            "yahoo",
+            "investing"
+          ],
+          "verified": [
+            {
+              "pass": 1,
+              "source_id": "yahoo",
+              "method": "quote",
+              "checked_on": "2026-11-10",
+              "evidence": "DAU grew 29% year over year, up from 23% in Q2"
+            },
+            {
+              "pass": 2,
+              "source_id": "investing",
+              "method": "quote",
+              "checked_on": "2026-11-10",
+              "evidence": "DAU growth: 29% YoY (vs. 23% in Q2)"
+            }
+          ]
+        },
+        {
+          "id": "mau26",
+          "label": "Monthly active users, Q3 2026",
+          "kind": "reported",
+          "display": "153.1M",
+          "value": 153.1,
+          "as_of": "2026-09-30",
+          "sources": [
+            "letter"
+          ],
+          "verified": [
+            {
+              "pass": 1,
+              "source_id": "letter",
+              "method": "quote",
+              "checked_on": "2026-11-10",
+              "evidence": "MAUs were 135.3 million and 153.1 million for the three months ended September 30, 2025 and 2026"
+            },
+            {
+              "pass": 2,
+              "source_id": "letter",
+              "method": "verbatim_refetch",
+              "checked_on": "2026-11-10",
+              "evidence": "Key metrics table: Monthly active users | Q3 2025 135.3M | Q3 2026 153.1M | 13%"
+            }
+          ]
+        },
+        {
+          "id": "mau25",
+          "label": "Monthly active users, Q3 2025",
+          "kind": "reported",
+          "display": "135.3M",
+          "value": 135.3,
+          "as_of": "2025-09-30",
+          "sources": [
+            "letter"
+          ],
+          "verified": [
+            {
+              "pass": 1,
+              "source_id": "letter",
+              "method": "quote",
+              "checked_on": "2026-11-10",
+              "evidence": "MAUs were 135.3 million and 153.1 million for the three months ended September 30, 2025 and 2026"
+            },
+            {
+              "pass": 2,
+              "source_id": "letter",
+              "method": "verbatim_refetch",
+              "checked_on": "2026-11-10",
+              "evidence": "Key metrics table: Monthly active users | Q3 2025 135.3M | Q3 2026 153.1M | 13%"
+            }
+          ]
+        },
+        {
+          "id": "mau_g",
+          "label": "Monthly active user growth",
+          "kind": "derived",
+          "display": "13%",
+          "value": 13,
+          "formula": "mau26 / mau25 - 1",
+          "scale": 100,
+          "inputs": [
+            "mau26",
+            "mau25"
+          ],
+          "decimals": 0,
+          "as_of": "2026-09-30"
+        },
+        {
+          "id": "paid26",
+          "label": "Paid subscribers, end of Q3 2026",
+          "kind": "reported",
+          "display": "13.1M",
+          "value": 13.1,
+          "as_of": "2026-09-30",
+          "sources": [
+            "letter",
+            "aware"
+          ],
+          "verified": [
+            {
+              "pass": 1,
+              "source_id": "letter",
+              "method": "table_row",
+              "checked_on": "2026-11-10",
+              "evidence": "Paid subscribers (period end) | 11.5 | 13.1 | 14%"
+            },
+            {
+              "pass": 2,
+              "source_id": "aware",
+              "method": "second_source",
+              "checked_on": "2026-11-10",
+              "evidence": "Paid subscribers: 13.1 million, up 14%"
+            }
+          ]
+        },
+        {
+          "id": "paid25",
+          "label": "Paid subscribers, end of Q3 2025",
+          "kind": "reported",
+          "display": "11.5M",
+          "value": 11.5,
+          "as_of": "2025-09-30",
+          "sources": [
+            "letter"
+          ],
+          "verified": [
+            {
+              "pass": 1,
+              "source_id": "letter",
+              "method": "table_row",
+              "checked_on": "2026-11-10",
+              "evidence": "Paid subscribers (period end) | 11.5 | 13.1 | 14%"
+            },
+            {
+              "pass": 2,
+              "source_id": "letter",
+              "method": "verbatim_refetch",
+              "checked_on": "2026-11-10",
+              "evidence": "Key metrics table: Paid subscribers (period end) | Q3 2025 11.5M | Q3 2026 13.1M | 14%"
+            }
+          ]
+        },
+        {
+          "id": "paid_g",
+          "label": "Paid subscriber growth",
+          "kind": "reported",
+          "display": "14%",
+          "value": 14,
+          "as_of": "2026-09-30",
+          "sources": [
+            "letter",
+            "aware"
+          ],
+          "verified": [
+            {
+              "pass": 1,
+              "source_id": "letter",
+              "method": "table_row",
+              "checked_on": "2026-11-10",
+              "evidence": "Paid subscribers (period end) | 11.5 | 13.1 | 14%"
+            },
+            {
+              "pass": 2,
+              "source_id": "aware",
+              "method": "second_source",
+              "checked_on": "2026-11-10",
+              "evidence": "Paid subscribers: 13.1 million, up 14%"
+            }
+          ]
+        },
+        {
+          "id": "book26",
+          "label": "Total bookings, Q3 2026",
+          "kind": "reported",
+          "display": "$316.1M",
+          "value": 316.1,
+          "as_of": "2026-09-30",
+          "sources": [
+            "letter",
+            "aware"
+          ],
+          "verified": [
+            {
+              "pass": 1,
+              "source_id": "letter",
+              "method": "table_row",
+              "checked_on": "2026-11-10",
+              "evidence": "Total bookings | $281.9 | $316.1 | 12%"
+            },
+            {
+              "pass": 2,
+              "source_id": "aware",
+              "method": "second_source",
+              "checked_on": "2026-11-10",
+              "evidence": "Total bookings: $316.1 million, up 12%"
+            }
+          ]
+        },
+        {
+          "id": "book25",
+          "label": "Total bookings, Q3 2025",
+          "kind": "reported",
+          "display": "$281.9M",
+          "value": 281.9,
+          "as_of": "2025-09-30",
+          "sources": [
+            "letter"
+          ],
+          "verified": [
+            {
+              "pass": 1,
+              "source_id": "letter",
+              "method": "table_row",
+              "checked_on": "2026-11-10",
+              "evidence": "Total bookings | $281.9 | $316.1 | 12%"
+            },
+            {
+              "pass": 2,
+              "source_id": "letter",
+              "method": "verbatim_refetch",
+              "checked_on": "2026-11-10",
+              "evidence": "Key metrics table: Total bookings | Q3 2025 $281.9M | Q3 2026 $316.1M | 12%"
+            }
+          ]
+        },
+        {
+          "id": "book_g",
+          "label": "Total bookings growth",
+          "kind": "reported",
+          "display": "12%",
+          "value": 12,
+          "as_of": "2026-09-30",
+          "sources": [
+            "letter",
+            "aware"
+          ],
+          "verified": [
+            {
+              "pass": 1,
+              "source_id": "letter",
+              "method": "table_row",
+              "checked_on": "2026-11-10",
+              "evidence": "Total bookings | $281.9 | $316.1 | 12%"
+            },
+            {
+              "pass": 2,
+              "source_id": "aware",
+              "method": "second_source",
+              "checked_on": "2026-11-10",
+              "evidence": "Total bookings: $316.1 million, up 12%"
+            }
+          ]
+        },
+        {
+          "id": "subb26",
+          "label": "Subscription bookings, Q3 2026",
+          "kind": "reported",
+          "display": "$278.4M",
+          "value": 278.4,
+          "as_of": "2026-09-30",
+          "sources": [
+            "letter",
+            "aware"
+          ],
+          "verified": [
+            {
+              "pass": 1,
+              "source_id": "letter",
+              "method": "table_row",
+              "checked_on": "2026-11-10",
+              "evidence": "Subscription bookings | $240.3 | $278.4 | 16%"
+            },
+            {
+              "pass": 2,
+              "source_id": "aware",
+              "method": "second_source",
+              "checked_on": "2026-11-10",
+              "evidence": "Subscription bookings: $278.4 million, up 16%"
+            }
+          ]
+        },
+        {
+          "id": "subb25",
+          "label": "Subscription bookings, Q3 2025",
+          "kind": "reported",
+          "display": "$240.3M",
+          "value": 240.3,
+          "as_of": "2025-09-30",
+          "sources": [
+            "letter"
+          ],
+          "verified": [
+            {
+              "pass": 1,
+              "source_id": "letter",
+              "method": "table_row",
+              "checked_on": "2026-11-10",
+              "evidence": "Subscription bookings | $240.3 | $278.4 | 16%"
+            },
+            {
+              "pass": 2,
+              "source_id": "letter",
+              "method": "verbatim_refetch",
+              "checked_on": "2026-11-10",
+              "evidence": "Key metrics table: Subscription bookings | Q3 2025 $240.3M | Q3 2026 $278.4M | 16%"
+            }
+          ]
+        },
+        {
+          "id": "subb_g",
+          "label": "Subscription bookings growth",
+          "kind": "reported",
+          "display": "16%",
+          "value": 16,
+          "as_of": "2026-09-30",
+          "sources": [
+            "letter",
+            "aware"
+          ],
+          "verified": [
+            {
+              "pass": 1,
+              "source_id": "letter",
+              "method": "table_row",
+              "checked_on": "2026-11-10",
+              "evidence": "Subscription bookings | $240.3 | $278.4 | 16%"
+            },
+            {
+              "pass": 2,
+              "source_id": "aware",
+              "method": "second_source",
+              "checked_on": "2026-11-10",
+              "evidence": "Subscription bookings: $278.4 million, up 16%"
+            }
+          ]
+        },
+        {
+          "id": "ad26",
+          "label": "Advertising revenue, Q3 2026",
+          "kind": "reported",
+          "display": "$20.8M",
+          "value": 20.8,
+          "as_of": "2026-09-30",
+          "sources": [
+            "letter",
+            "tenq"
+          ],
+          "verified": [
+            {
+              "pass": 1,
+              "source_id": "tenq",
+              "method": "table_row",
+              "checked_on": "2026-11-10",
+              "evidence": "Advertising revenue, 2026-07-01 to 2026-09-30: $20,820 thousand"
+            },
+            {
+              "pass": 2,
+              "source_id": "letter",
+              "method": "table_row",
+              "checked_on": "2026-11-10",
+              "evidence": "Advertising | 21,019 | 20,820 | (199) | (1)%"
+            }
+          ]
+        },
+        {
+          "id": "ad25",
+          "label": "Advertising revenue, Q3 2025",
+          "kind": "reported",
+          "display": "$21.0M",
+          "value": 21,
+          "as_of": "2025-09-30",
+          "sources": [
+            "letter",
+            "tenq"
+          ],
+          "verified": [
+            {
+              "pass": 1,
+              "source_id": "tenq",
+              "method": "table_row",
+              "checked_on": "2026-11-10",
+              "evidence": "Advertising revenue, 2025-07-01 to 2025-09-30: $21,019 thousand"
+            },
+            {
+              "pass": 2,
+              "source_id": "letter",
+              "method": "table_row",
+              "checked_on": "2026-11-10",
+              "evidence": "Advertising | 21,019 | 20,820 | (199) | (1)%"
+            }
+          ]
+        },
+        {
+          "id": "ad_g",
+          "label": "Advertising revenue change",
+          "kind": "reported",
+          "display": "-1%",
+          "value": -1,
+          "as_of": "2026-09-30",
+          "sources": [
+            "letter",
+            "tenq"
+          ],
+          "verified": [
+            {
+              "pass": 1,
+              "source_id": "letter",
+              "method": "table_row",
+              "checked_on": "2026-11-10",
+              "evidence": "Advertising | 21,019 | 20,820 | (199) | (1)%"
+            },
+            {
+              "pass": 2,
+              "source_id": "tenq",
+              "method": "second_source",
+              "checked_on": "2026-11-10",
+              "evidence": "$21,019 thousand to $20,820 thousand is a decline of about 0.9%, which rounds to 1%"
+            }
+          ]
+        },
+        {
+          "id": "iap26",
+          "label": "In-app purchase revenue, Q3 2026",
+          "kind": "reported",
+          "display": "$6.9M",
+          "value": 6.9,
+          "as_of": "2026-09-30",
+          "sources": [
+            "letter",
+            "tenq"
+          ],
+          "verified": [
+            {
+              "pass": 1,
+              "source_id": "tenq",
+              "method": "table_row",
+              "checked_on": "2026-11-10",
+              "evidence": "IAPs revenue, 2026-07-01 to 2026-09-30: $6,880 thousand"
+            },
+            {
+              "pass": 2,
+              "source_id": "letter",
+              "method": "table_row",
+              "checked_on": "2026-11-10",
+              "evidence": "In-App Purchases | 11,096 | 6,880 | (4,216) | (38)%"
+            }
+          ]
+        },
+        {
+          "id": "iap25",
+          "label": "In-app purchase revenue, Q3 2025",
+          "kind": "reported",
+          "display": "$11.1M",
+          "value": 11.1,
+          "as_of": "2025-09-30",
+          "sources": [
+            "letter",
+            "tenq"
+          ],
+          "verified": [
+            {
+              "pass": 1,
+              "source_id": "tenq",
+              "method": "table_row",
+              "checked_on": "2026-11-10",
+              "evidence": "IAPs revenue, 2025-07-01 to 2025-09-30: $11,096 thousand"
+            },
+            {
+              "pass": 2,
+              "source_id": "letter",
+              "method": "table_row",
+              "checked_on": "2026-11-10",
+              "evidence": "In-App Purchases | 11,096 | 6,880 | (4,216) | (38)%"
+            }
+          ]
+        },
+        {
+          "id": "iap_g",
+          "label": "In-app purchase revenue change",
+          "kind": "reported",
+          "display": "-38%",
+          "value": -38,
+          "as_of": "2026-09-30",
+          "sources": [
+            "letter",
+            "tenq"
+          ],
+          "verified": [
+            {
+              "pass": 1,
+              "source_id": "letter",
+              "method": "table_row",
+              "checked_on": "2026-11-10",
+              "evidence": "In-App Purchases | 11,096 | 6,880 | (4,216) | (38)%"
+            },
+            {
+              "pass": 2,
+              "source_id": "tenq",
+              "method": "second_source",
+              "checked_on": "2026-11-10",
+              "evidence": "$11,096 thousand to $6,880 thousand is a decline of about 38.0%"
+            }
+          ]
+        },
+        {
+          "id": "bonus",
+          "label": "Accrual for the company-wide bonus tied to Q4 daily-user growth",
+          "kind": "reported",
+          "display": "$11.4M",
+          "value": 11.4,
+          "as_of": "2026-09-30",
+          "sources": [
+            "letter",
+            "aware"
+          ],
+          "verified": [
+            {
+              "pass": 1,
+              "source_id": "letter",
+              "method": "quote",
+              "checked_on": "2026-11-10",
+              "evidence": "included an $11.4 million accrual for a company-wide performance bonus tied to achieving our Q4 DAU growth goal of 25% or greater"
+            },
+            {
+              "pass": 2,
+              "source_id": "aware",
+              "method": "second_source",
+              "checked_on": "2026-11-10",
+              "evidence": "includes an $11.4 million accrual for a company-wide performance bonus tied to a Q4 2026 DAU growth target of at least 25%"
+            }
+          ]
+        },
+        {
+          "id": "q4_goal",
+          "label": "Q4 daily-user growth goal the bonus is tied to",
+          "kind": "reported",
+          "display": "25%",
+          "value": 25,
+          "as_of": "2026-09-30",
+          "sources": [
+            "letter",
+            "aware"
+          ],
+          "verified": [
+            {
+              "pass": 1,
+              "source_id": "letter",
+              "method": "quote",
+              "checked_on": "2026-11-10",
+              "evidence": "tied to achieving our Q4 DAU growth goal of 25% or greater"
+            },
+            {
+              "pass": 2,
+              "source_id": "aware",
+              "method": "second_source",
+              "checked_on": "2026-11-10",
+              "evidence": "tied to a Q4 2026 DAU growth target of at least 25%"
+            }
+          ]
+        },
+        {
+          "id": "gm26",
+          "label": "Gross margin, Q3 2026",
+          "kind": "reported",
+          "display": "72.9%",
+          "value": 72.9,
+          "as_of": "2026-09-30",
+          "sources": [
+            "letter",
+            "tenq"
+          ],
+          "verified": [
+            {
+              "pass": 1,
+              "source_id": "letter",
+              "method": "table_row",
+              "checked_on": "2026-11-10",
+              "evidence": "Gross margin | 72.5% | 72.9% | +40 bps"
+            },
+            {
+              "pass": 2,
+              "source_id": "tenq",
+              "method": "second_source",
+              "checked_on": "2026-11-10",
+              "evidence": "Gross profit $225,132 thousand divided by revenue $309.0M is about 72.9%"
+            }
+          ]
+        },
+        {
+          "id": "gm_q4g",
+          "label": "Gross margin guidance, Q4 2026",
+          "kind": "reported",
+          "display": "72.0%",
+          "value": 72,
+          "as_of": "2026-11-03",
+          "sources": [
+            "letter",
+            "yahoo"
+          ],
+          "verified": [
+            {
+              "pass": 1,
+              "source_id": "letter",
+              "method": "table_row",
+              "checked_on": "2026-11-10",
+              "evidence": "Guidance table, Q4 2026: Gross margin 72.0%"
+            },
+            {
+              "pass": 2,
+              "source_id": "yahoo",
+              "method": "second_source",
+              "checked_on": "2026-11-10",
+              "evidence": "Gross margin is expected to fall slightly in Q4, about a point, as Video Call rolls out to all paid subscribers"
+            }
+          ]
+        },
+        {
+          "id": "ai_old",
+          "label": "AI cost of a Video Call when first launched",
+          "kind": "reported",
+          "display": "$0.30",
+          "value": 0.3,
+          "as_of": "2026-11-03",
+          "sources": [
+            "yahoo",
+            "investing"
+          ],
+          "verified": [
+            {
+              "pass": 1,
+              "source_id": "yahoo",
+              "method": "quote",
+              "checked_on": "2026-11-10",
+              "evidence": "Video Call AI cost was reduced from $0.30 to under $0.01 per call"
+            },
+            {
+              "pass": 2,
+              "source_id": "investing",
+              "method": "quote",
+              "checked_on": "2026-11-10",
+              "evidence": "Video Call initially cost about $0.30 per call in AI inference"
+            }
+          ]
+        },
+        {
+          "id": "ai_new",
+          "label": "AI cost of a Video Call after moving to open-weight models (upper bound)",
+          "kind": "reported",
+          "display": "$0.01",
+          "value": 0.01,
+          "as_of": "2026-11-03",
+          "sources": [
+            "yahoo",
+            "investing"
+          ],
+          "verified": [
+            {
+              "pass": 1,
+              "source_id": "yahoo",
+              "method": "quote",
+              "checked_on": "2026-11-10",
+              "evidence": "Video Call AI cost was reduced from $0.30 to under $0.01 per call, mainly by moving to open-weight models"
+            },
+            {
+              "pass": 2,
+              "source_id": "investing",
+              "method": "quote",
+              "checked_on": "2026-11-10",
+              "evidence": "now well under $0.01 per call, mainly due to open-weight models"
+            }
+          ]
+        },
+        {
+          "id": "chess",
+          "label": "Chess daily active users",
+          "kind": "reported",
+          "display": "10M",
+          "value": 10,
+          "as_of": "2026-11-03",
+          "sources": [
+            "yahoo",
+            "investing"
+          ],
+          "verified": [
+            {
+              "pass": 1,
+              "source_id": "yahoo",
+              "method": "quote",
+              "checked_on": "2026-11-10",
+              "evidence": "Chess reached 10 million DAUs, which management called completely under monetized"
+            },
+            {
+              "pass": 2,
+              "source_id": "investing",
+              "method": "quote",
+              "checked_on": "2026-11-10",
+              "evidence": "Chess reached 10 million DAU"
+            }
+          ]
+        },
+        {
+          "id": "paid_mau26",
+          "label": "Paid subscribers as a share of monthly users, Q3 2026",
+          "kind": "derived",
+          "display": "8.6%",
+          "value": 8.6,
+          "formula": "paid26 / mau26",
+          "scale": 100,
+          "inputs": [
+            "paid26",
+            "mau26"
+          ],
+          "decimals": 1,
+          "as_of": "2026-09-30"
+        },
+        {
+          "id": "paid_mau25",
+          "label": "Paid subscribers as a share of monthly users, Q3 2025",
+          "kind": "derived",
+          "display": "8.5%",
+          "value": 8.5,
+          "formula": "paid25 / mau25",
+          "scale": 100,
+          "inputs": [
+            "paid25",
+            "mau25"
+          ],
+          "decimals": 1,
+          "as_of": "2025-09-30"
+        },
+        {
+          "id": "paid_dau26",
+          "label": "Paid subscribers as a share of daily users, Q3 2026",
+          "kind": "derived",
+          "display": "20.2%",
+          "value": 20.2,
+          "formula": "paid26 / dau26",
+          "scale": 100,
+          "inputs": [
+            "paid26",
+            "dau26"
+          ],
+          "decimals": 1,
+          "as_of": "2026-09-30"
+        },
+        {
+          "id": "paid_dau25",
+          "label": "Paid subscribers as a share of daily users, Q3 2025",
+          "kind": "derived",
+          "display": "22.8%",
+          "value": 22.8,
+          "formula": "paid25 / dau25",
+          "scale": 100,
+          "inputs": [
+            "paid25",
+            "dau25"
+          ],
+          "decimals": 1,
+          "as_of": "2025-09-30"
+        },
+        {
+          "id": "bpd26",
+          "label": "Total bookings per daily user, Q3 2026",
+          "kind": "derived",
+          "display": "$4.87",
+          "value": 4.87,
+          "formula": "book26 / dau26",
+          "inputs": [
+            "book26",
+            "dau26"
+          ],
+          "decimals": 2,
+          "as_of": "2026-09-30"
+        },
+        {
+          "id": "bpd25",
+          "label": "Total bookings per daily user, Q3 2025",
+          "kind": "derived",
+          "display": "$5.58",
+          "value": 5.58,
+          "formula": "book25 / dau25",
+          "inputs": [
+            "book25",
+            "dau25"
+          ],
+          "decimals": 2,
+          "as_of": "2025-09-30"
+        },
+        {
+          "id": "bpd_chg",
+          "label": "Change in bookings per daily user",
+          "kind": "derived",
+          "display": "-12.7%",
+          "value": -12.7,
+          "formula": "bpd26 / bpd25 - 1",
+          "scale": 100,
+          "inputs": [
+            "bpd26",
+            "bpd25"
+          ],
+          "decimals": 1,
+          "as_of": "2026-09-30"
+        },
+        {
+          "id": "nonsub26",
+          "label": "Bookings outside subscriptions, Q3 2026",
+          "kind": "derived",
+          "display": "$37.7M",
+          "value": 37.7,
+          "formula": "book26 - subb26",
+          "inputs": [
+            "book26",
+            "subb26"
+          ],
+          "decimals": 1,
+          "as_of": "2026-09-30"
+        },
+        {
+          "id": "nonsub25",
+          "label": "Bookings outside subscriptions, Q3 2025",
+          "kind": "derived",
+          "display": "$41.6M",
+          "value": 41.6,
+          "formula": "book25 - subb25",
+          "inputs": [
+            "book25",
+            "subb25"
+          ],
+          "decimals": 1,
+          "as_of": "2025-09-30"
+        },
+        {
+          "id": "nonsub_chg",
+          "label": "Change in bookings outside subscriptions",
+          "kind": "derived",
+          "display": "-9.4%",
+          "value": -9.4,
+          "formula": "nonsub26 / nonsub25 - 1",
+          "scale": 100,
+          "inputs": [
+            "nonsub26",
+            "nonsub25"
+          ],
+          "decimals": 1,
+          "as_of": "2026-09-30"
+        }
+      ],
+      "time_sensitive": [
+        {
+          "claim": "Max is no longer sold to new subscribers and individual Max subscribers move to a Super family plan, per the November 3, 2026 letter; legacy Max family plan decisions were deferred to 2027.",
+          "as_of": "2026-11-10",
+          "check_again_by": "2026-11-23"
+        },
+        {
+          "claim": "Q4 2026 guidance, including gross margin of 72.0%, and the lever list come from the November 3, 2026 call; management said its full 2027 outlook would come later.",
+          "as_of": "2026-11-10",
+          "check_again_by": "2026-11-23"
+        }
+      ],
+      "stale_after": "2026-12-07"
+    }
+  }
+]

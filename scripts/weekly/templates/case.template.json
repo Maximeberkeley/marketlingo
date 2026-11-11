@@ -1,0 +1,152 @@
+{
+  "schema_version": 1,
+  "week_start": "YYYY-MM-DD (a Monday)",
+  "market_id": "one of the 15 industry ids",
+  "kind": "original",
+  "presented_by": "MarketLingo",
+  "partner": "ONLY for kind \"startup\": { name, contact, consent_to_publish:true, reviewed_by_marketlingo:true, confidential_figures_removed:true, provided_on }",
+  "title": "<= 80 characters",
+  "topic": "one line",
+  "hook": "<= 180 characters, includes the sharpest figure",
+  "tension": "One sentence: what pulls against what",
+  "as_of": "YYYY-MM-DD",
+  "stale_after": "0-21 days after week_start",
+  "disclosure": "Educational case built from public reporting as of <date>. Not advice.",
+  "brief": [
+    "3-7 paragraphs. Every figure must match a fact display string. Time-bound words (now, currently, pending, recently) need an explicit date in the same paragraph."
+  ],
+  "exhibits": [
+    {
+      "id": "lowercase_id",
+      "title": "...",
+      "note": "optional",
+      "columns": [
+        "A",
+        "B"
+      ],
+      "rows": [
+        [
+          "cell",
+          "cell"
+        ]
+      ],
+      "source_ids": [
+        "source_id"
+      ]
+    }
+  ],
+  "question": {
+    "text": "Your role, the decision, the constraint. At least 20 words."
+  },
+  "response": {
+    "parts": [
+      {
+        "id": "part_id",
+        "label": "...",
+        "prompt": "...",
+        "max_words": 100,
+        "minutes": 2
+      }
+    ]
+  },
+  "rubric": [
+    {
+      "id": "criterion_id",
+      "name": "...",
+      "weight": 25,
+      "part_ids": [
+        "part_id"
+      ],
+      "measures": "...",
+      "excellent": "...",
+      "weak": "..."
+    }
+  ],
+  "model_answer": {
+    "summary": "...",
+    "parts": [
+      {
+        "part_id": "part_id",
+        "text": "..."
+      }
+    ],
+    "alternatives": [
+      {
+        "option": "...",
+        "better_when": "..."
+      }
+    ],
+    "key_fact_ids": [
+      "fact_id"
+    ]
+  },
+  "common_traps": [
+    {
+      "trap": "...",
+      "why": "..."
+    }
+  ],
+  "sources": [
+    {
+      "id": "source_id",
+      "title": "...",
+      "publisher": "...",
+      "url": "https://...",
+      "tier": "primary | secondary | partner",
+      "published": "YYYY-MM-DD or null",
+      "published_note": "required if null",
+      "accessed": "YYYY-MM-DD"
+    }
+  ],
+  "facts": [
+    {
+      "id": "fact_id",
+      "label": "...",
+      "kind": "reported",
+      "display": "$316.1M",
+      "value": 316.1,
+      "as_of": "YYYY-MM-DD",
+      "sources": [
+        "source_id"
+      ],
+      "verified": [
+        {
+          "pass": 1,
+          "source_id": "source_id",
+          "method": "table_row",
+          "checked_on": "YYYY-MM-DD",
+          "evidence": "the exact row or quote"
+        },
+        {
+          "pass": 2,
+          "source_id": "source_id",
+          "method": "second_source | verbatim_refetch | quote | table_row",
+          "checked_on": "YYYY-MM-DD",
+          "evidence": "..."
+        }
+      ]
+    },
+    {
+      "id": "derived_id",
+      "label": "...",
+      "kind": "derived",
+      "display": "8.6%",
+      "value": 8.6,
+      "formula": "fact_a / fact_b",
+      "scale": 100,
+      "inputs": [
+        "fact_a",
+        "fact_b"
+      ],
+      "decimals": 1,
+      "as_of": "YYYY-MM-DD"
+    }
+  ],
+  "time_sensitive": [
+    {
+      "claim": "...",
+      "as_of": "YYYY-MM-DD",
+      "check_again_by": "YYYY-MM-DD"
+    }
+  ]
+}
