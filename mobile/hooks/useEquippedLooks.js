@@ -26,6 +26,32 @@ function useEquippedLooks(userIds) {
   }, [key]);
   return looks;
 }
+const publicCache = /* @__PURE__ */ new Map();
+function usePublicLooks(marketId, userIds) {
+  const ids = Array.from(new Set(userIds.filter((id) => !!id))).sort().slice(0, 100);
+  const key = `${marketId}|${ids.join(",")}`;
+  const [looks, setLooks] = useState(() => Object.fromEntries(ids.filter((id) => publicCache.has(id)).map((id) => [id, publicCache.get(id)])));
+  useEffect(() => {
+    if (!marketId || !ids.length) return;
+    let live = true;
+    supabase.rpc("get_public_looks", { p_market_id: marketId, p_user_ids: ids }).then(({ data, error }) => {
+      if (!live || error || !Array.isArray(data)) return;
+      const next = {};
+      for (const r of data) {
+        const entry = { look: lookFromJson(r.look), wearsCrown: !!r.wears_crown };
+        publicCache.set(r.user_id, entry);
+        next[r.user_id] = entry;
+      }
+      setLooks(next);
+    }, () => {
+    });
+    return () => {
+      live = false;
+    };
+  }, [key]);
+  return looks;
+}
 export {
-  useEquippedLooks
+  useEquippedLooks,
+  usePublicLooks
 };

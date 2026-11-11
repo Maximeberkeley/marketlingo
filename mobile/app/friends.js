@@ -44,7 +44,10 @@ import { CrownCard } from "../components/social/CrownCard";
 import { CrownBadge } from "../components/social/CrownBadge";
 import { LeoAvatar } from "../components/shop/LeoAvatar";
 import { useShop } from "../hooks/useShop";
-import { useEquippedLooks } from "../hooks/useEquippedLooks";
+import { useEquippedLooks, usePublicLooks } from "../hooks/useEquippedLooks";
+import { LeoPodium } from "../components/social/LeoPodium";
+import { RankCard } from "../components/social/RankCard";
+import { MotionScope } from "../components/shop/Motion";
 import { crownStatus } from "../lib/crown";
 const SHEET_HANDOFF_MS = 380;
 const MEDALS = [
@@ -174,6 +177,11 @@ function FriendsScreen() {
     }
     setGlobalLoading(false);
   }, [marketId, user]);
+  const [focused, setFocused] = useState(true);
+  useFocusEffect(useCallback(() => {
+    setFocused(true);
+    return () => setFocused(false);
+  }, []));
   useFocusEffect(useCallback(() => {
     if (!marketId || !user) return;
     void refetch();
@@ -185,6 +193,14 @@ function FriendsScreen() {
   const initial = (user?.email || "Y").charAt(0).toUpperCase();
   const shop = useShop();
   const looks = useEquippedLooks(friends.map((f) => f.id));
+  const publicLooks = usePublicLooks(activeTab === "global" ? marketId : null, globalEntries.map((e) => e.user_id));
+  const globalLook = (id, isMe) => isMe && shop.available ? shop.look : publicLooks[id]?.look ?? looks[id]?.look ?? {};
+  const rankPerson = (e) => e ? {
+    name: e.isCurrentUser ? "You" : e.username,
+    xp: e.total_xp,
+    look: globalLook(e.user_id, e.isCurrentUser),
+    crown: e.isCurrentUser ? shop.wearsCrown : !!publicLooks[e.user_id]?.wearsCrown
+  } : null;
   const friendsBoard = useMemo(() => {
     const rows = [
       {
@@ -529,18 +545,36 @@ function FriendsScreen() {
         nudge: !row.friend ? void 0 : row.friend.lessonDoneToday ? "done" : isNudged(row.friend.id) ? "nudged" : "idle",
         onNudge: row.friend ? () => openNudge(row.friend.id) : void 0
       }
-    ))), /* @__PURE__ */ React.createElement(AddFriendsCard, { hasFriends: true, onShare: handleShareInvite, onSearch: () => setFindOpen(true), onMyCode: () => openCodeSheet("code"), onScan: () => openCodeSheet("scan") }))), activeTab === "global" && /* @__PURE__ */ React.createElement(React.Fragment, null, !globalLoading && globalEntries.length > 0 && /* @__PURE__ */ React.createElement(View, { style: styles.heroCard }, /* @__PURE__ */ React.createElement(View, { style: { flex: 1 } }, /* @__PURE__ */ React.createElement(Text, { style: styles.heroKicker }, marketName.toUpperCase(), " \xB7 THIS MONTH"), /* @__PURE__ */ React.createElement(Text, { style: styles.heroValue }, currentUserRank ? /* @__PURE__ */ React.createElement(React.Fragment, null, "#", currentUserRank, /* @__PURE__ */ React.createElement(Text, { style: styles.heroUnit }, " of ", globalEntries.length)) : "Unranked"), /* @__PURE__ */ React.createElement(Text, { style: styles.heroLine }, currentUserRank === 1 ? /* @__PURE__ */ React.createElement(React.Fragment, null, "Top of the market. ", /* @__PURE__ */ React.createElement(Text, { style: styles.heroAccent }, "Hold it.")) : currentUserRank ? /* @__PURE__ */ React.createElement(React.Fragment, null, "Next spot costs ", /* @__PURE__ */ React.createElement(Text, { style: styles.heroAccent }, Math.max(1, (globalEntries[currentUserRank - 2]?.total_xp || 0) - (globalEntries[currentUserRank - 1]?.total_xp || 0) + 1), " XP"), ".") : "One lesson puts you on the board."))), !globalLoading && globalEntries.length >= 3 && /* @__PURE__ */ React.createElement(View, { style: styles.podium }, [1, 0, 2].map((i) => {
-      const e = globalEntries[i];
-      const m = MEDALS[i];
-      const h = i === 0 ? 76 : i === 1 ? 60 : 50;
-      return /* @__PURE__ */ React.createElement(View, { key: e.user_id, style: styles.podiumCol }, /* @__PURE__ */ React.createElement(SocialAvatar, { name: e.isCurrentUser ? myName || "You" : e.username, size: 44, ring: m.ring, ringWidth: 3 }), /* @__PURE__ */ React.createElement(Text, { style: styles.podiumName, numberOfLines: 1 }, e.isCurrentUser ? "You" : e.username), /* @__PURE__ */ React.createElement(View, { style: [styles.podiumBlock, { height: h, backgroundColor: m.bg, borderColor: m.ring + "55" }] }, /* @__PURE__ */ React.createElement(Text, { style: [styles.podiumRank, { color: m.text }] }, i + 1), /* @__PURE__ */ React.createElement(Text, { style: [styles.podiumXP, { color: m.text }] }, e.total_xp.toLocaleString())));
-    })), globalLoading ? /* @__PURE__ */ React.createElement(ActivityIndicator, { color: COLORS.accent, size: "large", style: { marginTop: 60 } }) : globalError ? /* @__PURE__ */ React.createElement(View, { style: styles.emptyState }, /* @__PURE__ */ React.createElement(Feather, { name: "wifi-off", size: 32, color: COLORS.textMuted }), /* @__PURE__ */ React.createElement(Text, { style: styles.emptyTitle }, "Standings unavailable"), /* @__PURE__ */ React.createElement(Text, { style: styles.emptySub }, globalError), /* @__PURE__ */ React.createElement(ChunkyButton, { label: "Try again", icon: /* @__PURE__ */ React.createElement(Feather, { name: "refresh-cw", size: 16, color: "#FFFFFF" }), onPress: fetchGlobalLeaderboard, style: { alignSelf: "stretch" } })) : globalEntries.length === 0 ? /* @__PURE__ */ React.createElement(View, { style: styles.emptyState }, /* @__PURE__ */ React.createElement(Feather, { name: "award", size: 34, color: COLORS.textMuted }), /* @__PURE__ */ React.createElement(Text, { style: styles.emptyTitle }, "No one has scored this month yet."), /* @__PURE__ */ React.createElement(Text, { style: styles.emptySub }, "Finish one lesson and you take first place.")) : /* @__PURE__ */ React.createElement(View, { style: styles.board }, globalEntries.map((entry, idx) => /* @__PURE__ */ React.createElement(
+    ))), /* @__PURE__ */ React.createElement(AddFriendsCard, { hasFriends: true, onShare: handleShareInvite, onSearch: () => setFindOpen(true), onMyCode: () => openCodeSheet("code"), onScan: () => openCodeSheet("scan") }))), activeTab === "global" && /* @__PURE__ */ React.createElement(React.Fragment, null, !globalLoading && globalEntries.length > 0 && /* @__PURE__ */ React.createElement(MotionScope, { active: focused }, /* @__PURE__ */ React.createElement(
+      RankCard,
+      {
+        rank: currentUserRank,
+        total: globalEntries.length,
+        market: marketName,
+        me: rankPerson(globalEntries.find((e) => e.isCurrentUser)),
+        next: currentUserRank && currentUserRank > 1 ? rankPerson(globalEntries[currentUserRank - 2]) : null,
+        second: rankPerson(globalEntries[1])
+      }
+    )), !globalLoading && globalEntries.length >= 3 && /* @__PURE__ */ React.createElement(MotionScope, { active: focused }, /* @__PURE__ */ React.createElement(
+      LeoPodium,
+      {
+        people: globalEntries.slice(0, 3).map((e) => ({
+          id: e.user_id,
+          name: e.username,
+          xp: e.total_xp,
+          look: globalLook(e.user_id, e.isCurrentUser),
+          crown: e.isCurrentUser ? shop.wearsCrown : !!publicLooks[e.user_id]?.wearsCrown,
+          isMe: !!e.isCurrentUser
+        }))
+      }
+    )), globalLoading ? /* @__PURE__ */ React.createElement(ActivityIndicator, { color: COLORS.accent, size: "large", style: { marginTop: 60 } }) : globalError ? /* @__PURE__ */ React.createElement(View, { style: styles.emptyState }, /* @__PURE__ */ React.createElement(Feather, { name: "wifi-off", size: 32, color: COLORS.textMuted }), /* @__PURE__ */ React.createElement(Text, { style: styles.emptyTitle }, "Standings unavailable"), /* @__PURE__ */ React.createElement(Text, { style: styles.emptySub }, globalError), /* @__PURE__ */ React.createElement(ChunkyButton, { label: "Try again", icon: /* @__PURE__ */ React.createElement(Feather, { name: "refresh-cw", size: 16, color: "#FFFFFF" }), onPress: fetchGlobalLeaderboard, style: { alignSelf: "stretch" } })) : globalEntries.length === 0 ? /* @__PURE__ */ React.createElement(View, { style: styles.emptyState }, /* @__PURE__ */ React.createElement(Feather, { name: "award", size: 34, color: COLORS.textMuted }), /* @__PURE__ */ React.createElement(Text, { style: styles.emptyTitle }, "No one has scored this month yet."), /* @__PURE__ */ React.createElement(Text, { style: styles.emptySub }, "Finish one lesson and you take first place.")) : /* @__PURE__ */ React.createElement(View, { style: styles.board }, globalEntries.map((entry, idx) => /* @__PURE__ */ React.createElement(
       BoardRow,
       {
         key: entry.user_id,
         rank: entry.rank,
         name: entry.isCurrentUser ? "You" : entry.username,
         avatarName: entry.isCurrentUser ? myName : void 0,
+        look: globalLook(entry.user_id, entry.isCurrentUser),
         xp: entry.total_xp,
         streak: entry.current_streak,
         isMe: entry.isCurrentUser,
@@ -780,30 +814,6 @@ const styles = StyleSheet.create({
   },
   nudgeBtnOff: { backgroundColor: COLORS.bg1, borderColor: COLORS.border },
   nudgeBtnDone: { backgroundColor: COLORS.success, borderColor: "#15803D" },
-  // Global hero
-  heroCard: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 12,
-    backgroundColor: COLORS.accentSoft,
-    borderRadius: 22,
-    padding: 14,
-    borderWidth: 1.5,
-    borderColor: COLORS.accentMedium,
-    marginBottom: 14
-  },
-  heroKicker: { fontSize: 10, fontWeight: "800", letterSpacing: 1, color: COLORS.accent },
-  heroValue: { fontSize: 28, fontWeight: "800", color: COLORS.textPrimary, marginTop: 2 },
-  heroUnit: { fontSize: 14, fontWeight: "700", color: COLORS.textSecondary },
-  heroLine: { fontSize: 12, color: COLORS.textSecondary, marginTop: 3, lineHeight: 17 },
-  heroAccent: { color: COLORS.accent, fontWeight: "800" },
-  // Podium
-  podium: { flexDirection: "row", alignItems: "flex-end", gap: 8, marginBottom: 14 },
-  podiumCol: { flex: 1, alignItems: "center" },
-  podiumName: { fontSize: 12, fontWeight: "800", color: COLORS.textPrimary, marginTop: 4, marginBottom: 4, maxWidth: "95%" },
-  podiumBlock: { width: "100%", borderRadius: 16, borderWidth: 1.5, alignItems: "center", justifyContent: "center", gap: 1 },
-  podiumRank: { fontSize: 18, fontWeight: "800" },
-  podiumXP: { fontSize: 11, fontWeight: "700" },
   // Empty state
   emptyState: { alignItems: "center", paddingTop: 24, gap: 4 },
   emptyTitle: { fontSize: 17, fontWeight: "800", color: COLORS.textPrimary },

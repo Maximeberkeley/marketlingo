@@ -56,9 +56,15 @@ export default function ShopScreen() {
 
   // The weekly featured offer: a full set when one is drawn, else a hero item.
   const feature = useMemo<Feature | null>(() => {
+    // A seasonal piece takes over in its month (holiday antlers in December); otherwise a full set, else a hero item.
+    const month = now.getMonth() + 1;
+    const inSeason = (id: string) => !!cosmetic(id)?.featuredIn?.includes(month);
+    const seasonSets: Feature[] = BUNDLES.filter(b => b.items.every(hasArt) && b.items.every(inSeason)).map(bundle => ({ kind: 'bundle', bundle }));
+    const seasonItems: Feature[] = COSMETICS.filter(c => priceOf(c) !== null && hasArt(c.id) && inSeason(c.id)).map(item => ({ kind: 'item', item }));
+    const seasonal = seasonSets.length ? seasonSets : seasonItems;
     const sets: Feature[] = BUNDLES.filter(b => b.items.every(hasArt)).map(bundle => ({ kind: 'bundle', bundle }));
     const items: Feature[] = COSMETICS.filter(c => priceOf(c) !== null && hasArt(c.id) && (c.rarity === 'epic' || c.rarity === 'legendary')).map(item => ({ kind: 'item', item }));
-    const pool = sets.length ? sets : items;
+    const pool = seasonal.length ? seasonal : sets.length ? sets : items;
     const pick = weeklyFeature(pool.map(f => ({ id: f.kind === 'bundle' ? f.bundle.id : f.item.id, f })), now);
     return pick?.f ?? null;
     // the offer changes weekly; recompute when the week key changes, not every second

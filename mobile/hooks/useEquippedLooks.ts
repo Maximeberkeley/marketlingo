@@ -33,3 +33,33 @@ export function useEquippedLooks(userIds: (string | null | undefined)[]): Record
   }, [key]);
   return looks;
 }
+
+const publicCache = new Map<string, FriendLook>();
+
+/**
+ * Looks for anyone shown on a market's standings (Global tab), friends or not. The server answers only with the
+ * equipped item ids per slot and whether the crown is worn (no names, no other personal data), and only for
+ * people who are on that market's standings. Someone with no answer shows the default Leo, never a letter.
+ */
+export function usePublicLooks(marketId: string | null | undefined, userIds: (string | null | undefined)[]): Record<string, FriendLook> {
+  const ids = Array.from(new Set(userIds.filter((id): id is string => !!id))).sort().slice(0, 100);
+  const key = `${marketId}|${ids.join(',')}`;
+  const [looks, setLooks] = useState<Record<string, FriendLook>>(() => Object.fromEntries(ids.filter(id => publicCache.has(id)).map(id => [id, publicCache.get(id)!])));
+  useEffect(() => {
+    if (!marketId || !ids.length) return;
+    let live = true;
+    supabase.rpc('get_public_looks', { p_market_id: marketId, p_user_ids: ids }).then(({ data, error }) => {
+      if (!live || error || !Array.isArray(data)) return;
+      const next: Record<string, FriendLook> = {};
+      for (const r of data as { user_id: string; look: Record<string, string | null>; wears_crown: boolean }[]) {
+        const entry = { look: lookFromJson(r.look), wearsCrown: !!r.wears_crown };
+        publicCache.set(r.user_id, entry);
+        next[r.user_id] = entry;
+      }
+      setLooks(next);
+    }, () => {});
+    return () => { live = false; };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [key]);
+  return looks;
+}

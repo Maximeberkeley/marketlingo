@@ -35,6 +35,9 @@ const COSMETICS = [
   { id: "monthly-crown-keepsake", slot: "hat", name: "Crown keepsake", rarity: "legendary", acquisition: "reward", requires: { crown_keepsake: true }, rule: "Past monthly crown winners keep it", hidden: true },
   { id: "santa-hat", slot: "hat", name: "Winter hat", rarity: "uncommon", acquisition: "purchase", collection: "seasonal" },
   { id: "flower-crown", slot: "hat", name: "Flower crown", rarity: "uncommon", acquisition: "purchase", collection: "seasonal" },
+  { id: "holiday-antlers", slot: "hat", name: "Holiday antlers", rarity: "common", acquisition: "purchase", collection: "seasonal", featuredIn: [12], pairsWith: ["holiday-collar", "reindeer-nose"] },
+  { id: "holiday-collar", slot: "outfit", name: "Holiday collar", rarity: "common", acquisition: "purchase", collection: "seasonal", featuredIn: [12], pairsWith: ["holiday-antlers", "reindeer-nose"] },
+  { id: "reindeer-nose", slot: "glasses", name: "Reindeer nose", rarity: "common", acquisition: "purchase", collection: "seasonal", featuredIn: [12], pairsWith: ["holiday-antlers", "holiday-collar"] },
   { id: "ember-band", slot: "hat", name: "Ember headband", rarity: "uncommon", acquisition: "reward", requires: { min_streak_days: 7 }, rule: "7-day streak" },
   { id: "phoenix-feather", slot: "hat", name: "Phoenix feather", rarity: "rare", acquisition: "reward", requires: { min_streak_days: 30 }, rule: "30-day streak" },
   { id: "eternal-flame-halo", slot: "hat", name: "Eternal flame halo", rarity: "legendary", acquisition: "reward", requires: { min_streak_days: 365 }, rule: "365-day streak" },
@@ -66,7 +69,11 @@ const COSMETICS = [
   // Colour variants of the same capelet: a cheaper tier than the red royal one.
   { id: "royal-mantle-blue", slot: "outfit", name: "Sapphire mantle", rarity: "rare", acquisition: "purchase", collection: "royal" },
   { id: "royal-mantle-green", slot: "outfit", name: "Emerald mantle", rarity: "rare", acquisition: "purchase", collection: "royal" },
-  { id: "sapphire-tiara", slot: "hat", name: "Sapphire tiara", rarity: "legendary", acquisition: "purchase", collection: "royal", price: 1e4 },
+  { id: "sapphire-tiara", slot: "hat", name: "Sapphire tiara", rarity: "legendary", acquisition: "purchase", collection: "royal", price: 1e4, pairsWith: ["ermine-cape"] },
+  { id: "ermine-cape", slot: "outfit", name: "Ermine cape", rarity: "legendary", acquisition: "purchase", collection: "royal", price: 7e3, pairsWith: ["sapphire-tiara"] },
+  { id: "crow-cape", slot: "outfit", name: "Crow cape", rarity: "legendary", acquisition: "purchase", collection: "royal", price: 7e3, pairsWith: ["raven-crown", "top-hat"] },
+  { id: "raven-crown", slot: "hat", name: "Raven crown", rarity: "legendary", acquisition: "purchase", collection: "royal", pairsWith: ["crow-cape"] },
+  { id: "commander-coat", slot: "outfit", name: "Commander coat", rarity: "legendary", acquisition: "purchase", collection: "aerospace", price: 1e4 },
   { id: "coffee-cup", slot: "held", name: "Coffee cup", rarity: "common", acquisition: "purchase", collection: "startup" },
   { id: "magnifier", slot: "held", name: "Magnifying glass", rarity: "common", acquisition: "purchase", collection: "lab" },
   { id: "test-tube", slot: "held", name: "Test tubes", rarity: "uncommon", acquisition: "purchase", collection: "lab" },
@@ -110,7 +117,8 @@ const BUNDLES = [
   { id: "bundle-aero", name: "Flight deck set", line: "Helmet, aviators, flight jacket", items: ["aero-helmet", "aviators", "flight-jacket"], price: 1350, collection: "aerospace" },
   { id: "bundle-wallstreet", name: "Wall Street set", line: "Power tie, monocle, top hat", items: ["trader-tie", "monocle", "top-hat"], price: 1575, collection: "wallstreet" },
   { id: "bundle-lab", name: "Lab set", line: "Goggles, lab coat, test tubes", items: ["safety-goggles", "lab-coat", "test-tube"], price: 1200, collection: "lab" },
-  { id: "bundle-startup", name: "Founder set", line: "Founder cap, hoodie, coffee", items: ["founder-cap", "startup-hoodie", "coffee-cup"], price: 850, collection: "startup" }
+  { id: "bundle-startup", name: "Founder set", line: "Founder cap, hoodie, coffee", items: ["founder-cap", "startup-hoodie", "coffee-cup"], price: 850, collection: "startup" },
+  { id: "bundle-christmas", name: "Christmas set", line: "Antlers, collar and a reindeer nose", items: ["holiday-antlers", "holiday-collar", "reindeer-nose"], price: 680, collection: "seasonal" }
 ];
 const PERK_STEPS = [
   "Join the waitlist. Free, no XP yet.",

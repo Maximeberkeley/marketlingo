@@ -386,6 +386,20 @@
       "when": 1794500000058,
       "tag": "0058_shop_catalog_sapphire_tiara",
       "breakpoints": true
+    },
+    {
+      "idx": 59,
+      "version": "7",
+      "when": 1794500000059,
+      "tag": "0059_shop_public_looks",
+      "breakpoints": true
+    },
+    {
+      "idx": 60,
+      "version": "7",
+      "when": 1794500000060,
+      "tag": "0060_shop_catalog_legendary_looks",
+      "breakpoints": true
     }
   ]
 }

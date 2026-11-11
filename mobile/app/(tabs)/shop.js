@@ -59,9 +59,14 @@ function ShopScreen() {
     setRefreshing(false);
   };
   const feature = useMemo(() => {
+    const month = now.getMonth() + 1;
+    const inSeason = (id) => !!cosmetic(id)?.featuredIn?.includes(month);
+    const seasonSets = BUNDLES.filter((b) => b.items.every(hasArt) && b.items.every(inSeason)).map((bundle) => ({ kind: "bundle", bundle }));
+    const seasonItems = COSMETICS.filter((c) => priceOf(c) !== null && hasArt(c.id) && inSeason(c.id)).map((item) => ({ kind: "item", item }));
+    const seasonal = seasonSets.length ? seasonSets : seasonItems;
     const sets = BUNDLES.filter((b) => b.items.every(hasArt)).map((bundle) => ({ kind: "bundle", bundle }));
     const items = COSMETICS.filter((c) => priceOf(c) !== null && hasArt(c.id) && (c.rarity === "epic" || c.rarity === "legendary")).map((item) => ({ kind: "item", item }));
-    const pool = sets.length ? sets : items;
+    const pool = seasonal.length ? seasonal : sets.length ? sets : items;
     const pick = weeklyFeature(pool.map((f) => ({ id: f.kind === "bundle" ? f.bundle.id : f.item.id, f })), now);
     return pick?.f ?? null;
   }, [now.toDateString()]);
