@@ -11,6 +11,7 @@ import { ErrorBoundary } from "../components/ErrorBoundary";
 import { PushTokenSync } from "../components/PushTokenSync";
 import { COLORS } from "../lib/constants";
 import { isDark } from "../lib/theme";
+import { fetchUpdateInBackground } from "../lib/otaUpdates";
 function resolveRoute(data) {
   if (data?.route) return data.route;
   switch (data?.type) {
@@ -74,6 +75,12 @@ function RootLayout() {
       notificationResponseListener.current?.remove();
       notificationResponseListener.current = null;
     };
+  }, []);
+  useEffect(() => {
+    const sub = AppState.addEventListener("change", (state) => {
+      if (state === "active") void fetchUpdateInBackground();
+    });
+    return () => sub.remove();
   }, []);
   useEffect(() => {
     const sub = AppState.addEventListener("change", (state) => {

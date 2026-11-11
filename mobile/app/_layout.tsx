@@ -11,6 +11,7 @@ import { ErrorBoundary } from '../components/ErrorBoundary';
 import { PushTokenSync } from '../components/PushTokenSync';
 import { COLORS } from '../lib/constants';
 import { isDark } from '../lib/theme';
+import { fetchUpdateInBackground } from '../lib/otaUpdates';
 
 // Map notification data `route` or `type` to an Expo Router path
 function resolveRoute(data: Record<string, any>): string | null {
@@ -87,6 +88,14 @@ export default function RootLayout() {
       notificationResponseListener.current?.remove();
       notificationResponseListener.current = null;
     };
+  }, []);
+
+  // Over-the-air updates: download in the background on return to the app; they apply on the next launch.
+  useEffect(() => {
+    const sub = AppState.addEventListener('change', (state) => {
+      if (state === 'active') void fetchUpdateInBackground();
+    });
+    return () => sub.remove();
   }, []);
 
   // Keep the iOS app icon free of any badge count (we never use badges).
