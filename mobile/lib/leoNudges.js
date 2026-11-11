@@ -16,6 +16,13 @@ async function loadNotifications() {
 }
 const NUDGE_STATE_KEY = "ml_leo_nudge_state";
 const LEGACY_STREAK_KEY = "ml_streak_notif_ids";
+let reminderWork = Promise.resolve();
+function serializeReminders(task) {
+  const next = reminderWork.then(task, task);
+  reminderWork = next.catch(() => {
+  });
+  return next;
+}
 const SCRIPTS = {
   midday: [
     { title: "Your briefing is ready", body: "{name}, take one focused lesson now and keep today\u2019s idea in motion." },
@@ -83,6 +90,9 @@ async function claimLeoNudge(key) {
   return true;
 }
 async function cancelRollingLeoNudges() {
+  return serializeReminders(cancelPendingToday);
+}
+async function cancelPendingToday() {
   try {
     const Notifications = await loadNotifications();
     if (!Notifications) return;
@@ -90,7 +100,7 @@ async function cancelRollingLeoNudges() {
     await Promise.all(state.scheduledIds.map((id) => Notifications.cancelScheduledNotificationAsync(id).catch(() => {
     })));
     const scheduled = await Notifications.getAllScheduledNotificationsAsync();
-    await Promise.all(scheduled.filter((item) => item.content.data?.type === "leo_rolling_nudge" || item.content.data?.type === "streak_warning").map((item) => Notifications.cancelScheduledNotificationAsync(item.identifier).catch(() => {
+    await Promise.all(scheduled.filter((item) => item.content.data?.type === "leo_rolling_nudge" || item.content.data?.type === "streak_warning" || item.content.data?.type === "daily_fallback" && (!item.content.data?.localDate || item.content.data.localDate === localDateString())).map((item) => Notifications.cancelScheduledNotificationAsync(item.identifier).catch(() => {
     })));
     await AsyncStorage.removeItem(LEGACY_STREAK_KEY);
     await writeState({ ...state, scheduledIds: [] });
@@ -99,7 +109,10 @@ async function cancelRollingLeoNudges() {
   }
 }
 async function scheduleRollingLeoNudges(lessonCompletedToday) {
-  await cancelRollingLeoNudges();
+  return serializeReminders(() => scheduleRolling(lessonCompletedToday));
+}
+async function scheduleRolling(lessonCompletedToday) {
+  await cancelPendingToday();
   if (lessonCompletedToday) return;
   try {
     const Notifications = await loadNotifications();
@@ -154,6 +167,9 @@ const DAILY_FALLBACKS = [
   }
 ];
 async function scheduleDailyFallbackReminders() {
+  return serializeReminders(scheduleDailyFallbacks);
+}
+async function scheduleDailyFallbacks() {
   try {
     const Notifications = await loadNotifications();
     if (!Notifications) return;
@@ -163,20 +179,35 @@ async function scheduleDailyFallbackReminders() {
     await Promise.all(scheduled.filter((item) => item.content.data?.type === "daily_fallback").map((item) => Notifications.cancelScheduledNotificationAsync(item.identifier).catch(() => {
     })));
     const displayName = normalizeDisplayName(await storage.getDisplayName());
-    for (const slot of DAILY_FALLBACKS) {
-      await Notifications.scheduleNotificationAsync({
-        content: {
-          title: slot.title,
-          body: personalized(slot.body, displayName),
-          sound: true,
-          data: { type: "daily_fallback", route: "/(tabs)/home", slot: slot.key }
-        },
-        trigger: {
-          type: Notifications.SchedulableTriggerInputTypes.DAILY,
-          hour: slot.hour,
-          minute: slot.minute
-        }
-      });
+    const now = /* @__PURE__ */ new Date();
+    let todayUnfinished = false;
+    try {
+      const { supabase } = await import("./supabase");
+      const { data: auth, error: authError } = await supabase.auth.getUser();
+      if (auth.user && !authError) {
+        const { data, error } = await supabase.from("daily_completions").select("id").eq("user_id", auth.user.id).eq("completion_date", localDateString(now)).eq("lesson_completed", true).limit(1);
+        todayUnfinished = !error && Array.isArray(data) && data.length === 0;
+      }
+    } catch (error) {
+      log.warn("[LeoNudges] Could not verify today\u2019s lesson:", error);
+    }
+    for (let day = 0; day < 7; day += 1) {
+      if (day === 0 && !todayUnfinished) continue;
+      for (const slot of DAILY_FALLBACKS) {
+        const fireAt = new Date(now);
+        fireAt.setDate(fireAt.getDate() + day);
+        fireAt.setHours(slot.hour, slot.minute, 0, 0);
+        if (fireAt <= now) continue;
+        await Notifications.scheduleNotificationAsync({
+          content: {
+            title: slot.title,
+            body: personalized(slot.body, displayName),
+            sound: true,
+            data: { type: "daily_fallback", route: "/(tabs)/home", slot: slot.key, localDate: localDateString(fireAt) }
+          },
+          trigger: fireAt
+        });
+      }
     }
   } catch (error) {
     log.warn("[LeoNudges] Could not schedule daily fallbacks:", error);
