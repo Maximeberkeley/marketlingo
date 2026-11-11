@@ -10,6 +10,8 @@ import { tokens } from '../theme/tokens';
 import { playSound } from '../../lib/sounds';
 import { triggerHaptic } from '../../lib/haptics';
 import { lessonRewards, scoreHeadline } from './lessonRewards';
+import { doubleXpUntil } from '../../hooks/useShop';
+import { doubleXpActive } from '../../lib/boosts';
 import { useUserProgress } from '../../hooks/useUserProgress';
 import { useDeliverable } from '../../hooks/useDeliverable';
 import { useAuth } from '../../hooks/useAuth';
@@ -72,7 +74,7 @@ export function LessonComplete({
   const nextSection = dossier.firstOpenSection;
   const accuracy = total > 0 ? Math.round((correct / total) * 100) : 100;
   const praise = scoreHeadline(accuracy, total);
-  const bonuses = useRef(lessonRewards(baseXp, accuracy, total, bestCombo, heartsLeft, timeSpentSeconds)).current;
+  const bonuses = useRef(lessonRewards(baseXp, accuracy, total, bestCombo, heartsLeft, timeSpentSeconds, doubleXpActive(doubleXpUntil(), Date.now()))).current;
   const totalXp = bonuses.reduce((sum, line) => sum + line.xp, 0);
 
   const [shown, setShown] = useState(0);

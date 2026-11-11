@@ -69,7 +69,9 @@ export default function StreakFreezeScreen() {
           ))}
         </View>
         <Text maxFontSizeMultiplier={1.3} style={styles.rule}>You get one free every week. Bought freezes cover any extra missed day, and you choose when to use one.</Text>
-        <Text maxFontSizeMultiplier={1.3} style={styles.repair}>Already lost it? Streak Repair is coming soon.</Text>
+        <TouchableOpacity onPress={() => router.push('/shop-repair' as any)} accessibilityRole="button">
+          <Text maxFontSizeMultiplier={1.3} style={styles.repair}>Already lost it? Try Streak Repair</Text>
+        </TouchableOpacity>
       </View>
 
       <View style={styles.footer}>
@@ -109,7 +111,7 @@ const styles = StyleSheet.create({
   dayText: { fontSize: 13, fontWeight: '900', color: '#FFFFFF' },
   dayLabel: { fontSize: 12, fontWeight: '700', color: COLORS.textSecondary },
   rule: { fontSize: 14, lineHeight: 20, color: COLORS.textSecondary, textAlign: 'center' },
-  repair: { fontSize: 13, fontWeight: '700', color: COLORS.textMuted, textAlign: 'center' },
+  repair: { fontSize: 13, fontWeight: '800', color: COLORS.accent, textAlign: 'center' },
   footer: { paddingHorizontal: 20, gap: 8 },
   note: { fontSize: 13, fontWeight: '700', color: COLORS.textPrimary, textAlign: 'center' },
   blocked: { height: 56, borderRadius: 16, backgroundColor: COLORS.bg1, alignItems: 'center', justifyContent: 'center', borderWidth: 1, borderColor: COLORS.border },

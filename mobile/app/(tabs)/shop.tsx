@@ -14,6 +14,7 @@ import {
 } from '../../lib/shopCatalog';
 import { Feature, formatCountdown, msUntilLocalMidnight, msUntilNextMonday, pickFeature, requirementProgress } from '../../lib/shopEconomy';
 import { hasArt, useShop } from '../../hooks/useShop';
+import { DOUBLE_XP_ID, boostMinutes, doubleXpActive } from '../../lib/boosts';
 import { LeoAvatar } from '../../components/shop/LeoAvatar';
 import { ItemArt, ShopIcon } from '../../components/shop/ItemArt';
 import { Carousel, Flask, PriceButton, Row, SectionHead, XPChip } from '../../components/shop/ShopKit';
@@ -22,6 +23,7 @@ import { FloatIcon, FloorShadow, PERK_SCENE, PerkObject, SCENES, SceneBackdrop, 
 import { SHOP_SCENES } from '../../lib/shopArt';
 import { MedalGlint, PODIUM_MEDALS } from '../../components/shop/MedalGlint';
 import { XPSheet } from '../../components/shop/XPSheet';
+import { DoubleXPTag } from '../../components/shop/DoubleXPTag';
 import { ChunkyButton } from '../../components/social/ChunkyButton';
 
 export const SHOP_SEEN_KEY = 'ml_shop_tab_seen_v1';
@@ -83,7 +85,10 @@ export default function ShopScreen() {
           )}
         </PressScale>
         <Text maxFontSizeMultiplier={1.3} style={styles.headerTitle}>Shop</Text>
-        <XPChip value={shop.balance.balance} onPress={() => setXpOpen(true)} />
+        <View style={styles.headerRight}>
+          <DoubleXPTag />
+          <XPChip value={shop.balance.balance} onPress={() => setXpOpen(true)} />
+        </View>
       </View>
 
       <ScrollWatch.Provider value={watch}>
@@ -148,24 +153,35 @@ export default function ShopScreen() {
         <Rise index={4} style={styles.section}>
           <SectionHead title="Power-ups" />
           <Row>
-            {POWER_UPS.map(p => (
-              <PressScale key={p.id} disabled={!p.live} onPress={() => open('/shop-freeze')} style={styles.powerTile} accessibilityLabel={p.id === STREAK_FREEZE_ID ? `${p.name}, you have ${freezes}` : p.name}>
-                <View style={[styles.powerArt, { backgroundColor: p.live ? (isDark ? 'rgba(56,189,248,0.14)' : '#EAF6FE') : COLORS.bg1 }]}>
-                  {p.live && <Sunburst size={220} cx={84} cy={52} color={isDark ? '#7DD3FC' : '#38BDF8'} opacity={0.3} />}
-                  <Float distance={4} phase={p.live ? 0 : 700}><View style={{ opacity: p.live ? 1 : 0.55 }}><ShopIcon id={p.icon} size={64} /></View></Float>
-                  {p.id === STREAK_FREEZE_ID && <View style={styles.haveTag}><Text maxFontSizeMultiplier={1.3} style={styles.haveText}>You have {freezes}</Text></View>}
-                </View>
-                <View style={styles.tileBody}>
-                  <Text maxFontSizeMultiplier={1.3} style={styles.tileTitle}>{p.name}</Text>
-                  <Text maxFontSizeMultiplier={1.3} style={styles.tileSub} numberOfLines={2}>{p.line}</Text>
-                  {p.live && p.price ? (
-                    <PriceButton price={p.price} onPress={() => open('/shop-freeze')} height={40} style={{ marginTop: 10 }} />
-                  ) : (
-                    <View style={styles.soonPill}><Text maxFontSizeMultiplier={1.3} style={styles.soonText}>Coming soon</Text></View>
-                  )}
-                </View>
-              </PressScale>
-            ))}
+            {POWER_UPS.map(p => {
+              const held = shop.owned[p.id]?.qty ?? 0;
+              const boosting = p.id === DOUBLE_XP_ID && doubleXpActive(shop.doubleXpUntil, now.getTime());
+              const tag = p.id === STREAK_FREEZE_ID ? `You have ${freezes}` : p.earned && held > 0 ? `You have ${held}` : null;
+              return (
+                <PressScale key={p.id} disabled={!p.live} onPress={() => open(p.route)} style={styles.powerTile} accessibilityLabel={tag ? `${p.name}, ${tag.toLowerCase()}` : p.name}>
+                  <View style={[styles.powerArt, { backgroundColor: p.live ? (isDark ? 'rgba(56,189,248,0.14)' : '#EAF6FE') : COLORS.bg1 }]}>
+                    {p.live && <Sunburst size={220} cx={84} cy={52} color={isDark ? '#7DD3FC' : '#38BDF8'} opacity={0.3} />}
+                    <Float distance={4} phase={p.live ? 0 : 700}><View style={{ opacity: p.live ? 1 : 0.55 }}><ShopIcon id={p.icon} size={64} /></View></Float>
+                    {tag && <View style={styles.haveTag}><Text maxFontSizeMultiplier={1.3} style={styles.haveText}>{tag}</Text></View>}
+                  </View>
+                  <View style={styles.tileBody}>
+                    <Text maxFontSizeMultiplier={1.3} style={styles.tileTitle}>{p.name}</Text>
+                    <Text maxFontSizeMultiplier={1.3} style={styles.tileSub} numberOfLines={2}>{p.line}</Text>
+                    {boosting ? (
+                      <View style={[styles.earnPill, styles.boostPill]}><Text maxFontSizeMultiplier={1.3} style={styles.boostPillText}>{`2x · ${boostMinutes(shop.doubleXpUntil, now.getTime())} min left`}</Text></View>
+                    ) : p.earned ? (
+                      held > 0
+                        ? <ChunkyButton label="Use now" onPress={() => open(p.route)} height={40} style={{ marginTop: 10 }} />
+                        : <View style={styles.earnPill}><Text maxFontSizeMultiplier={1.3} style={styles.earnText}>Submit a Weekly Case</Text></View>
+                    ) : p.live && p.price ? (
+                      <PriceButton price={p.price} onPress={() => open(p.route)} height={40} style={{ marginTop: 10 }} />
+                    ) : (
+                      <View style={styles.soonPill}><Text maxFontSizeMultiplier={1.3} style={styles.soonText}>Coming soon</Text></View>
+                    )}
+                  </View>
+                </PressScale>
+              );
+            })}
           </Row>
         </Rise>
 
@@ -480,6 +496,11 @@ const styles = StyleSheet.create({
   tileBody: { padding: 12 },
   tileTitle: { fontSize: 15, fontWeight: '800', color: COLORS.textPrimary },
   tileSub: { fontSize: 12, lineHeight: 16, color: COLORS.textSecondary, marginTop: 2, minHeight: 32 },
+  headerRight: { flexDirection: 'row', alignItems: 'center', gap: 6 },
+  earnPill: { marginTop: 10, height: 40, borderRadius: 12, borderWidth: 2, borderStyle: 'dashed', borderColor: COLORS.border, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 6 },
+  earnText: { fontSize: 12, fontWeight: '800', color: COLORS.textSecondary, textAlign: 'center' },
+  boostPill: { borderStyle: 'solid', borderColor: '#F59E0B', backgroundColor: isDark ? 'rgba(245,158,11,0.16)' : '#FEF3C7' },
+  boostPillText: { fontSize: 13, fontWeight: '900', color: isDark ? '#FCD34D' : '#B45309' },
   soonPill: { marginTop: 10, height: 36, borderRadius: 12, backgroundColor: COLORS.bg1, alignItems: 'center', justifyContent: 'center' },
   soonText: { fontSize: 12.5, fontWeight: '800', color: COLORS.textMuted },
   rarity: { fontSize: 10.5, fontWeight: '900', letterSpacing: 0.8, marginTop: 2 },

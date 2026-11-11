@@ -38,6 +38,7 @@ import { useDisplayName } from "../../hooks/useDisplayName";
 import { LeoPopup } from "../../components/mascot/LeoPopup";
 import { useLeoPopups } from "../../hooks/useLeoPopups";
 import { useSocialNudges } from "../../hooks/useSocialNudges";
+import { useRepairOffer } from "../../hooks/useRepairOffer";
 import { useShop } from "../../hooks/useShop";
 import { XPSheet } from "../../components/shop/XPSheet";
 import { trackEvent } from "../../lib/analytics";
@@ -391,6 +392,14 @@ function HomeScreenContent() {
       router.push("/friends");
     },
     duration: 9e3
+  }));
+  useRepairOffer(user?.id, selectedMarketLocal, streak, socialNudgesActive, (offer) => leoPopups.enqueue({
+    category: "streak",
+    title: `Your ${offer.lostStreak}-day streak broke`,
+    body: "Repair it before it is gone for good.",
+    actionLabel: "Repair",
+    onAction: () => router.push("/shop-repair"),
+    duration: 1e4
   }));
   const shop = useShop();
   const [xpSheetOpen, setXpSheetOpen] = useState(false);

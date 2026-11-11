@@ -52,6 +52,7 @@ import { FoxMascot } from '../../components/mascot/FoxMascot';
 import { LeoPopup } from '../../components/mascot/LeoPopup';
 import { useLeoPopups } from '../../hooks/useLeoPopups';
 import { useSocialNudges } from '../../hooks/useSocialNudges';
+import { useRepairOffer } from '../../hooks/useRepairOffer';
 import { useShop } from '../../hooks/useShop';
 import { XPSheet } from '../../components/shop/XPSheet';
 import { trackEvent } from '../../lib/analytics';
@@ -463,6 +464,16 @@ function HomeScreenContent() {
     actionLabel: nudge.action,
     onAction: () => { trackEvent('social_nudge_opened', { kind: nudge.key.split(':')[0] }); router.push('/friends' as any); },
     duration: 9000,
+  }));
+
+  // A 7+ day streak that broke in the last 48 hours: Leo offers Streak Repair once a day.
+  useRepairOffer(user?.id, selectedMarketLocal, streak, socialNudgesActive, offer => leoPopups.enqueue({
+    category: 'streak',
+    title: `Your ${offer.lostStreak}-day streak broke`,
+    body: 'Repair it before it is gone for good.',
+    actionLabel: 'Repair',
+    onAction: () => router.push('/shop-repair' as any),
+    duration: 10000,
   }));
 
   // XP to spend on the pill once the shop is live (spending never lowers XP earned), and the XP sheet behind it.

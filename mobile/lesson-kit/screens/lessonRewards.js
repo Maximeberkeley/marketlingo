@@ -5,7 +5,7 @@ function scoreHeadline(accuracy, total) {
   if (accuracy < 90) return "Solid work";
   return "Nailed it";
 }
-function lessonRewards(baseXp, accuracy, total, bestCombo, heartsLeft, timeSpentSeconds) {
+function lessonRewards(baseXp, accuracy, total, bestCombo, heartsLeft, timeSpentSeconds, doubleXp = false) {
   const lines = [{ label: "Daily lesson", xp: LESSON_BASE_XP }];
   if (baseXp > 0) lines.push({ label: "Correct answers", xp: baseXp });
   if (total > 0 && accuracy === 100) lines.push({ label: "Flawless run", xp: 25 });
@@ -13,6 +13,7 @@ function lessonRewards(baseXp, accuracy, total, bestCombo, heartsLeft, timeSpent
   if (bestCombo >= 3) lines.push({ label: `${bestCombo} in a row`, xp: bestCombo * 3 });
   if (total > 0 && timeSpentSeconds > 0 && timeSpentSeconds < 180 && accuracy >= 80)
     lines.push({ label: "Sharp and quick", xp: 15 });
+  if (doubleXp) lines.push({ label: "Double XP", xp: lines.reduce((sum, l) => sum + l.xp, 0) });
   return lines;
 }
 export {

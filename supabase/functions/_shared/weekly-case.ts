@@ -5,7 +5,8 @@
 //   public.weekly_cases.content   hook, tension, brief[], exhibits[], question.text, response.parts[]
 //   public.weekly_case_scoring    rubric[], model_answer, common_traps[], facts[]
 
-export const WEEKLY_CASE_XP = 40;
+/** Founder decision (Nov 11): 200 XP, normal XP earned, plus one Double XP token granted by the database. */
+export const WEEKLY_CASE_XP = 200;
 /** Under this share of the case's total word budget (and 80 words at most), a plan cannot score above THIN_CAP. */
 export const THIN_SHARE = 0.3;
 export const THIN_WORDS_CEILING = 80;

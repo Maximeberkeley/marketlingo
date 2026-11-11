@@ -10,6 +10,9 @@ import { router } from 'expo-router';
 import { CaseBrief } from '../components/weekly/CaseBrief';
 import { useSelectedMarket } from '../hooks/useSelectedMarket';
 import { useUserXP } from '../hooks/useUserXP';
+import { refreshShop } from '../hooks/useShop';
+import { ShopIcon } from '../components/shop/ItemArt';
+import { DOUBLE_XP_MINUTES } from '../lib/boosts';
 import { useWeeklyCase } from '../hooks/useWeeklyCase';
 import { COLORS, TYPE } from '../lib/constants';
 import { log } from '../lib/logger';
@@ -192,6 +195,8 @@ export default function WeeklyCaseRoute() {
       if (await xpAlreadyPaid(userId, current.id)) { setPaid(true); return; }
       await addXP(WEEKLY_CASE_XP, 'weekly_case', current.id, 'Weekly Case');
       setPaid(true);
+      // The server grants the Double XP token with the submission; show it in the Shop's store.
+      void refreshShop(userId);
     } catch (error) {
       // Not paid and not sure: stay quiet and try again the next time this screen opens.
       log.warn('[WeeklyCase] could not pay XP', error);
@@ -289,6 +294,16 @@ export default function WeeklyCaseRoute() {
           <>
             <Submitted weekly={current} board={board} />
             {paid ? <View style={styles.xpChip}><Feather name="zap" size={14} color={COLORS.accent} /><Text style={styles.xpText}>{`+${WEEKLY_CASE_XP} XP banked`}</Text></View> : null}
+            {paid ? (
+              <TouchableOpacity onPress={() => router.push('/shop-boost' as any)} accessibilityRole="button" accessibilityLabel="Double XP earned. Open it" style={styles.boostCard}>
+                <ShopIcon id="countdown" size={44} />
+                <View style={{ flex: 1 }}>
+                  <Text style={styles.boostTitle}>+1 Double XP</Text>
+                  <Text style={styles.boostSub}>{`${DOUBLE_XP_MINUTES} minutes of double XP, whenever you want. It counts for races.`}</Text>
+                </View>
+                <Feather name="chevron-right" size={18} color={COLORS.textMuted} />
+              </TouchableOpacity>
+            ) : null}
             <TouchableOpacity onPress={() => setBriefOpen(o => !o)} accessibilityRole="button" style={styles.toggle}>
               <Text style={styles.toggleText}>{briefOpen ? 'Hide the case' : 'Read the case again'}</Text>
               <Feather name={briefOpen ? 'chevron-up' : 'chevron-down'} size={16} color={COLORS.accent} />
@@ -390,6 +405,9 @@ const styles = StyleSheet.create({
   friendRow: { flexDirection: 'row', alignItems: 'center', gap: 10 },
   friendName: { flex: 1, fontSize: 15, fontWeight: '700', color: COLORS.textPrimary },
   friendCode: { fontSize: 12, fontWeight: '700', color: COLORS.textMuted, letterSpacing: 1 },
+  boostCard: { flexDirection: 'row', alignItems: 'center', gap: 12, padding: 14, borderRadius: 18, borderWidth: 2, borderBottomWidth: 4, borderColor: COLORS.border, backgroundColor: COLORS.bg2 },
+  boostTitle: { fontSize: 16, fontWeight: '900', color: COLORS.textPrimary },
+  boostSub: { fontSize: 13, lineHeight: 18, color: COLORS.textSecondary, marginTop: 2 },
   xpChip: { flexDirection: 'row', alignItems: 'center', gap: 6, alignSelf: 'center', paddingHorizontal: 12, paddingVertical: 7, borderRadius: 16, backgroundColor: COLORS.accentSoft },
   xpText: { fontSize: 13, fontWeight: '800', color: COLORS.accent },
 });

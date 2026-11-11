@@ -144,10 +144,9 @@ const STREAK_FREEZE_ID = "streak-freeze";
 const STREAK_FREEZE_PRICE = 400;
 const MAX_FREEZES_HELD = 2;
 const POWER_UPS = [
-  { id: STREAK_FREEZE_ID, name: "Streak Freeze", line: "Covers one missed day. Hold 2.", price: STREAK_FREEZE_PRICE, live: true, icon: "streak-freeze" },
-  // Not decided yet: shown, never sold.
-  { id: "streak-repair", name: "Streak Repair", line: "Bring a lost streak back.", price: 1200, live: false, icon: "streak-repair" },
-  { id: "double-xp", name: "Double XP", line: "15 minutes of double XP.", price: null, live: false, icon: "countdown" }
+  { id: STREAK_FREEZE_ID, name: "Streak Freeze", line: "Covers one missed day. Hold 2.", price: STREAK_FREEZE_PRICE, live: true, icon: "streak-freeze", route: "/shop-freeze" },
+  { id: "streak-repair", name: "Streak Repair", line: "Bring back a lost 7+ day streak.", price: 1200, live: true, icon: "streak-repair", route: "/shop-repair" },
+  { id: "double-xp", name: "Double XP", line: "15 minutes. Earned with each Weekly Case.", price: null, live: true, earned: true, icon: "countdown", route: "/shop-boost" }
 ];
 const BY_ID = new Map(COSMETICS.map((c) => [c.id, c]));
 const cosmetic = (id) => id ? BY_ID.get(id) : void 0;

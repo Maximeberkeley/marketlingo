@@ -15,6 +15,7 @@ import { useAuth } from './useAuth';
 import { COSMETICS, Slot, cosmetic, priceOf } from '../lib/shopCatalog';
 import { ART_READY_IDS } from '../lib/shopArtIds';
 import { Balance, EarnStats, Look, dailyDeals, idemKey, lookFromRows, spendable } from '../lib/shopEconomy';
+import { RepairStatus, repairFromJson } from '../lib/boosts';
 
 export interface OwnedItem { qty: number; source: string; seenAt: string | null }
 export interface Deal { itemId: string; price: number; dealPrice: number }
@@ -30,6 +31,8 @@ export interface ShopState {
   dealDate: string;
   perks: Record<string, { waitlist: number; joined: boolean }>;
   stats: EarnStats;
+  /** When the running Double XP ends (epoch ms), 0 when none runs. */
+  doubleXpUntil: number;
 }
 
 const ART = new Set(ART_READY_IDS);
@@ -44,6 +47,7 @@ const EMPTY: ShopState = {
   dealDate: localDateString(),
   perks: {},
   stats: { bestStreak: 0, xpEarned: 0, weeklyCasesSubmitted: 0, lessonsCompleted: 0 },
+  doubleXpUntil: 0,
 };
 
 // ── Shared store ────────────────────────────────────────────────────────────
@@ -74,7 +78,7 @@ async function load(uid: string): Promise<void> {
       if (raw) emit({ look: JSON.parse(raw) });
     } catch { /* first open */ }
   }
-  const [bal, inv, eq, looks, deals, perks, progress, xp, cases, placements] = await Promise.all([
+  const [bal, inv, eq, looks, deals, perks, progress, xp, cases, placements, boost] = await Promise.all([
     supabase.rpc('shop_balance'),
     supabase.from('user_inventory').select('item_id, qty, source, seen_at').eq('user_id', uid),
     supabase.from('user_equipped').select('slot, item_id').eq('user_id', uid),
@@ -85,6 +89,7 @@ async function load(uid: string): Promise<void> {
     supabase.from('user_xp').select('total_xp').eq('user_id', uid),
     supabase.from('weekly_case_submissions').select('id', { count: 'exact', head: true }).eq('user_id', uid).eq('status', 'submitted'),
     supabase.from('weekly_case_placements').select('rank, board_size').eq('user_id', uid),
+    supabase.from('user_boosts').select('double_xp_until').eq('user_id', uid).maybeSingle(),
   ]);
   const available = !bal.error;
   if (bal.error && !isMissing(bal.error)) log.warn('[Shop] Balance could not load:', bal.error.message);
@@ -122,6 +127,7 @@ async function load(uid: string): Promise<void> {
     dealDate: date,
     perks: perkMap,
     stats,
+    doubleXpUntil: boost.error ? 0 : Date.parse((boost.data as { double_xp_until?: string | null } | null)?.double_xp_until ?? '') || 0,
   });
   if (!eq.error) AsyncStorage.setItem(lookKey(uid), JSON.stringify(look)).catch(() => {});
 }
@@ -139,6 +145,9 @@ export function refreshShop(uid: string | null | undefined): Promise<void> {
   if (!inflight) inflight = load(uid).catch(e => log.warn('[Shop] Could not load:', e)).finally(() => { inflight = null; });
   return inflight;
 }
+
+/** When the running Double XP ends (epoch ms, 0 for none), for code outside React such as addXP. */
+export const doubleXpUntil = () => state.doubleXpUntil;
 
 export type PurchaseResult = { ok: true; balance: number } | { ok: false; error: string; requirement?: string };
 
@@ -220,7 +229,41 @@ export function useShop() {
     await supabase.rpc('shop_mark_seen', { p_item_ids: ids });
   }, [user]);
 
-  return { ...snap, refresh, purchase, equip, joinWaitlist, checkRewards, markSeen, owns: (id: string) => ownsItem(snap, id) };
+  /** Starts a held Double XP token now (15 minutes). The server takes the token and sets the end time. */
+  const startDoubleXp = useCallback(async (): Promise<{ ok: true; until: number } | { ok: false; error: string }> => {
+    if (!user) return { ok: false, error: 'signed_out' };
+    const { data, error } = await supabase.rpc('shop_use_double_xp');
+    if (error) return { ok: false, error: isMissing(error) ? 'unavailable' : error.message };
+    const r = data as { ok: boolean; error?: string; until?: string };
+    if (!r?.ok) return { ok: false, error: r?.error || 'failed' };
+    const until = Date.parse(r.until ?? '') || 0;
+    emit({ doubleXpUntil: until });
+    await refreshShop(user.id);
+    return { ok: true, until };
+  }, [user]);
+
+  /** Whether the streak in this market can be repaired right now, and why not. */
+  const repairStatus = useCallback(async (marketId: string): Promise<RepairStatus> => {
+    const { data, error } = await supabase.rpc('shop_repair_status', { p_market_id: marketId, p_today: localDateString() });
+    if (error) return repairFromJson({ reason: 'unavailable' });
+    return repairFromJson(data);
+  }, []);
+
+  /** Repairs the streak in this market for 1,200 XP; the server checks every rule again and recomputes the streak. */
+  const repairStreak = useCallback(async (marketId: string): Promise<{ ok: true; streak: number } | { ok: false; error: string }> => {
+    if (!user) return { ok: false, error: 'signed_out' };
+    const { data, error } = await supabase.rpc('shop_repair_streak', { p_market_id: marketId, p_today: localDateString(), p_idem_key: idemKey() });
+    if (error) return { ok: false, error: isMissing(error) ? 'unavailable' : error.message };
+    const r = data as { ok: boolean; error?: string; streak?: number };
+    if (!r?.ok) return { ok: false, error: r?.error || 'failed' };
+    await refreshShop(user.id);
+    return { ok: true, streak: Number(r.streak) || 0 };
+  }, [user]);
+
+  return {
+    ...snap, refresh, purchase, equip, joinWaitlist, checkRewards, markSeen, startDoubleXp, repairStatus, repairStreak,
+    owns: (id: string) => ownsItem(snap, id),
+  };
 }
 
 /** Price the learner pays today: the deal price when the item is in today's deals. */

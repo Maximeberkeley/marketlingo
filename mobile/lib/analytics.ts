@@ -8,6 +8,9 @@ import { log } from './logger';
 
 export type AnalyticsEvent =
   | 'social_nudge_shown'
+  | 'streak_repair_offered'
+  | 'streak_repaired'
+  | 'double_xp_started'
   | 'social_nudge_opened'
   | 'lesson_complete'
   | 'lesson_start'

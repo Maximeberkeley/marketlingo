@@ -78,7 +78,7 @@ describe('the Shop page and the celebration', () => {
     expect(shop).not.toContain('title="Your items"');
     expect(shop).not.toContain('<ItemTile');
     expect(shop).toContain('styles.freezeBadge');
-    expect(shop).toContain('You have {freezes}');
+    expect(shop).toContain('`You have ${freezes}`');
     expect(read('mobile/app/wardrobe.tsx')).toContain('Streak Freeze <Text maxFontSizeMultiplier={1.3} style={styles.freezeCount}>×{freezes}</Text>');
   });
 
