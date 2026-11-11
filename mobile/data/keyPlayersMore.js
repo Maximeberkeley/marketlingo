@@ -3270,58 +3270,6 @@ export const moreCompanies = {
    ]
   },
   {
-   "id": "orsted",
-   "name": "Ørsted",
-   "ticker": "ORSTED.CO",
-   "logoUrl": "https://img.logo.dev/orsted.com?token=pk_X-1ZO13GSgeOoUrIuJ6GMQ",
-   "segment": "commercial",
-   "description": "Danish company that transformed from oil/gas to world's largest offshore wind developer.",
-   "industryRole": "Ørsted operates 8.9GW of offshore wind—more than any company. Pioneered the offshore wind industry.",
-   "ceo": "Mads Nipper",
-   "founded": "1972",
-   "headquarters": "Fredericia, Denmark",
-   "employees": "8,000+",
-   "marketCap": "$25B+",
-   "keyProducts": [
-    "Offshore Wind",
-    "Onshore Wind",
-    "Solar",
-    "Green Hydrogen"
-   ],
-   "slides": [
-    {
-     "title": "Offshore Pioneer",
-     "content": "Ørsted built the first commercial offshore wind farm. Now operates 8.9GW with 15GW in development.",
-     "highlight": "8.9GW offshore",
-     "type": "insight"
-    },
-    {
-     "title": "Transformation Story",
-     "content": "Transformed from DONG Energy (Danish Oil & Gas) to pure-play renewables. Model for energy transition.",
-     "highlight": "Transformation",
-     "type": "insight"
-    },
-    {
-     "title": "U.S. Expansion",
-     "content": "Major projects in U.S. Northeast including Sunrise Wind. Critical for U.S. offshore targets.",
-     "highlight": "U.S. focus",
-     "type": "insight"
-    },
-    {
-     "title": "Competitive Position",
-     "content": "Leads Equinor, RWE, Iberdrola in offshore. U.S. project cancellations hurt 2023.",
-     "highlight": "Offshore leader",
-     "type": "competitive"
-    },
-    {
-     "title": "Investment Thesis",
-     "content": "Beaten down on project challenges. Essential for offshore wind growth. Recovery play.",
-     "highlight": "Recovery play",
-     "type": "investment"
-    }
-   ]
-  },
-  {
    "id": "ge_vernova",
    "name": "GE Vernova",
    "ticker": "GEV",
@@ -3369,58 +3317,6 @@ export const moreCompanies = {
      "title": "Investment Thesis",
      "content": "Spin from GE unlocks value. Power is cash cow, renewables is growth. Execution-dependent.",
      "highlight": "Spin value",
-     "type": "investment"
-    }
-   ]
-  },
-  {
-   "id": "solaredge",
-   "name": "SolarEdge Technologies",
-   "ticker": "SEDG",
-   "logoUrl": "https://img.logo.dev/solaredge.com?token=pk_X-1ZO13GSgeOoUrIuJ6GMQ",
-   "segment": "commercial",
-   "description": "Israeli company making inverters and power optimizers for residential solar.",
-   "industryRole": "SolarEdge's power optimizers enable module-level optimization. Key for residential solar performance.",
-   "ceo": "Zvi Lando",
-   "founded": "2006",
-   "headquarters": "Herzliya, Israel",
-   "employees": "5,000+",
-   "marketCap": "$3B+",
-   "keyProducts": [
-    "Power Optimizers",
-    "Inverters",
-    "Batteries",
-    "EV Chargers"
-   ],
-   "slides": [
-    {
-     "title": "Inverter Leader",
-     "content": "SolarEdge leads in residential solar inverters with Enphase. Optimizer technology differentiates.",
-     "highlight": "Residential leader",
-     "type": "insight"
-    },
-    {
-     "title": "Product Expansion",
-     "content": "Expanded from inverters to batteries, EV chargers, grid services. Full energy platform.",
-     "highlight": "Platform play",
-     "type": "insight"
-    },
-    {
-     "title": "European Strength",
-     "content": "Strong in Europe where solar adoption accelerated post-Ukraine. Geographic diversification.",
-     "highlight": "Europe focus",
-     "type": "insight"
-    },
-    {
-     "title": "Competitive Position",
-     "content": "Competes with Enphase (microinverters), Chinese players. Different architecture tradeoffs.",
-     "highlight": "Enphase rival",
-     "type": "competitive"
-    },
-    {
-     "title": "Investment Thesis",
-     "content": "Cyclical with solar market. Stock down 80%+ from peak. Value if solar recovers. Risk is demand.",
-     "highlight": "Cyclical value",
      "type": "investment"
     }
    ]
