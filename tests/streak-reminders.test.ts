@@ -28,8 +28,10 @@ function harness(path: string, completed: boolean, offline = false) {
     './supabase': { supabase: { auth: { getUser: async () => ({ data: { user: { id: 'max' } }, error: null }) }, from: () => query } },
     'expo-notifications': notifications,
   };
+  // Route lazy imports through the same isolated native/service adapters.
+  const source = readFileSync(path, 'utf8').replace(/await import\((['"])([^'"]+)\1\)/g, 'await Promise.resolve(require("$2"))');
   const code = execFileSync(process.execPath, ['--input-type=module', '-e',
-    `import {transformSync} from 'esbuild'; process.stdout.write(transformSync(${JSON.stringify(readFileSync(path, 'utf8'))}, {loader:'ts',format:'cjs'}).code);`], { encoding: 'utf8' });
+    `import {transformSync} from 'esbuild'; process.stdout.write(transformSync(${JSON.stringify(source)}, {loader:'ts',format:'cjs'}).code);`], { encoding: 'utf8' });
   const module = { exports: {} as any };
   runInNewContext(code, { module, exports: module.exports, require: (name: string) => imports[name], Date: Clock, console });
   return { api: module.exports, alerts: () => scheduled };
