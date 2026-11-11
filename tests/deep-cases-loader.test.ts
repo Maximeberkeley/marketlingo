@@ -128,6 +128,7 @@ describe('the function, run against an in-memory table', () => {
       },
     });
     (globalThis as any).Deno = { env: { get: () => 'x' }, serve: (h: any) => { handlers.push(h); } };
+    console.log("DBG", require("node:fs").existsSync(out), out);
     await import(pathToFileURL(out).href);
   }, 120000);
 
