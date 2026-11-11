@@ -154,7 +154,7 @@ describe('XP balance', () => {
     const flow = read('mobile/hooks/useSessionFlow.ts');
     expect(flow).toContain('Math.max(xpRewardLessonComplete, Math.round(lessonXp ?? 0))');
     expect(flow).toContain('await completeLessonForToday(activeStack.id, earnedXP);');
-    expect(read('mobile/components/slides/LessonKitReader.tsx')).toContain('onFinish={({ timeSpentSeconds, correct, total, xp }) => onComplete(');
+    expect(read('mobile/components/slides/LessonKitReader.tsx')).toContain('onFinish={({ timeSpentSeconds, correct, total, xp, missed }) => {');
     expect(read('mobile/app/arena.tsx')).toContain("await addXP(result.xp, 'arena', undefined, replay ? 'Daily Arena replay' : 'Daily Arena run');");
   });
 });

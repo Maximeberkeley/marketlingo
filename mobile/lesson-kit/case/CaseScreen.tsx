@@ -14,6 +14,7 @@ import { LeoCoach } from '../components/LeoCoach';
 import { leoFeedbackLine } from '../../components/mascot/leoAnimationRules';
 import { renderExerciseByKind, isPassiveKind } from '../components/ExerciseRenderer';
 import { ExerciseState } from '../exercises/types';
+import type { Exercise } from '../types';
 import { DeepCase, CaseGrade, CASE_XP, caseDebriefLine, gradeCase } from './buildCase';
 import { playSound } from '../../lib/sounds';
 import { getMarketWorld } from '../../data/marketWorlds';
@@ -50,6 +51,8 @@ export interface CaseResult {
   callCorrect: boolean;
   confidence: Confidence;
   xp: number;
+  /** Graded stages answered wrong, for the review ledger. */
+  missed: Exercise[];
 }
 
 interface Props {
@@ -87,6 +90,7 @@ export function CaseScreen({ deepCase, marketId, marketName, onExit, onFinish, g
   const [debrief, setDebrief] = useState(false);
   const [showExit, setShowExit] = useState(false);
   const [banking, setBanking] = useState(false);
+  const missedStages = useRef<Exercise[]>([]);
 
   const stage = deepCase.stages[stageIndex];
   const passive = isPassiveKind(stage?.exercise.kind);
@@ -112,10 +116,11 @@ export function CaseScreen({ deepCase, marketId, marketName, onExit, onFinish, g
     } else {
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error).catch(() => {});
       playSound('wrong').catch(() => {});
+      if (stage?.exercise) missedStages.current = [...missedStages.current, stage.exercise];
     }
     if (isCall) setCallCorrect(state.isCorrect);
     setPhase('feedback');
-  }, [isCall, state.isCorrect]);
+  }, [isCall, state.isCorrect, stage]);
 
   const onAction = useCallback(() => {
     if (passive) {
@@ -195,6 +200,7 @@ export function CaseScreen({ deepCase, marketId, marketName, onExit, onFinish, g
                 callCorrect,
                 confidence: confidence || 'medium',
                 xp,
+                missed: missedStages.current,
                });
              }}
           />

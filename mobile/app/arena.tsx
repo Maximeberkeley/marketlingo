@@ -17,7 +17,7 @@ import { useUserXP } from '../hooks/useUserXP';
 import { useCollectibles } from '../hooks/useCollectibles';
 import { getMarketName } from '../lib/markets';
 import { localDateString } from '../lib/dayMath';
-import { loadLedger, recordMisses, saveLedger } from '../lib/reviewLedger';
+import { fileMisses } from '../lib/reviewLedger';
 import { COLORS, TYPE } from '../lib/constants';
 import { log } from '../lib/logger';
 import { triggerHaptic } from '../lib/haptics';
@@ -199,15 +199,8 @@ export default function ArenaRoute() {
   }
 
   const handleFinish = async (result: ArenaResult) => {
-    try {
-      // Misses come back on the review ladder, shown on Practice as "Worth another look".
-      if (user?.id && marketId && result.missed?.length) {
-        const ledger = await loadLedger(user.id, marketId);
-        await saveLedger(user.id, marketId, recordMisses(ledger, result.missed, localDateString()));
-      }
-    } catch (error) {
-      log.warn('[Arena] Could not file the misses for review:', error);
-    }
+    // Misses come back on the review ladder, shown on Practice as "Worth another look".
+    await fileMisses(user?.id, marketId, result.missed ?? []);
     try {
       await recordArenaRun(result.score);
       await addXP(result.xp, 'arena', undefined, replay ? 'Daily Arena replay' : 'Daily Arena run');

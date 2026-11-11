@@ -96,3 +96,41 @@ describe('practice cards', () => {
     expect(kase.button).toBeNull();
   });
 });
+
+describe('filing misses from every session', () => {
+  it('stamps lesson beats with their lesson so the card reads "Day N"', async () => {
+    const { withLessonSource, recordMisses: record } = await import('../mobile/lib/reviewLedger');
+    const bare: Exercise = { kind: 'multipleChoice', id: 'b1', prompt: 'Which one is it?', options: ['A', 'B'], correctIndex: 0 };
+    const [stamped] = withLessonSource([bare], { day: 5, title: 'Airworthiness basics' });
+    const [entry] = record([], [stamped], '2026-11-10');
+    expect(entry).toMatchObject({ day: 5, title: 'Airworthiness basics' });
+    const [kept] = withLessonSource([mc('k', 'Kept source?', 3)], { day: 9, title: 'Other' });
+    expect(kept.source).toMatchObject({ day: 3 });
+  });
+
+  it('fileMisses stores them and never throws when storage fails', async () => {
+    const { fileMisses, loadLedger } = await import('../mobile/lib/reviewLedger');
+    // AsyncStorage's web build reads window.localStorage.
+    const store = new Map<string, string>();
+    let broken = false;
+    (globalThis as any).window = { localStorage: {
+      getItem: (k: string) => store.get(k) ?? null,
+      setItem: (k: string, v: string) => { if (broken) throw new Error('full'); store.set(k, v); },
+    } };
+    await fileMisses('u1', 'aerospace', [mc('z', 'Filed question?')], '2026-11-10');
+    expect(await loadLedger('u1', 'aerospace')).toHaveLength(1);
+    broken = true;
+    await expect(fileMisses('u1', 'aerospace', [mc('y', 'Another one?')], '2026-11-10')).resolves.toBeUndefined();
+    await expect(fileMisses(undefined, 'aerospace', [mc('y', 'x')])).resolves.toBeUndefined();
+  });
+
+  it('is wired from the Arena, daily lessons and Deep Cases', async () => {
+    const { readFileSync } = await import('node:fs');
+    const read = (p: string) => readFileSync(p, 'utf8');
+    expect(read('mobile/app/arena.tsx')).toContain('fileMisses(user?.id, marketId, result.missed');
+    expect(read('mobile/app/deep-case.tsx')).toContain('fileMisses(user?.id, marketId, result.missed');
+    expect(read('mobile/components/slides/LessonKitReader.tsx')).toContain('withLessonSource(missed');
+    expect(read('mobile/lesson-kit/screens/LessonScreen.tsx')).toContain('missed: missed.filter');
+    expect(read('mobile/lesson-kit/case/CaseScreen.tsx')).toContain('missed: missedStages.current');
+  });
+});

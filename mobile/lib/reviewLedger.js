@@ -2,6 +2,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { REVIEW_GAPS } from "../lesson-kit/arena/buildArena";
 import { quizQuestionKeys } from "./quizHistory";
 import { localDateString, parseLocalDate } from "./dayMath";
+import { log } from "./logger";
 const REVIEW_XP = 10;
 const REVIEW_ROUND_LIMIT = 5;
 const LEDGER_LIMIT = 60;
@@ -108,6 +109,19 @@ async function loadLedger(userId, marketId) {
 async function saveLedger(userId, marketId, entries) {
   await AsyncStorage.setItem(ledgerStorageKey(userId, marketId), JSON.stringify(entries));
 }
+function withLessonSource(exercises, source) {
+  if (!source) return exercises;
+  return exercises.map((e) => e.source ? e : { ...e, source: { type: "lesson", day: source.day ?? null, title: source.title } });
+}
+async function fileMisses(userId, marketId, missed, today = localDateString()) {
+  if (!userId || !marketId || !missed.length) return;
+  try {
+    const ledger = await loadLedger(userId, marketId);
+    await saveLedger(userId, marketId, recordMisses(ledger, missed, today));
+  } catch (error) {
+    log.warn("[Review] Could not file the misses for review:", error);
+  }
+}
 export {
   LEDGER_LIMIT,
   REVIEW_ROUND_LIMIT,
@@ -118,6 +132,7 @@ export {
   daysBetween,
   dueEntries,
   dueMeta,
+  fileMisses,
   isReviewable,
   ledgerStorageKey,
   loadLedger,
@@ -125,5 +140,6 @@ export {
   parseLedger,
   recordMisses,
   reviewWave,
-  saveLedger
+  saveLedger,
+  withLessonSource
 };

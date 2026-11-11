@@ -54,6 +54,7 @@ function CaseScreen({ deepCase, marketId, marketName, onExit, onFinish, goal, da
   const [debrief, setDebrief] = useState(false);
   const [showExit, setShowExit] = useState(false);
   const [banking, setBanking] = useState(false);
+  const missedStages = useRef([]);
   const stage = deepCase.stages[stageIndex];
   const passive = isPassiveKind(stage?.exercise.kind);
   const isCall = stage?.key === "call";
@@ -81,10 +82,11 @@ function CaseScreen({ deepCase, marketId, marketName, onExit, onFinish, goal, da
       });
       playSound("wrong").catch(() => {
       });
+      if (stage?.exercise) missedStages.current = [...missedStages.current, stage.exercise];
     }
     if (isCall) setCallCorrect(state.isCorrect);
     setPhase("feedback");
-  }, [isCall, state.isCorrect]);
+  }, [isCall, state.isCorrect, stage]);
   const onAction = useCallback(() => {
     if (passive) {
       advance();
@@ -144,7 +146,8 @@ function CaseScreen({ deepCase, marketId, marketName, onExit, onFinish, goal, da
             total: graded,
             callCorrect,
             confidence: confidence || "medium",
-            xp
+            xp,
+            missed: missedStages.current
           });
         }
       }

@@ -315,7 +315,9 @@ function LessonScreen({
           correct: correctCount,
           total: gradedCount,
           xp,
-          timeSpentSeconds
+          timeSpentSeconds,
+          // First-time misses only; the "retry what I missed" copies are not new misses.
+          missed: missed.filter((e) => !/-retry\d+$/.test(e.id))
         })
       }
     );

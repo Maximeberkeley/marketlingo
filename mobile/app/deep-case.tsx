@@ -19,8 +19,11 @@ import { COLORS, TYPE } from '../lib/constants';
 import { log } from '../lib/logger';
 import { trackEvent } from '../lib/analytics';
 import { casesDoneToday, DAILY_CASES } from '../lib/homeSteps';
+import { fileMisses } from '../lib/reviewLedger';
+import { useAuth } from '../hooks/useAuth';
 
 export default function DeepCaseRoute() {
+  const { user } = useAuth();
   const { day } = useLocalSearchParams<{ day?: string }>();
   const preferredDay = day ? Number(day) : undefined;
   const { marketId, loading: marketLoading } = useSelectedMarket();
@@ -113,6 +116,8 @@ export default function DeepCaseRoute() {
 
   const handleFinish = async (result: CaseResult) => {
     trackEvent('case_finished', { grade: result.grade, caseId: deepCase.id, dailyNumber: caseIndex + 1 });
+    // The stages missed come back on the review ladder.
+    await fileMisses(user?.id, marketId, result.missed ?? []);
     try {
       await recordCaseRun(result.grade);
       await addXP(result.xp, 'deep_case', deepCase.id, `Deep Case graded ${result.grade}`);

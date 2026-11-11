@@ -13,6 +13,8 @@ import { useDeliverable } from '../../hooks/useDeliverable';
 import { sectionForLesson } from '../../lib/deliverables';
 import { sayItContext } from '../../lib/sayItStarter';
 import { getMarketName } from '../../lib/markets';
+import { useAuth } from '../../hooks/useAuth';
+import { fileMisses, withLessonSource } from '../../lib/reviewLedger';
 import { readingSlides } from '../../lesson-kit/components/feedbackCopy';
 
 /** Authored fields win, but only when actually set. */
@@ -123,6 +125,7 @@ export function LessonKitReader({
   learningGoal,
   authoredLesson: rawAuthoredLesson,
 }: LessonKitReaderProps) {
+  const { user } = useAuth();
   const authoredLesson = useMemo(() => isAuthoredLesson(rawAuthoredLesson)
     ? lessonForGoal(rawAuthoredLesson, learningGoal) : rawAuthoredLesson, [rawAuthoredLesson, learningGoal]);
   const { trainer, drills, stats } = useIndustryContent(marketId, dayNumber);
@@ -211,12 +214,16 @@ export function LessonKitReader({
         marketId={marketId}
         stackId={stackId}
         onExit={onClose}
-        onFinish={({ timeSpentSeconds, correct, total, xp }) => onComplete(
-          isReview,
-          timeSpentSeconds,
-          total > 0 ? Math.round((correct / total) * 100) : 100,
-          xp,
-        )}
+        onFinish={({ timeSpentSeconds, correct, total, xp, missed }) => {
+          // Wrong answers come back on the review ladder; never blocks finishing the lesson.
+          void fileMisses(user?.id, marketId, withLessonSource(missed, { day: dayNumber, title: baseLesson.title || stackTitle }));
+          return onComplete(
+            isReview,
+            timeSpentSeconds,
+            total > 0 ? Math.round((correct / total) * 100) : 100,
+            xp,
+          );
+        }}
         renderExtraActions={extraActions}
         onSaveLeoAnswer={(text, exerciseIndex, exercise) =>
           onAddNote((exercise?.kind === 'microInsight' ? exercise.sourceSlideNumber : undefined) ?? slideNumbers[exerciseIndex] ?? 1, `Leo explained: ${text}`)

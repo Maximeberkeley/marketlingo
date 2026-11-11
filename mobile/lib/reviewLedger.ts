@@ -13,6 +13,7 @@ import type { ArenaWave } from '../lesson-kit/arena/buildArena';
 import { REVIEW_GAPS } from '../lesson-kit/arena/buildArena';
 import { quizQuestionKeys } from './quizHistory';
 import { localDateString, parseLocalDate } from './dayMath';
+import { log } from './logger';
 
 export const REVIEW_XP = 10;
 /** Questions one review round asks. */
@@ -160,4 +161,28 @@ export async function loadLedger(userId: string, marketId: string): Promise<Revi
 
 export async function saveLedger(userId: string, marketId: string, entries: ReviewEntry[]): Promise<void> {
   await AsyncStorage.setItem(ledgerStorageKey(userId, marketId), JSON.stringify(entries));
+}
+
+/** Where a missed question came from, so the review card can say "Day 12". */
+export type MissSource = { day?: number | null; title: string };
+
+/** Stamps exercises that carry no lesson source (daily lesson beats) with the lesson they came from. */
+export function withLessonSource(exercises: Exercise[], source: MissSource | null): Exercise[] {
+  if (!source) return exercises;
+  return exercises.map(e => (e.source ? e : { ...e, source: { type: 'lesson', day: source.day ?? null, title: source.title } } as Exercise));
+}
+
+/**
+ * The one way a session files what it got wrong: Arena, daily lesson checks and
+ * Deep Cases all call this. It never throws, so banking a run is never blocked
+ * by the review list.
+ */
+export async function fileMisses(userId: string | undefined | null, marketId: string | undefined | null, missed: Exercise[], today = localDateString()): Promise<void> {
+  if (!userId || !marketId || !missed.length) return;
+  try {
+    const ledger = await loadLedger(userId, marketId);
+    await saveLedger(userId, marketId, recordMisses(ledger, missed, today));
+  } catch (error) {
+    log.warn('[Review] Could not file the misses for review:', error);
+  }
 }
