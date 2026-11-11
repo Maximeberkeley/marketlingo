@@ -46,6 +46,7 @@ import { LeoAvatar } from "../components/shop/LeoAvatar";
 import { useShop } from "../hooks/useShop";
 import { useEquippedLooks, usePublicLooks } from "../hooks/useEquippedLooks";
 import { LeoPodium } from "../components/social/LeoPodium";
+import { RankCard } from "../components/social/RankCard";
 import { MotionScope } from "../components/shop/Motion";
 import { crownStatus } from "../lib/crown";
 const SHEET_HANDOFF_MS = 380;
@@ -194,6 +195,12 @@ function FriendsScreen() {
   const looks = useEquippedLooks(friends.map((f) => f.id));
   const publicLooks = usePublicLooks(activeTab === "global" ? marketId : null, globalEntries.map((e) => e.user_id));
   const globalLook = (id, isMe) => isMe && shop.available ? shop.look : publicLooks[id]?.look ?? looks[id]?.look ?? {};
+  const rankPerson = (e) => e ? {
+    name: e.isCurrentUser ? "You" : e.username,
+    xp: e.total_xp,
+    look: globalLook(e.user_id, e.isCurrentUser),
+    crown: e.isCurrentUser ? shop.wearsCrown : !!publicLooks[e.user_id]?.wearsCrown
+  } : null;
   const friendsBoard = useMemo(() => {
     const rows = [
       {
@@ -538,7 +545,17 @@ function FriendsScreen() {
         nudge: !row.friend ? void 0 : row.friend.lessonDoneToday ? "done" : isNudged(row.friend.id) ? "nudged" : "idle",
         onNudge: row.friend ? () => openNudge(row.friend.id) : void 0
       }
-    ))), /* @__PURE__ */ React.createElement(AddFriendsCard, { hasFriends: true, onShare: handleShareInvite, onSearch: () => setFindOpen(true), onMyCode: () => openCodeSheet("code"), onScan: () => openCodeSheet("scan") }))), activeTab === "global" && /* @__PURE__ */ React.createElement(React.Fragment, null, !globalLoading && globalEntries.length > 0 && /* @__PURE__ */ React.createElement(View, { style: styles.heroCard }, /* @__PURE__ */ React.createElement(View, { style: { flex: 1 } }, /* @__PURE__ */ React.createElement(Text, { style: styles.heroKicker }, marketName.toUpperCase(), " \xB7 THIS MONTH"), /* @__PURE__ */ React.createElement(Text, { style: styles.heroValue }, currentUserRank ? /* @__PURE__ */ React.createElement(React.Fragment, null, "#", currentUserRank, /* @__PURE__ */ React.createElement(Text, { style: styles.heroUnit }, " of ", globalEntries.length)) : "Unranked"), /* @__PURE__ */ React.createElement(Text, { style: styles.heroLine }, currentUserRank === 1 ? /* @__PURE__ */ React.createElement(React.Fragment, null, "Top of the market. ", /* @__PURE__ */ React.createElement(Text, { style: styles.heroAccent }, "Hold it.")) : currentUserRank ? /* @__PURE__ */ React.createElement(React.Fragment, null, "Next spot costs ", /* @__PURE__ */ React.createElement(Text, { style: styles.heroAccent }, Math.max(1, (globalEntries[currentUserRank - 2]?.total_xp || 0) - (globalEntries[currentUserRank - 1]?.total_xp || 0) + 1), " XP"), ".") : "One lesson puts you on the board."))), !globalLoading && globalEntries.length >= 3 && /* @__PURE__ */ React.createElement(MotionScope, { active: focused }, /* @__PURE__ */ React.createElement(
+    ))), /* @__PURE__ */ React.createElement(AddFriendsCard, { hasFriends: true, onShare: handleShareInvite, onSearch: () => setFindOpen(true), onMyCode: () => openCodeSheet("code"), onScan: () => openCodeSheet("scan") }))), activeTab === "global" && /* @__PURE__ */ React.createElement(React.Fragment, null, !globalLoading && globalEntries.length > 0 && /* @__PURE__ */ React.createElement(MotionScope, { active: focused }, /* @__PURE__ */ React.createElement(
+      RankCard,
+      {
+        rank: currentUserRank,
+        total: globalEntries.length,
+        market: marketName,
+        me: rankPerson(globalEntries.find((e) => e.isCurrentUser)),
+        next: currentUserRank && currentUserRank > 1 ? rankPerson(globalEntries[currentUserRank - 2]) : null,
+        second: rankPerson(globalEntries[1])
+      }
+    )), !globalLoading && globalEntries.length >= 3 && /* @__PURE__ */ React.createElement(MotionScope, { active: focused }, /* @__PURE__ */ React.createElement(
       LeoPodium,
       {
         people: globalEntries.slice(0, 3).map((e) => ({
@@ -797,23 +814,6 @@ const styles = StyleSheet.create({
   },
   nudgeBtnOff: { backgroundColor: COLORS.bg1, borderColor: COLORS.border },
   nudgeBtnDone: { backgroundColor: COLORS.success, borderColor: "#15803D" },
-  // Global hero
-  heroCard: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 12,
-    backgroundColor: COLORS.accentSoft,
-    borderRadius: 22,
-    padding: 14,
-    borderWidth: 1.5,
-    borderColor: COLORS.accentMedium,
-    marginBottom: 14
-  },
-  heroKicker: { fontSize: 10, fontWeight: "800", letterSpacing: 1, color: COLORS.accent },
-  heroValue: { fontSize: 28, fontWeight: "800", color: COLORS.textPrimary, marginTop: 2 },
-  heroUnit: { fontSize: 14, fontWeight: "700", color: COLORS.textSecondary },
-  heroLine: { fontSize: 12, color: COLORS.textSecondary, marginTop: 3, lineHeight: 17 },
-  heroAccent: { color: COLORS.accent, fontWeight: "800" },
   // Empty state
   emptyState: { alignItems: "center", paddingTop: 24, gap: 4 },
   emptyTitle: { fontSize: 17, fontWeight: "800", color: COLORS.textPrimary },

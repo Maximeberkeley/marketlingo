@@ -38,6 +38,7 @@ import { LeoAvatar } from '../components/shop/LeoAvatar';
 import { useShop } from '../hooks/useShop';
 import { useEquippedLooks, usePublicLooks } from '../hooks/useEquippedLooks';
 import { LeoPodium } from '../components/social/LeoPodium';
+import { RankCard, RankPerson } from '../components/social/RankCard';
 import { MotionScope } from '../components/shop/Motion';
 import type { Look } from '../lib/shopEconomy';
 import { crownStatus } from '../lib/crown';
@@ -218,6 +219,12 @@ export default function FriendsScreen() {
   // Global standings: anyone on the board, friend or not; no look known means the default Leo, never a letter.
   const publicLooks = usePublicLooks(activeTab === 'global' ? marketId : null, globalEntries.map(e => e.user_id));
   const globalLook = (id: string, isMe?: boolean): Look => (isMe && shop.available ? shop.look : publicLooks[id]?.look ?? looks[id]?.look ?? {});
+  const rankPerson = (e?: LeaderboardEntry): RankPerson | null => (e ? {
+    name: e.isCurrentUser ? 'You' : e.username,
+    xp: e.total_xp,
+    look: globalLook(e.user_id, e.isCurrentUser),
+    crown: e.isCurrentUser ? shop.wearsCrown : !!publicLooks[e.user_id]?.wearsCrown,
+  } : null);
   const friendsBoard = useMemo(() => {
     const rows = [
       {
@@ -648,25 +655,18 @@ export default function FriendsScreen() {
           {/* ── GLOBAL TAB ──────────────────────── */}
           {activeTab === 'global' && (
             <>
-              {/* Rank hero with real numbers */}
+              {/* Your rank: your Leo, the number, and the race to the next person up (XP earned, never spent) */}
               {!globalLoading && globalEntries.length > 0 && (
-                <View style={styles.heroCard}>
-                  <View style={{ flex: 1 }}>
-                    <Text style={styles.heroKicker}>{marketName.toUpperCase()} · THIS MONTH</Text>
-                    <Text style={styles.heroValue}>
-                      {currentUserRank ? <>#{currentUserRank}<Text style={styles.heroUnit}> of {globalEntries.length}</Text></> : 'Unranked'}
-                    </Text>
-                    <Text style={styles.heroLine}>
-                      {currentUserRank === 1
-                        ? <>Top of the market. <Text style={styles.heroAccent}>Hold it.</Text></>
-                        : currentUserRank
-                          ? <>Next spot costs <Text style={styles.heroAccent}>
-                              {Math.max(1, (globalEntries[currentUserRank - 2]?.total_xp || 0) - (globalEntries[currentUserRank - 1]?.total_xp || 0) + 1)} XP
-                            </Text>.</>
-                          : 'One lesson puts you on the board.'}
-                    </Text>
-                  </View>
-                </View>
+                <MotionScope active={focused}>
+                  <RankCard
+                    rank={currentUserRank}
+                    total={globalEntries.length}
+                    market={marketName}
+                    me={rankPerson(globalEntries.find(e => e.isCurrentUser))}
+                    next={currentUserRank && currentUserRank > 1 ? rankPerson(globalEntries[currentUserRank - 2]) : null}
+                    second={rankPerson(globalEntries[1])}
+                  />
+                </MotionScope>
               )}
 
               {/* Podium: each of the top three's own Leo standing on their block */}
@@ -933,18 +933,6 @@ const styles = StyleSheet.create({
   },
   nudgeBtnOff: { backgroundColor: COLORS.bg1, borderColor: COLORS.border },
   nudgeBtnDone: { backgroundColor: COLORS.success, borderColor: '#15803D' },
-
-  // Global hero
-  heroCard: {
-    flexDirection: 'row', alignItems: 'center', gap: 12,
-    backgroundColor: COLORS.accentSoft, borderRadius: 22, padding: 14,
-    borderWidth: 1.5, borderColor: COLORS.accentMedium, marginBottom: 14,
-  },
-  heroKicker: { fontSize: 10, fontWeight: '800', letterSpacing: 1, color: COLORS.accent },
-  heroValue: { fontSize: 28, fontWeight: '800', color: COLORS.textPrimary, marginTop: 2 },
-  heroUnit: { fontSize: 14, fontWeight: '700', color: COLORS.textSecondary },
-  heroLine: { fontSize: 12, color: COLORS.textSecondary, marginTop: 3, lineHeight: 17 },
-  heroAccent: { color: COLORS.accent, fontWeight: '800' },
 
   // Empty state
   emptyState: { alignItems: 'center', paddingTop: 24, gap: 4 },

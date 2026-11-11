@@ -1,7 +1,8 @@
 import { describe, it, expect } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { execFileSync } from 'node:child_process';
-import { COSMETICS, priceOf } from '../mobile/lib/shopCatalog';
+import { BUNDLES, COSMETICS, bundleFullPrice, priceOf } from '../mobile/lib/shopCatalog';
+import { raceLine } from '../mobile/lib/rankRace';
 
 const read = (p: string) => readFileSync(p, 'utf8');
 const transform = (source: string, loader: string) => execFileSync(process.execPath, ['--input-type=module', '-e',
@@ -38,6 +39,25 @@ describe('the Global podium of Leos', () => {
   });
 });
 
+describe('the rank card', () => {
+  const p = (name: string, xp: number) => ({ name, xp, look: {} });
+  it('races you to the next person on XP earned, never "costs"', () => {
+    expect(raceLine(5, p('You', 1100), p('Tom', 1200), p('Marcus', 2910))).toEqual({ text: '101 XP to pass Tom', fill: 1100 / 1200 });
+    expect(raceLine(1, p('You', 3480), null, p('Marcus', 2910))).toEqual({ text: "You're on top · 570 XP ahead of Marcus", fill: 1 });
+    expect(raceLine(null, null, null, null).text).toBe('One lesson puts you on the board.');
+    expect(friends).not.toMatch(/costs/i);
+    for (const r of [5, 1, null]) expect(raceLine(r, p('You', 10), p('Tom', 20), p('Ann', 5)).text).not.toMatch(/cost/i);
+  });
+  it('shows your Leo, the rank and a bar that fills on the native driver', () => {
+    const card = read('mobile/components/social/RankCard.tsx');
+    expect(friends).toContain('<RankCard');
+    expect(card).toContain('<LeoAvatar look={me?.look ?? {}} crown={!!me?.crown} size={96} crop={false} name="You" />');
+    expect(card).toContain("useNativeDriver: true");
+    expect(card).toContain('transform: [{ scaleX: bar }]');
+    expect(card).toContain('if (reduce) { bar.setValue(race.fill); return; }');
+  });
+});
+
 describe('Winter royal', () => {
   it('sells the ermine cape at its founder-set price, seeded by its own migration', () => {
     const cape = COSMETICS.find(c => c.id === 'ermine-cape')!;
@@ -61,12 +81,29 @@ describe('Winter royal', () => {
     expect(priceOf(coat)).toBe(10000);
     expect(read('drizzle/migrations/0060_shop_catalog_legendary_looks.sql')).toContain("('commander-coat', 'cosmetic', 'outfit', 'legendary', 'Commander coat', 10000, 'purchase'");
     expect(read('mobile/lib/shopArtIds.ts')).toContain("'commander-coat'");
+    // holiday antlers: a common Seasonal hat that takes the featured card in December
+    const antlers = COSMETICS.find(c => c.id === 'holiday-antlers')!;
+    expect(antlers).toMatchObject({ slot: 'hat', rarity: 'common', collection: 'seasonal', featuredIn: [12] });
+    expect(priceOf(antlers)).toBe(300);
+    expect(read('drizzle/migrations/0060_shop_catalog_legendary_looks.sql')).toContain("('holiday-antlers', 'cosmetic', 'hat', 'common', 'Holiday antlers', 300, 'purchase'");
+    expect(read('mobile/app/(tabs)/shop.tsx')).toContain('const pool = seasonal.length ? seasonal : sets.length ? sets : items;');
+    // the Christmas set: antlers + collar, both common, cheaper together, featured as a set in December
+    const collar = COSMETICS.find(c => c.id === 'holiday-collar')!;
+    expect(collar).toMatchObject({ slot: 'outfit', rarity: 'common', collection: 'seasonal', featuredIn: [12] });
+    expect(COSMETICS.find(c => c.id === 'reindeer-nose')).toMatchObject({ slot: 'glasses', rarity: 'common', collection: 'seasonal', featuredIn: [12] });
+    const xmas = BUNDLES.find(b => b.id === 'bundle-christmas')!;
+    expect(xmas.items).toEqual(['holiday-antlers', 'holiday-collar', 'reindeer-nose']);
+    expect(xmas.price).toBeLessThan(bundleFullPrice(xmas));
+    const sql = read('drizzle/migrations/0060_shop_catalog_legendary_looks.sql');
+    expect(sql).toContain("('holiday-collar', 'cosmetic', 'outfit', 'common', 'Holiday collar', 300, 'purchase'");
+    expect(sql).toContain("('reindeer-nose', 'cosmetic', 'glasses', 'common', 'Reindeer nose', 300, 'purchase'");
+    expect(sql).toContain("('bundle-christmas', 'bundle', NULL, NULL, 'Christmas set', 680, 'purchase'");
   });
 });
 
 describe('JavaScript copies', () => {
   it('match their source', () => {
-    for (const [path, loader] of [['app/friends', 'tsx'], ['components/social/LeoPodium', 'tsx'], ['hooks/useEquippedLooks', 'ts'], ['lib/shopCatalog', 'ts']]) {
+    for (const [path, loader] of [['app/friends', 'tsx'], ['components/social/LeoPodium', 'tsx'], ['components/social/RankCard', 'tsx'], ['lib/rankRace', 'ts'], ['hooks/useEquippedLooks', 'ts'], ['lib/shopCatalog', 'ts']]) {
       const js = read(`mobile/${path}.js`);
       expect(js, path).toBe(transform(read(`mobile/${path}.${loader}`), loader));
       if (js.includes('React.createElement')) expect(js, path).toMatch(/import React\b/);
