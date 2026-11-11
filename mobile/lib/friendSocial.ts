@@ -193,22 +193,25 @@ export function raceIsOver(r: Pick<FriendRace, 'status' | 'ends_at'>, now = new 
  * collect, a friend streak waiting on you, an invite to answer, a race in
  * progress. Null when there is nothing to say.
  */
-export function homeSocialLine(social: FriendSocial | null, now = new Date()): { text: string; icon: 'flame' | 'race' | 'gift' } | null {
+/** XP gaps read with thousands separators: "2,927 XP". */
+const xpGap = (n: number) => n.toLocaleString('en-US');
+
+export function homeSocialLine(social: FriendSocial | null, now = new Date()): { text: string; icon: 'flame' | 'race' | 'gift'; actionable?: boolean } | null {
   if (!social) return null;
   const claimRace = social.races.find(r => raceIsOver(r, now) && !r.claimed);
-  if (claimRace) return { text: `Race with ${firstName(claimRace)} is over. Collect your XP`, icon: 'gift' };
+  if (claimRace) return { text: `Race with ${firstName(claimRace)} is over · collect XP`, icon: 'gift', actionable: true };
   const claimStreak = social.streaks.find(s => s.claimable_xp > 0);
-  if (claimStreak) return { text: `${claimStreak.length}-day streak with ${firstName(claimStreak)}. Collect +${claimStreak.claimable_xp} XP`, icon: 'gift' };
+  if (claimStreak) return { text: `${claimStreak.length}-day streak with ${firstName(claimStreak)}. Collect +${claimStreak.claimable_xp} XP`, icon: 'gift', actionable: true };
   const yourTurn = social.streaks.find(s => s.status === 'active' && !s.me_done_today && (s.length > 0 || s.friend_done_today));
-  if (yourTurn) return { text: `${yourTurn.length > 0 ? `${yourTurn.length}-day streak with ${firstName(yourTurn)}` : `Streak with ${firstName(yourTurn)}`} · your turn`, icon: 'flame' };
+  if (yourTurn) return { text: `${yourTurn.length > 0 ? `${yourTurn.length}-day streak with ${firstName(yourTurn)}` : `Streak with ${firstName(yourTurn)}`} · your turn`, icon: 'flame', actionable: true };
   const invite = social.streaks.find(s => s.status === 'pending' && !s.invited_by_me);
-  if (invite) return { text: `${firstName(invite)} wants a friend streak with you`, icon: 'flame' };
+  if (invite) return { text: `${firstName(invite)} wants a friend streak with you`, icon: 'flame', actionable: true };
   const challenge = social.races.find(r => r.status === 'pending' && !r.challenged_by_me);
-  if (challenge) return { text: `${firstName(challenge)} challenged you to a race`, icon: 'race' };
+  if (challenge) return { text: `${firstName(challenge)} challenged you to a race`, icon: 'race', actionable: true };
   const race = social.races.find(r => r.status === 'active' && !raceIsOver(r, now));
   if (race) {
     const gap = Math.abs(race.my_xp - race.friend_xp);
-    const lead = race.my_xp === race.friend_xp ? 'neck and neck' : race.my_xp > race.friend_xp ? `you lead by ${gap} XP` : `${firstName(race)} leads by ${gap} XP`;
+    const lead = race.my_xp === race.friend_xp ? 'neck and neck' : race.my_xp > race.friend_xp ? `you lead by ${xpGap(gap)} XP` : `${firstName(race)} leads by ${xpGap(gap)} XP`;
     return { text: `Racing ${firstName(race)} · ${lead}`, icon: 'race' };
   }
   const lit = social.streaks.find(s => s.status === 'active' && s.length > 0);

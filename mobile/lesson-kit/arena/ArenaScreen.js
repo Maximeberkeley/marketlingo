@@ -299,7 +299,7 @@ function ArenaScreen({ waves, marketId, marketName, bestScore, onExit, onFinish,
   const buttonLabel = passive ? "Continue" : phase === "feedback" ? "Next" : "Lock it in";
   const strip = inAgain ? wave.exercises.map((_, i) => againMarks[i]) : Array.from({ length: mainTotal }, (_, i) => marks[i]);
   const current = inAgain ? beatIndex : mainPosition;
-  const roundLabel = inAgain ? "SECOND CHANCE" : `ROUND ${waveIndex + 1} OF ${waves.length}`;
+  const roundLabel = inAgain ? "SECOND CHANCE" : waves.length === 1 && wave?.name ? wave.name.toUpperCase() : `ROUND ${waveIndex + 1} OF ${waves.length}`;
   return /* @__PURE__ */ React.createElement(View, { style: [styles.root, { paddingTop: insets.top + 8 }] }, /* @__PURE__ */ React.createElement(View, { style: styles.hud }, /* @__PURE__ */ React.createElement(TouchableOpacity, { onPress: () => setShowExit(true), style: styles.hudExit, hitSlop: 10, accessibilityLabel: "Leave the run" }, /* @__PURE__ */ React.createElement(Feather, { name: "x", size: 20, color: tokens.color.textMuted })), /* @__PURE__ */ React.createElement(View, { style: styles.hudCenter }, /* @__PURE__ */ React.createElement(Text, { style: styles.hudWave }, roundLabel), /* @__PURE__ */ React.createElement(View, { style: styles.strip, accessibilityLabel: `Question ${current + 1} of ${strip.length}` }, strip.map((mark, i) => /* @__PURE__ */ React.createElement(
     View,
     {
@@ -371,7 +371,7 @@ function ArenaScreen({ waves, marketId, marketName, bestScore, onExit, onFinish,
       style: styles.waveCard
     },
     !inAgain && /* @__PURE__ */ React.createElement(View, { style: styles.pips }, waves.map((w, i) => /* @__PURE__ */ React.createElement(View, { key: w.key, style: [styles.pip, i < waveIndex && styles.pipDone, i === waveIndex && styles.pipNow] }))),
-    /* @__PURE__ */ React.createElement(Text, { style: styles.waveKicker }, inAgain ? "Bonus round" : `Round ${waveIndex + 1} of ${waves.length}`),
+    /* @__PURE__ */ React.createElement(Text, { style: styles.waveKicker }, inAgain ? "Bonus round" : waves.length === 1 ? "Review round" : `Round ${waveIndex + 1} of ${waves.length}`),
     !!wave.name && /* @__PURE__ */ React.createElement(Text, { style: styles.waveName }, wave.name),
     !!wave.tagline && /* @__PURE__ */ React.createElement(Text, { style: styles.waveTagline }, wave.tagline),
     !!wave.covers && /* @__PURE__ */ React.createElement(Text, { style: styles.waveCovers }, wave.covers),

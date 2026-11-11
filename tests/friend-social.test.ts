@@ -77,12 +77,14 @@ describe('Home chip line', () => {
     const turn = streak({ friend_done_today: true });
     const invite = streak({ id: 's3', display_name: 'Analyst', status: 'pending', invited_by_me: false, length: 0 });
     const challenge = race({ id: 'r3', display_name: 'Analyst', status: 'pending', challenged_by_me: false, ends_at: null });
-    expect(homeSocialLine(social([claim, turn], [race(), over]), NOW)).toEqual({ text: 'Race with Dana is over. Collect your XP', icon: 'gift' });
+    expect(homeSocialLine(social([claim, turn], [race(), over]), NOW)).toEqual({ text: 'Race with Dana is over · collect XP', icon: 'gift', actionable: true });
     expect(homeSocialLine(social([turn, claim], [race()]), NOW)?.text).toBe('7-day streak with Lucas. Collect +25 XP');
-    expect(homeSocialLine(social([turn], [race()]), NOW)).toEqual({ text: '6-day streak with Sophie · your turn', icon: 'flame' });
+    expect(homeSocialLine(social([turn], [race()]), NOW)).toEqual({ text: '6-day streak with Sophie · your turn', icon: 'flame', actionable: true });
     expect(homeSocialLine(social([invite], [challenge]), NOW)?.text).toBe('Analyst wants a friend streak with you');
-    expect(homeSocialLine(social([], [challenge]), NOW)).toEqual({ text: 'Analyst challenged you to a race', icon: 'race' });
+    expect(homeSocialLine(social([], [challenge]), NOW)).toEqual({ text: 'Analyst challenged you to a race', icon: 'race', actionable: true });
     expect(homeSocialLine(social([], [race()]), NOW)?.text).toBe('Racing Dana · you lead by 40 XP');
+    // A running race is status, not a to-do: Profile shows it only in the quiet line.
+    expect(homeSocialLine(social([], [race()]), NOW)?.actionable).toBeUndefined();
     expect(homeSocialLine(social([], []), NOW)).toBeNull();
     expect(homeSocialLine(null, NOW)).toBeNull();
   });
