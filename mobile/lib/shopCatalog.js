@@ -41,7 +41,7 @@ const COSMETICS = [
   { id: "holly-wreath", slot: "outfit", name: "Holly wreath", rarity: "uncommon", acquisition: "purchase", collection: "seasonal", featuredIn: [12], pairsWith: ["holiday-antlers", "reindeer-nose"] },
   { id: "ember-band", slot: "hat", name: "Ember headband", rarity: "uncommon", acquisition: "reward", requires: { min_streak_days: 7 }, rule: "7-day streak" },
   { id: "phoenix-feather", slot: "hat", name: "Phoenix feather", rarity: "rare", acquisition: "reward", requires: { min_streak_days: 30 }, rule: "30-day streak" },
-  { id: "eternal-flame-halo", slot: "hat", name: "Eternal flame halo", rarity: "legendary", acquisition: "reward", requires: { min_streak_days: 365 }, rule: "365-day streak" },
+  { id: "eternal-flame-halo", slot: "hat", name: "Eternal flame halo", rarity: "legendary", acquisition: "reward", requires: { min_streak_days: 150 }, rule: "150-day streak" },
   { id: "round-glasses", slot: "glasses", name: "Scholar glasses", rarity: "common", acquisition: "purchase", collection: "lab" },
   { id: "sunglasses", slot: "glasses", name: "Sunglasses", rarity: "common", acquisition: "purchase", collection: "startup" },
   { id: "aviators", slot: "glasses", name: "Aviators", rarity: "uncommon", acquisition: "purchase", collection: "aerospace" },

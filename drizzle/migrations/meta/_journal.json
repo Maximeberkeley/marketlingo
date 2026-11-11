@@ -449,6 +449,13 @@
       "when": 1794500000063,
       "tag": "0063_apply_shop_public_looks",
       "breakpoints": true
+    },
+    {
+      "idx": 64,
+      "version": "7",
+      "when": 1794500000067,
+      "tag": "0067_eternal_flame_150",
+      "breakpoints": true
     }
   ]
 }
