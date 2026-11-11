@@ -629,6 +629,24 @@ export type Database = {
           },
         ]
       }
+      double_xp_grants: {
+        Row: {
+          case_id: string
+          granted_at: string
+          user_id: string
+        }
+        Insert: {
+          case_id: string
+          granted_at?: string
+          user_id: string
+        }
+        Update: {
+          case_id?: string
+          granted_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       drill_questions: {
         Row: {
           category: string
@@ -2885,6 +2903,24 @@ export type Database = {
         }
         Relationships: []
       }
+      user_boosts: {
+        Row: {
+          double_xp_until: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          double_xp_until?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          double_xp_until?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_collectibles: {
         Row: {
           collectible_id: string
@@ -3957,10 +3993,23 @@ export type Database = {
         Args: { p_deal_date?: string; p_idem_key: string; p_item_id: string }
         Returns: Json
       }
+      shop_repair_check: {
+        Args: { p_market_id: string; p_today: string; p_user: string }
+        Returns: Json
+      }
+      shop_repair_status: {
+        Args: { p_market_id: string; p_today: string }
+        Returns: Json
+      }
+      shop_repair_streak: {
+        Args: { p_idem_key: string; p_market_id: string; p_today: string }
+        Returns: Json
+      }
       shop_unmet_requirement: {
         Args: { p_req: Json; p_user: string }
         Returns: string
       }
+      shop_use_double_xp: { Args: never; Returns: Json }
       shop_use_freeze: {
         Args: { p_local_date: string; p_market_id: string }
         Returns: boolean
@@ -3981,6 +4030,10 @@ export type Database = {
       shop_xp_earned: { Args: { p_user: string }; Returns: number }
       start_friend_streak: { Args: { p_friend: string }; Returns: string }
       stop_curriculum_rewrite_schedule: { Args: never; Returns: boolean }
+      streak_day_kept: {
+        Args: { p_day: string; p_market_id: string; p_user: string }
+        Returns: boolean
+      }
       submit_decision_answer: {
         Args: {
           p_confidence?: string
