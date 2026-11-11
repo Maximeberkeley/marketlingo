@@ -144,6 +144,10 @@ export interface EarnStats {
   xpEarned: number;
   weeklyCasesSubmitted: number;
   lessonsCompleted: number;
+  /** Weekly Cases finished 1st / 2nd / 3rd among friends (cases at least 3 friends submitted). */
+  podiumFirsts?: number;
+  podiumSeconds?: number;
+  podiumThirds?: number;
   weeklyCaseTop3?: boolean;
 }
 
@@ -161,6 +165,14 @@ export function requirementProgress(req: Requirements | undefined, s: EarnStats)
   if (req?.requires_weekly_case_submission) checks.push({ met: s.weeklyCasesSubmitted >= 1, current: Math.min(s.weeklyCasesSubmitted, 1), target: 1, label: 'Finish a Weekly Case' });
   if (req?.min_lessons_completed) checks.push({ met: s.lessonsCompleted >= req.min_lessons_completed, current: Math.min(s.lessonsCompleted, req.min_lessons_completed), target: req.min_lessons_completed, label: `Finish ${req.min_lessons_completed} lessons in one industry` });
   if (req?.weekly_case_top3) checks.push({ met: !!s.weeklyCaseTop3, current: s.weeklyCaseTop3 ? 1 : 0, target: 1, label: 'Finish top 3 among friends in a Weekly Case' });
+  const podium = (n: number | undefined, have: number | undefined, place: string) => {
+    if (!n) return;
+    const h = have ?? 0;
+    checks.push({ met: h >= n, current: Math.min(h, n), target: n, label: `Finish ${place} in a Weekly Case ${n} times` });
+  };
+  podium(req?.weekly_podium_first_count, s.podiumFirsts, '1st');
+  podium(req?.weekly_podium_second_count, s.podiumSeconds, '2nd');
+  podium(req?.weekly_podium_third_count, s.podiumThirds, '3rd');
   if (!checks.length) return { met: true, current: 1, target: 1, label: '' };
   return checks.find(c => !c.met) ?? checks[0];
 }

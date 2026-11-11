@@ -74,7 +74,7 @@ async function load(uid: string): Promise<void> {
       if (raw) emit({ look: JSON.parse(raw) });
     } catch { /* first open */ }
   }
-  const [bal, inv, eq, looks, deals, perks, progress, xp, cases] = await Promise.all([
+  const [bal, inv, eq, looks, deals, perks, progress, xp, cases, placements] = await Promise.all([
     supabase.rpc('shop_balance'),
     supabase.from('user_inventory').select('item_id, qty, source, seen_at').eq('user_id', uid),
     supabase.from('user_equipped').select('slot, item_id').eq('user_id', uid),
@@ -84,6 +84,7 @@ async function load(uid: string): Promise<void> {
     supabase.from('user_progress').select('longest_streak, completed_stacks').eq('user_id', uid),
     supabase.from('user_xp').select('total_xp').eq('user_id', uid),
     supabase.from('weekly_case_submissions').select('id', { count: 'exact', head: true }).eq('user_id', uid).eq('status', 'submitted'),
+    supabase.from('weekly_case_placements').select('rank, board_size').eq('user_id', uid),
   ]);
   const available = !bal.error;
   if (bal.error && !isMissing(bal.error)) log.warn('[Shop] Balance could not load:', bal.error.message);
@@ -108,6 +109,7 @@ async function load(uid: string): Promise<void> {
     lessonsCompleted: rows.reduce((m, r) => Math.max(m, r.completed_stacks?.length ?? 0), 0),
     xpEarned: balance.earned,
     weeklyCasesSubmitted: cases.count ?? 0,
+    ...podiumCounts(placements.data as { rank: number; board_size: number }[] | null),
   };
   emit({
     ready: true,
@@ -122,6 +124,13 @@ async function load(uid: string): Promise<void> {
     stats,
   });
   if (!eq.error) AsyncStorage.setItem(lookKey(uid), JSON.stringify(look)).catch(() => {});
+}
+
+/** Weekly Case placements among friends into podium counts; only cases at least 3 friends submitted count. */
+function podiumCounts(rows: { rank: number; board_size: number }[] | null): Pick<EarnStats, 'podiumFirsts' | 'podiumSeconds' | 'podiumThirds'> {
+  const real = (rows ?? []).filter(r => Number(r.board_size) >= 3);
+  const n = (rank: number) => real.filter(r => Number(r.rank) === rank).length;
+  return { podiumFirsts: n(1), podiumSeconds: n(2), podiumThirds: n(3) };
 }
 
 export function refreshShop(uid: string | null | undefined): Promise<void> {

@@ -407,6 +407,13 @@
       "when": 1794500000061,
       "tag": "0061_shop_catalog_holly_wreath",
       "breakpoints": true
+    },
+    {
+      "idx": 62,
+      "version": "7",
+      "when": 1794500000062,
+      "tag": "0062_shop_catalog_weekly_medals",
+      "breakpoints": true
     }
   ]
 }

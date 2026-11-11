@@ -3,7 +3,7 @@ import { readFileSync } from 'node:fs';
 import { execFileSync } from 'node:child_process';
 import { BUNDLES, COSMETICS, bundleFullPrice, priceOf } from '../mobile/lib/shopCatalog';
 import { raceLine } from '../mobile/lib/rankRace';
-import { avatarLayers } from '../mobile/lib/shopEconomy';
+import { avatarLayers, requirementProgress } from '../mobile/lib/shopEconomy';
 
 const read = (p: string) => readFileSync(p, 'utf8');
 const transform = (source: string, loader: string) => execFileSync(process.execPath, ['--input-type=module', '-e',
@@ -124,11 +124,63 @@ describe('Holly wreath and the champion medal', () => {
     expect(COSMETICS.some(c => c.id === 'lion-mane')).toBe(false);
     expect(read('mobile/lib/shopArt.ts')).not.toContain('lion-mane');
   });
-  it('draws the earn-only Case champion medal pinned on the chest, above outfits; hats stay above outfits too', () => {
-    expect(read('mobile/lib/shopArt.ts')).toContain("'medal-champion': require('../assets/shop/held/medal-champion.png')");
-    expect(avatarLayers({ outfit: 'commander-coat', held: 'medal-champion' }, { hasArt: () => true })).toEqual(['base', 'commander-coat', 'grad-cap', 'medal-champion']);
+  it('keeps hats and held medals above outfits (outfit art redraws the head)', () => {
+    expect(avatarLayers({ outfit: 'commander-coat', held: 'medal-gold' }, { hasArt: () => true })).toEqual(['base', 'commander-coat', 'grad-cap', 'medal-gold']);
     expect(avatarLayers({ hat: 'raven-crown', outfit: 'ermine-cape', glasses: 'aviators' }, { hasArt: () => true })).toEqual(['base', 'ermine-cape', 'aviators', 'raven-crown']);
-    expect(sql).toContain("'medal-champion']::text[])) WHERE kind = 'cosmetic'");
+  });
+});
+
+describe('Weekly Case podium medals', () => {
+  const medalSql = read('drizzle/migrations/0062_shop_catalog_weekly_medals.sql');
+  const stats = { bestStreak: 0, xpEarned: 0, weeklyCasesSubmitted: 9, lessonsCompleted: 0 };
+  it('are earn-only held quests: 3rd x3 bronze, 2nd x5 silver, 1st x7 gold, replacing the case champion medal', () => {
+    expect(COSMETICS.find(c => c.id === 'medal-bronze')).toMatchObject({ slot: 'held', rarity: 'rare', acquisition: 'reward', requires: { weekly_podium_third_count: 3 } });
+    expect(COSMETICS.find(c => c.id === 'medal-silver')).toMatchObject({ slot: 'held', rarity: 'epic', acquisition: 'reward', requires: { weekly_podium_second_count: 5 } });
+    expect(COSMETICS.find(c => c.id === 'medal-gold')).toMatchObject({ slot: 'held', rarity: 'legendary', acquisition: 'reward', requires: { weekly_podium_first_count: 7 } });
+    for (const id of ['medal-bronze', 'medal-silver', 'medal-gold']) expect(priceOf(COSMETICS.find(c => c.id === id)!), id).toBeNull();
+    expect(COSMETICS.some(c => c.id === 'medal-champion')).toBe(false);
+    expect(medalSql).toContain("UPDATE public.shop_items SET status = 'ended', hidden = true, art_ready = false WHERE id = 'medal-champion';");
+  });
+  it('show progress as quests from Weekly Case placements', () => {
+    const bronze = COSMETICS.find(c => c.id === 'medal-bronze')!;
+    expect(requirementProgress(bronze.requires, { ...stats, podiumThirds: 1 })).toEqual({ met: false, current: 1, target: 3, label: 'Finish 3rd in a Weekly Case 3 times' });
+    expect(requirementProgress(bronze.requires, { ...stats, podiumThirds: 3 }).met).toBe(true);
+    expect(read('mobile/hooks/useShop.ts')).toContain("supabase.from('weekly_case_placements').select('rank, board_size').eq('user_id', uid)");
+    expect(read('mobile/hooks/useShop.ts')).toContain('const real = (rows ?? []).filter(r => Number(r.board_size) >= 3);');
+  });
+  it('store placements once when scores are released, count only cases 3+ friends submitted, and grant once', () => {
+    expect(medalSql).toContain('PRIMARY KEY (user_id, case_id)');
+    expect(medalSql).toContain('PERFORM public.record_weekly_case_placements(p_case_id);');
+    expect(medalSql).toContain('ON CONFLICT (user_id, case_id) DO NOTHING;');
+    expect(medalSql).toMatch(/wp\.rank = 1 AND wp\.board_size >= 3\)\s+< \(p_req->>'weekly_podium_first_count'\)::integer/);
+    expect(medalSql).not.toContain('user_placements');
+  });
+  it('glint on the Weekly Case results podium, never on the monthly Standings podium', () => {
+    expect(read('mobile/app/weekly-case-results.tsx')).toContain('<LeoPodium unit="pts" medals people=');
+    expect(friends).not.toContain('medals');
+    expect(podium).toContain("{medals && <View style={styles.medal}><MedalGlint place={(i + 1) as 1 | 2 | 3} /></View>}");
+    expect(read('mobile/components/shop/MedalGlint.tsx')).toContain("router.push(`/shop-item?id=${id}` as any)");
+  });
+});
+
+describe('Captain hat', () => {
+  it('sells the captain hat (rare 800) paired with the commander coat both ways', () => {
+    const hat = COSMETICS.find(c => c.id === 'captain-hat')!;
+    expect(hat).toMatchObject({ slot: 'hat', rarity: 'rare', acquisition: 'purchase', pairsWith: ['commander-coat'] });
+    expect(priceOf(hat)).toBe(800);
+    expect(COSMETICS.find(c => c.id === 'commander-coat')!.pairsWith).toEqual(['captain-hat']);
+    expect(read('drizzle/migrations/0062_shop_catalog_weekly_medals.sql')).toContain("('captain-hat', 'cosmetic', 'hat', 'rare', 'Captain hat', 800, 'purchase'");
+  });
+});
+
+describe('Angel of my Dreams', () => {
+  it('sells angel wings (cape, behind Leo) and the halo at 800 each, and the pack with the necklace at 1,500', () => {
+    expect(COSMETICS.find(c => c.id === 'angel-wings')).toMatchObject({ slot: 'cape', name: 'Angel wings', rarity: 'rare', acquisition: 'purchase' });
+    expect(COSMETICS.find(c => c.id === 'halo')).toMatchObject({ slot: 'hat', rarity: 'rare', acquisition: 'purchase' });
+    const pack = BUNDLES.find(b => b.id === 'bundle-angel')!;
+    expect(pack).toMatchObject({ name: 'Angel of my Dreams', items: ['angel-wings', 'halo', 'sun-diamond-necklace'], price: 1500 });
+    expect(bundleFullPrice(pack)).toBe(2400);
+    expect(avatarLayers({ cape: 'angel-wings', outfit: 'sun-diamond-necklace', hat: 'halo' }, { hasArt: () => true })).toEqual(['angel-wings', 'base', 'sun-diamond-necklace', 'halo']);
   });
 });
 

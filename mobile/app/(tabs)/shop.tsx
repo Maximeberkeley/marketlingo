@@ -20,6 +20,7 @@ import { Carousel, Flask, PriceButton, Row, SectionHead, XPChip } from '../../co
 import { Countdown, Float, MotionScope, PressScale, Rise, ScrollWatch, Sheen, useNow, useScrollWatch } from '../../components/shop/Motion';
 import { FloatIcon, FloorShadow, PERK_SCENE, PerkObject, SCENES, SceneBackdrop, SceneTheme, Sunburst, Twinkles } from '../../components/shop/Scene';
 import { SHOP_SCENES } from '../../lib/shopArt';
+import { MedalGlint, PODIUM_MEDALS } from '../../components/shop/MedalGlint';
 import { XPSheet } from '../../components/shop/XPSheet';
 import { ChunkyButton } from '../../components/social/ChunkyButton';
 
@@ -271,7 +272,11 @@ export default function ShopScreen() {
                   <TouchableOpacity key={c.id} activeOpacity={0.9} onPress={() => open(`/shop-item?id=${c.id}`)} style={styles.earnTile} accessibilityRole="button">
                     <View style={styles.earnArt}>
                       <Sunburst size={220} cx={72} cy={50} color="#FDE68A" opacity={p.met ? 0.4 : 0.18} />
-                      <View style={{ opacity: p.met ? 1 : 0.55 }}><ItemArt item={c} size={92} showTag={false} tint="transparent" /></View>
+                      <View style={{ opacity: p.met ? 1 : 0.55 }}>
+                        {(PODIUM_MEDALS as readonly string[]).includes(c.id)
+                          ? <MedalGlint place={((PODIUM_MEDALS as readonly string[]).indexOf(c.id) + 1) as 1 | 2 | 3} height={84} interactive={false} />
+                          : <ItemArt item={c} size={92} showTag={false} tint="transparent" />}
+                      </View>
                       <View style={[styles.lock, p.met && { backgroundColor: '#4ADE80' }]}><Feather name={p.met ? 'check' : 'lock'} size={13} color={p.met ? '#052E16' : '#3A2600'} /></View>
                     </View>
                     <Text maxFontSizeMultiplier={1.3} style={styles.earnName} numberOfLines={1}>{c.name}</Text>

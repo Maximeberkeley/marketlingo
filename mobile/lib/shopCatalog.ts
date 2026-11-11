@@ -19,6 +19,10 @@ export interface Requirements {
   requires_weekly_case_submission?: boolean;
   crown_live?: boolean;
   crown_keepsake?: boolean;
+  /** Weekly Case placements among friends (cases at least 3 friends submitted), counted when scores are released. */
+  weekly_podium_first_count?: number;
+  weekly_podium_second_count?: number;
+  weekly_podium_third_count?: number;
 }
 
 export type CollectionId = 'aerospace' | 'wallstreet' | 'lab' | 'startup' | 'tech' | 'field' | 'royal' | 'seasonal';
@@ -105,7 +109,8 @@ export const COSMETICS: Cosmetic[] = [
   { id: 'case-blazer', slot: 'outfit', name: 'Case-cracker blazer', rarity: 'epic', acquisition: 'reward', requires: { weekly_case_submitted_count: 10 }, rule: 'Submit 10 weekly cases' },
   { id: 'hero-cape', slot: 'cape', name: 'Hero cape', rarity: 'common', acquisition: 'purchase', collection: 'seasonal' },
   { id: 'rocket-pack', slot: 'cape', name: 'Rocket backpack', rarity: 'uncommon', acquisition: 'purchase', collection: 'aerospace' },
-  { id: 'angel-wings', slot: 'cape', name: 'Wings', rarity: 'rare', acquisition: 'purchase', collection: 'seasonal' },
+  { id: 'angel-wings', slot: 'cape', name: 'Angel wings', rarity: 'rare', acquisition: 'purchase', collection: 'seasonal', pairsWith: ['halo', 'sun-diamond-necklace'] },
+  { id: 'halo', slot: 'hat', name: 'Halo', rarity: 'rare', acquisition: 'purchase', collection: 'seasonal', pairsWith: ['angel-wings', 'sun-diamond-necklace'] },
   // Drawn as a front-worn capelet (its art redraws Leo's head over the collar), so it is an outfit, not a cape.
   { id: 'royal-mantle', slot: 'outfit', name: 'Royal mantle', rarity: 'legendary', acquisition: 'purchase', collection: 'royal' },
   // Colour variants of the same capelet: a cheaper tier than the red royal one.
@@ -116,7 +121,8 @@ export const COSMETICS: Cosmetic[] = [
   { id: 'ermine-cape', slot: 'outfit', name: 'Ermine cape', rarity: 'legendary', acquisition: 'purchase', collection: 'royal', price: 7000, pairsWith: ['sapphire-tiara'] },
   { id: 'crow-cape', slot: 'outfit', name: 'Crow cape', rarity: 'legendary', acquisition: 'purchase', collection: 'royal', price: 7000, pairsWith: ['raven-crown', 'top-hat'] },
   { id: 'raven-crown', slot: 'hat', name: 'Raven crown', rarity: 'legendary', acquisition: 'purchase', collection: 'royal', pairsWith: ['crow-cape'] },
-  { id: 'commander-coat', slot: 'outfit', name: 'Commander coat', rarity: 'legendary', acquisition: 'purchase', collection: 'aerospace', price: 10000 },
+  { id: 'commander-coat', slot: 'outfit', name: 'Commander coat', rarity: 'legendary', acquisition: 'purchase', collection: 'aerospace', price: 10000, pairsWith: ['captain-hat'] },
+  { id: 'captain-hat', slot: 'hat', name: 'Captain hat', rarity: 'rare', acquisition: 'purchase', collection: 'aerospace', pairsWith: ['commander-coat'] },
   { id: 'coffee-cup', slot: 'held', name: 'Coffee cup', rarity: 'common', acquisition: 'purchase', collection: 'startup' },
   { id: 'magnifier', slot: 'held', name: 'Magnifying glass', rarity: 'common', acquisition: 'purchase', collection: 'lab' },
   { id: 'test-tube', slot: 'held', name: 'Test tubes', rarity: 'uncommon', acquisition: 'purchase', collection: 'lab' },
@@ -125,7 +131,10 @@ export const COSMETICS: Cosmetic[] = [
   { id: 'token-coin', slot: 'held', name: 'Token coin', rarity: 'rare', acquisition: 'purchase', collection: 'wallstreet' },
   { id: 'flag', slot: 'held', name: 'Summit flag', rarity: 'epic', acquisition: 'purchase', collection: 'field' },
   { id: 'trophy', slot: 'held', name: 'Trophy', rarity: 'legendary', acquisition: 'purchase', collection: 'royal' },
-  { id: 'medal-champion', slot: 'held', name: 'Case champion medal', rarity: 'legendary', acquisition: 'reward', requires: { weekly_case_top3: true }, rule: 'Finish top 3 among friends in a weekly case' },
+  // Podium medals: earned once from Weekly Case placements among friends (3+ friends submitted), never sold or taken back.
+  { id: 'medal-bronze', slot: 'held', name: 'Bronze medal', rarity: 'rare', acquisition: 'reward', requires: { weekly_podium_third_count: 3 }, rule: 'Finish 3rd among friends in a Weekly Case 3 times' },
+  { id: 'medal-silver', slot: 'held', name: 'Silver medal', rarity: 'epic', acquisition: 'reward', requires: { weekly_podium_second_count: 5 }, rule: 'Finish 2nd among friends in a Weekly Case 5 times' },
+  { id: 'medal-gold', slot: 'held', name: 'Gold medal', rarity: 'legendary', acquisition: 'reward', requires: { weekly_podium_first_count: 7 }, rule: 'Finish 1st among friends in a Weekly Case 7 times' },
   { id: 'bg-launchpad', slot: 'background', name: 'Launchpad', rarity: 'uncommon', acquisition: 'reward', requires: { min_lessons_completed: 30 }, rule: 'Finish your first industry' },
   { id: 'bg-trading-floor', slot: 'background', name: 'Trading floor', rarity: 'uncommon', acquisition: 'purchase', collection: 'wallstreet' },
   { id: 'bg-lab', slot: 'background', name: 'Research lab', rarity: 'uncommon', acquisition: 'purchase', collection: 'lab' },
@@ -167,6 +176,7 @@ export const BUNDLES: Bundle[] = [
   { id: 'bundle-lab', name: 'Lab set', line: 'Goggles, lab coat, test tubes', items: ['safety-goggles', 'lab-coat', 'test-tube'], price: 1200, collection: 'lab' },
   { id: 'bundle-startup', name: 'Founder set', line: 'Founder cap, hoodie, coffee', items: ['founder-cap', 'startup-hoodie', 'coffee-cup'], price: 850, collection: 'startup' },
   { id: 'bundle-christmas', name: 'Christmas set', line: 'Antlers, collar and a reindeer nose', items: ['holiday-antlers', 'holiday-collar', 'reindeer-nose'], price: 680, collection: 'seasonal' },
+  { id: 'bundle-angel', name: 'Angel of my Dreams', line: 'Angel wings, halo and sun diamond necklace', items: ['angel-wings', 'halo', 'sun-diamond-necklace'], price: 1500, collection: 'seasonal' },
 ];
 
 export type PerkIcon = 'video' | 'file-text' | 'award' | 'cpu' | 'gift';

@@ -2,12 +2,14 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { ActivityIndicator, ScrollView, Share, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { router, useLocalSearchParams } from 'expo-router';
+import { router, useFocusEffect, useLocalSearchParams } from 'expo-router';
 
 import { markResultsSeen } from '../hooks/useWeeklyCase';
 import { useAuth } from '../hooks/useAuth';
 import { useEquippedLooks } from '../hooks/useEquippedLooks';
 import { LeoAvatar } from '../components/shop/LeoAvatar';
+import { LeoPodium } from '../components/social/LeoPodium';
+import { MotionScope } from '../components/shop/Motion';
 import { COLORS, TYPE } from '../lib/constants';
 import { log } from '../lib/logger';
 import { triggerHaptic } from '../lib/haptics';
@@ -35,6 +37,9 @@ export default function WeeklyCaseResultsRoute() {
   const [board, setBoard] = useState<WeeklyBoardRow[]>([]);
   // Leo for each person on the standings, when the shop knows their look (letters otherwise).
   const looks = useEquippedLooks(board.map(r => r.user_id));
+  const podium = board.filter(r => r.score != null).slice(0, 3);
+  const [focused, setFocused] = useState(true);
+  useFocusEffect(useCallback(() => { setFocused(true); return () => setFocused(false); }, []));
   const [answers, setAnswers] = useState<WeeklyAnswers | null>(null);
   const [loading, setLoading] = useState(true);
   const [failed, setFailed] = useState(false);
@@ -159,6 +164,19 @@ export default function WeeklyCaseResultsRoute() {
 
         <View style={styles.card}>
           <Text style={styles.sectionLabel}>AMONG YOUR FRIENDS</Text>
+          {/* Podium with medal glints when at least 3 friends have scores (the medal quests count only those weeks) */}
+          {podium.length >= 3 && (
+            <MotionScope active={focused}>
+              <LeoPodium unit="pts" medals people={podium.map(r => ({
+                id: r.user_id,
+                name: r.is_me ? 'You' : r.display_name || 'Analyst',
+                xp: r.score ?? 0,
+                look: looks[r.user_id]?.look ?? {},
+                crown: !!looks[r.user_id]?.wearsCrown,
+                isMe: r.is_me,
+              }))} />
+            </MotionScope>
+          )}
           {board.length <= 1
             ? <Text style={styles.muted}>No friends played this week. Add friends to compete next time.</Text>
             : board.map(r => (
