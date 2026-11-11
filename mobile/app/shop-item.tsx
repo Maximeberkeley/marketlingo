@@ -74,6 +74,10 @@ export default function ShopItemScreen() {
   const wearAll = async () => {
     for (const p of parts) await shop.equip(p.slot, p.id);
   };
+  /** Takes it off: the slot is left empty (removing the cap leaves Leo bare-headed). */
+  const removeAll = async () => {
+    for (const p of parts) await shop.equip(p.slot, null);
+  };
 
   const buy = async () => {
     if (block === 'not_enough') { setShort(true); return; }
@@ -150,7 +154,11 @@ export default function ShopItemScreen() {
       <View style={styles.footer}>
         {error ? <Text maxFontSizeMultiplier={1.3} style={styles.error}>{error}</Text> : null}
         {owned ? (
-          <ChunkyButton label={worn ? 'Wearing it' : 'Wear it'} disabled={worn} onPress={() => { triggerHaptic('light'); void wearAll(); }} height={52} />
+          worn ? (
+            <ChunkyButton label="Remove" tone="plain" onPress={() => { triggerHaptic('light'); void removeAll(); }} height={52} accessibilityLabel={`Wearing ${name}. Remove it`} />
+          ) : (
+            <ChunkyButton label="Wear it" onPress={() => { triggerHaptic('light'); void wearAll(); }} height={52} />
+          )
         ) : block && block !== 'not_enough' ? (
           <View style={styles.blocked}><Text maxFontSizeMultiplier={1.3} style={styles.blockedText}>{block === 'earn_only' ? 'Earn it, XP cannot buy it' : BLOCK_LABEL[block]}</Text></View>
         ) : (

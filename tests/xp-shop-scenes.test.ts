@@ -104,3 +104,12 @@ describe('the Shop page and the celebration', () => {
     }
   }, 60000);
 });
+
+describe('taking an item off', () => {
+  it('offers Remove on an item Leo is wearing, which empties its slot', () => {
+    const page = readFileSync('mobile/app/shop-item.tsx', 'utf8');
+    expect(page).toContain('label="Remove"');
+    expect(page).toContain('await shop.equip(p.slot, null)');
+    expect(page).not.toContain('disabled={worn}');
+  });
+});
