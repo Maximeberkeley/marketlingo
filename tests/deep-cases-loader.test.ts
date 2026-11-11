@@ -3,17 +3,18 @@ import { readFileSync, readdirSync, mkdtempSync } from 'node:fs';
 import { execFileSync } from 'node:child_process';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { pathToFileURL } from 'node:url';
-import { batches, dayProblems, rowsToWrite, type CaseRow } from '../supabase/functions/load-deep-cases/plan';
+import { createRequire } from 'node:module';
+import { batches, dayProblems, rowsToWrite, type CaseRow } from '../supabase/functions/_shared/deep-cases-plan';
 
-const FN = 'supabase/functions/load-deep-cases';
+const FNS = readdirSync('supabase/functions').filter(f => /^load-deep-cases(-\d+)?$/.test(f)).map(f => `supabase/functions/${f}`);
+const fnOf = (market: string) => FNS.find(fn => readdirSync(`${fn}/data`).includes(`${market}.ts`))!;
 const MARKETS = readdirSync('drizzle/migrations')
   .map(f => f.match(/^\d{4}_([a-z0-9]+)_deep_cases\.sql$/)?.[1])
   .filter((m): m is string => !!m);
 
 /** A data module is generated JSON behind a one-line header; read it back as rows. */
 const dataRows = (market: string): CaseRow[] => {
-  const text = readFileSync(`${FN}/data/${market}.ts`, 'utf8');
+  const text = readFileSync(`${fnOf(market)}/data/${market}.ts`, 'utf8');
   return JSON.parse(text.slice(text.indexOf('= [') + 2, text.lastIndexOf(']') + 1));
 };
 
@@ -23,9 +24,9 @@ describe('load-deep-cases ships the same cases as the migrations', () => {
   }, 120000);
 
   it('bundles every market that has a migration, with the same rows and fingerprints', () => {
-    const index = readFileSync(`${FN}/data/index.ts`, 'utf8');
     for (const market of MARKETS) {
-      expect(index, market).toContain(`import ${market} from './${market}.ts';`);
+      expect(fnOf(market), market).toBeTruthy();
+      expect(readFileSync(`${fnOf(market)}/data/index.ts`, 'utf8'), market).toContain(`import ${market} from './${market}.ts';`);
       const rows = dataRows(market);
       const sql = readFileSync(readdirSync('drizzle/migrations').map(f => `drizzle/migrations/${f}`).find(f => f.endsWith(`_${market}_deep_cases.sql`))!, 'utf8');
       expect(rows.length, market).toBe((sql.match(/\$ml\$src:[0-9a-f]{12}\$ml\$/g) ?? []).length);
@@ -43,7 +44,16 @@ describe('load-deep-cases ships the same cases as the migrations', () => {
     expect(schema).toContain('CREATE TABLE IF NOT EXISTS public.deep_cases');
     expect(schema).toContain('ENABLE ROW LEVEL SECURITY');
     expect(schema).not.toMatch(/INSERT INTO/i);
-    expect(readFileSync('supabase/config.toml', 'utf8')).toMatch(/\[functions\.load-deep-cases\]\nverify_jwt = false/);
+    const config = readFileSync('supabase/config.toml', 'utf8');
+    for (const fn of FNS) expect(config).toContain(`[functions.${fn.split('/').pop()}]\nverify_jwt = false`);
+  });
+
+  it('keeps every loader under the deploy size limit', () => {
+    expect(FNS.length).toBeGreaterThan(1);
+    for (const fn of FNS) {
+      const bytes = readdirSync(`${fn}/data`).reduce((n, f) => n + readFileSync(`${fn}/data/${f}`).length, 0);
+      expect(bytes, fn).toBeLessThan(4_000_000);
+    }
   });
 });
 
@@ -68,17 +78,26 @@ describe('planning a load', () => {
 });
 
 describe('the function, run against an in-memory table', () => {
-  let handler: (req: Request) => Promise<Response>;
+  const handlers: ((req: Request) => Promise<Response>)[] = [];
+  // Calls every loader and merges their reports, as running each function once does.
+  const handler = async (req: Request) => {
+    const all = await Promise.all(handlers.map(h => h(req.clone())));
+    const bad = all.find(r => r.status !== 200);
+    if (bad) return bad;
+    const bodies = await Promise.all(all.map(r => r.json()));
+    return new Response(JSON.stringify({ mode: bodies[0].mode, report: Object.assign({}, ...bodies.map(b => b.report)),
+      totalsInDatabase: Object.assign({}, ...bodies.map(b => b.totalsInDatabase)), daysWithoutThreeCases: bodies.flatMap(b => b.daysWithoutThreeCases) }));
+  };
   const table = new Map<string, any>();
   let upserts = 0;
   let missingTable = false;
 
   beforeAll(async () => {
     // Bundle the Deno function with its supabase-js import swapped for an in-memory client.
-    const out = join(mkdtempSync(join(tmpdir(), 'loader-')), 'fn.mjs');
+    const out = join(mkdtempSync(join(tmpdir(), 'loader-')), 'fn.cjs');
     execFileSync(process.execPath, ['--input-type=module', '-e', `
       import { build } from 'esbuild';
-      await build({ entryPoints: [${JSON.stringify(`${FN}/index.ts`)}], bundle: true, format: 'esm', platform: 'neutral', outfile: ${JSON.stringify(out)}, logLevel: 'error',
+      await build({ stdin: { contents: ${JSON.stringify(FNS.map(fn => `import './${fn}/index.ts';`).join('\n'))}, resolveDir: process.cwd(), loader: 'ts' }, bundle: true, format: 'cjs', platform: 'neutral', outfile: ${JSON.stringify(out)}, logLevel: 'error',
         plugins: [{ name: 'mock', setup(b) { b.onResolve({ filter: /^https:\\/\\/esm\\.sh\\// }, () => ({ path: 'supabase', namespace: 'mock' }));
           b.onLoad({ filter: /.*/, namespace: 'mock' }, () => ({ contents: 'export const createClient = (...a) => globalThis.__createClient(...a);', loader: 'js' })); } }] });
     `], { encoding: 'utf8' });
@@ -108,8 +127,9 @@ describe('the function, run against an in-memory table', () => {
         return query;
       },
     });
-    (globalThis as any).Deno = { env: { get: () => 'x' }, serve: (h: any) => { handler = h; } };
-    await import(pathToFileURL(out).href);
+    (globalThis as any).Deno = { env: { get: () => 'x' }, serve: (h: any) => { handlers.push(h); } };
+    // Plain Node require: the bundle is several MB, which Vite's module loader refuses.
+    createRequire(import.meta.url)(out);
   }, 120000);
 
   it('explains a missing table instead of failing silently', async () => {
