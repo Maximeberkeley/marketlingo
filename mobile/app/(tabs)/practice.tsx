@@ -1,226 +1,141 @@
-import React, { useState, useRef, useCallback, useEffect } from 'react';
-import {
-  View,
-  Text,
-  ScrollView,
-  TouchableOpacity,
-  StyleSheet,
-  Animated,
-  ActivityIndicator,
-  Image,
-  ImageSourcePropType,
-  Dimensions,
-  NativeSyntheticEvent,
-  NativeScrollEvent,
-} from 'react-native';
+import React, { useCallback, useEffect, useState } from 'react';
+import { View, Text, ScrollView, TouchableOpacity, StyleSheet, ActivityIndicator, Image, ImageSourcePropType } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { router } from 'expo-router';
+import { router, useFocusEffect } from 'expo-router';
 import { triggerHaptic } from '../../lib/haptics';
 import { playSound } from '../../lib/sounds';
 import { useStudiedLessons } from '../../hooks/useStudiedLessons';
-import { COLORS, SHADOWS, TYPE } from '../../lib/constants';
+import { useUserXP } from '../../hooks/useUserXP';
+import { COLORS, TYPE } from '../../lib/constants';
 import { useAuth } from '../../hooks/useAuth';
 import { supabase } from '../../lib/supabase';
 import { getMarketName } from '../../lib/markets';
 import { INTERVIEW_ARTWORK } from '../../lib/interviewArtwork';
+import { localDateString } from '../../lib/dayMath';
+import { practiceCards, PracticeCardId, PracticeCardState, UNLOCK_LINE } from '../../lib/practiceCards';
+import { dueEntries, dueMeta, loadLedger, nextDue, REVIEW_XP, REVIEW_ROUND_LIMIT, ReviewEntry, STAGES } from '../../lib/reviewLedger';
 
-const { width: SCREEN_WIDTH } = Dimensions.get('window');
-const CARD_WIDTH = SCREEN_WIDTH - 40; // Full width with 20px padding each side
-const CARD_GAP = 16;
-const SNAP_WIDTH = CARD_WIDTH + CARD_GAP;
+const ART: Record<PracticeCardId, ImageSourcePropType> = {
+  interview: INTERVIEW_ARTWORK.practice,
+  investment: INTERVIEW_ARTWORK.investment,
+  'deep-case': INTERVIEW_ARTWORK.case,
+  arena: INTERVIEW_ARTWORK.quiz,
+};
 
-interface CardData {
-  id: string;
-  title: string;
-  description: string;
-  icon: keyof typeof Feather.glyphMap;
-  path: string;
-  isPro?: boolean;
-  hero?: ImageSourcePropType;
-}
+/** White text sits on this amber; the theme's brighter amber is too light for it. */
+const AMBER = '#B45309';
 
-const ACTIVITY_CARDS: CardData[] = [
-  {
-    id: 'arena',
-    title: 'Daily Arena',
-    description: 'Three rounds on what you studied.',
-    icon: 'zap',
-    path: '/arena',
-    hero: INTERVIEW_ARTWORK.quiz,
-  },
-  {
-    id: 'deep-case',
-    title: 'Deep Case',
-    description: 'A real situation. What would you do?',
-    icon: 'briefcase',
-    path: '/deep-case',
-    hero: INTERVIEW_ARTWORK.case,
-  },
-];
-
-const LAB_CARDS: CardData[] = [
-  {
-    id: 'interview-lab',
-    title: 'Interview practice',
-    description: 'Answer a question. Get useful feedback.',
-    icon: 'mic',
-    path: '/interview-lab',
-    hero: INTERVIEW_ARTWORK.practice,
-  },
-  {
-    id: 'investment',
-    title: 'Investment Lab',
-    description: 'Would you invest in this company?',
-    icon: 'trending-up',
-    path: '/investment-lab',
-    hero: INTERVIEW_ARTWORK.investment,
-  },
-];
-
-/* ─── Premium Carousel ─── */
-function PremiumCarousel({ cards, title }: { cards: CardData[]; title: string }) {
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const scrollRef = useRef<ScrollView>(null);
-
-  const handleScroll = useCallback(
-    (e: NativeSyntheticEvent<NativeScrollEvent>) => {
-      const offsetX = e.nativeEvent.contentOffset.x;
-      const idx = Math.round(offsetX / SNAP_WIDTH);
-      setCurrentIndex(Math.min(Math.max(idx, 0), cards.length - 1));
-    },
-    [cards.length],
-  );
-
-  const scrollToIndex = useCallback((idx: number) => {
-    scrollRef.current?.scrollTo({ x: idx * SNAP_WIDTH, animated: true });
-    setCurrentIndex(idx);
-  }, []);
-
-  return (
-    <View style={styles.carouselWrap}>
-      {/* Section header */}
-      <View style={styles.sectionHeader}>
-        <View style={styles.sectionTitleRow}>
-          <View style={styles.sectionDot} />
-          <Text style={styles.sectionTitle}>{title}</Text>
-        </View>
-        {/* Pill-style page indicator */}
-        <View style={styles.pageIndicator}>
-          {cards.map((_, i) => (
-            <TouchableOpacity
-              key={i}
-              onPress={() => scrollToIndex(i)}
-              hitSlop={{ top: 10, bottom: 10, left: 4, right: 4 }}
-            >
-              <Animated.View
-                style={[
-                  styles.indicatorDot,
-                  i === currentIndex && styles.indicatorDotActive,
-                ]}
-              />
-            </TouchableOpacity>
-          ))}
-        </View>
-      </View>
-
-      {/* Cards */}
-      <ScrollView
-        ref={scrollRef}
-        horizontal
-        pagingEnabled={false}
-        showsHorizontalScrollIndicator={false}
-        snapToInterval={SNAP_WIDTH}
-        decelerationRate="fast"
-        contentContainerStyle={styles.scrollContent}
-        onMomentumScrollEnd={handleScroll}
-      >
-        {cards.map((card, index) => (
-          <PremiumCard key={card.id} card={card} index={index} />
-        ))}
-      </ScrollView>
-    </View>
-  );
-}
-
-/* ─── Premium Card ─── */
-function PremiumCard({ card, index }: { card: CardData; index: number }) {
-  const scaleAnim = useRef(new Animated.Value(1)).current;
-
-  const onPressIn = () => {
-    Animated.spring(scaleAnim, {
-      toValue: 0.97,
-      useNativeDriver: true,
-      tension: 400,
-      friction: 25,
-    }).start();
-  };
-
-  const onPressOut = () => {
-    Animated.spring(scaleAnim, {
-      toValue: 1,
-      useNativeDriver: true,
-      tension: 400,
-      friction: 25,
-    }).start();
-  };
-
-  const onPress = () => {
+function PracticeCard({ card, first }: { card: PracticeCardState; first: boolean }) {
+  const open = () => {
+    if (card.locked || !card.button) return;
     triggerHaptic('light');
     playSound('tap').catch(() => {});
     router.push(card.path as any);
   };
-
-  const cardContent = (
-    <View style={styles.cardInner}>
-      {card.hero ? (
-        <Image
-          source={card.hero}
-          style={styles.cardHero}
-          resizeMode="contain"
-          pointerEvents="none"
-        />
-      ) : null}
-      <View style={styles.contentPanel}>
-        <View style={styles.metaRow}>
-          <View style={styles.iconPill}>
-            <Feather name={card.icon} size={16} color={COLORS.accent} />
+  const quiet = card.done;
+  return (
+    <View style={[styles.card, first && !card.locked && !card.done && styles.cardFirst]}>
+      <Image source={ART[card.id]} style={[styles.thumb, card.locked && styles.thumbLocked]} resizeMode="cover" />
+      <View style={styles.cardBody}>
+        <Text style={[styles.eyebrow, card.locked && { color: COLORS.textMuted }]}>{card.eyebrow}</Text>
+        <Text style={styles.cardTitle}>{card.title}</Text>
+        {card.done ? (
+          <View style={styles.doneRow}>
+            <Feather name="check" size={15} color={COLORS.success} />
+            <Text style={styles.doneText}>{card.state.before}</Text>
           </View>
-          <Text style={styles.cardTitle}>{card.title}</Text>
-        </View>
-        <Text style={styles.cardDesc} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.85}>{card.description}</Text>
-        <View style={styles.ctaRow}>
-          <Text style={styles.ctaText}>Start</Text>
-          <Feather name="arrow-right" size={16} color={COLORS.accent} />
-        </View>
+        ) : (
+          <Text style={styles.stateLine}>
+            {card.state.before}
+            {card.state.bold ? <Text style={styles.stateBold}>{card.state.bold}</Text> : null}
+            {card.state.after}
+          </Text>
+        )}
+        {card.locked ? (
+          <View style={styles.lockRow}>
+            <Feather name="lock" size={14} color={COLORS.textMuted} />
+            <Text style={styles.lockText}>{UNLOCK_LINE}</Text>
+          </View>
+        ) : card.button ? (
+          <TouchableOpacity
+            onPress={open}
+            activeOpacity={0.88}
+            accessibilityRole="button"
+            style={[styles.button, quiet && styles.buttonQuiet]}
+          >
+            <Text style={[styles.buttonText, quiet && styles.buttonQuietText]}>{card.button}</Text>
+          </TouchableOpacity>
+        ) : null}
       </View>
     </View>
   );
+}
 
+function WorthAnotherLook({ entries, today, later }: { entries: ReviewEntry[]; today: string; later: string | null }) {
+  const due = dueEntries(entries, today);
+  if (entries.length === 0) return null;
+  if (due.length === 0) {
+    return (
+      <View style={styles.look}>
+        <View style={styles.lookStripe} />
+        <View style={styles.lookHead}>
+          <View style={styles.lookIcon}><Feather name="check" size={20} color={COLORS.success} /></View>
+          <View style={{ flex: 1 }}>
+            <Text style={styles.lookTitle}>Worth another look</Text>
+            <Text style={styles.stateLine}>{later ? 'All caught up. More are due soon.' : 'All caught up.'}</Text>
+          </View>
+        </View>
+      </View>
+    );
+  }
+  const round = Math.min(due.length, REVIEW_ROUND_LIMIT);
   return (
-    <Animated.View style={[styles.cardOuter, { transform: [{ scale: scaleAnim }] }]}>
+    <View style={styles.look}>
+      <View style={styles.lookStripe} />
+      <View style={styles.lookHead}>
+        <View style={styles.lookIcon}><Feather name="rotate-ccw" size={20} color={AMBER} /></View>
+        <View style={{ flex: 1 }}>
+          <Text style={styles.lookTitle}>Worth another look</Text>
+          <Text style={styles.stateLine}>Due for review today</Text>
+        </View>
+        <View style={styles.count} accessibilityLabel={`${due.length} due`}><Text style={styles.countText}>{due.length}</Text></View>
+      </View>
+      <View style={{ marginTop: 12 }}>
+        {due.slice(0, 3).map(entry => (
+          <View key={entry.key} style={styles.item}>
+            <View style={{ flex: 1 }}>
+              <Text style={styles.itemName} numberOfLines={1}>{entry.title}</Text>
+              <Text style={styles.itemMeta}>{dueMeta(entry, today)}</Text>
+            </View>
+            <View style={styles.pips} accessibilityRole="image" accessibilityLabel={`Review stage ${entry.stage + 1} of ${STAGES}`}>
+              {Array.from({ length: STAGES }, (_, i) => <View key={i} style={[styles.pip, i <= entry.stage && styles.pipOn]} />)}
+            </View>
+          </View>
+        ))}
+      </View>
       <TouchableOpacity
-        activeOpacity={0.92}
-        onPressIn={onPressIn}
-        onPressOut={onPressOut}
-        onPress={onPress}
-        style={styles.cardTouch}
+        style={styles.lookButton}
+        activeOpacity={0.88}
+        accessibilityRole="button"
+        onPress={() => { triggerHaptic('light'); playSound('tap').catch(() => {}); router.push('/review' as any); }}
       >
-        {cardContent}
+        <Text style={styles.buttonText}>{`Review ${round} now · +${REVIEW_XP} XP`}</Text>
       </TouchableOpacity>
-    </Animated.View>
+    </View>
   );
 }
 
-/* ─── Main Screen ─── */
 export default function PracticeScreen() {
   const insets = useSafeAreaInsets();
   const { user } = useAuth();
   const [selectedMarket, setSelectedMarket] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [goal, setGoal] = useState<string | null>(null);
+  const [mocks, setMocks] = useState<{ score: number | null }[]>([]);
+  const [ledger, setLedger] = useState<ReviewEntry[]>([]);
   const studied = useStudiedLessons(selectedMarket || undefined);
-  const headerAnim = useRef(new Animated.Value(0)).current;
+  const { dailyCompletion } = useUserXP(selectedMarket || undefined);
 
   useEffect(() => {
     if (!user) return;
@@ -239,16 +154,18 @@ export default function PracticeScreen() {
       });
   }, [user]);
 
-  useEffect(() => {
-    if (!loading) {
-      Animated.spring(headerAnim, {
-        toValue: 1,
-        tension: 80,
-        friction: 12,
-        useNativeDriver: true,
-      }).start();
-    }
-  }, [loading]);
+  // Mocks and the review list change after every session, so reload on focus.
+  useFocusEffect(useCallback(() => {
+    if (!user?.id || !selectedMarket) return;
+    let active = true;
+    void loadLedger(user.id, selectedMarket).then(rows => { if (active) setLedger(rows); });
+    void Promise.resolve(supabase.from('interview_lab_attempts').select('score')
+      .eq('user_id', user.id).eq('market_id', selectedMarket).eq('attempt_type', 'mock')
+      .order('created_at', { ascending: false }).limit(200))
+      .then(({ data }: any) => { if (active) setMocks(Array.isArray(data) ? data : []); })
+      .catch(() => {});
+    return () => { active = false; };
+  }, [user?.id, selectedMarket]));
 
   if (loading || studied.isLoading) {
     return (
@@ -258,232 +175,75 @@ export default function PracticeScreen() {
     );
   }
 
+  const today = localDateString();
+  const cards = practiceCards({
+    goal,
+    lessonsStudied: studied.lessons.length,
+    gamesCompleted: dailyCompletion?.games_completed,
+    drillsCompleted: dailyCompletion?.drills_completed,
+    mocks,
+  });
+
   return (
     <View style={styles.container}>
       <ScrollView
-        contentContainerStyle={{
-          paddingTop: insets.top + 12,
-          paddingBottom: insets.bottom + 100,
-        }}
+        contentContainerStyle={{ paddingTop: insets.top + 12, paddingBottom: insets.bottom + 100, paddingHorizontal: 20, gap: 14 }}
         showsVerticalScrollIndicator={false}
       >
-        {/* Header */}
-        <Animated.View
-          style={[
-            styles.header,
-            {
-              opacity: headerAnim,
-              transform: [
-                {
-                  translateY: headerAnim.interpolate({
-                    inputRange: [0, 1],
-                    outputRange: [20, 0],
-                  }),
-                },
-              ],
-            },
-          ]}
-        >
-          <View>
-            <Text style={styles.headerTitle}>Practice</Text>
-            {selectedMarket && (
-              <View style={styles.marketBadge}>
-                <View style={styles.marketDot} />
-                <Text style={styles.marketBadgeText}>{getMarketName(selectedMarket)}</Text>
-              </View>
-            )}
-          </View>
-        </Animated.View>
-
-        <View style={styles.groundedBand}>
-          <View style={styles.groundedIcon}>
-            <Feather name={studied.lessons.length > 0 ? 'check-circle' : 'book-open'} size={18} color={studied.lessons.length > 0 ? COLORS.success : COLORS.accent} />
-          </View>
-          <View style={styles.groundedCopy}>
-            <Text style={styles.groundedLabel}>BUILT FROM YOUR COURSE</Text>
-            <Text style={styles.groundedTitle} numberOfLines={2}>
-              {studied.isLoading
-                ? 'Finding the concepts you own…'
-                : studied.lessons.length > 0
-                  ? `Ready: ${studied.lessons.length} ${studied.lessons.length === 1 ? 'lesson' : 'lessons'} to practice`
-                  : 'Complete your first lesson to unlock practice'}
-            </Text>
-            {!studied.isLoading && (
-              <Text style={styles.groundedBody}>
-                {studied.lessons.length === 0
-                  ? 'Arena and Deep Case stay locked until they can test something you actually studied.'
-                  : `Latest: ${studied.lessons[0].title}`}
-              </Text>
-            )}
-          </View>
+        <View>
+          <Text style={styles.headerTitle}>Practice</Text>
+          {selectedMarket && (
+            <View style={styles.marketBadge}>
+              <View style={styles.marketDot} />
+              <Text style={styles.marketBadgeText}>{getMarketName(selectedMarket)}</Text>
+            </View>
+          )}
         </View>
-
-        {studied.lessons.length > 0 ? <PremiumCarousel cards={ACTIVITY_CARDS} title="From your lessons" /> : null}
-
-        {/* Labs */}
-        <PremiumCarousel cards={LAB_CARDS.filter(card => card.id !== 'investment' || goal === 'invest')} title="More practice" />
-
+        {cards.map((card, i) => <PracticeCard key={card.id} card={card} first={i === 0} />)}
+        <WorthAnotherLook entries={ledger} today={today} later={nextDue(ledger, today)} />
       </ScrollView>
     </View>
   );
 }
 
-/* ─── Styles ─── */
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: COLORS.bg0 },
   centered: { alignItems: 'center', justifyContent: 'center' },
+  headerTitle: { ...TYPE.hero, fontSize: 32, color: COLORS.textPrimary, letterSpacing: -0.8 },
+  marketBadge: { flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 6, paddingHorizontal: 10, paddingVertical: 5, backgroundColor: COLORS.accentSoft, borderRadius: 20, alignSelf: 'flex-start' },
+  marketDot: { width: 6, height: 6, borderRadius: 3, backgroundColor: COLORS.accent },
+  marketBadgeText: { ...TYPE.caption, color: COLORS.accent, fontSize: 11 },
 
-  /* Header */
-  header: { paddingHorizontal: 20, marginBottom: 20, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' },
-  headerTitle: {
-    ...TYPE.hero,
-    fontSize: 32,
-    color: COLORS.textPrimary,
-    letterSpacing: -0.8,
-  },
-  marketBadge: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 6,
-    marginTop: 6,
-    paddingHorizontal: 10,
-    paddingVertical: 5,
-    backgroundColor: COLORS.accentSoft,
-    borderRadius: 20,
-    alignSelf: 'flex-start',
-  },
-  marketDot: {
-    width: 6,
-    height: 6,
-    borderRadius: 3,
-    backgroundColor: COLORS.accent,
-  },
-  marketBadgeText: {
-    ...TYPE.caption,
-    color: COLORS.accent,
-    fontSize: 11,
-  },
-  groundedBand: { marginHorizontal: 20, marginBottom: 22, paddingVertical: 14, borderTopWidth: 2, borderBottomWidth: StyleSheet.hairlineWidth, borderTopColor: COLORS.accent, borderBottomColor: COLORS.border, flexDirection: 'row', gap: 12, alignItems: 'flex-start' },
-  groundedIcon: { width: 40, height: 40, borderRadius: 12, backgroundColor: COLORS.bg1, alignItems: 'center', justifyContent: 'center' },
-  groundedCopy: { flex: 1 },
-  groundedLabel: { ...TYPE.overline, color: COLORS.accent },
-  groundedTitle: { ...TYPE.h3, color: COLORS.textPrimary, marginTop: 3 },
-  groundedBody: { ...TYPE.caption, color: COLORS.textSecondary, marginTop: 4, lineHeight: 17 },
+  card: { flexDirection: 'row', alignItems: 'center', gap: 14, padding: 12, borderRadius: 20, backgroundColor: COLORS.bg1, borderWidth: 1, borderColor: COLORS.border },
+  cardFirst: { borderColor: COLORS.accent, borderWidth: 2 },
+  thumb: { width: 84, height: 84, borderRadius: 14, backgroundColor: COLORS.accentSoft },
+  thumbLocked: { opacity: 0.45 },
+  cardBody: { flex: 1, minWidth: 0, gap: 3 },
+  eyebrow: { fontSize: 11, fontWeight: '800', letterSpacing: 1, textTransform: 'uppercase', color: COLORS.accent },
+  cardTitle: { fontSize: 18, fontWeight: '800', color: COLORS.textPrimary },
+  stateLine: { fontSize: 13, lineHeight: 18, color: COLORS.textSecondary },
+  stateBold: { fontWeight: '700', color: COLORS.textPrimary },
+  doneRow: { flexDirection: 'row', alignItems: 'center', gap: 6 },
+  doneText: { fontSize: 13, fontWeight: '700', color: COLORS.success },
+  lockRow: { flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 8 },
+  lockText: { fontSize: 13, fontWeight: '700', color: COLORS.textMuted },
+  button: { marginTop: 8, alignSelf: 'flex-start', minHeight: 44, paddingHorizontal: 16, borderRadius: 12, alignItems: 'center', justifyContent: 'center', backgroundColor: COLORS.accent },
+  buttonQuiet: { backgroundColor: 'transparent', borderWidth: 1.5, borderColor: COLORS.accent },
+  buttonText: { fontSize: 14, fontWeight: '700', color: COLORS.textOnAccent },
+  buttonQuietText: { color: COLORS.accent },
 
-  /* Carousel */
-  carouselWrap: { marginBottom: 28 },
-  sectionHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: 20,
-    marginBottom: 14,
-  },
-  sectionTitleRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
-  sectionDot: {
-    width: 4,
-    height: 16,
-    borderRadius: 2,
-    backgroundColor: COLORS.accent,
-  },
-  sectionTitle: {
-    ...TYPE.h3,
-    color: COLORS.textPrimary,
-  },
-  pageIndicator: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 6,
-    backgroundColor: COLORS.bg1,
-    paddingHorizontal: 8,
-    paddingVertical: 6,
-    borderRadius: 12,
-  },
-  indicatorDot: {
-    width: 6,
-    height: 6,
-    borderRadius: 3,
-    backgroundColor: COLORS.borderLight,
-  },
-  indicatorDotActive: {
-    width: 18,
-    height: 6,
-    borderRadius: 3,
-    backgroundColor: COLORS.accent,
-  },
-  scrollContent: {
-    paddingHorizontal: 20,
-    gap: CARD_GAP,
-  },
-
-  /* Card */
-  cardOuter: {
-    width: CARD_WIDTH,
-    borderRadius: 8,
-    ...SHADOWS.lg,
-  },
-  cardTouch: {
-    width: '100%',
-    borderRadius: 8,
-    overflow: 'hidden',
-  },
-  cardInner: {
-    backgroundColor: COLORS.bg2,
-    borderRadius: 8,
-    overflow: 'hidden',
-    borderWidth: 1,
-    borderColor: COLORS.border,
-  },
-  /* Illustration band at the top of the card */
-  cardHero: {
-    width: '100%',
-    height: 140,
-    backgroundColor: '#F3EEFA',
-  },
-  /* Content panel */
-  contentPanel: {
-    padding: 18,
-  },
-  metaRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-    marginBottom: 10,
-  },
-  iconPill: {
-    width: 28,
-    height: 28,
-    borderRadius: 8,
-    backgroundColor: COLORS.accentSoft,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  cardTitle: {
-    ...TYPE.h3,
-    color: COLORS.textPrimary,
-    flexShrink: 1,
-    letterSpacing: 0,
-  },
-  cardDesc: {
-    ...TYPE.body,
-    fontSize: 13,
-    color: COLORS.textSecondary,
-    lineHeight: 19,
-    marginBottom: 14,
-  },
-  ctaRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-    minHeight: 32,
-  },
-  ctaText: {
-    ...TYPE.bodyBold,
-    fontSize: 14,
-    color: COLORS.accent,
-  },
+  look: { padding: 16, paddingTop: 18, borderRadius: 20, backgroundColor: COLORS.bg1, borderWidth: 1, borderColor: COLORS.border, overflow: 'hidden' },
+  lookStripe: { position: 'absolute', left: 0, right: 0, top: 0, height: 4, backgroundColor: COLORS.warning },
+  lookHead: { flexDirection: 'row', alignItems: 'center', gap: 12 },
+  lookIcon: { width: 40, height: 40, borderRadius: 12, backgroundColor: COLORS.warningSoft, alignItems: 'center', justifyContent: 'center' },
+  lookTitle: { fontSize: 17, fontWeight: '800', color: COLORS.textPrimary },
+  count: { minWidth: 44, height: 44, borderRadius: 14, backgroundColor: AMBER, alignItems: 'center', justifyContent: 'center' },
+  countText: { fontSize: 22, fontWeight: '800', color: '#FFFFFF' },
+  item: { flexDirection: 'row', alignItems: 'center', gap: 12, paddingVertical: 11, borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: COLORS.border },
+  itemName: { fontSize: 14, fontWeight: '700', color: COLORS.textPrimary },
+  itemMeta: { fontSize: 12, color: COLORS.textSecondary, marginTop: 1 },
+  pips: { flexDirection: 'row', alignItems: 'flex-end', gap: 3 },
+  pip: { width: 7, height: 16, borderRadius: 3, backgroundColor: COLORS.border },
+  pipOn: { backgroundColor: COLORS.warning },
+  lookButton: { marginTop: 6, minHeight: 48, borderRadius: 12, alignItems: 'center', justifyContent: 'center', backgroundColor: AMBER },
 });

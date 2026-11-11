@@ -166,9 +166,9 @@ describe('the second chance and the summary', () => {
 
   it('wires the second chance, a real personal best, and a summary that always banks', () => {
     const screen = read('mobile/lesson-kit/arena/ArenaScreen.tsx');
-    expect(screen).toContain('const retry = again ? null : secondChanceWave(missed.current);');
+    expect(screen).toContain('const retry = again || fixedXp !== undefined ? null : secondChanceWave(missed.current);');
     expect(screen).toContain('const newBest = bestScore > 0 && score > bestScore;');
-    expect(screen).toContain('const xp = arenaXp(correct, graded, replay, recovered);');
+    expect(screen).toContain('const xp = fixedXp ?? arenaXp(correct, graded, replay, recovered);');
     expect(screen).toContain('DAILY ARENA');
     expect(screen).not.toContain('DAILY QUIZ');
     // Leaving the summary without banking used to throw the run away.

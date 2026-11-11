@@ -44,14 +44,14 @@ describe('Practice clarity', () => {
     for (const [key, art] of [['quiz', 'flashcards'], ['case', 'research'], ['practice', 'speaking'], ['investment', 'analysis']]) {
       expect(map).toContain(`${key}: ${art}`);
       expect(map).toContain(`require('../assets/illustrations/interview-${art}.jpg')`);
-      expect(read('mobile/app/(tabs)/practice.tsx')).toContain(`hero: INTERVIEW_ARTWORK.${key}`);
+      expect(read('mobile/app/(tabs)/practice.tsx')).toContain(`: INTERVIEW_ARTWORK.${key},`);
     }
     expect(read('mobile/app/(tabs)/practice.tsx')).not.toContain('daily-arena-hero.jpg');
     expect(map).not.toMatch(/https:|\.asset\.json|new URL/);
   });
   it('disables both native back gestures on all practice routes', () => {
     const source = read('mobile/app/_layout.tsx');
-    for (const route of ['arena', 'deep-case', 'trainer', 'games', 'drills', 'interview-lab', 'investment-lab', 'investment-module']) {
+    for (const route of ['arena', 'review', 'deep-case', 'trainer', 'games', 'drills', 'interview-lab', 'investment-lab', 'investment-module']) {
       const screen = source.split('\n').find(line => line.includes(`name="${route}"`));
       expect(screen).toContain('gestureEnabled: false');
       expect(screen).toContain('fullScreenGestureEnabled: false');

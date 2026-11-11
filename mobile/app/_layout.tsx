@@ -132,6 +132,7 @@ export default function RootLayout() {
                 <Stack.Screen name="focus" />
                 <Stack.Screen name="streak-rescue" />
                 <Stack.Screen name="arena" options={{ animation: 'fade', gestureEnabled: false, fullScreenGestureEnabled: false }} />
+                <Stack.Screen name="review" options={{ animation: 'fade', gestureEnabled: false, fullScreenGestureEnabled: false }} />
                 <Stack.Screen name="deep-case" options={{ animation: 'fade', gestureEnabled: false, fullScreenGestureEnabled: false }} />
                 <Stack.Screen name="trainer" options={{ gestureEnabled: false, fullScreenGestureEnabled: false }} />
                 <Stack.Screen name="games" options={{ gestureEnabled: false, fullScreenGestureEnabled: false }} />

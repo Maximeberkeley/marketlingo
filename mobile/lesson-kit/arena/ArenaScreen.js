@@ -39,7 +39,7 @@ const ARENA_IDLE_LINES = {
   theCall: "Think like you own the decision."
 };
 const AGAIN_KEY = "again";
-function ArenaScreen({ waves, marketId, marketName, bestScore, onExit, onFinish, onQuestionSeen, replay = false }) {
+function ArenaScreen({ waves, marketId, marketName, bestScore, onExit, onFinish, onQuestionSeen, replay = false, fixedXp }) {
   useEffect(() => {
     trackEvent("quiz_started", { marketId: marketId ?? null });
   }, []);
@@ -208,7 +208,7 @@ function ArenaScreen({ waves, marketId, marketName, bestScore, onExit, onFinish,
       setShowWaveIntro(true);
       return;
     }
-    const retry = again ? null : secondChanceWave(missed.current);
+    const retry = again || fixedXp !== void 0 ? null : secondChanceWave(missed.current);
     if (retry) {
       setAgain(retry);
       setWaveIndex((i) => i + 1);
@@ -235,7 +235,7 @@ function ArenaScreen({ waves, marketId, marketName, bestScore, onExit, onFinish,
   if (ended) {
     const rank = rankForAccuracy(correct, graded);
     const recovered = recoveredIds.length;
-    const xp = arenaXp(correct, graded, replay, recovered);
+    const xp = fixedXp ?? arenaXp(correct, graded, replay, recovered);
     const newBest = bestScore > 0 && score > bestScore;
     const perfect = graded > 0 && correct === graded;
     const stillMissed = missed.current.filter((e) => !recoveredIds.includes(e.id));
@@ -283,7 +283,8 @@ function ArenaScreen({ waves, marketId, marketName, bestScore, onExit, onFinish,
             waveReached: Math.min(waveIndex + 1, waves.length),
             survived: ended.survived,
             xp,
-            recovered
+            recovered,
+            missed: missed.current
           });
         }
       }
