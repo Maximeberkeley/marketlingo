@@ -11,13 +11,13 @@ import {
   ActivityIndicator,
   Linking,
   StatusBar,
+  ScrollView,
   useWindowDimensions
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Audio } from "expo-av";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Feather } from "@expo/vector-icons";
-import { COLORS } from "../../lib/constants";
 import { supabase } from "../../lib/supabase";
 import { speakWithElevenLabs } from "../../lib/tts";
 import { log } from "../../lib/logger";
@@ -208,8 +208,8 @@ function ImmersiveNewsOverlay({
         soundRef.current = sound;
         if (sound) {
           setIsSpeaking(true);
-          sound.setOnPlaybackStatusUpdate((status) => {
-            if ("didJustFinish" in status && status.didJustFinish) {
+          sound.setOnPlaybackStatusUpdate((status2) => {
+            if ("didJustFinish" in status2 && status2.didJustFinish) {
               setIsSpeaking(false);
               setIsDoneSpeaking(true);
               soundRef.current = null;
@@ -275,7 +275,7 @@ function ImmersiveNewsOverlay({
     () => PanResponder.create({
       onStartShouldSetPanResponder: () => false,
       onMoveShouldSetPanResponder: (_, g) => {
-        return Math.abs(g.dx) > 15 || g.dy < -15 && Math.abs(g.dy) > Math.abs(g.dx);
+        return Math.abs(g.dx) > 18 && Math.abs(g.dx) > Math.abs(g.dy) * 1.4;
       },
       onMoveShouldSetPanResponderCapture: () => false,
       onPanResponderGrant: () => {
@@ -283,22 +283,10 @@ function ImmersiveNewsOverlay({
         translateY.stopAnimation();
       },
       onPanResponderMove: (_, g) => {
-        if (Math.abs(g.dy) > Math.abs(g.dx) && g.dy < 0) {
-          translateY.setValue(g.dy);
-        } else {
-          translateX.setValue(g.dx);
-        }
+        translateX.setValue(g.dx);
       },
       onPanResponderRelease: (_, g) => {
         const idx = currentIndexRef.current;
-        if (g.dy < -SWIPE_THRESHOLD && Math.abs(g.dy) > Math.abs(g.dx)) {
-          Animated.timing(translateY, { toValue: -windowSize.current.h, duration: 300, useNativeDriver: true }).start(() => {
-            translateY.setValue(0);
-            onClose();
-          });
-          return;
-        }
-        Animated.spring(translateY, { toValue: 0, friction: 8, useNativeDriver: true }).start();
         if (g.dx < -SWIPE_THRESHOLD && Math.abs(g.dx) > Math.abs(g.dy)) {
           const next = idx + 1;
           if (next < articles.length) {
@@ -381,8 +369,8 @@ User's goal: ${learningGoal}`;
         const sound = await speakText(answer, SOPHIA_VOICE_ID);
         soundRef.current = sound;
         if (sound) {
-          sound.setOnPlaybackStatusUpdate((status) => {
-            if ("didJustFinish" in status && status.didJustFinish) {
+          sound.setOnPlaybackStatusUpdate((status2) => {
+            if ("didJustFinish" in status2 && status2.didJustFinish) {
               setIsSpeaking(false);
               setIsDoneSpeaking(true);
               soundRef.current = null;
@@ -426,282 +414,135 @@ User's goal: ${learningGoal}`;
       }
     }
   }, [isRecording, article, narrationText, marketId, learningGoal]);
+  const handleReplay = useCallback(async () => {
+    if (soundRef.current) {
+      try {
+        await soundRef.current.stopAsync();
+        await soundRef.current.unloadAsync();
+      } catch {
+      }
+      soundRef.current = null;
+      setIsSpeaking(false);
+      setIsDoneSpeaking(true);
+      return;
+    }
+    if (!narrationText) return;
+    if (mutedRef.current) {
+      mutedRef.current = false;
+      setMuted(false);
+      AsyncStorage.setItem(SOPHIA_MUTED_KEY, "0").catch(() => {
+      });
+    }
+    const sound = await speakText(narrationText, SOPHIA_VOICE_ID);
+    soundRef.current = sound;
+    if (!sound) return;
+    setIsSpeaking(true);
+    setIsDoneSpeaking(false);
+    sound.setOnPlaybackStatusUpdate((status2) => {
+      if ("didJustFinish" in status2 && status2.didJustFinish) {
+        setIsSpeaking(false);
+        setIsDoneSpeaking(true);
+        soundRef.current = null;
+      }
+    });
+  }, [narrationText]);
   if (!visible || !article) return null;
   const hasNext = currentIndex < articles.length - 1;
   const hasPrev = currentIndex > 0;
-  return /* @__PURE__ */ React.createElement(Modal, { visible, animationType: "none", transparent: true, statusBarTranslucent: true }, /* @__PURE__ */ React.createElement(StatusBar, { barStyle: "light-content" }), /* @__PURE__ */ React.createElement(
-    Animated.View,
+  const columnW = Math.min(windowW, STORY_COLUMN_MAX);
+  const imageH = Math.round((columnW - 40) * 0.6);
+  const status = isRecording ? "Listening. Tap again to send." : isTranscribing ? "Getting your question\u2026" : isGenerating ? "Sophia is reading the story\u2026" : null;
+  return /* @__PURE__ */ React.createElement(Modal, { visible, animationType: "none", transparent: true, statusBarTranslucent: true, onRequestClose: onClose }, /* @__PURE__ */ React.createElement(StatusBar, { barStyle: "light-content" }), /* @__PURE__ */ React.createElement(Animated.View, { style: [st.container, { opacity: fadeAnim }], ...panResponder.panHandlers }, /* @__PURE__ */ React.createElement(View, { style: [st.column, st.top, { paddingTop: Math.max(insets.top, 20) + 6 }] }, /* @__PURE__ */ React.createElement(View, { style: st.segments, accessibilityLabel: `Story ${currentIndex + 1} of ${articles.length}` }, articles.map((_, i) => /* @__PURE__ */ React.createElement(View, { key: i, style: [st.segment, i < currentIndex && st.segmentSeen, i === currentIndex && st.segmentNow] }))), /* @__PURE__ */ React.createElement(View, { style: st.topRow }, /* @__PURE__ */ React.createElement(View, { style: st.sourceBadge }, /* @__PURE__ */ React.createElement(Text, { style: st.sourceInitial }, (article.sourceName || "?").trim().charAt(0).toUpperCase())), /* @__PURE__ */ React.createElement(View, { style: { flex: 1 } }, /* @__PURE__ */ React.createElement(Text, { style: st.sourceName, numberOfLines: 1, maxFontSizeMultiplier: 1.3 }, article.sourceName), /* @__PURE__ */ React.createElement(Text, { style: st.sourceDate, maxFontSizeMultiplier: 1.3 }, article.publishedAt)), /* @__PURE__ */ React.createElement(TouchableOpacity, { style: st.topBtn, onPress: toggleMute, accessibilityRole: "button", accessibilityLabel: muted ? "Unmute Sophia" : "Mute Sophia" }, /* @__PURE__ */ React.createElement(Feather, { name: muted ? "volume-x" : "volume-2", size: 19, color: "#fff" })), /* @__PURE__ */ React.createElement(TouchableOpacity, { style: st.topBtn, onPress: onClose, accessibilityRole: "button", accessibilityLabel: "Close stories" }, /* @__PURE__ */ React.createElement(Feather, { name: "x", size: 21, color: "#fff" })))), /* @__PURE__ */ React.createElement(Animated.View, { style: { flex: 1, transform: [{ translateX }] } }, /* @__PURE__ */ React.createElement(
+    ScrollView,
     {
-      style: [st.container, { opacity: fadeAnim, transform: [{ translateY }] }],
-      ...panResponder.panHandlers
+      key: article.id,
+      style: { flex: 1 },
+      contentContainerStyle: [st.column, st.scroll, { paddingBottom: 120 + Math.max(insets.bottom, 12) }],
+      showsVerticalScrollIndicator: false
     },
-    /* @__PURE__ */ React.createElement(Animated.View, { style: [st.bgContainer, { transform: [{ translateX }] }] }, article.imageUrl ? /* @__PURE__ */ React.createElement(Image, { source: { uri: article.imageUrl }, style: st.bgImage, blurRadius: 1 }) : /* @__PURE__ */ React.createElement(View, { style: [st.bgImage, { backgroundColor: "#1A1035" }] }), /* @__PURE__ */ React.createElement(View, { style: st.bgOverlay })),
-    /* @__PURE__ */ React.createElement(View, { style: [st.topBar, { paddingTop: Math.max(insets.top, 20) + 12 }] }, /* @__PURE__ */ React.createElement(View, { style: st.counterBadge }, /* @__PURE__ */ React.createElement(Text, { style: st.counterText }, currentIndex + 1, "/", articles.length)), /* @__PURE__ */ React.createElement(View, { style: st.topBarRight }, onQuiz ? /* @__PURE__ */ React.createElement(
-      TouchableOpacity,
-      {
-        style: st.quizButton,
-        onPress: () => onQuiz(article),
-        accessibilityRole: "button",
-        accessibilityLabel: "Take quiz about this story"
-      },
-      /* @__PURE__ */ React.createElement(Feather, { name: "help-circle", size: 17, color: COLORS.textOnAccent }),
-      /* @__PURE__ */ React.createElement(Text, { style: st.quizButtonText }, "Quiz")
-    ) : null, /* @__PURE__ */ React.createElement(
-      TouchableOpacity,
-      {
-        style: st.topBtn,
-        onPress: toggleMute,
-        accessibilityRole: "button",
-        accessibilityLabel: muted ? "Unmute Sophia" : "Mute Sophia"
-      },
-      /* @__PURE__ */ React.createElement(Feather, { name: muted ? "volume-x" : "volume-2", size: 20, color: "#fff" })
-    ), /* @__PURE__ */ React.createElement(
-      TouchableOpacity,
-      {
-        style: st.topBtn,
-        onPress: () => {
-          onClose();
-          setTimeout(() => onOpenChat(article), 300);
-        }
-      },
-      /* @__PURE__ */ React.createElement(Feather, { name: "message-circle", size: 20, color: "#fff" })
-    ), /* @__PURE__ */ React.createElement(TouchableOpacity, { style: st.topBtn, onPress: onClose }, /* @__PURE__ */ React.createElement(Feather, { name: "x", size: 22, color: "#fff" })))),
-    /* @__PURE__ */ React.createElement(View, { style: st.centerStage }, /* @__PURE__ */ React.createElement(Animated.View, { style: [st.sophiaRing, {
+    /* @__PURE__ */ React.createElement(View, { style: [st.imageCard, { height: imageH }] }, article.imageUrl ? /* @__PURE__ */ React.createElement(Image, { source: { uri: article.imageUrl }, style: StyleSheet.absoluteFill, resizeMode: "cover" }) : /* @__PURE__ */ React.createElement(View, { style: [StyleSheet.absoluteFill, st.noImage] }, /* @__PURE__ */ React.createElement(Feather, { name: "radio", size: 40, color: "rgba(255,255,255,0.35)" })), article.categoryTag ? /* @__PURE__ */ React.createElement(View, { style: st.category }, /* @__PURE__ */ React.createElement(Text, { style: st.categoryText, maxFontSizeMultiplier: 1.3 }, article.categoryTag)) : null),
+    /* @__PURE__ */ React.createElement(Text, { style: st.title, maxFontSizeMultiplier: 1.3 }, article.title),
+    /* @__PURE__ */ React.createElement(Text, { style: st.summary, maxFontSizeMultiplier: 1.4 }, article.summary || "Open the source to read the full story."),
+    article.sourceUrl ? /* @__PURE__ */ React.createElement(TouchableOpacity, { style: st.sourceLink, onPress: () => Linking.openURL(article.sourceUrl).catch(() => {
+    }), accessibilityRole: "link" }, /* @__PURE__ */ React.createElement(Text, { style: st.sourceLinkText, maxFontSizeMultiplier: 1.3 }, "Read it on ", article.sourceName), /* @__PURE__ */ React.createElement(Feather, { name: "arrow-up-right", size: 16, color: DARK.accent })) : null,
+    /* @__PURE__ */ React.createElement(View, { style: st.sophiaCard }, /* @__PURE__ */ React.createElement(View, { style: st.sophiaHead }, /* @__PURE__ */ React.createElement(Animated.View, { style: [st.sophiaRing, {
       transform: [{ scale: Animated.multiply(sophiaScale, pulseAnim) }],
-      borderColor: isRecording ? "#EF4444" : isSpeaking ? COLORS.accent : "rgba(255,255,255,0.3)"
-    }] }, /* @__PURE__ */ React.createElement(TouchableOpacity, { onPress: handleSophiaTap, activeOpacity: 0.8 }, /* @__PURE__ */ React.createElement(Image, { source: sophiaAvatar, style: st.sophiaAvatar }), isRecording && /* @__PURE__ */ React.createElement(View, { style: st.micBadge }, /* @__PURE__ */ React.createElement(Feather, { name: "mic", size: 14, color: "#fff" })))), /* @__PURE__ */ React.createElement(View, { style: st.statusContainer }, isGenerating && /* @__PURE__ */ React.createElement(View, { style: st.statusRow }, /* @__PURE__ */ React.createElement(ActivityIndicator, { size: "small", color: COLORS.accent }), /* @__PURE__ */ React.createElement(Text, { style: st.statusText }, "Sophia is thinking...")), isTranscribing && /* @__PURE__ */ React.createElement(View, { style: st.statusRow }, /* @__PURE__ */ React.createElement(ActivityIndicator, { size: "small", color: COLORS.accent }), /* @__PURE__ */ React.createElement(Text, { style: st.statusText }, "Transcribing your question...")), isRecording && /* @__PURE__ */ React.createElement(View, { style: st.statusRow }, /* @__PURE__ */ React.createElement(View, { style: st.recordDot }), /* @__PURE__ */ React.createElement(Text, { style: st.statusText }, "Listening... Tap again to send")), isSpeaking && !isGenerating && /* @__PURE__ */ React.createElement(Text, { style: st.statusText }, "\u{1F399} Sophia is speaking..."), isDoneSpeaking && !isGenerating && !isRecording && !isTranscribing && /* @__PURE__ */ React.createElement(Text, { style: st.statusText }, "Tap Sophia to ask a question")), narrationText && !isGenerating && /* @__PURE__ */ React.createElement(
+      borderColor: isRecording ? "#F87171" : isSpeaking ? DARK.accent : "transparent"
+    }] }, /* @__PURE__ */ React.createElement(Image, { source: sophiaAvatar, style: st.sophiaAvatar })), /* @__PURE__ */ React.createElement(View, { style: { flex: 1 } }, /* @__PURE__ */ React.createElement(Text, { style: st.sophiaTitle, maxFontSizeMultiplier: 1.3 }, "Why it matters to you"), /* @__PURE__ */ React.createElement(Text, { style: st.sophiaSub, maxFontSizeMultiplier: 1.3 }, "Sophia, growth advisor")), narrationText && !isGenerating ? /* @__PURE__ */ React.createElement(TouchableOpacity, { style: st.playBtn, onPress: handleReplay, accessibilityRole: "button", accessibilityLabel: isSpeaking ? "Stop Sophia" : "Play Sophia" }, /* @__PURE__ */ React.createElement(Feather, { name: isSpeaking ? "pause" : "play", size: 17, color: "#fff" })) : null), isGenerating ? /* @__PURE__ */ React.createElement(View, { style: st.skeleton }, /* @__PURE__ */ React.createElement(View, { style: [st.skelLine, { width: "96%" }] }), /* @__PURE__ */ React.createElement(View, { style: [st.skelLine, { width: "88%" }] }), /* @__PURE__ */ React.createElement(View, { style: [st.skelLine, { width: "64%" }] })) : narrationText ? /* @__PURE__ */ React.createElement(Text, { style: st.narration, maxFontSizeMultiplier: 1.4 }, narrationText) : null, /* @__PURE__ */ React.createElement(View, { style: st.askRow }, /* @__PURE__ */ React.createElement(
       TouchableOpacity,
       {
-        style: st.subtitleBox,
-        onPress: () => setSubtitlesExpanded(!subtitlesExpanded),
-        activeOpacity: 0.8
+        style: [st.askBtn, isRecording && st.askBtnLive],
+        onPress: handleSophiaTap,
+        disabled: isTranscribing || isGenerating,
+        accessibilityRole: "button",
+        accessibilityLabel: isRecording ? "Send your question" : "Ask Sophia out loud"
       },
-      /* @__PURE__ */ React.createElement(Text, { style: st.subtitleText, numberOfLines: subtitlesExpanded ? void 0 : 2 }, narrationText),
-      !subtitlesExpanded && narrationText.length > 80 && /* @__PURE__ */ React.createElement(Text, { style: st.expandHint }, "Tap to read more")
-    )),
-    /* @__PURE__ */ React.createElement(View, { style: [st.column, st.titleContainer] }, /* @__PURE__ */ React.createElement(Text, { style: st.articleTitle, numberOfLines: 3 }, article.title), /* @__PURE__ */ React.createElement(Text, { style: st.articleMeta }, article.sourceName, " \xB7 ", article.publishedAt)),
-    /* @__PURE__ */ React.createElement(View, { style: [st.column, st.bottomBar] }, /* @__PURE__ */ React.createElement(
-      TouchableOpacity,
-      {
-        style: st.sourceBtn,
-        onPress: () => Linking.openURL(article.sourceUrl).catch(() => {
-        })
+      /* @__PURE__ */ React.createElement(Feather, { name: isRecording ? "send" : "mic", size: 15, color: "#fff" }),
+      /* @__PURE__ */ React.createElement(Text, { style: st.askText, maxFontSizeMultiplier: 1.3 }, isRecording ? "Send" : "Ask Sophia")
+    ), status ? /* @__PURE__ */ React.createElement(View, { style: st.statusRow }, isRecording ? /* @__PURE__ */ React.createElement(View, { style: st.recordDot }) : /* @__PURE__ */ React.createElement(ActivityIndicator, { size: "small", color: DARK.accent }), /* @__PURE__ */ React.createElement(Text, { style: st.statusText, maxFontSizeMultiplier: 1.3 }, status)) : null))
+  )), /* @__PURE__ */ React.createElement(View, { style: [st.bottom, { paddingBottom: Math.max(insets.bottom, 12) + 4 }] }, /* @__PURE__ */ React.createElement(View, { style: [st.column, st.bottomRow] }, /* @__PURE__ */ React.createElement(
+    TouchableOpacity,
+    {
+      style: st.discussBtn,
+      onPress: () => {
+        onClose();
+        setTimeout(() => onOpenChat(article), 300);
       },
-      /* @__PURE__ */ React.createElement(Feather, { name: "external-link", size: 16, color: "#fff" }),
-      /* @__PURE__ */ React.createElement(Text, { style: st.sourceBtnText }, "Read Full Article")
-    ), isDoneSpeaking && hasNext && /* @__PURE__ */ React.createElement(Text, { style: st.swipeHint }, "Swipe left for next article \u2192")),
-    /* @__PURE__ */ React.createElement(View, { style: [st.dotsRow, { paddingBottom: Math.max(insets.bottom, 16) + 8 }] }, articles.map((_, i) => /* @__PURE__ */ React.createElement(
-      View,
-      {
-        key: i,
-        style: [st.dot, i === currentIndex && st.dotActive]
-      }
-    )))
-  ));
+      accessibilityRole: "button",
+      accessibilityLabel: "Discuss this story"
+    },
+    /* @__PURE__ */ React.createElement(Feather, { name: "message-circle", size: 18, color: "#fff" }),
+    /* @__PURE__ */ React.createElement(Text, { style: st.discussText, maxFontSizeMultiplier: 1.3 }, "Discuss")
+  ), onQuiz ? /* @__PURE__ */ React.createElement(TouchableOpacity, { style: st.quizBtn, onPress: () => onQuiz(article), accessibilityRole: "button", accessibilityLabel: "Quiz me on this story" }, /* @__PURE__ */ React.createElement(Text, { style: st.quizText, maxFontSizeMultiplier: 1.3 }, "Quiz me")) : null), hasNext || hasPrev ? /* @__PURE__ */ React.createElement(Text, { style: st.swipeHint, maxFontSizeMultiplier: 1.3 }, hasNext ? "Swipe for the next story" : "Swipe back for the last story") : null)));
 }
+const DARK = { bg: "#0E0F14", card: "#1A1C24", line: "rgba(255,255,255,0.10)", text: "#F5F5F7", soft: "rgba(245,245,247,0.74)", muted: "rgba(245,245,247,0.5)", accent: "#B9A4FF" };
 const st = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#000"
-  },
-  bgContainer: {
-    ...StyleSheet.absoluteFillObject
-  },
-  bgImage: {
-    ...StyleSheet.absoluteFillObject,
-    width: "100%",
-    height: "100%",
-    resizeMode: "cover"
-  },
-  bgOverlay: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: "rgba(0,0,0,0.55)"
-  },
-  // Top bar
-  topBar: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    paddingHorizontal: 20,
-    zIndex: 10
-  },
-  topBarRight: {
-    flexDirection: "row",
-    gap: 12
-  },
-  topBtn: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: "rgba(255,255,255,0.15)",
-    alignItems: "center",
-    justifyContent: "center"
-  },
-  quizButton: {
-    height: 40,
-    borderRadius: 20,
-    paddingHorizontal: 15,
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 6,
-    backgroundColor: COLORS.accent
-  },
-  quizButtonText: { fontSize: 13, fontWeight: "800", color: COLORS.textOnAccent },
-  counterBadge: {
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 16,
-    backgroundColor: "rgba(255,255,255,0.15)"
-  },
-  counterText: {
-    fontSize: 12,
-    fontWeight: "700",
-    color: "rgba(255,255,255,0.8)"
-  },
-  // Center Sophia
-  centerStage: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
-    paddingHorizontal: 30,
-    zIndex: 10
-  },
-  sophiaRing: {
-    width: 130,
-    height: 130,
-    borderRadius: 65,
-    borderWidth: 3,
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: "rgba(0,0,0,0.3)"
-  },
-  sophiaAvatar: {
-    width: 120,
-    height: 120,
-    borderRadius: 60
-  },
-  micBadge: {
-    position: "absolute",
-    bottom: 2,
-    right: 2,
-    width: 28,
-    height: 28,
-    borderRadius: 14,
-    backgroundColor: "#EF4444",
-    alignItems: "center",
-    justifyContent: "center",
-    borderWidth: 2,
-    borderColor: "#000"
-  },
-  // Status
-  statusContainer: {
-    marginTop: 16,
-    alignItems: "center",
-    minHeight: 30
-  },
-  statusRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 8
-  },
-  statusText: {
-    fontSize: 13,
-    color: "rgba(255,255,255,0.7)",
-    fontWeight: "500"
-  },
-  recordDot: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-    backgroundColor: "#EF4444"
-  },
-  // Subtitle
-  subtitleBox: {
-    marginTop: 20,
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    borderRadius: 16,
-    backgroundColor: "rgba(0,0,0,0.5)",
-    maxWidth: 620
-  },
-  subtitleText: {
-    fontSize: 14,
-    lineHeight: 21,
-    color: "#fff",
-    textAlign: "center",
-    fontWeight: "400"
-  },
-  expandHint: {
-    fontSize: 11,
-    color: "rgba(255,255,255,0.5)",
-    textAlign: "center",
-    marginTop: 4,
-    fontWeight: "600"
-  },
+  container: { flex: 1, backgroundColor: DARK.bg },
   column: { width: "100%", maxWidth: STORY_COLUMN_MAX, alignSelf: "center" },
-  // Title
-  titleContainer: {
-    paddingHorizontal: 24,
-    paddingBottom: 12
-  },
-  articleTitle: {
-    fontSize: 20,
-    fontWeight: "800",
-    color: "#fff",
-    lineHeight: 26,
-    marginBottom: 4
-  },
-  articleMeta: {
-    fontSize: 12,
-    color: "rgba(255,255,255,0.5)",
-    fontWeight: "500"
-  },
-  // Bottom
-  bottomBar: {
-    paddingHorizontal: 24,
-    paddingBottom: 10,
-    alignItems: "center",
-    gap: 12,
-    zIndex: 10
-  },
-  sourceBtn: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 8,
-    paddingHorizontal: 24,
-    paddingVertical: 14,
-    borderRadius: 28,
-    backgroundColor: "rgba(255,255,255,0.15)",
-    borderWidth: 1,
-    borderColor: "rgba(255,255,255,0.2)"
-  },
-  sourceBtnText: {
-    fontSize: 14,
-    fontWeight: "700",
-    color: "#fff"
-  },
-  swipeHint: {
-    fontSize: 12,
-    color: "rgba(255,255,255,0.4)",
-    fontWeight: "500"
-  },
-  // Dots
-  dotsRow: {
-    flexDirection: "row",
-    justifyContent: "center",
-    gap: 4
-  },
-  dot: {
-    width: 6,
-    height: 6,
-    borderRadius: 3,
-    backgroundColor: "rgba(255,255,255,0.25)"
-  },
-  dotActive: {
-    backgroundColor: COLORS.bg2,
-    width: 18,
-    borderRadius: 3
-  }
+  top: { paddingHorizontal: 20, paddingBottom: 10 },
+  segments: { flexDirection: "row", gap: 4 },
+  segment: { flex: 1, height: 3, borderRadius: 2, backgroundColor: "rgba(255,255,255,0.18)" },
+  segmentSeen: { backgroundColor: "rgba(255,255,255,0.55)" },
+  segmentNow: { backgroundColor: "#FFFFFF" },
+  topRow: { flexDirection: "row", alignItems: "center", gap: 10, marginTop: 12 },
+  sourceBadge: { width: 34, height: 34, borderRadius: 17, backgroundColor: "#2A2D38", alignItems: "center", justifyContent: "center" },
+  sourceInitial: { fontSize: 15, fontWeight: "900", color: DARK.text },
+  sourceName: { fontSize: 14.5, fontWeight: "800", color: DARK.text },
+  sourceDate: { fontSize: 12.5, fontWeight: "600", color: DARK.muted },
+  topBtn: { width: 38, height: 38, borderRadius: 19, backgroundColor: "rgba(255,255,255,0.10)", alignItems: "center", justifyContent: "center" },
+  scroll: { paddingHorizontal: 20, paddingTop: 6 },
+  imageCard: { borderRadius: 20, overflow: "hidden", backgroundColor: DARK.card },
+  noImage: { alignItems: "center", justifyContent: "center", backgroundColor: "#24203A" },
+  category: { position: "absolute", left: 12, top: 12, paddingHorizontal: 10, height: 26, borderRadius: 13, backgroundColor: "rgba(0,0,0,0.55)", justifyContent: "center" },
+  categoryText: { fontSize: 12.5, fontWeight: "800", color: "#FFFFFF" },
+  title: { fontSize: 25, lineHeight: 31, fontWeight: "900", color: DARK.text, marginTop: 18, letterSpacing: -0.3 },
+  summary: { fontSize: 17, lineHeight: 26, color: DARK.soft, marginTop: 10 },
+  sourceLink: { flexDirection: "row", alignItems: "center", gap: 6, marginTop: 12, alignSelf: "flex-start", paddingVertical: 4 },
+  sourceLinkText: { fontSize: 15, fontWeight: "800", color: DARK.accent },
+  sophiaCard: { marginTop: 22, padding: 16, borderRadius: 20, backgroundColor: DARK.card, borderWidth: 1, borderColor: DARK.line },
+  sophiaHead: { flexDirection: "row", alignItems: "center", gap: 12 },
+  sophiaRing: { width: 50, height: 50, borderRadius: 25, borderWidth: 2.5, alignItems: "center", justifyContent: "center" },
+  sophiaAvatar: { width: 42, height: 42, borderRadius: 21 },
+  sophiaTitle: { fontSize: 16, fontWeight: "900", color: DARK.text },
+  sophiaSub: { fontSize: 12.5, fontWeight: "600", color: DARK.muted, marginTop: 1 },
+  playBtn: { width: 38, height: 38, borderRadius: 19, backgroundColor: "#7C5CE6", alignItems: "center", justifyContent: "center" },
+  skeleton: { gap: 8, marginTop: 14 },
+  skelLine: { height: 12, borderRadius: 6, backgroundColor: "rgba(255,255,255,0.10)" },
+  narration: { fontSize: 16, lineHeight: 24, color: DARK.text, marginTop: 12 },
+  askRow: { flexDirection: "row", alignItems: "center", gap: 12, marginTop: 14, flexWrap: "wrap" },
+  askBtn: { flexDirection: "row", alignItems: "center", gap: 7, height: 38, paddingHorizontal: 14, borderRadius: 19, backgroundColor: "rgba(255,255,255,0.10)" },
+  askBtnLive: { backgroundColor: "#DC2626" },
+  askText: { fontSize: 14, fontWeight: "800", color: "#FFFFFF" },
+  statusRow: { flexDirection: "row", alignItems: "center", gap: 8, flexShrink: 1 },
+  statusText: { fontSize: 13, fontWeight: "600", color: DARK.soft, flexShrink: 1 },
+  recordDot: { width: 9, height: 9, borderRadius: 5, backgroundColor: "#F87171" },
+  bottom: { position: "absolute", left: 0, right: 0, bottom: 0, paddingTop: 12, paddingHorizontal: 20, backgroundColor: DARK.bg, borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: DARK.line },
+  bottomRow: { flexDirection: "row", gap: 10 },
+  discussBtn: { flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 8, height: 52, paddingHorizontal: 18, borderRadius: 16, backgroundColor: "rgba(255,255,255,0.10)" },
+  discussText: { fontSize: 16, fontWeight: "800", color: "#FFFFFF" },
+  quizBtn: { flex: 1, height: 52, borderRadius: 16, backgroundColor: "#A78BFA", alignItems: "center", justifyContent: "center", borderBottomWidth: 4, borderBottomColor: "#7C5CE6" },
+  quizText: { fontSize: 17, fontWeight: "900", color: "#1B1530" },
+  swipeHint: { fontSize: 12.5, fontWeight: "600", color: DARK.muted, textAlign: "center", marginTop: 10 }
 });
 export {
   ImmersiveNewsOverlay,
