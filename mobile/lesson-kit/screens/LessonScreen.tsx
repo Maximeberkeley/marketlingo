@@ -68,7 +68,7 @@ export interface LessonScreenProps {
   lesson: Lesson;
   onExit: () => void;
   /** Fired when the learner finishes the lesson and taps the final CTA. */
-  onFinish: (result: { correct: number; total: number; xp: number; timeSpentSeconds: number }) => void | boolean | Promise<void | boolean>;
+  onFinish: (result: { correct: number; total: number; xp: number; timeSpentSeconds: number; missed: Exercise[] }) => void | boolean | Promise<void | boolean>;
   xpPerCorrect?: number;
   /** Rendered in the header overflow menu (e.g. Note / Save). */
   renderExtraActions?: (exerciseIndex: number, dismiss: () => void, exercise?: Exercise) => React.ReactNode;
@@ -359,6 +359,8 @@ export function LessonScreen({
             total: gradedCount,
             xp,
             timeSpentSeconds,
+            // First-time misses only; the "retry what I missed" copies are not new misses.
+            missed: missed.filter(e => !/-retry\d+$/.test(e.id)),
           })
         }
       />

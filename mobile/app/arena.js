@@ -15,7 +15,7 @@ import { useUserXP } from "../hooks/useUserXP";
 import { useCollectibles } from "../hooks/useCollectibles";
 import { getMarketName } from "../lib/markets";
 import { localDateString } from "../lib/dayMath";
-import { loadLedger, recordMisses, saveLedger } from "../lib/reviewLedger";
+import { fileMisses } from "../lib/reviewLedger";
 import { COLORS, TYPE } from "../lib/constants";
 import { log } from "../lib/logger";
 import { triggerHaptic } from "../lib/haptics";
@@ -158,14 +158,7 @@ function ArenaRoute() {
     return /* @__PURE__ */ React.createElement(View, { style: styles.loading }, /* @__PURE__ */ React.createElement(Text, { style: styles.loadingText }, "You've seen all available questions this week. Study another lesson for fresh questions."), /* @__PURE__ */ React.createElement(Text, { style: styles.backLink, onPress: () => router.back() }, "Go back"));
   }
   const handleFinish = async (result) => {
-    try {
-      if (user?.id && marketId && result.missed?.length) {
-        const ledger = await loadLedger(user.id, marketId);
-        await saveLedger(user.id, marketId, recordMisses(ledger, result.missed, localDateString()));
-      }
-    } catch (error) {
-      log.warn("[Arena] Could not file the misses for review:", error);
-    }
+    await fileMisses(user?.id, marketId, result.missed ?? []);
     try {
       await recordArenaRun(result.score);
       await addXP(result.xp, "arena", void 0, replay ? "Daily Arena replay" : "Daily Arena run");
