@@ -5,6 +5,21 @@ function practiceOrder(goal) {
   if (goal === "invest") return ["investment", "deep-case", "arena", "interview"];
   return ["arena", "deep-case", "interview"];
 }
+function weeklyCard(info) {
+  return {
+    id: "weekly-case",
+    eyebrow: "Weekly Case",
+    title: info.title,
+    byline: info.byline,
+    path: info.path,
+    locked: false,
+    done: info.kind === "submitted",
+    state: info.state,
+    button: info.button,
+    tile: info.tile,
+    extra: info.extra
+  };
+}
 function practiceCards(input) {
   const unlocked = input.lessonsStudied > 0;
   const cases = casesDoneToday(input.gamesCompleted);
@@ -52,7 +67,10 @@ function practiceCards(input) {
       button: !unlocked ? null : arenaDone ? "Play again" : "Start the Arena"
     }
   };
-  return practiceOrder(input.goal).map((id) => cards[id]);
+  const ordered = practiceOrder(input.goal).map((id) => cards[id]);
+  if (!input.weekly) return ordered;
+  const weekly = weeklyCard(input.weekly);
+  return input.weekly.kind === "open" || input.weekly.kind === "results" ? [weekly, ...ordered] : [...ordered, weekly];
 }
 const UNLOCK_LINE = UNLOCK;
 export {

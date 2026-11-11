@@ -309,6 +309,13 @@
       "when": 1794332565966,
       "tag": "0043_create_deep_cases_schema",
       "breakpoints": true
+    },
+    {
+      "idx": 44,
+      "version": "7",
+      "when": 1794400000000,
+      "tag": "0044_weekly_cases",
+      "breakpoints": true
     }
   ]
 }

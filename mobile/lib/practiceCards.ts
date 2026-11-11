@@ -6,8 +6,9 @@
  * button) instead of describing the activity, and locked cards say what unlocks them.
  */
 import { DAILY_CASES, casesDoneToday } from './homeSteps';
+import type { WeeklyCardInfo } from './weeklyCase';
 
-export type PracticeCardId = 'interview' | 'investment' | 'deep-case' | 'arena';
+export type PracticeCardId = 'weekly-case' | 'interview' | 'investment' | 'deep-case' | 'arena';
 
 export interface PracticeInputs {
   goal: string | null;
@@ -17,6 +18,8 @@ export interface PracticeInputs {
   drillsCompleted?: number | null;
   /** The learner's mock interviews in this market, newest first. */
   mocks: { score: number | null }[];
+  /** This week's case, when the learner has the Weekly Case (see lib/weeklyCase). */
+  weekly?: WeeklyCardInfo | null;
 }
 
 export interface PracticeCardState {
@@ -29,14 +32,30 @@ export interface PracticeCardState {
   locked: boolean;
   done: boolean;
   path: string;
+  /** A line under the eyebrow, such as "Presented by Acme". */
+  byline?: string;
+  /** Shown in place of artwork: a small icon tile with a label. */
+  tile?: { icon: string; label: string };
+  /** A second, quieter action inside the card. */
+  extra?: { label: string; path: string };
 }
 
 const UNLOCK = 'Finish Day 1 to unlock';
 
-export function practiceOrder(goal: string | null): PracticeCardId[] {
+type DailyCardId = Exclude<PracticeCardId, 'weekly-case'>;
+
+export function practiceOrder(goal: string | null): DailyCardId[] {
   if (goal === 'career') return ['interview', 'deep-case', 'arena'];
   if (goal === 'invest') return ['investment', 'deep-case', 'arena', 'interview'];
   return ['arena', 'deep-case', 'interview'];
+}
+
+/** The Weekly Case card: first while it is waiting on the learner (it is time-limited), otherwise last. */
+function weeklyCard(info: WeeklyCardInfo): PracticeCardState {
+  return {
+    id: 'weekly-case', eyebrow: 'Weekly Case', title: info.title, byline: info.byline, path: info.path,
+    locked: false, done: info.kind === 'submitted', state: info.state, button: info.button, tile: info.tile, extra: info.extra,
+  };
 }
 
 export function practiceCards(input: PracticeInputs): PracticeCardState[] {
@@ -45,7 +64,7 @@ export function practiceCards(input: PracticeInputs): PracticeCardState[] {
   const arenaDone = (input.drillsCompleted || 0) > 0;
   const scored = input.mocks.filter(m => typeof m.score === 'number');
 
-  const cards: Record<PracticeCardId, PracticeCardState> = {
+  const cards: Record<DailyCardId, PracticeCardState> = {
     interview: {
       id: 'interview', eyebrow: 'Interview prep', title: 'Mock interview', path: '/interview-lab',
       locked: false, done: false,
@@ -84,7 +103,10 @@ export function practiceCards(input: PracticeInputs): PracticeCardState[] {
       button: !unlocked ? null : arenaDone ? 'Play again' : 'Start the Arena',
     },
   };
-  return practiceOrder(input.goal).map(id => cards[id]);
+  const ordered = practiceOrder(input.goal).map(id => cards[id]);
+  if (!input.weekly) return ordered;
+  const weekly = weeklyCard(input.weekly);
+  return input.weekly.kind === 'open' || input.weekly.kind === 'results' ? [weekly, ...ordered] : [...ordered, weekly];
 }
 
 export const UNLOCK_LINE = UNLOCK;
