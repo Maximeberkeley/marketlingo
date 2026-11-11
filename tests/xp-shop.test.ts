@@ -6,7 +6,7 @@ import {
 } from '../mobile/lib/shopCatalog';
 import {
   avatarLayers, buyBlock, dailyDeals, dealPrice, formatCountdown, isoWeekKey, lookFromJson, lookFromRows,
-  milestoneProgress, msUntilLocalMidnight, msUntilNextMonday, requirementProgress, spendable, weeklyFeature,
+  milestoneProgress, msUntilLocalMidnight, msUntilNextMonday, pickFeature, requirementProgress, spendable, weeklyFeature,
 } from '../mobile/lib/shopEconomy';
 import { ART_READY_IDS, ICON_IDS } from '../mobile/lib/shopArtIds';
 
@@ -187,5 +187,37 @@ describe('art and the server catalog stay in step', () => {
     expect(migration).toContain("ON public.streak_freezes (user_id, market_id, week_of, kind) WHERE kind <> 'shop'");
     expect(migration).toContain("ON public.streak_freezes (user_id, market_id, freeze_date) WHERE kind = 'shop'");
     expect(read('mobile/hooks/useStreakFreeze.ts')).not.toContain('999');
+  });
+});
+
+describe('seasonal promo card', () => {
+  const all = () => true;
+  const id = (f: any) => (f?.kind === 'bundle' ? f.bundle.id : f?.item.id);
+  const holiday = new Set(['holiday-antlers', 'holiday-collar', 'reindeer-nose', 'holly-wreath', 'bundle-christmas']);
+
+  it('never features the Christmas set or holiday pieces outside December', () => {
+    for (let m = 0; m < 11; m++) {
+      for (let d = 1; d <= 28; d += 3) {
+        const pick = pickFeature(BUNDLES, COSMETICS, all, new Date(2026, m, d, 12));
+        expect(holiday.has(id(pick))).toBe(false);
+      }
+    }
+    expect(id(pickFeature(BUNDLES, COSMETICS, all, new Date(2026, 10, 30, 23, 59)))).not.toBe('bundle-christmas');
+  });
+
+  it('features the Christmas set from December 1 through the month', () => {
+    for (const d of [1, 8, 15, 24, 31]) expect(id(pickFeature(BUNDLES, COSMETICS, all, new Date(2026, 11, d, 0, 1)))).toBe('bundle-christmas');
+  });
+
+  it('falls back to a single holiday piece in December when the set is not fully drawn', () => {
+    const pick = pickFeature(BUNDLES, COSMETICS, (x: string) => x !== 'reindeer-nose', new Date(2026, 11, 5));
+    expect(pick?.kind).toBe('item');
+    expect(holiday.has(id(pick))).toBe(true);
+  });
+
+  it('keeps year-round sets like Angel of my Dreams in the weekly rotation', () => {
+    const picks = new Set<string>();
+    for (let w = 0; w < 40; w++) picks.add(id(pickFeature(BUNDLES, COSMETICS, all, new Date(2026, 0, 5 + w * 7))));
+    expect(picks.has('bundle-angel')).toBe(true);
   });
 });

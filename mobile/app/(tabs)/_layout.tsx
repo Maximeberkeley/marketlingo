@@ -53,6 +53,8 @@ export default function TabLayout() {
 
 function TabNavigator() {
   const insets = useSafeAreaInsets();
+  // Phones without a home indicator (iPhone SE) report a 0 inset; keep the labels off the screen's bottom edge.
+  const bottomPad = insets.bottom > 0 ? insets.bottom : 8;
   const { hidden } = useLessonNavigation();
   // The Shop tab carries a "new" dot until it is opened once.
   const [shopNew, setShopNew] = useState(false);
@@ -69,9 +71,10 @@ function TabNavigator() {
           backgroundColor: COLORS.bg0,
           borderTopColor: COLORS.border,
           borderTopWidth: StyleSheet.hairlineWidth,
-          height: 56 + insets.bottom,
-          paddingBottom: insets.bottom,
-          paddingTop: 8,
+          // 54 px for icon + label on every phone: the item's own 5 px bottom padding left the label 7 px before.
+          height: 60 + bottomPad,
+          paddingBottom: bottomPad,
+          paddingTop: 6,
           elevation: 0,
           shadowColor: '#000',
           shadowOffset: { width: 0, height: -2 },
