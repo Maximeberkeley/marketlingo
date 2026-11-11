@@ -20,7 +20,7 @@ describe('shop scenes', () => {
     }
     expect(shop).toContain('<LeoAvatar look={{ ...look, ...wear }} size={leo} crop={false} />');
     expect(shop).toContain('padTop={40}');
-    expect(item).toContain('<LeoAvatar look={{ ...shop.look, ...wearing }} size={LEO_TRY} crop={false} />');
+    expect(item).toContain('<LeoAvatar look={art ? { ...shop.look, ...wearing } : {}} size={LEO_TRY} crop={false} />');
   });
 
   it('lets a dropped scene PNG replace the coded backdrop', () => {
@@ -111,5 +111,24 @@ describe('taking an item off', () => {
     expect(page).toContain('label="Remove"');
     expect(page).toContain('await shop.equip(p.slot, null)');
     expect(page).not.toContain('disabled={worn}');
+  });
+});
+
+describe('shop polish (Nov 11)', () => {
+  const perkPage = readFileSync('mobile/app/shop-perk.tsx', 'utf8');
+  const collPage = readFileSync('mobile/app/shop-collection.tsx', 'utf8');
+  it('opens a perk on the same scene as its card, with one clear cost row', () => {
+    expect(perkPage).toContain('<PerkObject id={perk.id} width={objectW} />');
+    expect(perkPage).toContain('When it opens');
+    expect(perkPage).not.toContain('glow:');
+  });
+  it('shows only drawn pieces in a collection, and lists the rest once', () => {
+    expect(collPage).toContain('const coming = all.filter(c => !hasArt(c.id));');
+    expect(collPage).not.toContain('<ItemArt');
+  });
+  it('never labels anything "Art soon"', () => {
+    for (const f of ['mobile/app/(tabs)/shop.tsx', 'mobile/app/shop-item.tsx', 'mobile/components/shop/ItemArt.tsx', 'mobile/lib/shopEconomy.ts']) {
+      expect(readFileSync(f, 'utf8'), f).not.toMatch(/Art soon|ART SOON/);
+    }
   });
 });

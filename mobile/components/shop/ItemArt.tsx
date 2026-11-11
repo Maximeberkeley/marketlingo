@@ -25,7 +25,7 @@ export function ShopIcon({ id, size }: { id: string; size: number }) {
 
 /**
  * An item on a tile: Leo wearing it when its art exists, otherwise a soft placeholder in the item's slot shape and
- * rarity colour with a small "Art soon" tag (final art comes from the ChatGPT pack).
+ * rarity colour with a small "Coming soon" tag (final art comes from the ChatGPT pack).
  */
 export function ItemArt({ item, size, tint, style, showTag = true }: { item: Cosmetic; size: number; tint?: string; style?: ViewStyle; showTag?: boolean }) {
   const color = RARITY_COLOR[item.rarity];
@@ -40,7 +40,7 @@ export function ItemArt({ item, size, tint, style, showTag = true }: { item: Cos
     <View style={[styles.placeholder, { width: size, height: size, borderRadius: size * 0.22, backgroundColor: color + (isDark ? '22' : '14') }, style]}>
       <MaterialCommunityIcons name={SLOT_ICON[item.slot]} size={Math.round(size * 0.42)} color={color + (isDark ? 'AA' : '88')} />
       {showTag && size >= 64 && (
-        <View style={styles.tag}><Text maxFontSizeMultiplier={1.3} style={styles.tagText}>Art soon</Text></View>
+        <View style={styles.tag}><Text maxFontSizeMultiplier={1.3} style={styles.tagText}>Coming soon</Text></View>
       )}
     </View>
   );

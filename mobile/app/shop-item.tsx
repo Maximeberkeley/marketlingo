@@ -117,14 +117,18 @@ export default function ShopItemScreen() {
         <FloatIcon id={SCENES[theme].icons[0]} size={50} x={10} y={STAGE_H - 78} depth={2} phase={200} />
         <FloatIcon id={SCENES[theme].icons[1]} size={40} x={stageW - 58} y={22} depth={0} phase={900} />
         <Float distance={6} style={{ position: 'absolute', left: stageW / 2 - LEO_TRY / 2, top: STAGE_H - LEO_TRY * 0.955 + 4 }}>
-          <LeoAvatar look={{ ...shop.look, ...wearing }} size={LEO_TRY} crop={false} />
+          {/* Not drawn yet: plain Leo, so the page never passes off the current outfit as this item. */}
+          <LeoAvatar look={art ? { ...shop.look, ...wearing } : {}} size={LEO_TRY} crop={false} />
         </Float>
         <View style={[styles.rarityTag, { backgroundColor: color }]}><Text maxFontSizeMultiplier={1.3} style={styles.rarityTagText}>{RARITY_LABEL[lead.rarity].toUpperCase()}</Text></View>
+        {!art && (
+          <View style={styles.drawing}><Feather name="edit-3" size={13} color="#FFFFFF" /><Text maxFontSizeMultiplier={1.3} style={styles.drawingText}>Picture on the way</Text></View>
+        )}
       </View>
 
       <View style={styles.info}>
         <Text maxFontSizeMultiplier={1.3} style={[styles.kicker, { color }]}>
-          {bundle ? `SET · ${parts.length} PIECES` : `${RARITY_LABEL[lead.rarity].toUpperCase()} · ${SLOT_LABEL[lead.slot].toUpperCase()}`}
+          {bundle ? `Set of ${parts.length}` : `${RARITY_LABEL[lead.rarity]} ${SLOT_LABEL[lead.slot].toLowerCase()}`}
         </Text>
         <Text maxFontSizeMultiplier={1.3} style={styles.name}>{name}</Text>
         {bundle ? (
@@ -282,6 +286,8 @@ function NotEnoughSheet({ visible, onClose, name, price, balance, item }: { visi
 }
 
 const styles = StyleSheet.create({
+  drawing: { position: 'absolute', alignSelf: 'center', bottom: 14, flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 12, height: 30, borderRadius: 15, backgroundColor: 'rgba(0,0,0,0.45)' },
+  drawingText: { fontSize: 13, fontWeight: '800', color: '#FFFFFF' },
   root: { flex: 1, backgroundColor: COLORS.bg0, paddingHorizontal: 20 },
   center: { alignItems: 'center', justifyContent: 'center', gap: 12 },
   top: { flexDirection: 'row', alignItems: 'center', gap: 12, height: 44 },
@@ -292,7 +298,7 @@ const styles = StyleSheet.create({
   rarityTag: { position: 'absolute', left: 14, top: 14, paddingHorizontal: 10, height: 24, borderRadius: 12, justifyContent: 'center' },
   rarityTagText: { fontSize: 11, fontWeight: '900', letterSpacing: 1, color: '#FFFFFF' },
   info: { alignItems: 'center', marginTop: 22, gap: 6 },
-  kicker: { fontSize: 11.5, fontWeight: '900', letterSpacing: 1 },
+  kicker: { fontSize: 13.5, fontWeight: '800' },
   name: { fontSize: 28, fontWeight: '900', color: COLORS.textPrimary, textAlign: 'center', letterSpacing: -0.4 },
   line: { fontSize: 15, color: COLORS.textSecondary, textAlign: 'center' },
   goes: { fontSize: 14, color: COLORS.textSecondary, textAlign: 'center', marginTop: 4 },

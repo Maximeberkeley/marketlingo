@@ -203,17 +203,7 @@ const SETS: Record<SceneTheme, () => React.ReactNode> = {
         <Circle cx="356" cy="64" r="8" fill="#FDE047" />
         <Circle cx="300" cy="78" r="9" fill="#60A5FA" />
       </G>
-      {/* beakers */}
-      <G transform="translate(30 150)">
-        <Path d="M10 0 H30 V22 L46 66 C48 72 44 76 38 76 H2 C-4 76 -8 72 -6 66 L10 22Z" fill="#ECFEFF" opacity="0.9" />
-        <Path d="M-1 52 L41 52 L46 66 C48 72 44 76 38 76 H2 C-4 76 -8 72 -6 66Z" fill="#A855F7" />
-        <Rect x="6" y="-4" width="28" height="6" rx="3" fill="#ECFEFF" />
-      </G>
-      <G transform="translate(334 160)">
-        <Rect x="0" y="0" width="34" height="62" rx="6" fill="#ECFEFF" opacity="0.9" />
-        <Rect x="0" y="30" width="34" height="32" rx="6" fill="#22D3EE" />
-        <Rect x="-3" y="-4" width="40" height="6" rx="3" fill="#ECFEFF" />
-      </G>
+      {/* no glassware here: the floating flask icon is the lab's prop, and drawn beakers framed it like a jar */}
       {/* bubbles */}
       {[[60, 120, 7], [74, 96, 4], [52, 84, 5], [346, 132, 5], [358, 112, 3.5], [110, 40, 6], [250, 26, 4]].map(([x, y, r], i) => (
         <Circle key={`b${i}`} cx={x} cy={y} r={r} fill="none" stroke="#F0FDFA" strokeWidth="2" opacity="0.8" />

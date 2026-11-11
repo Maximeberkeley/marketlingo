@@ -64,6 +64,11 @@ export default function ShopScreen() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [now.toDateString()]);
 
+  // Collections with drawn pieces first; a set still being drawn goes to the end of the carousel.
+  const collectionsByArt = useMemo(() => {
+    const drawnIn = (id: string) => COSMETICS.some(c => c.collection === id && !c.hidden && hasArt(c.id));
+    return [...COLLECTIONS.filter(c => drawnIn(c.id)), ...COLLECTIONS.filter(c => !drawnIn(c.id))];
+  }, []);
   const freezes = shop.owned[STREAK_FREEZE_ID]?.qty ?? 0;
   const wardrobeCount = COSMETICS.filter(c => !c.hidden && shop.owns(c.id)).length;
   const toClaim = COSMETICS.filter(c => shop.owned[c.id]?.source === 'reward' && !shop.owned[c.id]?.seenAt);
@@ -108,7 +113,7 @@ export default function ShopScreen() {
         )}
 
         <Rise index={1} style={styles.section}>
-          <SectionHead title="Perks" tag="REAL VALUE" sub="Real help from people who hire." action="How it works" onAction={() => open(`/shop-perk?id=${PERKS[0].id}`)} />
+          <SectionHead title="Perks" sub="Real help from people who hire." action="How it works" onAction={() => open(`/shop-perk?id=${PERKS[0].id}`)} />
           <Carousel
             items={PERKS}
             keyOf={p => p.id}
@@ -226,7 +231,7 @@ export default function ShopScreen() {
 
         <Rise index={6} style={styles.section}>
           <SectionHead title="Leo collections" sub="Swipe through. Tap to try on." />
-          <Carousel items={COLLECTIONS} keyOf={c => c.id} autoMs={5000} padTop={40} render={(c, w) => <CollectionCard collection={c} width={w} owned={shop.owns} />} />
+          <Carousel items={collectionsByArt} keyOf={c => c.id} autoMs={5000} padTop={40} render={(c, w) => <CollectionCard collection={c} width={w} owned={shop.owns} />} />
         </Rise>
 
         <Rise index={7} style={styles.section}>
@@ -258,7 +263,7 @@ export default function ShopScreen() {
                     ) : ready ? (
                       <PriceButton price={b.price} was={full} onPress={() => open(`/shop-item?bundle=${b.id}`)} height={42} style={{ marginTop: 10 }} />
                     ) : (
-                      <View style={[styles.soonPill, { marginTop: 12 }]}><Text maxFontSizeMultiplier={1.3} style={styles.soonText}>Art soon · {fmt(b.price)} XP</Text></View>
+                      <View style={[styles.soonPill, { marginTop: 12 }]}><Text maxFontSizeMultiplier={1.3} style={styles.soonText}>Coming soon · {fmt(b.price)} XP</Text></View>
                     )}
                   </View>
                 </PressScale>
@@ -281,7 +286,8 @@ export default function ShopScreen() {
                       <View style={{ opacity: p.met ? 1 : 0.55 }}>
                         {(PODIUM_MEDALS as readonly string[]).includes(c.id)
                           ? <MedalGlint place={((PODIUM_MEDALS as readonly string[]).indexOf(c.id) + 1) as 1 | 2 | 3} height={84} interactive={false} />
-                          : <ItemArt item={c} size={92} showTag={false} tint="transparent" />}
+                          : hasArt(c.id) ? <ItemArt item={c} size={92} showTag={false} tint="transparent" />
+                          : <ShopIcon id="milestone-trophy" size={76} />}
                       </View>
                       <View style={[styles.lock, p.met && { backgroundColor: '#4ADE80' }]}><Feather name={p.met ? 'check' : 'lock'} size={13} color={p.met ? '#052E16' : '#3A2600'} /></View>
                     </View>
@@ -382,8 +388,7 @@ function PerkCard({ perk, width, waitlist, joined, locked, onJoin }: { perk: Per
         )}
         <FloatIcon id={scene.icons[0]} size={42} x={14} y={H - 66} depth={2} phase={400} />
         <FloatIcon id={scene.icons[1]} size={34} x={width - 54} y={46} depth={0} phase={1100} />
-        <View style={styles.perkTag}><Text maxFontSizeMultiplier={1.3} style={styles.perkTagText}>✦ PERK</Text></View>
-        <Text maxFontSizeMultiplier={1.3} style={styles.perkKicker}>{perk.kicker.toUpperCase()}</Text>
+        <View style={styles.perkTag}><Text maxFontSizeMultiplier={1.3} style={styles.perkTagText}>{perk.kicker}</Text></View>
         <Sheen width={width} every={5200} delay={1200} />
       </View>
       <View style={styles.perkBody}>
@@ -393,7 +398,7 @@ function PerkCard({ perk, width, waitlist, joined, locked, onJoin }: { perk: Per
           <Text maxFontSizeMultiplier={1.3} style={styles.perkStatusText} numberOfLines={1}>{status}</Text>
         </View>
         <View style={styles.perkActions}>
-          <View style={styles.perkPrice}><Flask size={15} color="#6D28D9" /><Text maxFontSizeMultiplier={1.3} style={styles.perkPriceText}>{fmt(perk.price)}</Text></View>
+          <View style={styles.perkPrice}><Flask size={16} /><Text maxFontSizeMultiplier={1.3} style={styles.perkPriceText}>{fmt(perk.price)}</Text></View>
           {joined ? (
             <View style={styles.joined}><Feather name="check" size={15} color={COLORS.success} /><Text maxFontSizeMultiplier={1.3} style={styles.joinedText}>You're on the list</Text></View>
           ) : (
@@ -409,7 +414,8 @@ function CollectionCard({ collection, width, owned }: { collection: Collection; 
   const items = COSMETICS.filter(c => c.collection === collection.id && !c.hidden);
   const drawn = items.filter(c => hasArt(c.id));
   const look = Object.fromEntries(drawn.map(c => [c.slot, c.id]));
-  const have = items.filter(c => owned(c.id)).length;
+  // Counts only pieces that are drawn and can be collected today.
+  const have = drawn.filter(c => owned(c.id)).length;
   const theme = collection.id as SceneTheme;
   const t = SCENES[theme] ?? SCENES.promo;
   const H = 208;
@@ -430,13 +436,12 @@ function CollectionCard({ collection, width, owned }: { collection: Collection; 
       </Float>
       <FloatIcon id={t.icons[0]} size={50} x={12} y={H - 74} depth={2} phase={200} />
       <FloatIcon id={t.icons[2]} size={44} x={width - 60} y={H - 62} depth={1} phase={1200} />
-      {!drawn.length && <View style={styles.collPill}><Text maxFontSizeMultiplier={1.3} style={styles.collPillText}>ART SOON</Text></View>}
       <View style={styles.collBody}>
         <View style={{ flex: 1 }}>
           <Text maxFontSizeMultiplier={1.3} style={styles.collName}>{collection.name}</Text>
           <Text maxFontSizeMultiplier={1.3} style={styles.collHook} numberOfLines={1}>{collection.hook}</Text>
-          <View style={styles.collMeter}><View style={[styles.collFill, { width: `${Math.max(4, (have / Math.max(1, items.length)) * 100)}%` }]} /></View>
-          <Text maxFontSizeMultiplier={1.3} style={styles.collOwned}>{have} of {items.length} owned</Text>
+          <View style={styles.collMeter}><View style={[styles.collFill, { width: `${Math.max(4, (have / Math.max(1, drawn.length)) * 100)}%` }]} /></View>
+          <Text maxFontSizeMultiplier={1.3} style={styles.collOwned}>{drawn.length ? `${have} of ${drawn.length} collected` : 'Being drawn'}</Text>
         </View>
         <ChunkyButton label="See set" onPress={() => open(`/shop-collection?id=${collection.id}`)} height={42} tone="plain" style={{ width: 110 }} haptic />
       </View>
@@ -468,8 +473,8 @@ const styles = StyleSheet.create({
 
   perk: { ...CARD, overflow: 'hidden' },
   perkArt: { overflow: 'hidden', borderTopLeftRadius: 18, borderTopRightRadius: 18 },
-  perkTag: { position: 'absolute', top: 12, left: 12, paddingHorizontal: 9, height: 24, borderRadius: 12, borderWidth: 1.5, borderColor: '#FCD34D', backgroundColor: 'rgba(0,0,0,0.25)', alignItems: 'center', justifyContent: 'center' },
-  perkTagText: { fontSize: 11, fontWeight: '900', letterSpacing: 0.8, color: '#FCD34D' },
+  perkTag: { position: 'absolute', top: 12, left: 12, paddingHorizontal: 10, height: 26, borderRadius: 13, backgroundColor: 'rgba(0,0,0,0.32)', alignItems: 'center', justifyContent: 'center' },
+  perkTagText: { fontSize: 12.5, fontWeight: '800', color: '#FDE68A' },
   perkKicker: { position: 'absolute', top: 17, right: 14, fontSize: 10.5, fontWeight: '900', letterSpacing: 1, color: '#E9D5FF' },
   perkBody: { padding: 16, gap: 8 },
   perkName: { fontSize: 18, lineHeight: 23, fontWeight: '900', color: COLORS.textPrimary },
@@ -477,8 +482,8 @@ const styles = StyleSheet.create({
   statusDot: { width: 7, height: 7, borderRadius: 4 },
   perkStatusText: { flex: 1, fontSize: 12.5, fontWeight: '700', color: COLORS.textSecondary },
   perkActions: { flexDirection: 'row', alignItems: 'center', gap: 10, marginTop: 4 },
-  perkPrice: { flexDirection: 'row', alignItems: 'center', gap: 5, height: 46, paddingHorizontal: 12, borderRadius: 14, borderBottomWidth: 4, borderColor: isDark ? 'rgba(217,154,0,0.55)' : '#F2C94C', backgroundColor: isDark ? 'rgba(255,200,61,0.16)' : '#FFF4D1' },
-  perkPriceText: { fontSize: 15, fontWeight: '900', color: isDark ? '#FCD34D' : '#7A5A00' },
+  perkPrice: { flexDirection: 'row', alignItems: 'center', gap: 5, height: 42, paddingHorizontal: 12, borderRadius: 14, backgroundColor: COLORS.bg1, borderWidth: 1.5, borderColor: COLORS.border },
+  perkPriceText: { fontSize: 15, fontWeight: '900', color: COLORS.textPrimary, fontVariant: ['tabular-nums'] },
   joined: { flex: 1, height: 42, borderRadius: 14, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, backgroundColor: COLORS.successSoft },
   joinedText: { fontSize: 14, fontWeight: '800', color: COLORS.success },
 
