@@ -1,5 +1,4 @@
 ﻿// Key Players data for mobile app - mirrors web app keyPlayersData.ts
-import { moreCompanies } from './keyPlayersMore';
 
 export interface CompanySlide {
   title: string;
@@ -616,16 +615,6 @@ export const marketCompanies: MarketCompanies = {
     { id: 'alchemy', name: 'Alchemy', logoUrl: getLogoUrl('alchemy.com'), segment: 'commercial', description: 'Blockchain developer platform used by 70%+ of top Web3 companies.', industryRole: 'Alchemy is the AWS of Web3. Developers use their APIs to build on Ethereum, Polygon, and more.', ceo: 'Nikil Viswanathan', founded: '2017', headquarters: 'San Francisco, CA', employees: '300+', keyProducts: ['Alchemy API', 'Supernode', 'NFT API', 'Account Abstraction'], slides: [{ title: 'Web3 Infrastructure', content: 'Alchemy powers 70%+ of top Web3 apps. $105B+ in transactions processed.', highlight: '70%+ market share', type: 'insight' }, { title: 'Reliability at Scale', content: '99.9%+ uptime. Enhanced APIs not available from raw node. Mission-critical infrastructure.', highlight: '99.9% uptime', type: 'insight' }, { title: 'Account Abstraction', content: 'Pioneering smart wallet standard. Makes Web3 accessible without seed phrases.', highlight: 'Smart wallets', type: 'insight' }, { title: 'Competitive Position', content: 'Competes with Infura (Consensys), QuickNode. Developer experience is moat.', highlight: 'Developer experience', type: 'competitive' }, { title: 'Investment Thesis', content: 'Private at $10.2B. Web3 developer activity is leading indicator of adoption.', highlight: '$10.2B valuation', type: 'investment' }] },
   ],
 };
-
-// Add each market's further key players, skipping any company already listed (matched by name).
-const nameKey = (name: string) => name.normalize('NFD').replace(/[^a-z0-9]/gi, '').toLowerCase();
-for (const [marketId, extra] of Object.entries(moreCompanies)) {
-  const list = (marketCompanies[marketId] ??= []);
-  const seen = new Set(list.map(c => nameKey(c.name)));
-  for (const company of extra) {
-    if (!seen.has(nameKey(company.name))) { list.push(company); seen.add(nameKey(company.name)); }
-  }
-}
 
 // Default companies for markets without full data
 export const defaultCompanies: Company[] = marketCompanies.aerospace.slice(0, 6);

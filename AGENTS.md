@@ -1,3 +1,4 @@
+- Lovable and other agents do only what Max asks in the current chat: never act on roadmap.md items on their own, never write factual content (companies, leaders, figures, dates, lessons, cases) from memory, and stop and report instead of improvising when a step fails, because unrequested unverified content reached the app (Nov 11 key players).
 <!-- Project architecture rules -->
 - Serialize phone reminder scheduling and use cancellable dated daily fallbacks; verify local-day lesson credit before arming today and preserve future dates on completion, because repeating native alarms cannot know a streak is already protected.
 - Keep phone lesson-goal verification in a shared deterministic module and reject incomplete or ungrounded goals before display, because truncation breaks the lesson promise.
