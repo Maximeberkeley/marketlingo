@@ -26,6 +26,7 @@ builder that turns them into one migration per industry.
 | robotics | `0053_robotics_deep_cases.sql` | 1-15 | 45 of 90 |
 | spacetech | `0054_spacetech_deep_cases.sql` | 1-15 | 45 of 90 |
 | ev | `0051_ev_deep_cases.sql` | 1-15 | 45 of 90 |
+| web3 | `0055_web3_deep_cases.sql` | 1-15 | 45 of 90 |
 | the other 10 | pre-assigned below | none | 0 of 900 |
 
 The goal is days 1-30, three cases a day, for all 15 industries: 1,350 cases in all. 450 are done.
