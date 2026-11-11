@@ -28,3 +28,18 @@ python3 scripts/lessons/build.py spacetech scripts/lessons/spacetech/days_*.py \
 Each day becomes four stacks (career, invest, build_startup, curiosity) with stable ids, so the migration is
 safe to run again after an edit: stacks are updated in place and their slides replaced.
 `fitcheck.mjs` needs `esbuild` (installed with the web app's dependencies).
+
+## Load into Supabase
+
+The migrations are too large for Lovable to paste, so the same rows also ship in edge functions. After any
+lesson edit, rebuild the migration and then run:
+
+```
+python3 scripts/lessons/export_loader.py
+```
+
+It writes the data into `supabase/functions/load-handwritten-lessons[-N]/data/` (split to stay under the deploy
+size limit) and registers each function in `supabase/config.toml`. Deploy each function and call it: GET
+previews, POST loads only stacks whose fingerprint (`stacks.metadata.handwritten_src`) changed and replaces
+their slides. Rows use `stack_type` 'LESSON' (the table's CHECK constraint rejects 'MICRO_LESSON'); the app
+finds them by the MICRO_LESSON and handwritten-v1 tags.

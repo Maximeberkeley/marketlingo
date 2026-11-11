@@ -3,7 +3,7 @@
 > For Lovable and any agent: this file is a log, not a to-do list for you. Only do what Max asks in the current chat. Never pick up unchecked items here on your own.
 
 ## Nov 11 — Catch-up on past work
-- [ ] Load hand-written lessons days 6–30 for 10 industries (0028–0037 were skipped by migrations).
+- [x] Hand-written lessons days 6–30 for 10 industries (0028–0037 failed: stack_type 'MICRO_LESSON' broke the table's CHECK). Fixed to 'LESSON' and shipped as the load-handwritten-lessons[-2,-3] edge functions; Max asks Lovable to deploy and call them.
 - [ ] Split the oversized Deep Case loader so it deploys.
 - [x] Verify the XP Shop end to end as a signed-in learner.
 - [ ] ~~Bring key players up to 15 companies + 5 startups per market.~~ REVERTED Nov 11: the added companies were written from memory and never source-checked. Not requested by Max. Do not redo without a sourced, verified list.

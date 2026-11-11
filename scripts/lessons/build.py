@@ -190,24 +190,42 @@ def q(s):
     return f'$ml${s}$ml$'
 
 
-def sql(src, lessons, market):
-    rows, slide_rows, ids = [], [], []
+# The stacks table only accepts NEWS, HISTORY, LESSON, GAME, DRILL or SUMMARY as stack_type (its CHECK
+# constraint), so hand-written lessons are 'LESSON' rows; the app finds them by the MICRO_LESSON tag.
+STACK_TYPE = 'LESSON'
+
+
+def stack_rows(src, lessons, market):
+    """Every stack and its slides, as plain rows: the single source for the migration and the loader."""
+    out = []
     for L in lessons:
         for g in GOALS:
             lesson = expand(src, L, market, g)
             sid = str(uuid.uuid5(NS, f'marketlingo:{market}:d{L["day"]}:{g}:handwritten-v1'))
-            ids.append(sid)
             tags = ['MICRO_LESSON', f'day-{L["day"]}', 'month-1', 'handwritten-v1', f'goal:{g}'] + TAGS_TAIL
-            tag_sql = 'ARRAY[' + ', '.join(q(t) for t in tags) + ']::text[]'
-            rows.append(f"({q(sid)}::uuid, {q(market)}, {q(L['title'])}, 'MICRO_LESSON', {tag_sql}, 5, now(), '{{}}'::jsonb, {q(json.dumps(lesson, ensure_ascii=False))}::jsonb)")
-            for n, (title, body, s) in enumerate(slides_for(lesson), 1):
-                slid = str(uuid.uuid5(NS, f'{sid}:slide:{n}'))
-                slide_rows.append(f"({q(slid)}::uuid, {q(sid)}::uuid, {n}, {q(title)}, {q(body)}, {q(json.dumps(s, ensure_ascii=False))}::jsonb)")
+            slides = [{'id': str(uuid.uuid5(NS, f'{sid}:slide:{n}')), 'slide_number': n, 'title': title, 'body': body, 'sources': s}
+                      for n, (title, body, s) in enumerate(slides_for(lesson), 1)]
+            out.append({'id': sid, 'market_id': market, 'title': L['title'], 'stack_type': STACK_TYPE, 'tags': tags,
+                        'duration_minutes': 5, 'authored_lesson': lesson, 'slides': slides})
+    return out
+
+
+def sql(src, lessons, market):
+    rows, slide_rows, ids = [], [], []
+    for r in stack_rows(src, lessons, market):
+        sid = r['id']
+        ids.append(sid)
+        tag_sql = 'ARRAY[' + ', '.join(q(t) for t in r['tags']) + ']::text[]'
+        rows.append(f"({q(sid)}::uuid, {q(market)}, {q(r['title'])}, '{r['stack_type']}', {tag_sql}, {r['duration_minutes']}, now(), '{{}}'::jsonb, {q(json.dumps(r['authored_lesson'], ensure_ascii=False))}::jsonb)")
+        for sl in r['slides']:
+            slide_rows.append(f"({q(sl['id'])}::uuid, {q(sid)}::uuid, {sl['slide_number']}, {q(sl['title'])}, {q(sl['body'])}, {q(json.dumps(sl['sources'], ensure_ascii=False))}::jsonb)")
     id_list = ', '.join(f"'{i}'::uuid" for i in ids)
     days = sorted(l['day'] for l in lessons)
     head = (f"-- Hand-written {market} lessons, days {days[0]}-{days[-1]} ({len(ids)} stacks: one per day and learner goal).\n"
             "-- Tagged handwritten-v1, so Days 1-30 pick them over older generated stacks (mobile/lib/handwritten.ts).\n"
-            "-- Safe to run more than once: stacks upsert on id, and each stack's slides are replaced.\n")
+            "-- Safe to run more than once: stacks upsert on id, and each stack's slides are replaced.\n"
+            "-- Too large for Lovable to paste: the load-handwritten-lessons edge functions write these same rows\n"
+            "-- (scripts/lessons/export_loader.py).\n")
     out = [head, 'BEGIN;\n',
            'INSERT INTO stacks (id, market_id, title, stack_type, tags, duration_minutes, published_at, metadata, authored_lesson) VALUES\n',
            ',\n'.join(rows),
