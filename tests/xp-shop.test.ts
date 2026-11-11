@@ -178,7 +178,8 @@ describe('art and the server catalog stay in step', () => {
   });
   it('marks art_ready in the seed for exactly the drawn items', () => {
     for (const c of COSMETICS) {
-      const row = migration.split('\n').find(l => l.startsWith(`  ('${c.id}', 'cosmetic'`))!;
+      // the latest migration's row is the one in force
+      const row = migration.split('\n').filter(l => l.startsWith(`  ('${c.id}', 'cosmetic'`)).pop()!;
       expect(row.includes(`'live', ${ART_READY_IDS.includes(c.id)},`), c.id).toBe(true);
     }
   });

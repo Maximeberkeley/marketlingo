@@ -69,7 +69,7 @@ export default function ShopItemScreen() {
   const paired = (lead.pairsWith ?? []).map(id => cosmetic(id)).filter((c): c is Cosmetic => !!c && hasArt(c.id));
   const goesWith = bundle ? [] : (paired.length ? paired : lead.collection
     ? COSMETICS.filter(c => c.collection === lead.collection && c.id !== lead.id && c.slot !== lead.slot && hasArt(c.id))
-    : []).slice(0, 2);
+    : []).slice(0, 3);
 
   const wearAll = async () => {
     for (const p of parts) await shop.equip(p.slot, p.id);
@@ -138,7 +138,7 @@ export default function ShopItemScreen() {
           <Text maxFontSizeMultiplier={1.3} style={styles.goes}>
             Goes with {goesWith.map((g, i) => (
               <Text key={g.id}>
-                {i > 0 ? ' and ' : ''}
+                {i === 0 ? '' : i === goesWith.length - 1 ? ' and ' : ', '}
                 <Text maxFontSizeMultiplier={1.3} style={styles.link} onPress={() => router.replace(`/shop-item?id=${g.id}` as any)}>{g.name}</Text>
               </Text>
             ))}

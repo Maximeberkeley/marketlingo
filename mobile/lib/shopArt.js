@@ -19,9 +19,12 @@ const SHOP_ART = {
   "crow-cape": require("../assets/shop/outfit/crow-cape.png"),
   "ermine-cape": require("../assets/shop/outfit/ermine-cape.png"),
   "holiday-collar": require("../assets/shop/outfit/holiday-collar.png"),
+  "holly-wreath": require("../assets/shop/outfit/holly-wreath.png"),
   "royal-mantle": require("../assets/shop/outfit/royal-mantle.png"),
   "royal-mantle-blue": require("../assets/shop/outfit/royal-mantle-blue.png"),
-  "royal-mantle-green": require("../assets/shop/outfit/royal-mantle-green.png")
+  "royal-mantle-green": require("../assets/shop/outfit/royal-mantle-green.png"),
+  "sun-diamond-necklace": require("../assets/shop/outfit/sun-diamond-necklace.png"),
+  "medal-champion": require("../assets/shop/held/medal-champion.png")
 };
 const SHOP_ICONS = {
   "bundle-box": require("../assets/shop/icons/bundle-box.png"),

@@ -3,6 +3,7 @@ import { readFileSync } from 'node:fs';
 import { execFileSync } from 'node:child_process';
 import { BUNDLES, COSMETICS, bundleFullPrice, priceOf } from '../mobile/lib/shopCatalog';
 import { raceLine } from '../mobile/lib/rankRace';
+import { avatarLayers } from '../mobile/lib/shopEconomy';
 
 const read = (p: string) => readFileSync(p, 'utf8');
 const transform = (source: string, loader: string) => execFileSync(process.execPath, ['--input-type=module', '-e',
@@ -98,6 +99,36 @@ describe('Winter royal', () => {
     expect(sql).toContain("('holiday-collar', 'cosmetic', 'outfit', 'common', 'Holiday collar', 300, 'purchase'");
     expect(sql).toContain("('reindeer-nose', 'cosmetic', 'glasses', 'common', 'Reindeer nose', 300, 'purchase'");
     expect(sql).toContain("('bundle-christmas', 'bundle', NULL, NULL, 'Christmas set', 680, 'purchase'");
+  });
+});
+
+describe('Holly wreath and the champion medal', () => {
+  const sql = read('drizzle/migrations/0061_shop_catalog_holly_wreath.sql');
+  it('sells the holly wreath as an uncommon Seasonal outfit, suggested with the antlers, outside the Christmas set', () => {
+    const wreath = COSMETICS.find(c => c.id === 'holly-wreath')!;
+    expect(wreath).toMatchObject({ slot: 'outfit', rarity: 'uncommon', acquisition: 'purchase', collection: 'seasonal' });
+    expect(priceOf(wreath)).toBe(500);
+    expect(COSMETICS.find(c => c.id === 'holiday-antlers')!.pairsWith).toContain('holly-wreath');
+    expect(BUNDLES.find(b => b.id === 'bundle-christmas')!.items).toEqual(['holiday-antlers', 'holiday-collar', 'reindeer-nose']);
+    expect(sql).toContain("('holly-wreath', 'cosmetic', 'outfit', 'uncommon', 'Holly wreath', 500, 'purchase'");
+    expect(read('mobile/app/shop-item.tsx')).toContain(".slice(0, 3);");
+  });
+  it('sells the sun diamond necklace as a rare Royal outfit, paired with the Sapphire tiara both ways', () => {
+    const necklace = COSMETICS.find(c => c.id === 'sun-diamond-necklace')!;
+    expect(necklace).toMatchObject({ slot: 'outfit', rarity: 'rare', acquisition: 'purchase', pairsWith: ['sapphire-tiara'] });
+    expect(priceOf(necklace)).toBe(800);
+    expect(COSMETICS.find(c => c.id === 'sapphire-tiara')!.pairsWith).toContain('sun-diamond-necklace');
+    expect(sql).toContain("('sun-diamond-necklace', 'cosmetic', 'outfit', 'rare', 'Sun diamond necklace', 800, 'purchase'");
+  });
+  it('keeps the dropped lion mane out', () => {
+    expect(COSMETICS.some(c => c.id === 'lion-mane')).toBe(false);
+    expect(read('mobile/lib/shopArt.ts')).not.toContain('lion-mane');
+  });
+  it('draws the earn-only Case champion medal pinned on the chest, above outfits; hats stay above outfits too', () => {
+    expect(read('mobile/lib/shopArt.ts')).toContain("'medal-champion': require('../assets/shop/held/medal-champion.png')");
+    expect(avatarLayers({ outfit: 'commander-coat', held: 'medal-champion' }, { hasArt: () => true })).toEqual(['base', 'commander-coat', 'grad-cap', 'medal-champion']);
+    expect(avatarLayers({ hat: 'raven-crown', outfit: 'ermine-cape', glasses: 'aviators' }, { hasArt: () => true })).toEqual(['base', 'ermine-cape', 'aviators', 'raven-crown']);
+    expect(sql).toContain("'medal-champion']::text[])) WHERE kind = 'cosmetic'");
   });
 });
 
