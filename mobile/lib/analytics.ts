@@ -7,6 +7,8 @@ import { supabase } from './supabase';
 import { log } from './logger';
 
 export type AnalyticsEvent =
+  | 'social_nudge_shown'
+  | 'social_nudge_opened'
   | 'lesson_complete'
   | 'lesson_start'
   | 'streak_milestone'
