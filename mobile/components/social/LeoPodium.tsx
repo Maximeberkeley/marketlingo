@@ -9,6 +9,7 @@ import type { Look } from '../../lib/shopEconomy';
 import { LeoAvatar } from '../shop/LeoAvatar';
 import { Pop } from '../shop/Motion';
 import { FloorShadow, Sunburst, Twinkles } from '../shop/Scene';
+import { MedalGlint } from '../shop/MedalGlint';
 
 export interface PodiumPerson { id: string; name: string; xp: number; look: Look; crown: boolean; isMe: boolean }
 
@@ -22,10 +23,14 @@ const LEO = [108, 88, 84];
 // Bust art leaves ~4.5% empty canvas under the flat chest edge; sink Leo by that so he stands on the block.
 const SINK = 0.045;
 
-export function LeoPodium({ people }: { people: PodiumPerson[] }) {
+/**
+ * `unit` labels each block's number ("XP" on standings, "pts" for a Weekly Case score). `medals` adds the podium
+ * medal glints under the steps (Weekly Case results only), each tapping through to its quest.
+ */
+export function LeoPodium({ people, unit = 'XP', medals = false }: { people: PodiumPerson[]; unit?: string; medals?: boolean }) {
   if (people.length < 3) return null;
   return (
-    <View style={styles.podium} accessibilityRole="summary" accessibilityLabel={`Top three: ${people.slice(0, 3).map((p, i) => `${i + 1}, ${p.name}, ${p.xp} XP`).join('; ')}`}>
+    <View style={styles.podium} accessibilityRole="summary" accessibilityLabel={`Top three: ${people.slice(0, 3).map((p, i) => `${i + 1}, ${p.name}, ${p.xp} ${unit}`).join('; ')}`}>
       {[1, 0, 2].map(i => {
         const p = people[i];
         const m = MEDALS[i];
@@ -47,8 +52,9 @@ export function LeoPodium({ people }: { people: PodiumPerson[] }) {
             <View style={[styles.block, { height: BLOCK[i], backgroundColor: m.bg, borderColor: m.ring + '66' }]}>
               <Text maxFontSizeMultiplier={1.2} style={[styles.rank, { color: m.text }]}>{i + 1}</Text>
               <Text maxFontSizeMultiplier={1.2} style={[styles.name, { color: p.isMe ? '#6D28D9' : '#1F2937' }]} numberOfLines={1}>{p.isMe ? 'You' : p.name}</Text>
-              <Text maxFontSizeMultiplier={1.2} style={[styles.xp, { color: m.text }]}>{p.xp.toLocaleString()} XP</Text>
+              <Text maxFontSizeMultiplier={1.2} style={[styles.xp, { color: m.text }]}>{p.xp.toLocaleString()} {unit}</Text>
             </View>
+            {medals && <View style={styles.medal}><MedalGlint place={(i + 1) as 1 | 2 | 3} /></View>}
           </View>
         );
       })}
@@ -61,6 +67,7 @@ const styles = StyleSheet.create({
   col: { flex: 1, alignItems: 'center' },
   block: { width: '100%', borderRadius: 16, borderWidth: 1.5, borderBottomWidth: 4, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 6 },
   rank: { fontSize: 20, fontWeight: '900' },
+  medal: { marginTop: 8, alignItems: 'center' },
   // Medal blocks stay pale in both themes, so their text stays dark.
   name: { fontSize: 12.5, fontWeight: '800', maxWidth: '100%' },
   xp: { fontSize: 11, fontWeight: '800', marginTop: 1 },
