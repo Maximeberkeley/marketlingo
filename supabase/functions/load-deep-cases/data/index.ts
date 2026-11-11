@@ -5,7 +5,8 @@ import biotech from './biotech.ts';
 import fintech from './fintech.ts';
 import neuroscience from './neuroscience.ts';
 import cleanenergy from './cleanenergy.ts';
+import robotics from './robotics.ts';
 import spacetech from './spacetech.ts';
 
 /** Every hand-written Deep Case, by market, as deep_cases rows. */
-export const DEEP_CASES = { aerospace, ai, biotech, fintech, neuroscience, cleanenergy, spacetech };
+export const DEEP_CASES = { aerospace, ai, biotech, fintech, neuroscience, cleanenergy, robotics, spacetech };
