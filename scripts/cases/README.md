@@ -22,6 +22,7 @@ builder that turns them into one migration per industry.
 | biotech | `0040_biotech_deep_cases.sql` | 1-30 | 90 of 90 |
 | fintech | `0041_fintech_deep_cases.sql` | 1-30 | 90 of 90 |
 | neuroscience | `0042_neuroscience_deep_cases.sql` | 1-30 | 90 of 90 |
+| cleanenergy | `0049_cleanenergy_deep_cases.sql` | 1-15 | 45 of 90 |
 | the other 10 | pre-assigned below | none | 0 of 900 |
 
 The goal is days 1-30, three cases a day, for all 15 industries: 1,350 cases in all. 450 are done.
