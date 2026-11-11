@@ -68,3 +68,12 @@ verify_jwt = false
 
 [functions.load-deep-cases-3]
 verify_jwt = false
+
+[functions.load-handwritten-lessons]
+verify_jwt = false
+
+[functions.load-handwritten-lessons-2]
+verify_jwt = false
+
+[functions.load-handwritten-lessons-3]
+verify_jwt = false
