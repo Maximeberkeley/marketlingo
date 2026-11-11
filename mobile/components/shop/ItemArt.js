@@ -24,7 +24,7 @@ function ItemArt({ item, size, tint, style, showTag = true }) {
   if (item.id in SHOP_ART) {
     return /* @__PURE__ */ React.createElement(View, { style: [{ width: size, height: size, alignItems: "center", justifyContent: "center" }, style] }, /* @__PURE__ */ React.createElement(LeoAvatar, { look: { [item.slot]: item.id }, size, bg: tint ?? "transparent" }));
   }
-  return /* @__PURE__ */ React.createElement(View, { style: [styles.placeholder, { width: size, height: size, borderRadius: size * 0.22, backgroundColor: color + (isDark ? "22" : "14") }, style] }, /* @__PURE__ */ React.createElement(MaterialCommunityIcons, { name: SLOT_ICON[item.slot], size: Math.round(size * 0.42), color: color + (isDark ? "AA" : "88") }), showTag && size >= 64 && /* @__PURE__ */ React.createElement(View, { style: styles.tag }, /* @__PURE__ */ React.createElement(Text, { maxFontSizeMultiplier: 1.3, style: styles.tagText }, "Art soon")));
+  return /* @__PURE__ */ React.createElement(View, { style: [styles.placeholder, { width: size, height: size, borderRadius: size * 0.22, backgroundColor: color + (isDark ? "22" : "14") }, style] }, /* @__PURE__ */ React.createElement(MaterialCommunityIcons, { name: SLOT_ICON[item.slot], size: Math.round(size * 0.42), color: color + (isDark ? "AA" : "88") }), showTag && size >= 64 && /* @__PURE__ */ React.createElement(View, { style: styles.tag }, /* @__PURE__ */ React.createElement(Text, { maxFontSizeMultiplier: 1.3, style: styles.tagText }, "Coming soon")));
 }
 const styles = StyleSheet.create({
   placeholder: { alignItems: "center", justifyContent: "center" },

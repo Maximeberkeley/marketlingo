@@ -24,7 +24,7 @@ function buyBlock(ctx) {
 }
 const BLOCK_LABEL = {
   owned: "Owned",
-  no_art: "Art soon",
+  no_art: "Coming soon",
   earn_only: "Earn it",
   coming_soon: "Coming soon",
   max_held: "You hold 2",

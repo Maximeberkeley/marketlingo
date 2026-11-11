@@ -55,7 +55,7 @@ export function buyBlock(ctx: BuyContext): BuyBlock | null {
 
 export const BLOCK_LABEL: Record<BuyBlock, string> = {
   owned: 'Owned',
-  no_art: 'Art soon',
+  no_art: 'Coming soon',
   earn_only: 'Earn it',
   coming_soon: 'Coming soon',
   max_held: 'You hold 2',
