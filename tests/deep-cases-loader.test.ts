@@ -94,11 +94,10 @@ describe('the function, run against an in-memory table', () => {
 
   beforeAll(async () => {
     // Bundle the Deno function with its supabase-js import swapped for an in-memory client.
-    for (const FN of FNS) {
     const out = join(mkdtempSync(join(tmpdir(), 'loader-')), 'fn.mjs');
     execFileSync(process.execPath, ['--input-type=module', '-e', `
       import { build } from 'esbuild';
-      await build({ entryPoints: [${JSON.stringify(`${FN}/index.ts`)}], bundle: true, format: 'esm', platform: 'neutral', outfile: ${JSON.stringify(out)}, logLevel: 'error',
+      await build({ stdin: { contents: ${JSON.stringify(FNS.map(fn => `import './${fn}/index.ts';`).join('\n'))}, resolveDir: process.cwd(), loader: 'ts' }, bundle: true, format: 'esm', platform: 'neutral', outfile: ${JSON.stringify(out)}, logLevel: 'error',
         plugins: [{ name: 'mock', setup(b) { b.onResolve({ filter: /^https:\\/\\/esm\\.sh\\// }, () => ({ path: 'supabase', namespace: 'mock' }));
           b.onLoad({ filter: /.*/, namespace: 'mock' }, () => ({ contents: 'export const createClient = (...a) => globalThis.__createClient(...a);', loader: 'js' })); } }] });
     `], { encoding: 'utf8' });
@@ -130,7 +129,6 @@ describe('the function, run against an in-memory table', () => {
     });
     (globalThis as any).Deno = { env: { get: () => 'x' }, serve: (h: any) => { handlers.push(h); } };
     await import(pathToFileURL(out).href);
-    }
   }, 120000);
 
   it('explains a missing table instead of failing silently', async () => {
