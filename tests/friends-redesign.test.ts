@@ -122,7 +122,8 @@ describe('scanning a friend’s code in the app', () => {
     const plugin = app.plugins.find((p: unknown) => Array.isArray(p) && p[0] === 'expo-camera');
     expect(plugin?.[1].cameraPermission).toMatch(/scan a friend's code/);
     expect(JSON.parse(read('mobile/package.json')).dependencies['expo-camera']).toBe('~17.0.10');
-    expect(app.ios.buildNumber).toBe('163');
+    // camera shipped in build 163; later builds keep it
+    expect(Number(app.ios.buildNumber)).toBeGreaterThanOrEqual(163);
   });
 });
 
