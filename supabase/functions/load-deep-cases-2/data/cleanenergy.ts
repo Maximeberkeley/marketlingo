@@ -6518,6 +6518,6532 @@ const rows: unknown[] = [
    "handwritten-v1",
    "src:142c2188c4a6"
   ]
+ },
+ {
+  "id": "7da0b288-a07b-5d21-a8c2-f6da56604762",
+  "market_id": "cleanenergy",
+  "day": 16,
+  "slot": 1,
+  "content": {
+   "id": "cleanenergy-d16-c1",
+   "title": "Europe's deals shrink, solar grows",
+   "lessonTitle": "The corporate buying slowdown",
+   "slot": 1,
+   "type": "apply",
+   "brief": {
+    "headline": "Pexapark counted 6.08 GW of European PPAs in the first half of 2025, down 26% from 8.25 GW a year earlier. Solar went the other way, rising to 4.2 GW from 3.9 GW.",
+    "kicker": "Apply the rule: a falling total can hide a growing segment.",
+    "fullText": "The 6.08 GW came from 124 agreements. Corporate buyers signed 4.3 GW, with their participation down 40%.\n\nCountries split sharply. Germany's contracted volume fell 84% to 228 MW, while Italy's solar PPA volume rose 184%, driven by a 420 MW corporate contract. Spain added 579 MW across six agreements.",
+    "sources": [
+     {
+      "url": "https://energiaestrategica.com/solar-ppas-withstand-overall-decline-in-the-european-market-in-2025/",
+      "label": "Energía Estratégica, Pexapark on European PPAs in the first half of 2025"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "spotFake",
+    "prompt": "Two statements match Pexapark's first half. Which one does not?",
+    "statements": [
+     "Total volume fell 26%",
+     "Solar PPA volume rose to 4.2 GW",
+     "Every country signed less than in 2024"
+    ],
+    "fakeIndex": 2,
+    "explanation": "Germany fell 84%, but Italy's solar volume rose 184%. The total hid very different country stories."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "By what percent did Germany's contracted PPA volume fall in the first half of 2025?",
+    "min": 0,
+    "max": 100,
+    "value": 84,
+    "unit": "%",
+    "explanation": "An 84% drop, to 228 MW, while Europe overall fell 26%."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You join a PPA advisory team covering Europe.",
+      "prompt": "Which summary would you give a new client?",
+      "options": [
+       "The European PPA market is collapsing on all fronts",
+       "Every country moved in the same direction",
+       "Volumes fell overall, but solar and some markets grew"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Solar rose and Italy grew, so collapse overstates it.",
+       "Germany and Italy moved in opposite directions.",
+       "You give the total and the exceptions inside it."
+      ],
+      "explanation": "The total fell 26%, but solar rose and Italy grew. Advisers who see the split find the live deals."
+     },
+     "proReasoning": "Good advisers open with the total and then show where deals are still being signed.",
+     "commonMistake": "Reading a 26% drop as a sign the whole market is shut.",
+     "mentalModel": "Total first, then the segments."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You fund solar projects that need European corporate buyers.",
+      "prompt": "What does the data suggest?",
+      "options": [
+       "Solar buyers held up, but pick countries carefully",
+       "Avoid Europe entirely after a 26% drop in volume",
+       "Germany is the safest market now"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Solar rose while country results diverged.",
+       "Solar volume grew despite the drop.",
+       "Germany fell 84%, the steepest drop listed."
+      ],
+      "explanation": "Solar PPAs rose to 4.2 GW even as the total fell. Country choice decides whether you find a buyer."
+     },
+     "proReasoning": "Investors look past the headline to the technology and country that still sign.",
+     "commonMistake": "Exiting a whole region because its total fell.",
+     "mentalModel": "Back the segment that grows."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your startup sells PPA pricing software in Europe.",
+      "prompt": "Where do you focus sales first?",
+      "options": [
+       "Every market equally, regardless of recent activity",
+       "Markets and buyers still signing, like Italy and Spain",
+       "Germany, since it was largest before"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Spreading evenly ignores where deals happen.",
+       "You chase live demand.",
+       "Germany fell 84% in the period."
+      ],
+      "explanation": "Italy and Spain kept signing while Germany fell. Sales go where deals are moving."
+     },
+     "proReasoning": "Founders follow deal flow, not last year's ranking.",
+     "commonMistake": "Targeting the biggest past market while it shrinks fastest.",
+     "mentalModel": "Sell where deals still close."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A headline says European clean power deals fell 26%.",
+      "prompt": "What else is worth asking?",
+      "options": [
+       "Whether renewables are being abandoned",
+       "Whether the figure counts every country the same way",
+       "Which technologies and countries grew anyway"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Solar deals rose, so abandonment overstates it.",
+       "Useful, but the bigger story is the split.",
+       "Solar and Italy grew, which changes the story."
+      ],
+      "explanation": "Inside the drop, solar rose to 4.2 GW and Italy grew sharply."
+     },
+     "proReasoning": "Ask what grew inside a total that fell.",
+     "commonMistake": "Taking a regional total as the whole story.",
+     "mentalModel": "Look inside the total."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:81c6016aedee"
+  ]
+ },
+ {
+  "id": "a24f8d59-29c3-5385-80e0-ab90634e2e76",
+  "market_id": "cleanenergy",
+  "day": 16,
+  "slot": 2,
+  "content": {
+   "id": "cleanenergy-d16-c2",
+   "title": "Fewer buyers, bigger deals",
+   "lessonTitle": "The corporate buying slowdown",
+   "slot": 2,
+   "type": "connect",
+   "brief": {
+    "headline": "In 2025 the US set a record of 29.5 GW of corporate clean power deals. Yet the number of unique US buyers fell 51% to 33, and four tech giants made up 49% of global buying.",
+    "kicker": "Connect day 15 and day 16: a record built by fewer buyers.",
+    "fullText": "Day 15 showed Meta, Amazon, Google and Microsoft making up 49% of corporate clean power buying in 2025, while unique US buyers fell 51% to 33.\n\nToday's lesson adds the totals. Global deals fell to 55.9 GW from 62 GW, but the US hit a record 29.5 GW, over half the world's volume. A few very large buyers carried the American record.",
+    "sources": [
+     {
+      "url": "https://www.utilitydive.com/news/corporate-clean-energy-procurement-ppa-meta-amazon-google/812591/",
+      "label": "Utility Dive, BNEF on corporate clean energy buying in 2025"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "multipleChoice",
+    "prompt": "How can US volume set a record while US buyers fall by half?",
+    "options": [
+     "Utilities replaced corporate buyers",
+     "A few buyers signed much larger deals",
+     "Buyers signed more but smaller deals"
+    ],
+    "correctIndex": 1,
+    "explanation": "Four tech giants made up 49% of buying. Fewer, larger buyers can still push volume to a record."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "Out of 55.9 GW of global deals, about what percent did the US sign?",
+    "min": 0,
+    "max": 80,
+    "value": 53,
+    "unit": "%",
+    "tolerance": 0.08,
+    "explanation": "29.5 divided by 55.9 is about 53%, over half the world's total."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You sell clean power deals at a US developer.",
+      "prompt": "What does this mean for your pipeline?",
+      "options": [
+       "Deals depend on a few huge buyers",
+       "Hundreds of new buyers are entering",
+       "Corporate buying is shrinking in the US"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Losing one giant would hurt badly.",
+       "Unique US buyers fell 51% to 33.",
+       "US volume hit a record 29.5 GW."
+      ],
+      "explanation": "A record built by fewer buyers means concentration risk. Each big buyer matters more."
+     },
+     "proReasoning": "Sales teams map their dependence on each large buyer.",
+     "commonMistake": "Reading a record as broad-based demand.",
+     "mentalModel": "Know who carries the record."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You value a developer whose contracts mostly come from big tech.",
+      "prompt": "Which risk deserves the closest look?",
+      "options": [
+       "A lack of US demand",
+       "Concentration on a handful of buyers",
+       "Too many small customers to serve well"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "US demand set a record.",
+       "If one giant pulls back, revenue drops.",
+       "The trend is the opposite."
+      ],
+      "explanation": "With four buyers at 49% of the market, losing one large contract would matter a lot."
+     },
+     "proReasoning": "Investors stress-test what happens if the top buyer walks away.",
+     "commonMistake": "Treating record volume as a sign of diversified demand.",
+     "mentalModel": "Test the top-buyer risk."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your startup helps mid-size companies buy clean power.",
+      "prompt": "What does the falling buyer count suggest?",
+      "options": [
+       "Mid-size buyers are no longer needed",
+       "Only big tech can ever buy clean power",
+       "Smaller buyers need help to get back in"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "They still need clean power for their goals.",
+       "Smaller deals exist; they are just harder.",
+       "Fewer buyers leaves room to bring others back."
+      ],
+      "explanation": "Unique US buyers fell to 33. A product that makes deals easier for smaller buyers fills that gap."
+     },
+     "proReasoning": "Founders look for the customers a market has left behind.",
+     "commonMistake": "Assuming a market dominated by giants has no room for others.",
+     "mentalModel": "Serve the buyers left behind."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend says US companies are buying clean power more than ever.",
+      "prompt": "What would you add?",
+      "options": [
+       "Volume is a record, but buyers fell by half",
+       "Nothing, demand is broad and growing fast",
+       "US buying actually fell in 2025"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Both facts together tell the real story.",
+       "Buyers fell 51% to 33.",
+       "US volume hit a record 29.5 GW."
+      ],
+      "explanation": "The record came from fewer, larger buyers, led by four tech giants."
+     },
+     "proReasoning": "Ask how many buyers stand behind a record.",
+     "commonMistake": "Assuming more volume means more buyers.",
+     "mentalModel": "Volume and breadth differ."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:aca15d28788d"
+  ]
+ },
+ {
+  "id": "e363ff93-cb4c-516c-a691-1531a7a08477",
+  "market_id": "cleanenergy",
+  "day": 16,
+  "slot": 3,
+  "content": {
+   "id": "cleanenergy-d16-c3",
+   "title": "Where to sell your next deal",
+   "lessonTitle": "The corporate buying slowdown",
+   "slot": 3,
+   "type": "decide",
+   "brief": {
+    "headline": "You run a developer with projects in several regions. Global corporate deals fell about 10% in 2025, the US hit a record, and co-located deals reached 5.8 GW.",
+    "kicker": "Decide where your sales team spends the year.",
+    "fullText": "Corporate clean power deals fell to 55.9 GW worldwide in 2025. The Americas were the only region where volume did not drop, and the US signed a record 29.5 GW.\n\nDeals that place clean power next to the buyer's site reached 5.8 GW, linked to proposed hourly emissions tracking. Your team can only chase a few markets well.",
+    "sources": [
+     {
+      "url": "https://www.utilitydive.com/news/corporate-clean-energy-procurement-ppa-meta-amazon-google/812591/",
+      "label": "Utility Dive, BNEF on corporate clean energy buying in 2025"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "sortSignal",
+    "prompt": "Does each point favor focusing on US deals, or not?",
+    "buckets": [
+     "Favors a US focus",
+     "Does not"
+    ],
+    "items": [
+     {
+      "text": "The US set a record 29.5 GW",
+      "bucket": 0
+     },
+     {
+      "text": "The Americas held their volume",
+      "bucket": 0
+     },
+     {
+      "text": "Data centers drove US demand",
+      "bucket": 0
+     },
+     {
+      "text": "Global deals fell about 10%",
+      "bucket": 1
+     },
+     {
+      "text": "Other regions saw volume drop",
+      "bucket": 1
+     }
+    ],
+    "explanation": "US demand held up and grew while other regions fell. That points sales toward the US."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "Global deals fell from 62 GW to 55.9 GW. By how many GW?",
+    "min": 0,
+    "max": 20,
+    "value": 6.1,
+    "unit": "GW",
+    "tolerance": 0.1,
+    "explanation": "62 minus 55.9 is 6.1 GW, a drop of about 10%."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You lead sales planning and must pick next year's priority.",
+      "prompt": "Where do you send most of the team?",
+      "options": [
+       "Every region in equal measure",
+       "US data center buyers",
+       "Regions where volume is falling"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Spreading evenly ignores the data.",
+       "You follow the only region that grew.",
+       "Falling regions offer fewer deals."
+      ],
+      "explanation": "The US set a record while other regions fell. Effort goes where buyers are signing."
+     },
+     "proReasoning": "Sales leaders put most effort where volume is growing.",
+     "commonMistake": "Splitting effort evenly when one region clearly leads.",
+     "mentalModel": "Follow the growing region."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You decide which projects to fund first.",
+      "prompt": "Which project ranks highest?",
+      "options": [
+       "A project in a region with falling volume",
+       "A project with no buyer identified",
+       "A US project near data center demand"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Fewer buyers means more risk.",
+       "No buyer means no secured revenue.",
+       "Strong local demand means a likely buyer."
+      ],
+      "explanation": "Projects near strong demand are more likely to sign a buyer on good terms."
+     },
+     "proReasoning": "Investors rank projects by how likely a buyer is.",
+     "commonMistake": "Funding projects where buyers are pulling back.",
+     "mentalModel": "Fund projects with likely buyers."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your startup designs co-located power setups.",
+      "prompt": "What does 5.8 GW of co-located deals tell you?",
+      "options": [
+       "A new deal shape is gaining ground",
+       "Co-location has already peaked",
+       "Buyers prefer distant plants now"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "It is growing with hourly tracking.",
+       "Nothing in the data shows a peak.",
+       "The trend points toward nearby supply."
+      ],
+      "explanation": "Co-located and hybrid deals reached 5.8 GW, linked to proposed hourly tracking. That is a growing niche."
+     },
+     "proReasoning": "Founders watch for new deal shapes that grow inside a flat market.",
+     "commonMistake": "Ignoring a new deal type because it is still small.",
+     "mentalModel": "Back the rising deal shape."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You read that clean power deals fell worldwide in 2025.",
+      "prompt": "What is the most useful follow-up?",
+      "options": [
+       "Which company signed the single biggest deal",
+       "Where volume grew, and why",
+       "Whether the decline will last forever"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Interesting, but not the main point.",
+       "The US record changes the picture.",
+       "One year does not make a trend."
+      ],
+      "explanation": "Volume grew in the US even as the world fell, driven by data centers."
+     },
+     "proReasoning": "Ask where a falling market is still growing.",
+     "commonMistake": "Stopping at the global headline.",
+     "mentalModel": "Find where growth hides."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:86d3ecb41cb9"
+  ]
+ },
+ {
+  "id": "9bf878aa-9f34-56a9-9cad-3c6edc4b2d82",
+  "market_id": "cleanenergy",
+  "day": 17,
+  "slot": 1,
+  "content": {
+   "id": "cleanenergy-d17-c1",
+   "title": "Google's hourly score",
+   "lessonTitle": "Matching clean power hour by hour",
+   "slot": 1,
+   "type": "apply",
+   "brief": {
+    "headline": "Google reported that its carbon-free energy use rose from 64% to 66% on an hourly basis in 2024. Over the same year, its data center electricity demand rose 27%.",
+    "kicker": "Apply the hourly test to a company that already reports it.",
+    "fullText": "Most companies report clean power on a yearly basis. Google reports an hourly figure, which counts clean power only in the hours it is actually used.\n\nIn 2024, it said it cut data center energy emissions by 12% while electricity demand for those data centers rose 27%. The hourly score still left about a third of its use uncovered by clean power in the hour it was used.",
+    "sources": [
+     {
+      "url": "https://blog.google/outreach-initiatives/sustainability/environmental-report-2025/",
+      "label": "Google, its 10th annual Environmental Report (2025)"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "faceOff",
+    "prompt": "Which measure is harder to score well on?",
+    "left": {
+     "name": "Hourly matching",
+     "note": "Clean power must arrive in the same hour"
+    },
+    "right": {
+     "name": "Yearly matching",
+     "note": "Totals add up over twelve months"
+    },
+    "correctIndex": 0,
+    "explanation": "Yearly totals can count daytime solar against nighttime use. Hourly matching cannot, so it is the stricter test."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "What share of Google's use was carbon-free on an hourly basis in 2024?",
+    "min": 0,
+    "max": 100,
+    "value": 66,
+    "unit": "%",
+    "explanation": "66%, up from 64%, even as data center demand rose 27%."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You interview for a sustainability role at a tech company.",
+      "prompt": "How do you describe Google's 66% figure?",
+      "options": [
+       "Clean power matched to use in each hour",
+       "Clean power bought over the whole year",
+       "The share of its offices using solar"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "That is what makes the number strict.",
+       "Yearly matching would show a higher figure.",
+       "It covers its electricity use, not offices only."
+      ],
+      "explanation": "The 66% is measured hour by hour, which is the strict method the GHG Protocol proposed."
+     },
+     "proReasoning": "Strong candidates say which method sits behind a percentage.",
+     "commonMistake": "Comparing an hourly score with another company's yearly score.",
+     "mentalModel": "Name the method behind the share."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You compare two tech companies' clean energy claims.",
+      "prompt": "What do you check first?",
+      "options": [
+       "Which company has the larger logo",
+       "Whether each figure is hourly or yearly",
+       "Which company bought more total MWh"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Irrelevant to the claim.",
+       "Methods must match before comparing.",
+       "Volume alone hides timing."
+      ],
+      "explanation": "A yearly 100% and an hourly 66% measure different things. Compare like with like."
+     },
+     "proReasoning": "Analysts line up methods before comparing climate claims.",
+     "commonMistake": "Treating two percentages as comparable without checking the method.",
+     "mentalModel": "Match methods before comparing."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your startup tracks clean power hour by hour.",
+      "prompt": "What does Google's reporting show about your market?",
+      "options": [
+       "Hourly data is only for regulators",
+       "No company reports hourly figures",
+       "Large buyers already want hourly data"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Companies use it to set goals too.",
+       "Google does, as an example.",
+       "Google reports an hourly score publicly."
+      ],
+      "explanation": "A major buyer reporting hourly shows the data has real demand."
+     },
+     "proReasoning": "Founders point to leading buyers already using their kind of data.",
+     "commonMistake": "Assuming hourly tracking is too niche to sell.",
+     "mentalModel": "Show buyers already use it."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend says a company \"runs on 100% clean energy.\"",
+      "prompt": "What question helps most?",
+      "options": [
+       "Is that measured each hour or over a year?",
+       "Is the company very large?",
+       "Does it have solar panels on its own roof?"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "The method changes the meaning.",
+       "Size does not settle the claim.",
+       "Rooftop solar is a small part."
+      ],
+      "explanation": "A yearly 100% can still leave nights uncovered. Google's hourly score was 66%."
+     },
+     "proReasoning": "Ask how a clean energy claim is measured.",
+     "commonMistake": "Taking \"100% clean\" at face value.",
+     "mentalModel": "Ask hourly or yearly."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:bed1d033915f"
+  ]
+ },
+ {
+  "id": "4421918b-fd3a-53ab-a11c-d4e1bba6a748",
+  "market_id": "cleanenergy",
+  "day": 17,
+  "slot": 2,
+  "content": {
+   "id": "cleanenergy-d17-c2",
+   "title": "Why the clock favors steady plants",
+   "lessonTitle": "Matching clean power hour by hour",
+   "slot": 2,
+   "type": "connect",
+   "brief": {
+    "headline": "US solar ran at a 24.0% capacity factor in 2025, wind at 33.8% and nuclear at 91.1%. Hourly matching rewards supply that is there in every hour.",
+    "kicker": "Connect day 10 and day 17: running time meets hourly rules.",
+    "fullText": "Day 10 showed how often plants actually run. Solar stops at night, so its capacity factor is 24.0%; nuclear runs almost nonstop at 91.1%.\n\nToday's lesson adds the accounting rule. The GHG Protocol proposed matching clean power to use hour by hour. Under that rule, solar alone cannot cover a data center at night, while steady sources or storage can.",
+    "sources": [
+     {
+      "url": "https://eia.gov/electricity/annual/html/epa_04_08_b.html",
+      "label": "EIA, capacity factors for non-fossil generators"
+     },
+     {
+      "url": "https://www.esgtoday.com/?p=26480",
+      "label": "ESG Today, GHG Protocol pushes back stricter Scope 2 rules"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "buildChain",
+    "prompt": "Order these from least to most hours covered in a typical year.",
+    "steps": [
+     "Solar, 24.0% capacity factor",
+     "Wind, 33.8% capacity factor",
+     "Nuclear, 91.1% capacity factor"
+    ],
+    "explanation": "A higher capacity factor means more hours of output, which matters most under hourly matching."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "Nuclear runs at 91.1%, solar at 24.0%. About how many times more does nuclear run?",
+    "min": 0,
+    "max": 10,
+    "value": 3.8,
+    "unit": "x",
+    "tolerance": 0.1,
+    "explanation": "91.1 divided by 24.0 is about 3.8 times as many full-power hours."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your company is weighing a move to hourly matching.",
+      "prompt": "What do you tell your boss about its current solar contracts?",
+      "options": [
+       "They become worthless under the new hourly rules",
+       "They cover daytime only; nights need other supply",
+       "They already cover every hour of use"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "They still count for the hours they produce.",
+       "Solar runs about 24% of the time.",
+       "Solar cannot cover night hours."
+      ],
+      "explanation": "Solar counts only for the hours it produces. Night use needs wind, nuclear or storage."
+     },
+     "proReasoning": "Good analysts show which hours current contracts actually cover.",
+     "commonMistake": "Assuming yearly solar totals cover every hour.",
+     "mentalModel": "Map contracts to hours."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You weigh what hourly matching would do to demand.",
+      "prompt": "Which supply gains the most value?",
+      "options": [
+       "Extra daytime solar on sunny afternoons",
+       "Power from any region",
+       "Firm or stored power available at night"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Daytime is already well covered.",
+       "The proposal also wants the same grid market.",
+       "Night hours are the hardest to fill."
+      ],
+      "explanation": "Hourly rules make round-the-clock supply scarce and valuable. Extra daytime solar adds less."
+     },
+     "proReasoning": "Investors price the scarce hours, not the average.",
+     "commonMistake": "Valuing every clean MWh the same under hourly rules.",
+     "mentalModel": "Price the scarce hours."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You plan a product for buyers moving to hourly matching.",
+      "prompt": "What should it do first?",
+      "options": [
+       "Show which hours lack clean supply",
+       "Sell more daytime solar credits",
+       "Hide hourly gaps behind yearly totals"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Buyers need to see their gaps.",
+       "Daytime is rarely the gap.",
+       "That defeats the point of hourly rules."
+      ],
+      "explanation": "Under hourly rules, buyers need to see their night and winter gaps first."
+     },
+     "proReasoning": "Founders start with the problem the new rule exposes.",
+     "commonMistake": "Building for the old yearly method as rules move.",
+     "mentalModel": "Show the gaps first."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You wonder why tech companies sign nuclear deals.",
+      "prompt": "Which fact explains it best?",
+      "options": [
+       "Nuclear plants are small",
+       "Nuclear runs about 91% of the time",
+       "Nuclear is the cheapest power to build"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Most nuclear plants are large.",
+       "It can cover nearly every hour.",
+       "Cost is not what the data shows here."
+      ],
+      "explanation": "If you want clean power in every hour, a plant that runs 91% of the time helps a lot."
+     },
+     "proReasoning": "Ask what a source offers hour by hour.",
+     "commonMistake": "Thinking all clean power is interchangeable.",
+     "mentalModel": "Hours matter, not just totals."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:d99a5a47809c"
+  ]
+ },
+ {
+  "id": "0eadc909-0c6f-53e4-97da-f9d89d161621",
+  "market_id": "cleanenergy",
+  "day": 17,
+  "slot": 3,
+  "content": {
+   "id": "cleanenergy-d17-c3",
+   "title": "Which method to report",
+   "lessonTitle": "Matching clean power hour by hour",
+   "slot": 3,
+   "type": "decide",
+   "brief": {
+    "headline": "You run sustainability reporting at a retailer. The GHG Protocol now says companies should use hourly matching, but may keep the old yearly method until a future date.",
+    "kicker": "Decide how your company reports clean power now.",
+    "fullText": "The GHG Protocol proposed hourly matching in October 2025. Only 12% of consultation responses supported it, and 86% worried it would add burden and cost.\n\nIn October 2026, it said companies should use the new method but may keep the old one for now. Your current contracts are mostly yearly solar deals.",
+    "sources": [
+     {
+      "url": "https://www.esgtoday.com/?p=26480",
+      "label": "ESG Today, GHG Protocol pushes back stricter Scope 2 rules"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "multipleChoice",
+    "prompt": "What share of consultation responses supported hourly matching?",
+    "options": [
+     "86%",
+     "12%",
+     "50%"
+    ],
+    "correctIndex": 1,
+    "explanation": "Only 12% supported it. 86% worried about burden and cost, which is why the old method may continue for now."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "What share of respondents worried hourly matching would add burden and cost?",
+    "min": 0,
+    "max": 100,
+    "value": 86,
+    "unit": "%",
+    "explanation": "86% worried about burden and cost, which slowed mandatory use."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your CFO asks whether to switch methods now.",
+      "prompt": "What do you recommend?",
+      "options": [
+       "Drop all clean power reporting",
+       "Switch fully to hourly matching overnight",
+       "Report yearly, and start measuring hourly too"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Reporting is still expected.",
+       "Your contracts would look much worse at once.",
+       "You comply now and prepare for later."
+      ],
+      "explanation": "The old method is still allowed, but the direction is hourly. Measuring both prepares you."
+     },
+     "proReasoning": "Good reporting leads prepare for the stricter rule before it is required.",
+     "commonMistake": "Ignoring the new method because it is not yet mandatory.",
+     "mentalModel": "Comply now, prepare for hourly."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You hold shares in a company that reports 100% yearly matching.",
+      "prompt": "What do you ask management?",
+      "options": [
+       "What its hourly score would be",
+       "Whether it can add more yearly credits",
+       "Whether reporting can stop"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "That shows exposure to the new rule.",
+       "More yearly credits do not fix hourly gaps.",
+       "Reporting is not going away."
+      ],
+      "explanation": "If hourly matching becomes the norm, a yearly 100% could fall sharply. Ask for the hourly figure."
+     },
+     "proReasoning": "Investors ask how a company would score under the stricter rule.",
+     "commonMistake": "Taking a yearly 100% as future-proof.",
+     "mentalModel": "Ask for the hourly number."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your startup sells hourly matching software.",
+      "prompt": "How do you pitch given the delay?",
+      "options": [
+       "Wait until the rules are final before selling",
+       "Prepare early, before rules become mandatory",
+       "Hourly matching is required now"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Waiting gives the market to rivals.",
+       "Early movers avoid a rush later.",
+       "The old method may continue for now."
+      ],
+      "explanation": "The rule points to hourly but is not yet required. Selling preparation fits that timing."
+     },
+     "proReasoning": "Founders sell readiness when a rule is coming but not yet enforced.",
+     "commonMistake": "Overstating a rule as already mandatory.",
+     "mentalModel": "Sell readiness, not panic."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You read that a clean energy rule was \"delayed.\"",
+      "prompt": "What actually happened?",
+      "options": [
+       "The new method was scrapped after the public consultation",
+       "The new method became mandatory",
+       "The new method is preferred, but the old one may continue"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "It was not scrapped.",
+       "Mandatory use was delayed.",
+       "That is the October 2026 decision."
+      ],
+      "explanation": "The GHG Protocol said companies should use hourly matching but may keep the old method for now."
+     },
+     "proReasoning": "Read what a \"delay\" actually changes.",
+     "commonMistake": "Assuming a delay means a rule is dead.",
+     "mentalModel": "Delayed is not dropped."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:c8af4668d944"
+  ]
+ },
+ {
+  "id": "b83f9e50-ee0d-555b-91cc-eae4aad0dd9b",
+  "market_id": "cleanenergy",
+  "day": 18,
+  "slot": 1,
+  "content": {
+   "id": "cleanenergy-d18-c1",
+   "title": "Amazon puts money into reactors",
+   "lessonTitle": "Buying power from reactors not yet built",
+   "slot": 1,
+   "type": "apply",
+   "brief": {
+    "headline": "In October 2024, Amazon led a $500 million funding round for X-Energy, which develops small modular reactors. The partners aim to bring more than 5 GW online by 2039.",
+    "kicker": "Apply the idea to a buyer that also became an investor.",
+    "fullText": "In Washington state, four reactors would first generate 320 MW for Energy Northwest, possibly growing to 960 MW. In Virginia, Amazon is exploring a reactor of at least 300 MW near a Dominion nuclear station.\n\nNo small modular reactors were operating in the US at the time, and only NuScale's design had approval from the Nuclear Regulatory Commission. NuScale's Idaho project had collapsed after projected power prices rose too high for its buyers.",
+    "sources": [
+     {
+      "url": "https://datacenterknowledge.com/energy-power-supply/amazon-doubles-down-on-nuclear-energy-with-deal-for-small-reactors",
+      "label": "Data Center Knowledge, Amazon deal for small reactors"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "sortSignal",
+    "prompt": "Is each a fact about the Amazon and X-Energy plan, or not?",
+    "buckets": [
+     "Part of the plan",
+     "Not part of it"
+    ],
+    "items": [
+     {
+      "text": "A $500 million funding round",
+      "bucket": 0
+     },
+     {
+      "text": "More than 5 GW by 2039",
+      "bucket": 0
+     },
+     {
+      "text": "320 MW first for Energy Northwest",
+      "bucket": 0
+     },
+     {
+      "text": "Reactors already running in 2024",
+      "bucket": 1
+     },
+     {
+      "text": "A design already approved by regulators",
+      "bucket": 1
+     }
+    ],
+    "explanation": "No small reactors were running in the US, and only NuScale's design had approval. Amazon is betting on future plants."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "How many MW could the Energy Northwest project grow to?",
+    "min": 0,
+    "max": 1500,
+    "value": 960,
+    "unit": "MW",
+    "tolerance": 0.06,
+    "explanation": "960 MW, up from an initial 320 MW from four reactors."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You interview at a utility partnering on small reactors.",
+      "prompt": "How do you describe Amazon's role?",
+      "options": [
+       "A regulator approving new reactor designs for use",
+       "Buyer and investor in a technology still unbuilt",
+       "Owner of running nuclear plants"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Regulators are separate from buyers.",
+       "It funds and plans to buy future power.",
+       "No small reactors were running yet."
+      ],
+      "explanation": "Amazon both funded X-Energy and planned to buy its future power. That shares risk on unbuilt plants."
+     },
+     "proReasoning": "Strong candidates explain how risk is shared before a plant exists.",
+     "commonMistake": "Describing future reactors as if they were running.",
+     "mentalModel": "Buyer, investor, and patient."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You weigh a stake in a small reactor developer.",
+      "prompt": "Which risk matters most?",
+      "options": [
+       "Too much demand from big tech buyers at once",
+       "Too many approved designs",
+       "Cost and timeline before the first plant runs"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Demand is the reason to invest.",
+       "Only one design had approval.",
+       "NuScale's project failed on rising costs."
+      ],
+      "explanation": "NuScale's Idaho project collapsed when projected prices rose too high. Costs decide whether plants get built."
+     },
+     "proReasoning": "Investors weigh the first plant's cost and schedule above all.",
+     "commonMistake": "Treating a big buyer's interest as proof a plant will be built.",
+     "mentalModel": "First-plant cost decides."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your startup makes parts for small reactors.",
+      "prompt": "What does Amazon's move change?",
+      "options": [
+       "Equity money now supports the first projects",
+       "Reactors are guaranteed to be built on time",
+       "No more buyers will be needed"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "A deep-pocketed backer helps projects start.",
+       "Timelines still carry risk.",
+       "Projects still need buyers for power."
+      ],
+      "explanation": "X-Energy's CEO said the change was Amazon being prepared to be the equity. That helps early projects start."
+     },
+     "proReasoning": "Founders note when a big backer reduces early-stage risk.",
+     "commonMistake": "Assuming funding removes construction risk.",
+     "mentalModel": "Funding helps, risk remains."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend says Amazon is already running on small reactors.",
+      "prompt": "What is accurate?",
+      "options": [
+       "Small reactors power most US data centers",
+       "Amazon backs reactors due in the 2030s",
+       "Amazon runs four reactors in Washington"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "None were running in the US yet.",
+       "The goal is more than 5 GW by 2039.",
+       "They are planned, not running."
+      ],
+      "explanation": "Amazon funded and plans to buy from future reactors. None were operating in the US in 2024."
+     },
+     "proReasoning": "Ask whether a plant is planned or running.",
+     "commonMistake": "Confusing announcements with operating plants.",
+     "mentalModel": "Planned is not running."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:06bd339e7acb"
+  ]
+ },
+ {
+  "id": "80c48082-535b-5418-8a90-9783488f2ef6",
+  "market_id": "cleanenergy",
+  "day": 18,
+  "slot": 2,
+  "content": {
+   "id": "cleanenergy-d18-c2",
+   "title": "Restart versus first of a kind",
+   "lessonTitle": "Buying power from reactors not yet built",
+   "slot": 2,
+   "type": "connect",
+   "brief": {
+    "headline": "Microsoft signed a 20-year deal for the 835 MW Three Mile Island Unit 1 restart. Google agreed to buy from 500 MW of Kairos reactors by 2035, with the first due by 2030.",
+    "kicker": "Connect day 13 and day 18: an old reactor and new ones.",
+    "fullText": "Day 13 showed Microsoft buying the output of a nuclear unit Constellation plans to restart. The reactor design already exists and has run before.\n\nToday's lesson adds a different bet. Google signed for small reactors that Kairos has not yet built. Its low-power Hermes demonstration reactor in Tennessee was targeted to run by 2027. Both buyers want power around the clock, but they take very different risks.",
+    "sources": [
+     {
+      "url": "https://www.orrick.com/en/News/2024/10/Microsoft-Signs-20-Year-PPA-with-Constellation",
+      "label": "Orrick, Microsoft signs 20-year PPA with Constellation"
+     },
+     {
+      "url": "https://www.world-nuclear-news.org/articles/google-and-kairos-power-team-up-for-smr-deployments-in-us-first",
+      "label": "World Nuclear News, Google and Kairos Power team up"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "faceOff",
+    "prompt": "Which deal carries more technology risk?",
+    "left": {
+     "name": "Google and Kairos",
+     "note": "New reactor design, first plant due 2030"
+    },
+    "right": {
+     "name": "Microsoft and Three Mile Island",
+     "note": "Restart of a unit that ran before"
+    },
+    "correctIndex": 0,
+    "explanation": "A restart uses a reactor that has already run. Kairos's commercial plants do not yet exist."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "How many MW does the Three Mile Island Unit 1 restart cover?",
+    "min": 0,
+    "max": 1500,
+    "value": 835,
+    "unit": "MW",
+    "tolerance": 0.06,
+    "explanation": "835 MW, from one existing unit, versus 500 MW from a fleet of new reactors."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You compare the two deals for a nuclear industry newsletter.",
+      "prompt": "Which contrast do you lead with?",
+      "options": [
+       "Big company versus small company",
+       "Solar versus nuclear",
+       "Proven reactor versus unbuilt design"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Both buyers are tech giants.",
+       "Both deals are nuclear.",
+       "That is the core difference in risk."
+      ],
+      "explanation": "Both want firm clean power. One relies on a reactor that ran before, the other on new technology."
+     },
+     "proReasoning": "Strong writers lead with the difference that drives risk.",
+     "commonMistake": "Treating all nuclear deals as the same bet.",
+     "mentalModel": "Lead with the risk gap."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You must pick which deal's timeline is more reliable.",
+      "prompt": "Which do you trust more?",
+      "options": [
+       "The restart of an existing unit",
+       "The first-of-a-kind small reactors",
+       "Both carry the same timeline risk"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "The design and site already exist.",
+       "New designs often face delays.",
+       "The risks differ a lot."
+      ],
+      "explanation": "A restart avoids building a new design. First-of-a-kind reactors carry more schedule risk."
+     },
+     "proReasoning": "Investors discount timelines for technology that has never run commercially.",
+     "commonMistake": "Giving new designs the same confidence as restarts.",
+     "mentalModel": "Discount first-of-a-kind dates."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your startup offers services for nuclear projects.",
+      "prompt": "Which customer gets you revenue sooner?",
+      "options": [
+       "Neither has near-term work",
+       "Restarts of existing plants",
+       "Small reactors due after 2030"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Restarts create work today.",
+       "Restarts need work now.",
+       "Their main build-out is years away."
+      ],
+      "explanation": "Restarts have nearer timelines. Small reactor projects pay off later."
+     },
+     "proReasoning": "Founders match early revenue to projects already moving.",
+     "commonMistake": "Betting the company only on the furthest-out projects.",
+     "mentalModel": "Revenue now, bets later."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You wonder why tech giants sign such different nuclear deals.",
+      "prompt": "Which reason fits both?",
+      "options": [
+       "They want to own power plants",
+       "They want the cheapest power possible",
+       "They want clean power around the clock"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Microsoft buys output, not the plant.",
+       "Firm supply, not lowest cost, drives these deals.",
+       "Nuclear can run day and night."
+      ],
+      "explanation": "Both seek carbon-free power in every hour. They differ in how much technology risk they accept."
+     },
+     "proReasoning": "Ask what a buyer needs that other sources cannot give.",
+     "commonMistake": "Assuming every nuclear deal is about price.",
+     "mentalModel": "Same goal, different risk."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:961a036bcebc"
+  ]
+ },
+ {
+  "id": "4e4d997a-624a-5a62-9f56-e8446bcdebf3",
+  "market_id": "cleanenergy",
+  "day": 18,
+  "slot": 3,
+  "content": {
+   "id": "cleanenergy-d18-c3",
+   "title": "Signing for power in 2030",
+   "lessonTitle": "Buying power from reactors not yet built",
+   "slot": 3,
+   "type": "decide",
+   "brief": {
+    "headline": "You run energy buying for a cloud company. A reactor developer offers a contract like Google's: power from new small reactors, the first due by 2030.",
+    "kicker": "Decide how much of your future supply to bet on it.",
+    "fullText": "Google agreed in 2024 to buy power from 500 MW of Kairos small reactors by 2035, with the first due by 2030. No commercial Kairos plant was running yet.\n\nYour data centers need firm, carbon-free power now and later. The contract could secure supply that runs day and night, but only if the plants arrive on time.",
+    "sources": [
+     {
+      "url": "https://www.world-nuclear-news.org/articles/google-and-kairos-power-team-up-for-smr-deployments-in-us-first",
+      "label": "World Nuclear News, Google and Kairos Power team up"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "spotFake",
+    "prompt": "Two statements match the Google and Kairos deal. Which one does not?",
+    "statements": [
+     "The total is 500 MW by 2035",
+     "The first plant is due by 2030",
+     "A commercial Kairos plant was already running"
+    ],
+    "fakeIndex": 2,
+    "explanation": "No commercial Kairos plant was running. Only a low-power demonstration reactor was planned for 2027."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "How many years after the 2024 deal is the first plant due?",
+    "min": 0,
+    "max": 15,
+    "value": 6,
+    "unit": "years",
+    "explanation": "The first plant is due by 2030, six years after the 2024 agreement."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your boss asks how to treat the offer.",
+      "prompt": "What do you recommend?",
+      "options": [
+       "Sign some, and keep backup supply",
+       "Sign all future needs on it",
+       "Reject any deal for unbuilt plants"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "You support the tech without betting everything.",
+       "A delay would leave you short.",
+       "Early contracts help new tech reach market."
+      ],
+      "explanation": "Early contracts help new reactors get built, but delays happen. A partial bet with backup balances both."
+     },
+     "proReasoning": "Energy buyers hedge first-of-a-kind supply with proven sources.",
+     "commonMistake": "Betting all future demand on one unbuilt technology.",
+     "mentalModel": "Bet some, hedge the rest."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You assess the reactor developer that would win the contract.",
+      "prompt": "What does the signed contract prove?",
+      "options": [
+       "That costs are already fixed",
+       "A credible buyer, not that plants will be built",
+       "That the plants will open on time and on budget"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "First-plant costs are still uncertain.",
+       "It shows demand, not delivery.",
+       "Timelines can still slip."
+      ],
+      "explanation": "A buyer's signature shows demand. Building the plant on time and on budget is a separate risk."
+     },
+     "proReasoning": "Investors separate proof of demand from proof of delivery.",
+     "commonMistake": "Treating a signed buyer as a finished project.",
+     "mentalModel": "Demand is not delivery."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your startup offers backup power for data centers.",
+      "prompt": "How does this offer help your pitch?",
+      "options": [
+       "New reactors remove all need for backup",
+       "Backup is only needed after 2035",
+       "Buyers need supply until new reactors arrive"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Delays make backup more valuable.",
+       "Needs exist right now.",
+       "The gap before 2030 needs filling."
+      ],
+      "explanation": "Firm supply from new reactors is years away. Bridging supply has a market today."
+     },
+     "proReasoning": "Founders sell the bridge to a future technology.",
+     "commonMistake": "Assuming future supply solves today's needs.",
+     "mentalModel": "Sell the bridge."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A headline says a tech firm \"will run on nuclear by 2030.\"",
+      "prompt": "What should you keep in mind?",
+      "options": [
+       "The plants do not exist yet",
+       "The plants already supply it",
+       "Nuclear plants are built in a year"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "It is a contract for future plants.",
+       "Supply has not started.",
+       "Builds take many years."
+      ],
+      "explanation": "Contracts like this come years before the first electron. Timelines can slip."
+     },
+     "proReasoning": "Ask whether the plant exists yet.",
+     "commonMistake": "Reading a contract date as a delivery date.",
+     "mentalModel": "Contracts come first."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:f6ea3b453bc1"
+  ]
+ },
+ {
+  "id": "d43928c5-301d-506a-8a54-7fb56c2710b3",
+  "market_id": "cleanenergy",
+  "day": 19,
+  "slot": 1,
+  "content": {
+   "id": "cleanenergy-d19-c1",
+   "title": "Dominion's return gets trimmed",
+   "lessonTitle": "Allowed returns versus real returns",
+   "slot": 1,
+   "type": "apply",
+   "brief": {
+    "headline": "In November 2025, Virginia's regulators approved a 9.8% return on equity for Dominion Energy, down from the 10.4% it requested. The average home bill rises $13.60 over two years.",
+    "kicker": "Apply allowed returns to a fresh rate decision.",
+    "fullText": "Dominion had sought increases worth $19.57 a month for the average home. Regulators approved about 30% less: $11.24 in 2026 and another $2.36 in 2027.\n\nThe added revenue approved was $565.7 million in 2026 and $209.9 million in 2027, against requests of $822 million and $345 million. The allowed return is the profit rate regulators approve on shareholders' investment in the grid.",
+    "sources": [
+     {
+      "url": "https://cardinalnews.org/2025/11/26/regulators-approve-dominion-energy-rate-increase/",
+      "label": "Cardinal News, regulators approve Dominion Energy rate increase"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "multipleChoice",
+    "prompt": "What return on equity did Virginia approve for Dominion?",
+    "options": [
+     "9.8%",
+     "10.4%",
+     "13.6%"
+    ],
+    "correctIndex": 0,
+    "explanation": "Regulators approved 9.8%, below the 10.4% Dominion requested."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "How much added revenue did regulators approve for 2026, in millions of dollars?",
+    "min": 0,
+    "max": 1000,
+    "value": 565.7,
+    "unit": "M",
+    "tolerance": 0.06,
+    "explanation": "$565.7 million, against the $822 million Dominion requested for 2026."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You join a utility's regulatory team after this decision.",
+      "prompt": "How do you describe the outcome?",
+      "options": [
+       "Regulators granted the full request as filed",
+       "Regulators rejected any increase",
+       "A lower return and smaller increase than asked"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Both the return and revenue were cut.",
+       "Bills still rise $13.60 over two years.",
+       "9.8% versus 10.4%, and about 30% less money."
+      ],
+      "explanation": "Regulators trimmed both the return and the revenue. That is typical of how rate cases end."
+     },
+     "proReasoning": "Regulatory analysts compare every outcome with what was requested.",
+     "commonMistake": "Reporting a rate case without the requested figures.",
+     "mentalModel": "Asked versus approved."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You hold Dominion shares.",
+      "prompt": "What does the 9.8% return mean for you?",
+      "options": [
+       "A ceiling on profit, not a promise",
+       "A guaranteed 9.8% earnings rate",
+       "A return regulators will raise yearly"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Actual earnings depend on costs and timing.",
+       "Utilities often earn less than allowed.",
+       "Returns are set in rate cases, not yearly."
+      ],
+      "explanation": "An allowed return is what regulators approve. Costs rising between rate cases can push earnings below it."
+     },
+     "proReasoning": "Investors model earned returns, not just allowed ones.",
+     "commonMistake": "Assuming a utility will earn its full allowed return.",
+     "mentalModel": "Allowed is a ceiling."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your startup sells grid software to utilities.",
+      "prompt": "What does a trimmed rate case mean for your sales?",
+      "options": [
+       "Regulators will buy software directly",
+       "Utilities will look for ways to cut costs",
+       "Utilities will spend freely now"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Utilities, not regulators, buy tools.",
+       "Lower returns push them to save money.",
+       "Approved revenue fell short of the ask."
+      ],
+      "explanation": "With less revenue than asked, utilities look for savings. Tools that cut costs gain appeal."
+     },
+     "proReasoning": "Founders pitch savings when utilities get less than they asked for.",
+     "commonMistake": "Pitching nice-to-have features right after a rate cut.",
+     "mentalModel": "Pitch savings after cuts."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A neighbor asks why the power company \"gets a guaranteed profit.\"",
+      "prompt": "What is accurate?",
+      "options": [
+       "Utilities can charge whatever price they like",
+       "Utilities are not allowed any profit",
+       "Regulators set an allowed return, not a guarantee"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Regulators cut Dominion's request.",
+       "They are allowed a return on investment.",
+       "Actual returns can fall short."
+      ],
+      "explanation": "Regulators approve a target return, here 9.8%. Real earnings depend on costs and sales."
+     },
+     "proReasoning": "Ask what regulators allow versus what a utility earns.",
+     "commonMistake": "Calling an allowed return a guarantee.",
+     "mentalModel": "Allowed is not guaranteed."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:1b0a793549af"
+  ]
+ },
+ {
+  "id": "b8254d34-8c58-5d4f-b9b9-2d023a44ba7a",
+  "market_id": "cleanenergy",
+  "day": 19,
+  "slot": 2,
+  "content": {
+   "id": "cleanenergy-d19-c2",
+   "title": "Returns that never arrive",
+   "lessonTitle": "Allowed returns versus real returns",
+   "slot": 2,
+   "type": "connect",
+   "brief": {
+    "headline": "Duke Energy Progress was allowed a 9.60% return in South Carolina but earned 4.39%. In 2023, Ørsted cancelled two New Jersey wind projects and took a $4 billion impairment.",
+    "kicker": "Connect day 12 and day 19: expected returns can vanish.",
+    "fullText": "Day 12 showed Ørsted cancelling Ocean Wind 1 and 2 after delays, supply problems and rising interest rates pushed costs up. Its expected returns turned into a $4 billion writedown.\n\nToday's lesson shows a quieter version in regulated utilities. Every utility listed in South Carolina earned less than allowed, because costs rose between rate cases. In both cases, the return on paper was not the return realized.",
+    "sources": [
+     {
+      "url": "https://www.cnbc.com/2023/11/01/orsted-axes-two-new-jersey-wind-projects-takes-4-billion-writedown.html",
+      "label": "CNBC, Ørsted axes two New Jersey wind projects"
+     },
+     {
+      "url": "https://ors.sc.gov/sites/scors/files/Documents/Regulatory/electricNaturalGas/Electricity/Electric%20and%20Gas%20Utility%20ROE%20Q1%202025.pdf",
+      "label": "South Carolina Office of Regulatory Staff, utility returns on equity, Q1 2025"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "faceOff",
+    "prompt": "Which lost more of its expected return?",
+    "left": {
+     "name": "Duke Energy Progress",
+     "note": "Allowed 9.60%, earned 4.39%"
+    },
+    "right": {
+     "name": "Duke Energy Carolinas",
+     "note": "Allowed 9.94%, earned 7.81%"
+    },
+    "correctIndex": 0,
+    "explanation": "Progress fell 5.21 points short, while Carolinas fell 2.13 points short."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "About how many percentage points below its allowed return did Duke Energy Progress earn?",
+    "min": 0,
+    "max": 8,
+    "value": 5.2,
+    "unit": "points",
+    "tolerance": 0.06,
+    "explanation": "9.60 minus 4.39 is 5.21 points, more than half the allowed return."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You brief a team on project and utility returns.",
+      "prompt": "What lesson ties Ørsted and Duke together?",
+      "options": [
+       "Costs can erase returns on paper",
+       "Wind projects always fail",
+       "Regulated utilities never lose money"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Both fell short of expected returns.",
+       "One cancellation is not all wind.",
+       "Duke earned far less than allowed."
+      ],
+      "explanation": "Rising costs hit both a wind developer and regulated utilities. Paper returns need cost control."
+     },
+     "proReasoning": "Good analysts look for the common cause behind different losses.",
+     "commonMistake": "Treating regulated returns as safe from cost pressure.",
+     "mentalModel": "Costs decide real returns."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You compare a regulated utility with a wind developer.",
+      "prompt": "What is the key difference in risk?",
+      "options": [
+       "Developers are always safer",
+       "Utilities underearn; developers can lose it all",
+       "Both carry identical risk of losing money"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Ørsted took a $4 billion hit.",
+       "A shortfall differs from a writedown.",
+       "The scale of loss differs."
+      ],
+      "explanation": "Duke earned less than allowed but stayed profitable. Ørsted wrote off $4 billion. The downside differs in size."
+     },
+     "proReasoning": "Investors compare how bad the bad case can get.",
+     "commonMistake": "Assuming all clean energy exposure carries the same downside.",
+     "mentalModel": "Size the downside."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your startup cuts project cost overruns.",
+      "prompt": "Who is your best first customer?",
+      "options": [
+       "Only offshore wind developers in New Jersey",
+       "Only regulators",
+       "Anyone whose returns depend on cost control"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Utilities face the same pressure.",
+       "Regulators do not run projects.",
+       "Both utilities and developers need it."
+      ],
+      "explanation": "Utilities underearn and developers take writedowns when costs rise. Both need cost control."
+     },
+     "proReasoning": "Founders find the shared pain across different customers.",
+     "commonMistake": "Narrowing a broad need to one niche too early.",
+     "mentalModel": "Find the shared pain."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You wonder why a regulated utility could earn so little.",
+      "prompt": "Which fact explains it?",
+      "options": [
+       "Costs rose between rate cases",
+       "Regulators set its return at 4.39%",
+       "It stopped selling power"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Rates lag behind rising costs.",
+       "Regulators allowed 9.60%.",
+       "It kept selling power."
+      ],
+      "explanation": "Rates are set in rate cases. When costs rise in between, earnings fall below the allowed return."
+     },
+     "proReasoning": "Ask what changed between the approval and the result.",
+     "commonMistake": "Assuming regulators chose the low return.",
+     "mentalModel": "Costs move faster than rates."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:4c067be1fc08"
+  ]
+ },
+ {
+  "id": "b6f6f424-5083-516e-9947-e5ddc589ad79",
+  "market_id": "cleanenergy",
+  "day": 19,
+  "slot": 3,
+  "content": {
+   "id": "cleanenergy-d19-c3",
+   "title": "Closing the earnings gap",
+   "lessonTitle": "Allowed returns versus real returns",
+   "slot": 3,
+   "type": "decide",
+   "brief": {
+    "headline": "You are CFO of a utility allowed a 9.60% return. Last year it earned 4.39% as costs rose between rate cases. Shareholders want a plan.",
+    "kicker": "Decide how to close the gap between allowed and earned.",
+    "fullText": "Duke Energy Progress was allowed 9.60% in South Carolina but earned 4.39% in the 12 months to March 2025. Regulators set allowed returns; actual earnings depend on costs, sales and how fast rates are updated.\n\nYou can file a new rate case, cut costs, or wait for sales to grow. Each takes time and carries risk.",
+    "sources": [
+     {
+      "url": "https://ors.sc.gov/sites/scors/files/Documents/Regulatory/electricNaturalGas/Electricity/Electric%20and%20Gas%20Utility%20ROE%20Q1%202025.pdf",
+      "label": "South Carolina Office of Regulatory Staff, utility returns on equity, Q1 2025"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "sortSignal",
+    "prompt": "Does each push earned returns down, or help them recover?",
+    "buckets": [
+     "Pushes returns down",
+     "Helps returns recover"
+    ],
+    "items": [
+     {
+      "text": "Costs rising between rate cases",
+      "bucket": 0
+     },
+     {
+      "text": "Weak electricity sales",
+      "bucket": 0
+     },
+     {
+      "text": "A new rate case approved",
+      "bucket": 1
+     },
+     {
+      "text": "Lower operating costs",
+      "bucket": 1
+     },
+     {
+      "text": "Rates updated more often",
+      "bucket": 1
+     }
+    ],
+    "explanation": "Rising costs and weak sales squeeze returns. New rates, faster updates and lower costs help."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "Duke Energy Carolinas was allowed 9.94%. About what did it earn?",
+    "min": 0,
+    "max": 12,
+    "value": 7.8,
+    "unit": "%",
+    "tolerance": 0.06,
+    "explanation": "7.81%, about 2.1 points below its allowed return."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "The board asks for your first step.",
+      "prompt": "What do you propose?",
+      "options": [
+       "Ask regulators to guarantee the full 9.60%",
+       "File a rate case and cut controllable costs",
+       "Wait for sales to fix it alone"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Regulators do not guarantee returns.",
+       "You work both levers you control.",
+       "Waiting leaves the gap open."
+      ],
+      "explanation": "New rates and lower costs both lift earnings. Doing both closes the gap faster."
+     },
+     "proReasoning": "Utility finance leaders pull several levers at once.",
+     "commonMistake": "Waiting for growth to fix a cost problem.",
+     "mentalModel": "Pull both levers."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You consider buying the utility's shares.",
+      "prompt": "What would make you more confident?",
+      "options": [
+       "A higher allowed return alone",
+       "A promise of future growth",
+       "A pending rate case and a cost plan"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Allowed returns were never earned.",
+       "Promises are not plans.",
+       "Both narrow the gap to allowed returns."
+      ],
+      "explanation": "The gap came from costs and slow rate updates. A rate case and cost plan address both."
+     },
+     "proReasoning": "Investors look for concrete steps that close an earnings gap.",
+     "commonMistake": "Buying on the allowed return alone.",
+     "mentalModel": "Look for concrete steps."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your startup sells tools that cut utility operating costs.",
+      "prompt": "How do you frame your pitch to this CFO?",
+      "options": [
+       "Every dollar saved lifts earned returns",
+       "Your tool raises the allowed return",
+       "Your tool replaces rate cases"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Savings flow straight to earnings between rate cases.",
+       "Only regulators set allowed returns.",
+       "Rate cases are still needed."
+      ],
+      "explanation": "Between rate cases, cost savings raise earnings directly. That is the CFO's pain."
+     },
+     "proReasoning": "Founders tie their product to the metric the buyer is judged on.",
+     "commonMistake": "Pitching features instead of earned returns.",
+     "mentalModel": "Tie savings to returns."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You read that a utility earned half its allowed return.",
+      "prompt": "What is the most likely reason?",
+      "options": [
+       "It gave power away for free",
+       "Rates did not keep up with rising costs",
+       "Regulators lowered its allowed return"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "It kept charging customers.",
+       "That is the usual cause.",
+       "The allowed return stayed 9.60%."
+      ],
+      "explanation": "Between rate cases, rising costs eat into earnings while prices stay fixed."
+     },
+     "proReasoning": "Ask how often rates are updated.",
+     "commonMistake": "Assuming regulators caused every shortfall.",
+     "mentalModel": "Rates lag, costs rise."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:f3dd995aa81b"
+  ]
+ },
+ {
+  "id": "d51b9449-2230-54a8-9181-4b7a4f51dd2e",
+  "market_id": "cleanenergy",
+  "day": 20,
+  "slot": 1,
+  "content": {
+   "id": "cleanenergy-d20-c1",
+   "title": "Con Ed's three-year increase",
+   "lessonTitle": "A record wave of rate hikes",
+   "slot": 1,
+   "type": "apply",
+   "brief": {
+    "headline": "In January 2026, New York regulators approved a three-year rate increase for Con Edison. Typical electric bills in the city rose roughly 4%, and gas bills 2.4%.",
+    "kicker": "Apply the rate hike wave to one big city utility.",
+    "fullText": "Con Ed serves more than 3.4 million electric and 1.1 million gas customers in New York City and Westchester County. The increase pays for investments to maintain the system and to handle growing electricity demand.\n\nSome New York City elected officials opposed it over affordability. The commission's chair said the increase reflected compromises.",
+    "sources": [
+     {
+      "url": "https://www.eenews.net/articles/con-ed-customers-set-to-see-higher-bills/",
+      "label": "E&E News, Con Ed customers set to see higher bills"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "buildChain",
+    "prompt": "Put the steps of a rate increase in order.",
+    "steps": [
+     "The utility files a rate case",
+     "Officials and customers weigh in",
+     "Regulators approve a reduced increase",
+     "Customers see higher bills"
+    ],
+    "explanation": "A utility asks, others respond, regulators decide, and bills change. Here bills rose about 4% for typical electric customers."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "About how many million electric customers does Con Edison serve?",
+    "min": 0,
+    "max": 10,
+    "value": 3.4,
+    "unit": "M",
+    "tolerance": 0.08,
+    "explanation": "More than 3.4 million electric customers, plus 1.1 million gas customers."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You start at New York's utility regulator.",
+      "prompt": "What is your role in a case like this?",
+      "options": [
+       "Balance needed investment against bills",
+       "Approve whatever the utility asks",
+       "Set prices without hearing anyone"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "That is the core of the job.",
+       "Regulators approved compromises.",
+       "Officials and customers weigh in."
+      ],
+      "explanation": "Regulators weigh investment needs against affordability. The chair described this outcome as compromises."
+     },
+     "proReasoning": "Regulatory staff explain both what the system needs and what bills can bear.",
+     "commonMistake": "Seeing regulators as rubber stamps.",
+     "mentalModel": "Balance needs and bills."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You hold utility shares as rate hikes spread.",
+      "prompt": "What does political opposition signal?",
+      "options": [
+       "Rates will soon fall",
+       "Future increases may get trimmed harder",
+       "Regulators will approve everything"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Demand growth points the other way.",
+       "Affordability pressure limits approvals.",
+       "Opposition makes full approval less likely."
+      ],
+      "explanation": "As bills rise, officials push back. Regulators may cut future requests more."
+     },
+     "proReasoning": "Investors watch politics as closely as the rate filing.",
+     "commonMistake": "Ignoring affordability pressure on future rate cases.",
+     "mentalModel": "Politics shapes rates."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your startup helps households cut power use.",
+      "prompt": "What does a 4% increase mean for you?",
+      "options": [
+       "Nobody notices 4%",
+       "Customers will switch utilities freely",
+       "Customers feel the bill and want savings"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Officials opposed it over affordability.",
+       "Most cannot pick another utility.",
+       "Rising bills drive interest in savings."
+      ],
+      "explanation": "Rising bills make savings tools more appealing, especially in a market where officials worry about affordability."
+     },
+     "proReasoning": "Founders time their pitch to moments when bills rise.",
+     "commonMistake": "Assuming small percentage increases go unnoticed.",
+     "mentalModel": "Rising bills open doors."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend asks why Con Ed bills are going up.",
+      "prompt": "What is the main reason?",
+      "options": [
+       "Investment in the system and rising demand",
+       "A new city tax on rooftop solar panels",
+       "Lower gas prices"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "That is what the increase pays for.",
+       "Not what the increase covers.",
+       "That would push bills down."
+      ],
+      "explanation": "The increase pays for maintaining the system and handling growing demand."
+     },
+     "proReasoning": "Ask what a rate increase pays for.",
+     "commonMistake": "Assuming a rate rise is pure profit.",
+     "mentalModel": "Ask what it pays for."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:d0be45c78100"
+  ]
+ },
+ {
+  "id": "2155e02a-b9b4-5732-b428-eb99dbc6b8db",
+  "market_id": "cleanenergy",
+  "day": 20,
+  "slot": 2,
+  "content": {
+   "id": "cleanenergy-d20-c2",
+   "title": "Why utilities file so many cases",
+   "lessonTitle": "A record wave of rate hikes",
+   "slot": 2,
+   "type": "connect",
+   "brief": {
+    "headline": "US utilities requested nearly $31 billion in rate increases in 2025, a record. In South Carolina, Duke Energy Progress earned 4.39% against a 9.60% allowed return.",
+    "kicker": "Connect day 19 and day 20: underearning drives rate cases.",
+    "fullText": "Day 19 showed utilities earning less than their allowed returns, because costs rose between rate cases.\n\nToday's lesson shows the response. Requests for rate increases more than doubled in 2025 to nearly $31 billion, as demand growth and data centers required new plants and wires. A rate case is how a utility asks to close the gap between what it earns and what it is allowed.",
+    "sources": [
+     {
+      "url": "https://ors.sc.gov/sites/scors/files/Documents/Regulatory/electricNaturalGas/Electricity/Electric%20and%20Gas%20Utility%20ROE%20Q1%202025.pdf",
+      "label": "South Carolina Office of Regulatory Staff, utility returns on equity, Q1 2025"
+     },
+     {
+      "url": "https://www.eenews.net/articles/utilities-sought-a-record-31b-in-rate-increases-last-year/",
+      "label": "E&E News, utilities sought a record $31B in rate increases"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "multipleChoice",
+    "prompt": "Why do utilities file rate cases when they underearn?",
+    "options": [
+     "To update prices to cover higher costs",
+     "To lower their allowed return on equity",
+     "To leave the regulated market"
+    ],
+    "correctIndex": 0,
+    "explanation": "A rate case asks regulators to reset prices so revenue covers costs plus a fair return."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "About how many billion dollars in rate increases did US utilities request in 2025?",
+    "min": 0,
+    "max": 50,
+    "value": 31,
+    "unit": "B",
+    "tolerance": 0.08,
+    "explanation": "Nearly $31 billion, more than double 2024 and a record."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You join a consulting team that supports rate cases.",
+      "prompt": "Why is demand for your work rising?",
+      "options": [
+       "Utilities want lower returns",
+       "Rising costs and demand push more filings",
+       "Regulators now require yearly cases"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "They want to earn their allowed return.",
+       "Requests more than doubled in 2025.",
+       "No such rule is described."
+      ],
+      "explanation": "Underearning and new demand both push utilities to file. Requests hit a record."
+     },
+     "proReasoning": "Consultants link their workload to the forces driving filings.",
+     "commonMistake": "Missing why rate case volume suddenly rose.",
+     "mentalModel": "Follow the filings."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You weigh how much of $31 billion regulators will approve.",
+      "prompt": "What is a sensible assumption?",
+      "options": [
+       "Every dollar requested will be approved",
+       "None will be approved",
+       "Less than requested, often much less"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "They rarely approve requests in full.",
+       "Most cases end with some increase.",
+       "Regulators usually trim requests."
+      ],
+      "explanation": "Regulators approve, cut or reject. With bills rising, cuts are likely."
+     },
+     "proReasoning": "Investors haircut rate requests before modeling them.",
+     "commonMistake": "Modeling requested revenue as if already approved.",
+     "mentalModel": "Haircut every request."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your startup builds tools for rate case filings.",
+      "prompt": "What does the record wave mean?",
+      "options": [
+       "More utilities need help preparing cases",
+       "Rate cases are disappearing",
+       "Only small utilities file rate cases now"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Filings surged in 2025.",
+       "Requests more than doubled.",
+       "Large utilities file too."
+      ],
+      "explanation": "With requests at a record, utilities need help preparing and defending cases."
+     },
+     "proReasoning": "Founders ride a surge in the process their tool supports.",
+     "commonMistake": "Building for a process that is shrinking.",
+     "mentalModel": "Ride the filing wave."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You wonder why so many utilities want higher rates at once.",
+      "prompt": "Which two facts explain it?",
+      "options": [
+       "Lower costs plus higher profits",
+       "Underearning plus new demand from data centers",
+       "Cheaper fuel plus fewer customers to serve"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Costs rose, not fell.",
+       "Both push utilities to file.",
+       "Those would lower pressure."
+      ],
+      "explanation": "Utilities earned less than allowed, and new demand requires investment. Both lead to rate cases."
+     },
+     "proReasoning": "Ask what changed for many utilities at once.",
+     "commonMistake": "Blaming one utility instead of shared pressures.",
+     "mentalModel": "Shared pressures, many filings."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:f4916d3d8470"
+  ]
+ },
+ {
+  "id": "a090035c-9e25-5cb7-915e-2ea05fcc892d",
+  "market_id": "cleanenergy",
+  "day": 20,
+  "slot": 3,
+  "content": {
+   "id": "cleanenergy-d20-c3",
+   "title": "Who pays for the new load",
+   "lessonTitle": "A record wave of rate hikes",
+   "slot": 3,
+   "type": "decide",
+   "brief": {
+    "headline": "You sit on a state utility commission. A utility asks for a large increase, mostly to serve new data centers. Households would see higher bills too.",
+    "kicker": "Decide how to share the cost of new demand.",
+    "fullText": "US utilities requested a record nearly $31 billion in rate increases in 2025, more than double 2024. Growing demand and the data center boom drove the requests.\n\nNew plants and wires flow into customer rates. Regulators can approve, cut or reject a request, and decide how costs are shared between new and existing customers.",
+    "sources": [
+     {
+      "url": "https://www.eenews.net/articles/utilities-sought-a-record-31b-in-rate-increases-last-year/",
+      "label": "E&E News, utilities sought a record $31B in rate increases"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "spotFake",
+    "prompt": "Two statements match the 2025 rate requests. Which one does not?",
+    "statements": [
+     "Requests reached nearly $31 billion",
+     "They more than doubled from 2024",
+     "Regulators must approve every request"
+    ],
+    "fakeIndex": 2,
+    "explanation": "Regulators can approve, cut or reject a request. They will not approve all of them."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "Requests in 2025 more than doubled from 2024. At least what multiple of 2024 were they?",
+    "min": 0,
+    "max": 5,
+    "value": 2,
+    "unit": "x",
+    "tolerance": 0.05,
+    "explanation": "More than double means over twice the 2024 total."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Staff ask how to frame the decision.",
+      "prompt": "What principle do you put first?",
+      "options": [
+       "Spread every cost evenly across all",
+       "Reject all new demand",
+       "Customers who cause costs should pay them"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Households would pay for data centers.",
+       "The grid must still serve new load.",
+       "It protects existing customers."
+      ],
+      "explanation": "When new load drives costs, asking it to pay protects other customers. Regulators decide that split."
+     },
+     "proReasoning": "Commission staff tie cost sharing to who causes the cost.",
+     "commonMistake": "Spreading costs from one group onto everyone by default.",
+     "mentalModel": "Who causes it, pays it."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You invest in a data center developer in this state.",
+      "prompt": "Which outcome raises your costs most?",
+      "options": [
+       "Rules that put new grid costs on data centers",
+       "Rules that spread the costs to all households",
+       "A rejected request"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Your projects would carry more cost.",
+       "Households would pay instead.",
+       "Costs would be delayed, not assigned."
+      ],
+      "explanation": "If regulators assign new grid costs to large new loads, data center costs rise."
+     },
+     "proReasoning": "Investors track how regulators assign the costs their projects cause.",
+     "commonMistake": "Assuming grid upgrades are free for new large loads.",
+     "mentalModel": "Watch who pays."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your startup helps data centers use less grid power at peaks.",
+      "prompt": "Why could this decision help you?",
+      "options": [
+       "Households will buy your product instead",
+       "Paying for grid costs rewards using less",
+       "Data centers will ignore costs"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Your buyer is the data center.",
+       "Higher grid charges make savings valuable.",
+       "Costs shape their choices."
+      ],
+      "explanation": "If data centers pay their grid costs, reducing peak demand saves them money."
+     },
+     "proReasoning": "Founders find value where new rules move costs onto their customer.",
+     "commonMistake": "Ignoring how cost rules change buyer incentives.",
+     "mentalModel": "Cost rules create buyers."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You wonder why your bill might rise because of a data center.",
+      "prompt": "What decides whether it does?",
+      "options": [
+       "Whether the data center uses solar",
+       "Your home's energy rating",
+       "How regulators share the grid costs"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "The supply source is a separate question.",
+       "Your home does not change the split.",
+       "Regulators decide the split."
+      ],
+      "explanation": "New demand needs new plants and wires. Regulators decide whether everyone or the new customer pays."
+     },
+     "proReasoning": "Ask who regulators make pay for new grid costs.",
+     "commonMistake": "Assuming bills rise only from your own use.",
+     "mentalModel": "Regulators split the costs."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:e4a8c0aa3ac3"
+  ]
+ },
+ {
+  "id": "f6990d8e-f32a-51b5-afb2-9ff1ca45f645",
+  "market_id": "cleanenergy",
+  "day": 21,
+  "slot": 1,
+  "content": {
+   "id": "cleanenergy-d21-c1",
+   "title": "Paying for reactors never finished",
+   "lessonTitle": "Who pays for Vogtle",
+   "slot": 1,
+   "type": "apply",
+   "brief": {
+    "headline": "South Carolina's V.C. Summer reactors were abandoned in 2017 after $9 billion was spent. Dominion's customers still pay a fee of just over $8 a month, with about 15 years to go.",
+    "kicker": "Apply the prudence question to reactors that never ran.",
+    "fullText": "Construction on the two reactors began in early 2013. The fee is 5.6% of the monthly bill for about 800,000 Dominion customers, and it pays off $2.3 billion in debt. It is not shown on monthly bills.\n\nState-owned Santee Cooper carried a $3.6 billion share. About 5% of its customers' bills went toward it in a 2020 estimate, and the charge runs through at least 2032.",
+    "sources": [
+     {
+      "url": "https://www.newsfromthestates.com/node/239509",
+      "label": "SC Daily Gazette via States Newsroom, what SC customers still pay for V.C. Summer"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "spotFake",
+    "prompt": "Two statements match the South Carolina story. Which one does not?",
+    "statements": [
+     "The project was abandoned in 2017",
+     "Dominion customers pay a 5.6% fee",
+     "The reactors now supply power to the grid"
+    ],
+    "fakeIndex": 2,
+    "explanation": "The reactors were never finished. Customers pay for debt on a plant that produces nothing."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "How many billion dollars was spent on V.C. Summer before it was abandoned?",
+    "min": 0,
+    "max": 15,
+    "value": 9,
+    "unit": "B",
+    "explanation": "$9 billion, with customers still paying down the debt years later."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You join a utility regulator reviewing a new nuclear plan.",
+      "prompt": "What lesson from V.C. Summer do you bring?",
+      "options": [
+       "Nuclear plans never need review",
+       "Customers can pay for years even if a plant fails",
+       "Abandoned plants cost their customers nothing more"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Review is how regulators protect customers.",
+       "Dominion customers still pay with years to go.",
+       "Customers still pay a monthly fee."
+      ],
+      "explanation": "Customers carry debt from V.C. Summer long after it stopped. Reviews before spending protect them."
+     },
+     "proReasoning": "Regulators ask who pays if a project is abandoned before approving it.",
+     "commonMistake": "Assuming an abandoned plant stops costing customers.",
+     "mentalModel": "Ask who pays if it fails."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You weigh a utility planning a large new reactor.",
+      "prompt": "Which risk does V.C. Summer highlight?",
+      "options": [
+       "Too little demand for nuclear power",
+       "Too many approved reactor designs",
+       "Costs that may not all be recovered"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Demand was not what failed here.",
+       "Design approvals were not the issue.",
+       "Regulators and politics can limit recovery."
+      ],
+      "explanation": "Big overruns can end in abandonment and fights over who pays. Recovery is not certain."
+     },
+     "proReasoning": "Investors price the chance that regulators deny some costs.",
+     "commonMistake": "Assuming every dollar spent will reach customer bills.",
+     "mentalModel": "Recovery is not certain."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your startup tracks large construction project risk.",
+      "prompt": "Who might pay for your tool after V.C. Summer?",
+      "options": [
+       "Regulators and utilities planning big builds",
+       "Only homeowners with solar",
+       "No one, since nuclear building is finished"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "They need early warnings on overruns.",
+       "They are not building big plants.",
+       "Utilities still plan nuclear projects."
+      ],
+      "explanation": "Regulators and utilities want early signs of overruns before costs reach customers."
+     },
+     "proReasoning": "Founders sell to whoever carries the blame when a project fails.",
+     "commonMistake": "Pitching to people with no stake in the outcome.",
+     "mentalModel": "Sell to who carries blame."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend in South Carolina asks why part of their bill funds a dead project.",
+      "prompt": "What is accurate?",
+      "options": [
+       "The fee was refunded in full",
+       "Debt from the abandoned plant is still being repaid",
+       "The plant is still being built and will open soon"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Customers still pay it.",
+       "That is what the fee pays for.",
+       "It was abandoned in 2017."
+      ],
+      "explanation": "The utilities spent $9 billion before quitting. Customers repay the debt through a fee."
+     },
+     "proReasoning": "Ask what a line on your bill is paying for.",
+     "commonMistake": "Assuming a cancelled project costs nothing after it stops.",
+     "mentalModel": "Debt outlives projects."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:f4a41d0a29fc"
+  ]
+ },
+ {
+  "id": "b4d12e51-317f-58c1-a91b-003dcfceec3c",
+  "market_id": "cleanenergy",
+  "day": 21,
+  "slot": 2,
+  "content": {
+   "id": "cleanenergy-d21-c2",
+   "title": "New reactors, old delays",
+   "lessonTitle": "Who pays for Vogtle",
+   "slot": 2,
+   "type": "connect",
+   "brief": {
+    "headline": "Google expects its first Kairos reactor by 2030. Georgia's Vogtle expansion came in seven years late and about $17 billion over budget, nearing $35 billion in total.",
+    "kicker": "Connect day 18 and day 21: what delays did to the last build.",
+    "fullText": "Day 18 showed Google signing for 500 MW of Kairos reactors by 2035, with the first due by 2030. No commercial Kairos plant was running yet.\n\nToday's lesson shows the last big US nuclear build. Vogtle's overruns pushed contractor Westinghouse into bankruptcy in 2017. First-of-a-kind dates carry real risk, and someone has to pay when they slip.",
+    "sources": [
+     {
+      "url": "https://www.world-nuclear-news.org/articles/google-and-kairos-power-team-up-for-smr-deployments-in-us-first",
+      "label": "World Nuclear News, Google and Kairos Power team up"
+     },
+     {
+      "url": "https://newschannel9.com/news/local/georgia-nuclear-rebirth-arrives-7-years-late-17b-over-cost-power-customers-footing-bill-vogtle-plant-waynesboro-georgia-power-company",
+      "label": "AP via NewsChannel 9, Georgia nuclear rebirth arrives 7 years late"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "buildChain",
+    "prompt": "Put the Vogtle story in order.",
+    "steps": [
+     "Construction starts on new reactors",
+     "Costs and delays pile up",
+     "Westinghouse goes bankrupt in 2017",
+     "Regulators decide what customers pay"
+    ],
+    "explanation": "Overruns broke the contractor, and the bill fell to the utility, regulators and customers."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "How many years late did the Vogtle expansion come in?",
+    "min": 0,
+    "max": 12,
+    "value": 7,
+    "unit": "years",
+    "explanation": "Seven years late, and about $17 billion over budget."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You plan energy supply at a tech company considering new reactors.",
+      "prompt": "How do you treat a 2030 delivery date?",
+      "options": [
+       "As a firm date to plan everything around",
+       "As irrelevant to your plans",
+       "As a target that could slip by years"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Delays are common in first builds.",
+       "Supply timing drives your plans.",
+       "Vogtle came in seven years late."
+      ],
+      "explanation": "Vogtle shows how long nuclear builds can slip. A planner builds in room for delay."
+     },
+     "proReasoning": "Energy planners treat first-of-a-kind dates as targets, not promises.",
+     "commonMistake": "Planning data center growth around an unproven delivery date.",
+     "mentalModel": "Targets are not promises."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You are offered a stake in a first-of-a-kind reactor project.",
+      "prompt": "What does Vogtle suggest you check first?",
+      "options": [
+       "Who absorbs overruns if costs rise",
+       "Whether the logo is well known",
+       "How many homes it could power"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Overruns broke Westinghouse at Vogtle.",
+       "Branding does not cover overruns.",
+       "Output does not protect your stake."
+      ],
+      "explanation": "At Vogtle, overruns bankrupted the contractor. Contracts that spell out who pays matter most."
+     },
+     "proReasoning": "Investors read the overrun terms before the output figures.",
+     "commonMistake": "Assuming a fixed-price contract makes overruns impossible.",
+     "mentalModel": "Read the overrun terms."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your startup builds scheduling software for nuclear projects.",
+      "prompt": "How do you use Vogtle in your pitch?",
+      "options": [
+       "Delays only matter to regulators",
+       "Delays cost billions, so early warnings pay",
+       "Nuclear projects always finish on time"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Utilities and buyers pay too.",
+       "Seven years late and $17 billion over.",
+       "Vogtle shows the opposite."
+      ],
+      "explanation": "Vogtle shows the scale of losses from delay. Tools that flag slips early have a clear value."
+     },
+     "proReasoning": "Founders point to a real failure their product would have caught.",
+     "commonMistake": "Pitching without showing the size of the problem.",
+     "mentalModel": "Show the cost of delay."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend says new small reactors will arrive right on time.",
+      "prompt": "What history is worth sharing?",
+      "options": [
+       "Every reactor opened early",
+       "Reactors are built in a year",
+       "Vogtle came in seven years late"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "History shows the opposite.",
+       "Builds take many years.",
+       "That is the most recent US build."
+      ],
+      "explanation": "The last big US nuclear build ran seven years late. New designs face similar risks."
+     },
+     "proReasoning": "Ask how the last similar project went.",
+     "commonMistake": "Assuming new technology avoids old delays.",
+     "mentalModel": "Check the last build."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:8d67f72e43e6"
+  ]
+ },
+ {
+  "id": "91e5b824-046d-528a-a64f-7dbd65b4d1c5",
+  "market_id": "cleanenergy",
+  "day": 21,
+  "slot": 3,
+  "content": {
+   "id": "cleanenergy-d21-c3",
+   "title": "Ruling on prudence",
+   "lessonTitle": "Who pays for Vogtle",
+   "slot": 3,
+   "type": "decide",
+   "brief": {
+    "headline": "You sit on Georgia's five-member Public Service Commission. Vogtle came in about $17 billion over budget. You must decide how much of the spending customers pay.",
+    "kicker": "Decide what share of the overrun reaches bills.",
+    "fullText": "Residential customers faced an extra $3.78 a month once the first new unit entered service. Staff estimated Georgia Power could earn $9.4 billion more profit over 60 years if it recovered all its spending.\n\nWestinghouse's parent paid the owners $3.7 billion to escape its fixed-price guarantee. Regulators can keep spending they judge imprudent off customer bills.",
+    "sources": [
+     {
+      "url": "https://newschannel9.com/news/local/georgia-nuclear-rebirth-arrives-7-years-late-17b-over-cost-power-customers-footing-bill-vogtle-plant-waynesboro-georgia-power-company",
+      "label": "AP via NewsChannel 9, Georgia nuclear rebirth arrives 7 years late"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "sortSignal",
+    "prompt": "Does each point argue for full recovery, or against it?",
+    "buckets": [
+     "For full recovery",
+     "Against it"
+    ],
+    "items": [
+     {
+      "text": "The plant now supplies carbon-free power",
+      "bucket": 0
+     },
+     {
+      "text": "The utility must stay financially healthy",
+      "bucket": 0
+     },
+     {
+      "text": "It came in $17 billion over budget",
+      "bucket": 1
+     },
+     {
+      "text": "$9.4 billion more profit over 60 years",
+      "bucket": 1
+     },
+     {
+      "text": "It was seven years late",
+      "bucket": 1
+     }
+    ],
+    "explanation": "A working plant and a healthy utility argue for recovery. Huge overruns and extra profit argue against it."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "How many cents a month did residential customers face once the first new unit ran?",
+    "min": 0,
+    "max": 1000,
+    "value": 378,
+    "unit": "¢",
+    "tolerance": 0.04,
+    "explanation": "$3.78 a month, once the first new unit entered service."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Commission staff ask what test to apply.",
+      "prompt": "What do you tell them?",
+      "options": [
+       "Recover only spending judged prudent",
+       "Recover every dollar, no questions",
+       "Recover nothing at all"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "That is the standard regulators use.",
+       "Imprudent costs can be kept off bills.",
+       "The plant does serve customers."
+      ],
+      "explanation": "Regulators review whether spending was prudent. Only prudent costs reach customer bills."
+     },
+     "proReasoning": "Commission staff tie each cost to whether it was a reasonable choice at the time.",
+     "commonMistake": "Treating all spending as automatically recoverable.",
+     "mentalModel": "Prudence decides recovery."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You hold Georgia Power bonds as the ruling nears.",
+      "prompt": "What outcome do you watch for?",
+      "options": [
+       "Whether rates fall to zero",
+       "How much spending is ruled imprudent",
+       "Whether the plant gets a new name soon"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "That will not happen.",
+       "Denied costs hit the utility directly.",
+       "Names do not move cash."
+      ],
+      "explanation": "Any spending ruled imprudent cannot be charged to customers, which cuts the utility's returns."
+     },
+     "proReasoning": "Investors model the share of costs at risk of denial.",
+     "commonMistake": "Assuming the commission always approves full recovery.",
+     "mentalModel": "Model the denied share."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your startup audits large utility projects for regulators.",
+      "prompt": "Why could this case help your business?",
+      "options": [
+       "Commissions never question spending",
+       "Utilities set their own rates",
+       "Commissions need evidence on prudence"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "They do review spending.",
+       "Regulators decide rates.",
+       "Prudence reviews need detailed records."
+      ],
+      "explanation": "A prudence ruling needs clear evidence. Audits that show what was reasonable are valuable."
+     },
+     "proReasoning": "Founders serve the decision-maker who needs evidence.",
+     "commonMistake": "Assuming regulators rubber-stamp big projects.",
+     "mentalModel": "Serve the deciders."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You wonder why five commissioners matter so much.",
+      "prompt": "What gives them power here?",
+      "options": [
+       "They decide what customers pay",
+       "They built the two reactors",
+       "They own Georgia Power"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "They rule on prudence.",
+       "Contractors built them.",
+       "Shareholders own it."
+      ],
+      "explanation": "Georgia's elected commission decides how much of the spending can be charged to customers."
+     },
+     "proReasoning": "Ask who decides what goes on your bill.",
+     "commonMistake": "Assuming the utility alone sets what you pay.",
+     "mentalModel": "Regulators set the bill."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:0a436d733c25"
+  ]
+ },
+ {
+  "id": "a95d4a35-dc70-57e8-9371-c000d1633f4c",
+  "market_id": "cleanenergy",
+  "day": 22,
+  "slot": 1,
+  "content": {
+   "id": "cleanenergy-d22-c1",
+   "title": "A tenfold jump in capacity prices",
+   "lessonTitle": "Home power bills climb",
+   "slot": 1,
+   "type": "apply",
+   "brief": {
+    "headline": "PJM's capacity auction price jumped from $28.92 per MW-day in 2023 to $269.92 in 2024, almost tenfold. It drove a 20% rise in New Jersey electricity prices.",
+    "kicker": "Apply rising bills to the grid that serves 65 million people.",
+    "fullText": "PJM runs the grid for about 65 million people in 13 states, from Illinois to New Jersey. Capacity payments go to plants for being available when needed. Illinois saw at least a 10% increase.\n\nPJM projects summer demand will rise about 30 GW by 2030 compared with 2025, largely from data centers. For 2025 it set a price cap of $325 and a floor of $175 per MW-day for the next two auctions.",
+    "sources": [
+     {
+      "url": "https://insideclimatenews.org/news/20072025/pjm-capacity-auction-electricity-price-hike/",
+      "label": "Inside Climate News, the PJM capacity auction and power prices"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "multipleChoice",
+    "prompt": "What is the main driver of PJM's demand growth?",
+    "options": [
+     "Data centers",
+     "Fewer homes on the grid",
+     "Lower industrial use"
+    ],
+    "correctIndex": 0,
+    "explanation": "PJM expects about 30 GW more summer demand by 2030, largely from data centers."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "About what was PJM's 2024 capacity price, in dollars per MW-day?",
+    "min": 0,
+    "max": 400,
+    "value": 270,
+    "unit": "$",
+    "tolerance": 0.05,
+    "explanation": "$269.92 per MW-day, up from $28.92 the year before."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You join a state energy office in New Jersey.",
+      "prompt": "What do you explain to lawmakers first?",
+      "options": [
+       "Bills rose only because of higher fuel prices",
+       "Bills fell in 2025",
+       "Capacity costs, not just fuel, pushed bills up"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Capacity drove a 20% price rise.",
+       "They rose 20%.",
+       "The auction price jumped almost tenfold."
+      ],
+      "explanation": "The capacity auction drove a 20% rise in New Jersey. Bills have parts beyond fuel."
+     },
+     "proReasoning": "Energy staff break a bill into its parts before proposing fixes.",
+     "commonMistake": "Blaming every bill increase on fuel prices.",
+     "mentalModel": "Break the bill into parts."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You own gas and battery plants in PJM.",
+      "prompt": "What does the price cap of $325 mean for you?",
+      "options": [
+       "Upside is limited, but revenue is far above 2023",
+       "Prices will fall back to $28.92 per MW-day",
+       "Capacity revenue disappears"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "The floor and cap bound your income.",
+       "The floor is $175.",
+       "Plants still get paid for availability."
+      ],
+      "explanation": "A $175 floor and $325 cap set the range for two auctions. Both are well above the 2023 price."
+     },
+     "proReasoning": "Investors model revenue between the floor and the cap.",
+     "commonMistake": "Assuming capacity prices revert to old lows.",
+     "mentalModel": "Model between floor and cap."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your startup pays homes to cut use at peak times.",
+      "prompt": "Why does the PJM jump help you?",
+      "options": [
+       "Only power plants can earn capacity value",
+       "Cutting peak demand is now worth more",
+       "Peak demand no longer matters"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Demand cuts can also help.",
+       "Higher capacity prices raise peak value.",
+       "Peaks drive capacity needs."
+      ],
+      "explanation": "When paying for available capacity costs more, cutting peak demand saves more money."
+     },
+     "proReasoning": "Founders follow the price that values what they deliver.",
+     "commonMistake": "Ignoring a tenfold change in your key price.",
+     "mentalModel": "Follow the price you sell."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend in Illinois asks why bills rose over 10%.",
+      "prompt": "What is the best short answer?",
+      "options": [
+       "Their own use doubled overnight",
+       "Solar panels raised prices",
+       "Paying plants to be ready got pricier"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Use alone did not drive it.",
+       "Not what the data shows.",
+       "The capacity auction price jumped."
+      ],
+      "explanation": "PJM's capacity price jumped almost tenfold, adding to bills across its 13 states."
+     },
+     "proReasoning": "Ask which part of the bill changed.",
+     "commonMistake": "Assuming bills rise only from more use.",
+     "mentalModel": "Find the changed part."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:d9a1ddd68550"
+  ]
+ },
+ {
+  "id": "83c2a1d3-d26d-5c45-b540-2d40f0fdb048",
+  "market_id": "cleanenergy",
+  "day": 22,
+  "slot": 2,
+  "content": {
+   "id": "cleanenergy-d22-c2",
+   "title": "From rate cases to home bills",
+   "lessonTitle": "Home power bills climb",
+   "slot": 2,
+   "type": "connect",
+   "brief": {
+    "headline": "US utilities requested a record nearly $31 billion in rate increases in 2025. By November, the average home paid 17.78 cents per kWh, up 5.5% in a year.",
+    "kicker": "Connect day 20 and day 22: requests become bills.",
+    "fullText": "Day 20 showed utilities filing a record wave of rate increase requests, more than double 2024, to pay for new plants and wires.\n\nToday's lesson shows the household side. The average residential price rose 5.5% in a year. Natural gas spot prices rose 56% from a 2024 record low, and colder weather added demand. Both the wires and the fuel pushed bills up.",
+    "sources": [
+     {
+      "url": "https://www.eenews.net/articles/utilities-sought-a-record-31b-in-rate-increases-last-year/",
+      "label": "E&E News, utilities sought a record $31B in rate increases"
+     },
+     {
+      "url": "https://www.utilitydive.com/news/gas-electricity-prices-rising-energy-information/811103/",
+      "label": "Utility Dive, gas and electricity prices rising"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "sortSignal",
+    "prompt": "Is each a cost of delivery, or a cost of fuel?",
+    "buckets": [
+     "Delivery and grid",
+     "Fuel"
+    ],
+    "items": [
+     {
+      "text": "New wires approved in a rate case",
+      "bucket": 0
+     },
+     {
+      "text": "Grid upgrades for data centers",
+      "bucket": 0
+     },
+     {
+      "text": "Gas spot prices up 56%",
+      "bucket": 1
+     },
+     {
+      "text": "Gas setting the price of power",
+      "bucket": 1
+     }
+    ],
+    "explanation": "Rate cases mostly pay for the grid. Gas prices change the fuel part. Both raised bills."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "About what was the average US home electricity price in November 2025, in cents per kWh?",
+    "min": 0,
+    "max": 30,
+    "value": 17.8,
+    "unit": "¢",
+    "tolerance": 0.05,
+    "explanation": "17.78 cents per kWh, up 5.5% from a year earlier."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You analyze bills for a consumer advocate.",
+      "prompt": "How do you split the 5.5% rise?",
+      "options": [
+       "Between grid costs and fuel costs",
+       "Blame it all on fuel",
+       "Blame it all on the rate cases"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Both played a part.",
+       "Rate cases added grid costs too.",
+       "Gas rose 56% as well."
+      ],
+      "explanation": "Record rate requests and a 56% gas price rise both pushed bills up. Advocates need both parts."
+     },
+     "proReasoning": "Advocates separate what regulators control from what markets do.",
+     "commonMistake": "Blaming one cause when two are at work.",
+     "mentalModel": "Split the causes."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You compare utilities as bills climb.",
+      "prompt": "Which utility faces more pushback risk?",
+      "options": [
+       "One with falling fuel costs",
+       "One asking for big increases as bills rise",
+       "One with flat bills and no rate case"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Lower fuel eases bills.",
+       "Rising bills sharpen opposition.",
+       "Less pressure on approvals."
+      ],
+      "explanation": "With bills up 5.5%, new increase requests face harder reviews."
+     },
+     "proReasoning": "Investors weigh rate requests against how much bills have already risen.",
+     "commonMistake": "Assuming regulators ignore rising household bills.",
+     "mentalModel": "Rising bills, harder reviews."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your startup sells home energy audits.",
+      "prompt": "How do you pitch in this market?",
+      "options": [
+       "Bills will fall again next year anyway",
+       "Only businesses care about bills",
+       "Bills are rising from both grid and fuel"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Nothing points to falling bills.",
+       "Households feel the 5.5% rise.",
+       "Two pressures make savings timely."
+      ],
+      "explanation": "Grid costs and fuel both rose, so cutting use pays off from two directions."
+     },
+     "proReasoning": "Founders explain why a problem will last, not just that it exists.",
+     "commonMistake": "Selling savings without showing why costs keep rising.",
+     "mentalModel": "Show why costs last."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend asks whether rising bills are just a gas price story.",
+      "prompt": "What would you say?",
+      "options": [
+       "Partly, but grid spending is rising too",
+       "Yes, gas prices explain everything",
+       "No, gas prices fell"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Rate requests hit a record.",
+       "Grid costs played a part.",
+       "Gas rose 56%."
+      ],
+      "explanation": "Gas rose 56%, and utilities requested record increases for grid spending."
+     },
+     "proReasoning": "Ask whether a price rise has more than one cause.",
+     "commonMistake": "Pinning a rise on a single cause.",
+     "mentalModel": "Look for two causes."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:a9c4ab7fbd20"
+  ]
+ },
+ {
+  "id": "675c6a90-b560-5fb1-9a6b-7cd77e3031c9",
+  "market_id": "cleanenergy",
+  "day": 22,
+  "slot": 3,
+  "content": {
+   "id": "cleanenergy-d22-c3",
+   "title": "Fix the price or float it",
+   "lessonTitle": "Home power bills climb",
+   "slot": 3,
+   "type": "decide",
+   "brief": {
+    "headline": "You run a small bakery. Home power prices rose 5.5% in a year and gas spot prices rose 56%. A supplier offers you a fixed electricity price for two years.",
+    "kicker": "Decide how to handle rising power costs.",
+    "fullText": "The average US residential price reached 17.78 cents per kWh in November 2025, up 5.5% from a year earlier. Natural gas, the biggest US power fuel, often sets the price of power.\n\nA fixed price protects you if costs keep rising but costs more if they fall. Using less power helps either way.",
+    "sources": [
+     {
+      "url": "https://www.utilitydive.com/news/gas-electricity-prices-rising-energy-information/811103/",
+      "label": "Utility Dive, gas and electricity prices rising"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "faceOff",
+    "prompt": "Which choice protects you if gas keeps rising?",
+    "left": {
+     "name": "A fixed price",
+     "note": "Locks your rate for two years"
+    },
+    "right": {
+     "name": "A floating price",
+     "note": "Moves with the market"
+    },
+    "correctIndex": 0,
+    "explanation": "With gas often setting power prices, a fixed price shields you from further rises."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "By what percent did gas spot prices rise in 2025?",
+    "min": 0,
+    "max": 100,
+    "value": 56,
+    "unit": "%",
+    "tolerance": 0.04,
+    "explanation": "56%, from a record low in 2024."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You advise small businesses on energy costs.",
+      "prompt": "What do you recommend to the bakery?",
+      "options": [
+       "Ignore energy, it is a small cost",
+       "Weigh fixing part of the cost and cut use",
+       "Always float and hope prices fall soon"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Energy is a big cost for ovens.",
+       "You reduce risk and the bill.",
+       "Gas rose 56% last year."
+      ],
+      "explanation": "Fixing part of the price limits risk, and cutting use lowers the bill either way."
+     },
+     "proReasoning": "Advisers combine price protection with lower use.",
+     "commonMistake": "Betting the whole bill on prices falling.",
+     "mentalModel": "Hedge part, cut use."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You own shares in a retail power supplier.",
+      "prompt": "What risk comes with selling fixed prices?",
+      "options": [
+       "It can never lose on fixed deals",
+       "Fixed prices mean no customers",
+       "It must buy power if costs rise"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Rising costs can cause losses.",
+       "Many customers want them.",
+       "It carries the price risk."
+      ],
+      "explanation": "A supplier selling fixed prices takes on the risk that costs rise. It needs hedges."
+     },
+     "proReasoning": "Investors check how suppliers cover the price risk they sell.",
+     "commonMistake": "Assuming fixed-price sales are risk-free for the seller.",
+     "mentalModel": "Sellers carry the risk."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your startup helps small shops track power use.",
+      "prompt": "What does this decision show about your buyers?",
+      "options": [
+       "They need clear data to pick a contract",
+       "They never think about power costs",
+       "They all choose floating prices"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Usage data guides the choice.",
+       "Rising prices make them care.",
+       "Many prefer certainty."
+      ],
+      "explanation": "Owners choosing between fixed and floating need their usage patterns."
+     },
+     "proReasoning": "Founders support the decisions their buyers face each year.",
+     "commonMistake": "Building data tools with no decision attached.",
+     "mentalModel": "Tie data to a decision."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You wonder why a supplier offers to fix your price.",
+      "prompt": "What is a good explanation?",
+      "options": [
+       "Prices are guaranteed to fall next year",
+       "It charges a premium for taking the risk",
+       "It expects to lose money"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "No one knows that.",
+       "That is how fixed pricing works.",
+       "Suppliers price to make money."
+      ],
+      "explanation": "Fixed prices move the risk to the supplier, who charges for it."
+     },
+     "proReasoning": "Ask who carries the risk in a contract.",
+     "commonMistake": "Assuming a fixed price is free protection.",
+     "mentalModel": "Risk has a price."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:439a6d773b04"
+  ]
+ },
+ {
+  "id": "d825ffcb-0cdb-5a4e-95bd-0ff83c70f411",
+  "market_id": "cleanenergy",
+  "day": 23,
+  "slot": 1,
+  "content": {
+   "id": "cleanenergy-d23-c1",
+   "title": "The Dutch end net metering",
+   "lessonTitle": "California cuts rooftop solar credits",
+   "slot": 1,
+   "type": "apply",
+   "brief": {
+    "headline": "The Netherlands will end its netting scheme for solar panels on 1 January 2027. Suppliers will instead pay \"a reasonable compensation\" for solar power fed back to the grid.",
+    "kicker": "Apply the California change to a second country.",
+    "fullText": "Under the netting scheme, small users can offset the power they feed into the grid against the power they use over a year. The government wants users to consume more of their own solar power, which should reduce strain on the grid.\n\nThe government guidance gives no figure for the new compensation. It applies to small-volume users, including businesses with connections of up to 3x80 amperes.",
+    "sources": [
+     {
+      "url": "https://business.gov.nl/amendment/netting-scheme-solar-panels-ends/",
+      "label": "Business.gov.nl, netting scheme for solar panels ends"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "spotFake",
+    "prompt": "Two statements match the Dutch change. Which one does not?",
+    "statements": [
+     "Netting ends on 1 January 2027",
+     "Suppliers will pay a reasonable compensation",
+     "Exports will be credited at the full retail price"
+    ],
+    "fakeIndex": 2,
+    "explanation": "Netting is what credited exports at the retail price. It is ending, and the replacement amount is not set out."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "What is the maximum connection size in amperes per phase for the scheme (3x what)?",
+    "min": 0,
+    "max": 120,
+    "value": 80,
+    "unit": "A",
+    "explanation": "3x80 amperes at most, which covers small-volume users."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You work for a Dutch solar installer.",
+      "prompt": "How do you advise customers now?",
+      "options": [
+       "Size systems to use more power on site",
+       "Size systems to export as much as possible",
+       "Stop selling solar entirely"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Self-use keeps its full value.",
+       "Exports will earn less than netting.",
+       "Solar can still cut bills."
+      ],
+      "explanation": "When exports earn less, power used on site becomes the main value. Systems are sized for that."
+     },
+     "proReasoning": "Installers redesign offers when the value of exports changes.",
+     "commonMistake": "Selling systems on export income that is ending.",
+     "mentalModel": "Design for self-use."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You fund a Dutch home battery company.",
+      "prompt": "What does the change mean for demand?",
+      "options": [
+       "Nothing changes for home batteries at all",
+       "Storing solar for later use gains value",
+       "Batteries become useless"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Export value is changing.",
+       "Stored power avoids buying at retail.",
+       "Self-use makes them more useful."
+      ],
+      "explanation": "Ending netting lowers the value of exports. Batteries let homes use more of their own solar."
+     },
+     "proReasoning": "Investors look for products that gain when a subsidy ends.",
+     "commonMistake": "Assuming the end of a subsidy hurts every related product.",
+     "mentalModel": "Find who gains."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your startup controls home appliances.",
+      "prompt": "What product fits the Dutch change?",
+      "options": [
+       "Run appliances only at night",
+       "Ignore solar output when scheduling",
+       "Run appliances when solar is producing"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "That wastes daytime solar.",
+       "The timing is now the point.",
+       "Using solar on site keeps its value."
+      ],
+      "explanation": "With netting gone, moving use into sunny hours saves money. Control tools make that easy."
+     },
+     "proReasoning": "Founders build for the behavior a new rule rewards.",
+     "commonMistake": "Building for a pricing setup that is ending.",
+     "mentalModel": "Build for the new rule."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A Dutch friend asks why their solar deal is changing.",
+      "prompt": "What is the stated reason?",
+      "options": [
+       "To encourage self-use and reduce grid strain",
+       "To ban solar panels by 2027",
+       "To raise the price paid for solar exports"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "That is what the government says.",
+       "Solar panels remain allowed.",
+       "Export payments will fall."
+      ],
+      "explanation": "The government wants people to use more of their own solar power, which eases strain on the grid."
+     },
+     "proReasoning": "Ask what behavior a rule change aims to encourage.",
+     "commonMistake": "Reading a credit change as a ban.",
+     "mentalModel": "Ask what it rewards."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:71e24b785fe1"
+  ]
+ },
+ {
+  "id": "c5bbb442-f33a-596b-9418-5da461ab76b4",
+  "market_id": "cleanenergy",
+  "day": 23,
+  "slot": 2,
+  "content": {
+   "id": "cleanenergy-d23-c2",
+   "title": "Why self-use beats export",
+   "lessonTitle": "California cuts rooftop solar credits",
+   "slot": 2,
+   "type": "connect",
+   "brief": {
+    "headline": "US homes paid an average 17.78 cents per kWh in November 2025, up 5.5%. California cut the credit for rooftop solar exports by about 75% from April 2023.",
+    "kicker": "Connect day 22 and day 23: rising prices raise self-use value.",
+    "fullText": "Day 22 showed household electricity prices climbing 5.5% in a year.\n\nToday's lesson shows California paying much less for solar sent back to the grid. Together they change the math. Every kWh a home uses from its own panels avoids a rising retail price, while every kWh exported earns a much smaller credit. Time-varying credits pay more in the evening peak, which makes batteries more valuable.",
+    "sources": [
+     {
+      "url": "https://www.utilitydive.com/news/gas-electricity-prices-rising-energy-information/811103/",
+      "label": "Utility Dive, gas and electricity prices rising"
+     },
+     {
+      "url": "https://www.pv-tech.org/california-votes-to-slash-net-metering-payments",
+      "label": "PV Tech, California votes to slash net metering payments"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "faceOff",
+    "prompt": "Under California's new rules, which kWh of solar is worth more?",
+    "left": {
+     "name": "One used at home",
+     "note": "Avoids buying at the retail price"
+    },
+    "right": {
+     "name": "One exported at noon",
+     "note": "Earns a cut credit"
+    },
+    "correctIndex": 0,
+    "explanation": "Export credits fell about 75%. Using solar at home avoids the full retail price, which keeps rising."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "By about what percent did California cut credits for rooftop solar exports?",
+    "min": 0,
+    "max": 100,
+    "value": 75,
+    "unit": "%",
+    "explanation": "About 75%, from April 2023."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You train sales staff at a California solar firm.",
+      "prompt": "What do you teach them to say?",
+      "options": [
+       "Rising prices make solar worthless",
+       "Value comes from using solar at home",
+       "Value comes from exporting at noon"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Rising prices help self-use.",
+       "Self-use avoids rising retail prices.",
+       "Export credits fell about 75%."
+      ],
+      "explanation": "Exports earn much less now, while retail prices keep rising. Self-use is the selling point."
+     },
+     "proReasoning": "Sales trainers update the pitch when the value source moves.",
+     "commonMistake": "Selling solar on export credits that were cut.",
+     "mentalModel": "Sell self-use."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You weigh two California home solar lenders.",
+      "prompt": "Which is better placed?",
+      "options": [
+       "One selling panels for export income",
+       "One avoiding California entirely",
+       "One pairing panels with batteries"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Export credits were cut.",
+       "California is still a big market.",
+       "Batteries capture the evening peak."
+      ],
+      "explanation": "Time-varying credits reward evening power. Batteries let homes use solar when it is worth most."
+     },
+     "proReasoning": "Investors back business models that match the current rules.",
+     "commonMistake": "Lending on export income that has been cut.",
+     "mentalModel": "Match the rules."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your startup sells home battery controls.",
+      "prompt": "What message fits?",
+      "options": [
+       "Store noon solar for the costly evening",
+       "Export everything as soon as it is made",
+       "Charge only from the grid at peak"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "That matches time-varying credits.",
+       "Noon exports earn little.",
+       "Peak grid power is the most costly."
+      ],
+      "explanation": "Evening power is worth more under California's credits. Batteries shift solar there."
+     },
+     "proReasoning": "Founders match their product to the time-of-day price.",
+     "commonMistake": "Ignoring when power is worth most.",
+     "mentalModel": "Shift solar to the peak."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend asks whether rooftop solar still makes sense in California.",
+      "prompt": "What changed most?",
+      "options": [
+       "Exports now earn more than before",
+       "Using your own solar now matters more",
+       "Solar panels stopped working"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Credits fell about 75%.",
+       "Exports earn much less.",
+       "The panels work the same."
+      ],
+      "explanation": "Exports earn about 75% less, but self-use avoids a rising retail price."
+     },
+     "proReasoning": "Ask where a home's solar savings come from.",
+     "commonMistake": "Judging solar on the old export credits.",
+     "mentalModel": "Savings moved to self-use."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:e1db2bbad13b"
+  ]
+ },
+ {
+  "id": "d4ec0743-5018-5488-9393-c9c710c6063d",
+  "market_id": "cleanenergy",
+  "day": 23,
+  "slot": 3,
+  "content": {
+   "id": "cleanenergy-d23-c3",
+   "title": "Solar alone or with a battery",
+   "lessonTitle": "California cuts rooftop solar credits",
+   "slot": 3,
+   "type": "decide",
+   "brief": {
+    "headline": "You run a small California installer. Export credits fell about 75% and the market was projected to shrink 39% in 2024. You must decide what to sell.",
+    "kicker": "Decide your product mix after the credit cut.",
+    "fullText": "California replaced net metering in April 2023. Export credits now vary by time of day, paying more in the evening peak. A commissioner said net metering was \"profoundly expensive for non-solar customers.\"\n\nSolar trade groups projected the market would shrink 39% in 2024, the first full year. Batteries that store midday solar for the evening became more valuable.",
+    "sources": [
+     {
+      "url": "https://www.pv-tech.org/california-votes-to-slash-net-metering-payments",
+      "label": "PV Tech, California votes to slash net metering payments"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "buildChain",
+    "prompt": "Order how the credit cut changes what homes buy.",
+    "steps": [
+     "Export credits fall about 75%",
+     "Noon exports earn little",
+     "Evening power stays valuable",
+     "Homes add batteries to shift solar"
+    ],
+    "explanation": "When noon exports earn little and evenings pay more, storing solar becomes the way to capture value."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "By what percent was California's rooftop market projected to shrink in 2024?",
+    "min": 0,
+    "max": 100,
+    "value": 39,
+    "unit": "%",
+    "explanation": "A projected 39% drop in the first full year of the new rules."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You are the installer's sales lead.",
+      "prompt": "What do you push next year?",
+      "options": [
+       "Solar alone, as before",
+       "Exit the market now",
+       "Solar paired with batteries"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Solar-only lost most export value.",
+       "Demand remains, just smaller.",
+       "Batteries capture evening value."
+      ],
+      "explanation": "Time-varying credits favor batteries. Selling pairs fits the new rules."
+     },
+     "proReasoning": "Sales leads change the product when the rules change the value.",
+     "commonMistake": "Selling the old product into new rules.",
+     "mentalModel": "Sell what the rules reward."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You consider lending to this installer.",
+      "prompt": "What would reassure you most?",
+      "options": [
+       "A plan to sell more battery systems",
+       "A plan to keep selling solar alone",
+       "A plan to wait for old rules to return"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "It matches the new value.",
+       "That market shrank sharply.",
+       "Nothing suggests a return."
+      ],
+      "explanation": "With a 39% projected drop, installers that adapt to batteries are better risks."
+     },
+     "proReasoning": "Lenders back firms that adapt to a shrinking market.",
+     "commonMistake": "Lending to a firm betting on old rules returning.",
+     "mentalModel": "Back the adapters."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your startup makes installer software.",
+      "prompt": "Which feature matters most now?",
+      "options": [
+       "A feature for exporting all power",
+       "Modeling savings with time-varying credits",
+       "Modeling savings under old net metering"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Exports earn little now.",
+       "That is how homes are paid now.",
+       "Net metering was replaced."
+      ],
+      "explanation": "Installers need to show savings under time-varying credits and batteries."
+     },
+     "proReasoning": "Founders rebuild features when the pricing rules change.",
+     "commonMistake": "Keeping tools built for the old credit system.",
+     "mentalModel": "Model the new credits."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You wonder why regulators cut the credits.",
+      "prompt": "Which reason did a commissioner give?",
+      "options": [
+       "Rooftop solar panels were found unsafe",
+       "Too few homes had solar",
+       "Non-solar customers were paying too much"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Not the reason given.",
+       "Many homes had solar.",
+       "That was the stated concern."
+      ],
+      "explanation": "A commissioner said net metering was \"profoundly expensive for non-solar customers.\""
+     },
+     "proReasoning": "Ask who regulators think was paying.",
+     "commonMistake": "Assuming the change was aimed at solar itself.",
+     "mentalModel": "Ask who was paying."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:9a635753b069"
+  ]
+ },
+ {
+  "id": "a10ee68c-20a3-5062-ab4f-08f7fe98ba47",
+  "market_id": "cleanenergy",
+  "day": 24,
+  "slot": 1,
+  "content": {
+   "id": "cleanenergy-d24-c1",
+   "title": "Virginia's new data center class",
+   "lessonTitle": "Making data centers pay their way",
+   "slot": 1,
+   "type": "apply",
+   "brief": {
+    "headline": "In November 2025, Virginia regulators created a new rate class for customers over 25 MW with a load factor above 75%. They must pay minimum demand charges and sign 14-year contracts.",
+    "kicker": "Apply the data center tariff idea to a second state.",
+    "fullText": "The minimum demand charges are 85% for transmission, 85% for distribution and 60% for generation. The aim is to keep other customers from paying for grid built for data centers.\n\nIn the same decision, regulators approved Dominion's 944 MW Chesterfield gas plant, costing $1.47 billion and recovered through a rider on bills. Construction is expected to start in 2026 and finish in 2029.",
+    "sources": [
+     {
+      "url": "https://virginiamercury.com/2025/11/25/scc-approves-chesterfield-gas-plant-and-dominion-rate-hike-creates-new-rate-class-for-data-centers/",
+      "label": "Virginia Mercury, SCC creates a new rate class for data centers"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "multipleChoice",
+    "prompt": "What minimum share of transmission demand must the new class pay for?",
+    "options": [
+     "25%",
+     "85%",
+     "60%"
+    ],
+    "correctIndex": 1,
+    "explanation": "85% for transmission and distribution, and 60% for generation."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "How many years do contracts in the new rate class run?",
+    "min": 0,
+    "max": 25,
+    "value": 14,
+    "unit": "years",
+    "explanation": "14 years, longer than AEP Ohio's up to 12 years."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You join a data center developer's energy team.",
+      "prompt": "What changes for your Virginia projects?",
+      "options": [
+       "No contract is needed anymore",
+       "Long minimum payments, even if you use less",
+       "Lower bills for large customers like you"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Contracts now run 14 years.",
+       "You pay 85% of grid demand regardless.",
+       "The rule raises their commitments."
+      ],
+      "explanation": "Large loads must pay most of their grid demand for 14 years. Plans need to be firm."
+     },
+     "proReasoning": "Energy teams forecast load carefully before committing to minimum payments.",
+     "commonMistake": "Requesting more capacity than you will use.",
+     "mentalModel": "Commit only what you use."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You compare Ohio and Virginia rules for a data center fund.",
+      "prompt": "What do both rules share?",
+      "options": [
+       "Both ban new data centers",
+       "Both cut data center bills to attract them",
+       "Large loads pay most of their grid costs"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Neither bans them.",
+       "They raise commitments instead.",
+       "Both use minimum payments above 25 MW."
+      ],
+      "explanation": "Both states set 85% minimums for large loads over 25 MW. Speculative requests get expensive."
+     },
+     "proReasoning": "Investors compare commitment terms across states before picking sites.",
+     "commonMistake": "Assuming every state treats data centers the same.",
+     "mentalModel": "Compare the terms."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your startup forecasts data center power needs.",
+      "prompt": "Why does this rule help you?",
+      "options": [
+       "Overestimating demand now costs real money",
+       "Forecasts no longer matter",
+       "Only utilities need forecasts of demand now"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Minimum payments punish overbooking.",
+       "They matter more than ever.",
+       "Developers need them too."
+      ],
+      "explanation": "With 14-year minimum payments, a bad forecast becomes a long bill. Good forecasts save money."
+     },
+     "proReasoning": "Founders sell where a rule makes mistakes expensive.",
+     "commonMistake": "Missing that a new rule raises the cost of errors.",
+     "mentalModel": "Errors now cost more."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A Virginia neighbor asks why data centers got their own rates.",
+      "prompt": "What is the main aim?",
+      "options": [
+       "Ban new data centers",
+       "Stop others paying for data center grid costs",
+       "Give data centers a discount to keep them here"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "They are still allowed.",
+       "That is the stated purpose.",
+       "They pay more commitments."
+      ],
+      "explanation": "Minimum demand charges make large new loads pay for the grid built for them."
+     },
+     "proReasoning": "Ask who a new rate class protects.",
+     "commonMistake": "Assuming special rates always mean discounts.",
+     "mentalModel": "Ask who it protects."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:4281b0c9d903"
+  ]
+ },
+ {
+  "id": "32a9938a-d2a4-5c03-9cc1-9f4cf6a151d0",
+  "market_id": "cleanenergy",
+  "day": 24,
+  "slot": 2,
+  "content": {
+   "id": "cleanenergy-d24-c2",
+   "title": "Filtering out speculative requests",
+   "lessonTitle": "Making data centers pay their way",
+   "slot": 2,
+   "type": "connect",
+   "brief": {
+    "headline": "AEP Ohio had requests from over 50 customers at more than 90 sites, totaling over 30 GW. Its central Ohio data center load was about 600 MW in 2024, projected near 5 GW by 2030.",
+    "kicker": "Connect day 20 and day 24: who pays for grid that may go unused.",
+    "fullText": "Day 20 showed utilities requesting a record nearly $31 billion in rate increases in 2025, driven by growing demand and data centers.\n\nToday's lesson shows one utility's defense. Requests far exceeded realistic load. AEP Ohio's tariff requires new loads over 25 MW to pay for at least 85% of contracted power for up to 12 years. Regulators said it protects other customers from paying for unused grid investments.",
+    "sources": [
+     {
+      "url": "https://www.eenews.net/articles/utilities-sought-a-record-31b-in-rate-increases-last-year/",
+      "label": "E&E News, utilities sought a record $31B in rate increases"
+     },
+     {
+      "url": "https://www.powermag.com/regulator-approves-aep-ohios-landmark-data-center-tariff/",
+      "label": "POWER, regulator approves AEP Ohio's data center tariff"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "sortSignal",
+    "prompt": "Does each point suggest speculative demand, or real demand?",
+    "buckets": [
+     "Suggests speculation",
+     "Suggests real demand"
+    ],
+    "items": [
+     {
+      "text": "Over 30 GW of requests",
+      "bucket": 0
+     },
+     {
+      "text": "Requests at over 90 sites",
+      "bucket": 0
+     },
+     {
+      "text": "About 600 MW of load in 2024",
+      "bucket": 1
+     },
+     {
+      "text": "About 5 GW projected by 2030",
+      "bucket": 1
+     }
+    ],
+    "explanation": "Requests of 30 GW dwarf a 5 GW projection. Minimum payments filter out requests that are not serious."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "How many GW of data center load does AEP project in central Ohio by 2030?",
+    "min": 0,
+    "max": 12,
+    "value": 5,
+    "unit": "GW",
+    "explanation": "About 5 GW by 2030, far below the more than 30 GW requested."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You plan the grid at a utility flooded with requests.",
+      "prompt": "How do you treat 30 GW of requests?",
+      "options": [
+       "As certain demand to build grid for right now",
+       "As noise to ignore entirely",
+       "As a ceiling, with much less likely to build"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Customers could pay for unused grid.",
+       "Some demand is real.",
+       "AEP projects about 5 GW by 2030."
+      ],
+      "explanation": "Requests far exceed realistic load. Planning to the full number risks unused grid."
+     },
+     "proReasoning": "Grid planners separate requests from load likely to show up.",
+     "commonMistake": "Building grid for every request that arrives.",
+     "mentalModel": "Requests are not load."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You invest in transmission builders serving AEP Ohio.",
+      "prompt": "What does the tariff do for your risk?",
+      "options": [
+       "Makes grid spending more likely to be paid for",
+       "Removes all demand for new transmission lines",
+       "Guarantees 30 GW of new load"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Committed loads cover costs.",
+       "Real demand still needs lines.",
+       "Only committed loads will build."
+      ],
+      "explanation": "Minimum payments mean grid built for data centers is more likely to be paid for."
+     },
+     "proReasoning": "Investors like rules that tie spending to committed buyers.",
+     "commonMistake": "Counting every request as future revenue.",
+     "mentalModel": "Committed buyers matter."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your startup finds grid capacity for data centers.",
+      "prompt": "What shift should you build for?",
+      "options": [
+       "No more data centers in Ohio",
+       "Fewer, firmer requests with real commitments",
+       "More speculative requests than ever before"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Load is still projected to grow.",
+       "Minimum payments filter requests.",
+       "Commitments discourage speculation."
+      ],
+      "explanation": "The tariff turns loose requests into fewer firm ones. Tools should help buyers commit wisely."
+     },
+     "proReasoning": "Founders adjust to how a rule changes customer behavior.",
+     "commonMistake": "Building for a flood of requests the rule now filters.",
+     "mentalModel": "Build for firmer requests."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You wonder why requests were six times projected load.",
+      "prompt": "What is a likely reason?",
+      "options": [
+       "Every site will be built",
+       "Power was free to reserve forever",
+       "Developers asked at many sites at once"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "AEP projects only about 5 GW.",
+       "It was not free, just loosely committed.",
+       "Over 90 sites for 50 customers."
+      ],
+      "explanation": "More than 50 customers asked at over 90 sites. Many requests were backups or bets."
+     },
+     "proReasoning": "Ask how many requests turn into real projects.",
+     "commonMistake": "Taking request totals as real demand.",
+     "mentalModel": "Not every request builds."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:c1c974dd51b7"
+  ]
+ },
+ {
+  "id": "9da9a2f7-5d19-536a-94c5-e17b29568005",
+  "market_id": "cleanenergy",
+  "day": 24,
+  "slot": 3,
+  "content": {
+   "id": "cleanenergy-d24-c3",
+   "title": "Committing to 85% for 12 years",
+   "lessonTitle": "Making data centers pay their way",
+   "slot": 3,
+   "type": "decide",
+   "brief": {
+    "headline": "You lead a data center developer with a site request at AEP Ohio. To proceed, you must pay for at least 85% of contracted power for up to 12 years.",
+    "kicker": "Decide how much power to contract.",
+    "fullText": "Ohio regulators approved the tariff in July 2025. It applies to new loads over 25 MW, with exit fees for leaving early.\n\nAEP Ohio had paused new data center agreements in March 2023 to study grid impacts. Your tenant demand is likely but not signed.",
+    "sources": [
+     {
+      "url": "https://www.powermag.com/regulator-approves-aep-ohios-landmark-data-center-tariff/",
+      "label": "POWER, regulator approves AEP Ohio's data center tariff"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "spotFake",
+    "prompt": "Two statements match AEP Ohio's tariff. Which one does not?",
+    "statements": [
+     "It applies to new loads over 25 MW",
+     "It includes exit fees for leaving early",
+     "It lets you pay only for power you use"
+    ],
+    "fakeIndex": 2,
+    "explanation": "You pay for at least 85% of contracted power, even if you use less."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "For up to how many years does the minimum payment apply?",
+    "min": 0,
+    "max": 30,
+    "value": 12,
+    "unit": "years",
+    "explanation": "Up to 12 years, at a minimum of 85% of contracted power."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your CEO asks how much capacity to contract.",
+      "prompt": "What do you recommend?",
+      "options": [
+       "What tenants are likely to use, not the maximum",
+       "The largest amount AEP allows, just in case",
+       "Nothing until all tenants sign"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "You avoid paying for unused power.",
+       "You would pay 85% of it regardless.",
+       "You may lose your place in line."
+      ],
+      "explanation": "Paying 85% of contracted power means overbooking costs real money. Match contracts to likely use."
+     },
+     "proReasoning": "Energy leads size contracts to realistic demand.",
+     "commonMistake": "Reserving the maximum just in case.",
+     "mentalModel": "Contract what you will use."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You are the developer's lender.",
+      "prompt": "What do you want to see before funding?",
+      "options": [
+       "The largest possible contract",
+       "Signed or likely tenants for the contracted power",
+       "A promise that the rules will change before long"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Bigger means more risk.",
+       "Tenants cover the minimum payments.",
+       "Rules were just approved."
+      ],
+      "explanation": "The developer owes 85% for up to 12 years. Tenants must cover that, or the lender is exposed."
+     },
+     "proReasoning": "Lenders match long payment duties to signed revenue.",
+     "commonMistake": "Funding a big contract with no tenants.",
+     "mentalModel": "Match duties to revenue."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your startup sells flexible computing for data centers.",
+      "prompt": "How does the tariff help you?",
+      "options": [
+       "Data centers now want far less contracted power",
+       "Contracts no longer matter",
+       "Filling contracted power avoids paying for idle use"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "They want to use it well.",
+       "Contracts set the minimum.",
+       "Using what you pay for has value."
+      ],
+      "explanation": "When you pay for 85% regardless, using that capacity well matters. Flexible demand helps fill it."
+     },
+     "proReasoning": "Founders turn a fixed cost into a reason to use their product.",
+     "commonMistake": "Missing how a minimum bill changes buyer incentives.",
+     "mentalModel": "Fill what you pay for."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You wonder why a utility would charge for unused power.",
+      "prompt": "What is the reason?",
+      "options": [
+       "It builds grid for that power regardless",
+       "It wants to discourage all new growth",
+       "Power cannot be stored"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Unused grid still has to be paid for.",
+       "It still serves new loads.",
+       "Not the reason here."
+      ],
+      "explanation": "If a data center leaves, someone pays for the grid built for it. Minimums keep that cost with the data center."
+     },
+     "proReasoning": "Ask who pays for grid that sits unused.",
+     "commonMistake": "Assuming minimum bills are just a penalty.",
+     "mentalModel": "Grid costs stay."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:9aab4836fac4"
+  ]
+ },
+ {
+  "id": "aa45358d-3b58-5c87-987b-137b2c716fcb",
+  "market_id": "cleanenergy",
+  "day": 25,
+  "slot": 1,
+  "content": {
+   "id": "cleanenergy-d25-c1",
+   "title": "Most new solar picks the PTC",
+   "lessonTitle": "Two ways to subsidize clean power",
+   "slot": 1,
+   "type": "apply",
+   "brief": {
+    "headline": "Berkeley Lab found the production tax credit appeared more beneficial than the investment credit for 54 of 75 new solar projects, about 72%. Its data ran through 2023.",
+    "kicker": "Apply the two credits to real US solar projects.",
+    "fullText": "The production credit became available to solar under the 2022 Inflation Reduction Act. Before it, solar mostly used the investment credit.\n\n2023 was a record year, with 18.5 GW of utility-scale solar added. The levelized cost of solar rose slightly to $46 per MWh before tax credits and fell to $31 with federal incentives.",
+    "sources": [
+     {
+      "url": "https://eta-publications.lbl.gov/sites/default/files/2024-10/utility-scale_solar_2024_executive_summary.pdf",
+      "label": "Berkeley Lab, Utility-Scale Solar 2024 executive summary"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "spotFake",
+    "prompt": "Two statements match Berkeley Lab's findings. Which one does not?",
+    "statements": [
+     "The PTC looked better for 54 of 75 projects",
+     "18.5 GW was added in 2023",
+     "Every project found the ITC better"
+    ],
+    "fakeIndex": 2,
+    "explanation": "About 72% of projects looked better off with the PTC, not the ITC."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "What was solar's levelized cost with federal incentives, in dollars per MWh?",
+    "min": 0,
+    "max": 80,
+    "value": 31,
+    "unit": "$",
+    "explanation": "$31 per MWh with incentives, down from $46 before tax credits."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You join a solar developer's finance team.",
+      "prompt": "What do you check for each project?",
+      "options": [
+       "Always choose the ITC, out of habit",
+       "Always choose the PTC",
+       "Which credit gives more over its life"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Most looked better with the PTC.",
+       "About 28% still did not.",
+       "The answer depends on the project."
+      ],
+      "explanation": "The PTC looked better for about 72% of projects, but not all. Each project needs its own math."
+     },
+     "proReasoning": "Finance teams model both credits for every project.",
+     "commonMistake": "Applying one credit to every project by habit.",
+     "mentalModel": "Model both credits."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You buy into a solar portfolio.",
+      "prompt": "What does the PTC finding tell you?",
+      "options": [
+       "Output now matters more to project value",
+       "Output no longer matters to project value",
+       "Costs no longer matter"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "The PTC pays per kWh produced.",
+       "It matters more under the PTC.",
+       "Cost still drives the ITC math."
+      ],
+      "explanation": "With most projects choosing a per-kWh credit, how much power they produce drives value."
+     },
+     "proReasoning": "Investors check output estimates closely when credits pay per kWh.",
+     "commonMistake": "Valuing PTC projects without checking their output.",
+     "mentalModel": "Output drives PTC value."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your startup boosts solar plant output.",
+      "prompt": "Why does the PTC shift help you?",
+      "options": [
+       "Only building costs earn credit",
+       "More kWh earns more credit",
+       "Credits now ignore output"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "That is the ITC.",
+       "The PTC pays on every kWh.",
+       "The PTC is based on output."
+      ],
+      "explanation": "Under the PTC, each extra kWh earns credit for 10 years. Output gains are worth more."
+     },
+     "proReasoning": "Founders link their product to how subsidies are paid.",
+     "commonMistake": "Pitching output gains without the credit value.",
+     "mentalModel": "Tie output to credit."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You read that most new solar used the production credit.",
+      "prompt": "What changed to make that possible?",
+      "options": [
+       "The ITC was banned in 2023",
+       "Solar plants stopped producing power",
+       "The 2022 law opened the PTC to solar"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "The ITC remained available.",
+       "Solar output grew.",
+       "Solar could then choose either."
+      ],
+      "explanation": "The Inflation Reduction Act let solar choose the PTC. Many projects then found it better."
+     },
+     "proReasoning": "Ask what rule change opened a new option.",
+     "commonMistake": "Assuming one credit replaced the other by law.",
+     "mentalModel": "Ask what opened the option."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:fc7d13172f2c"
+  ]
+ },
+ {
+  "id": "e898bf63-c9a3-5f71-b4e5-39fb0536f6e2",
+  "market_id": "cleanenergy",
+  "day": 25,
+  "slot": 2,
+  "content": {
+   "id": "cleanenergy-d25-c2",
+   "title": "Capacity factor picks the credit",
+   "lessonTitle": "Two ways to subsidize clean power",
+   "slot": 2,
+   "type": "connect",
+   "brief": {
+    "headline": "US solar ran at a 24.0% capacity factor in 2025 and wind at 33.8%. The production credit pays per kWh for 10 years; the investment credit pays 30% of cost up front.",
+    "kicker": "Connect day 10 and day 25: output decides which credit pays.",
+    "fullText": "Day 10 showed how much of the time each type of plant actually runs.\n\nToday's lesson adds the two credits. The investment credit suits projects with high costs and modest output. The production credit suits projects that produce a lot of power. So a plant that runs more of the time earns more from a per-kWh credit.",
+    "sources": [
+     {
+      "url": "https://eia.gov/electricity/annual/html/epa_04_08_b.html",
+      "label": "EIA, capacity factors for non-fossil generators"
+     },
+     {
+      "url": "https://www.energy.gov/sites/default/files/2023-04/Federal-Solar-Tax-Credits-for-Businesses-4-23.pdf",
+      "label": "US Department of Energy, federal solar tax credits for businesses"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "faceOff",
+    "prompt": "All else equal, which plant gains more from a per-kWh credit?",
+    "left": {
+     "name": "A wind farm",
+     "note": "33.8% capacity factor"
+    },
+    "right": {
+     "name": "A solar farm",
+     "note": "24.0% capacity factor"
+    },
+    "correctIndex": 0,
+    "explanation": "The wind farm produces more kWh per MW, so a per-kWh credit pays it more."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "What share of project cost does the investment tax credit pay?",
+    "min": 0,
+    "max": 100,
+    "value": 30,
+    "unit": "%",
+    "explanation": "30% of eligible cost, when the labor rules are met."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You model a new wind farm for a developer.",
+      "prompt": "Which credit do you test first?",
+      "options": [
+       "The production credit, given high output",
+       "The investment credit, in every case",
+       "Neither, wind gets no credit"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "More kWh means more per-kWh credit.",
+       "Output may favor the PTC.",
+       "Wind qualifies for both."
+      ],
+      "explanation": "Higher output makes per-kWh credits more valuable. Wind's 33.8% favors testing the PTC."
+     },
+     "proReasoning": "Modelers start with the credit that fits the plant's output.",
+     "commonMistake": "Picking a credit without checking output.",
+     "mentalModel": "Output picks the credit."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You compare two projects with the same cost.",
+      "prompt": "Which deserves the PTC?",
+      "options": [
+       "The one built first",
+       "The one that produces more power",
+       "The one with the lower output"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Timing does not decide it.",
+       "The PTC rewards output.",
+       "It would earn less per year."
+      ],
+      "explanation": "With equal costs, the higher-output project earns more from a per-kWh credit."
+     },
+     "proReasoning": "Investors match the credit to how much a project produces.",
+     "commonMistake": "Treating the two credits as equal for every project.",
+     "mentalModel": "Match credit to output."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your startup sells tracking mounts that raise solar output.",
+      "prompt": "What is your strongest pitch?",
+      "options": [
+       "Trackers lower the ITC",
+       "Output has no link to any credits",
+       "Higher output means more PTC dollars"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Trackers raise cost, which raises the ITC.",
+       "Output drives the PTC.",
+       "The PTC pays per kWh."
+      ],
+      "explanation": "Raising solar's output above 24% earns more from a per-kWh credit for 10 years."
+     },
+     "proReasoning": "Founders turn a technical gain into credit dollars.",
+     "commonMistake": "Pitching output without the money it earns.",
+     "mentalModel": "Turn output into dollars."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You wonder why developers choose different credits.",
+      "prompt": "What explains it best?",
+      "options": [
+       "Output and cost differ by project",
+       "Developers choose at random",
+       "One credit is always larger"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "That drives the choice.",
+       "It is a careful choice.",
+       "It depends on the project."
+      ],
+      "explanation": "A high-output project gains more per kWh. A costly, low-output one gains more from 30% of cost."
+     },
+     "proReasoning": "Ask what a subsidy rewards.",
+     "commonMistake": "Assuming one subsidy is always better.",
+     "mentalModel": "Ask what it rewards."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:fb933469f44d"
+  ]
+ },
+ {
+  "id": "e0031c87-3bfe-53c5-a3c3-2bf714f68434",
+  "market_id": "cleanenergy",
+  "day": 25,
+  "slot": 3,
+  "content": {
+   "id": "cleanenergy-d25-c3",
+   "title": "Choosing ITC or PTC",
+   "lessonTitle": "Two ways to subsidize clean power",
+   "slot": 3,
+   "type": "decide",
+   "brief": {
+    "headline": "You run a developer with a new solar project. You can claim 30% of its cost up front, or 3 cents per kWh for 10 years. You cannot claim both.",
+    "kicker": "Decide which credit to claim.",
+    "fullText": "For 2025, the full production credit was 3 cents per kWh. Both credits require meeting prevailing wage and apprenticeship rules for the full rate. Without them, credits are a fifth as large, such as 0.6 cents per kWh.\n\nYour site has strong sun, and your construction costs came in on budget.",
+    "sources": [
+     {
+      "url": "https://www.energy.gov/sites/default/files/2023-04/Federal-Solar-Tax-Credits-for-Businesses-4-23.pdf",
+      "label": "US Department of Energy, federal solar tax credits for businesses"
+     },
+     {
+      "url": "https://www.hklaw.com/en/insights/publications/2025/05/irs-releases-2025-section-45-production-tax-credit-amounts",
+      "label": "Holland & Knight, IRS releases 2025 PTC amounts"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "sortSignal",
+    "prompt": "Does each point favor the production credit, or the investment credit?",
+    "buckets": [
+     "Favors the PTC",
+     "Favors the ITC"
+    ],
+    "items": [
+     {
+      "text": "A sunny site with high output",
+      "bucket": 0
+     },
+     {
+      "text": "Low building costs",
+      "bucket": 0
+     },
+     {
+      "text": "High building costs",
+      "bucket": 1
+     },
+     {
+      "text": "Modest expected output",
+      "bucket": 1
+     }
+    ],
+    "explanation": "The PTC rewards output. The ITC rewards cost. Your sunny, on-budget project leans toward the PTC."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "Without the labor rules, what was the 2025 production credit, in cents per kWh?",
+    "min": 0,
+    "max": 4,
+    "value": 0.6,
+    "unit": "¢",
+    "tolerance": 0.05,
+    "explanation": "0.6 cents, a fifth of the full 3 cents."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your CFO asks which credit to claim.",
+      "prompt": "What do you recommend?",
+      "options": [
+       "Skip the labor rules to save cost",
+       "Model both, likely pick the PTC here",
+       "Claim both to maximize value"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Credits drop to a fifth.",
+       "High output favors the PTC.",
+       "You cannot claim both."
+      ],
+      "explanation": "Strong sun and low costs favor a per-kWh credit. Meeting labor rules keeps the full rate."
+     },
+     "proReasoning": "Finance leads model both credits before choosing.",
+     "commonMistake": "Skipping labor rules and losing four-fifths of the credit.",
+     "mentalModel": "Model both, keep the full rate."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You lend to this project.",
+      "prompt": "What risk comes with choosing the PTC?",
+      "options": [
+       "The credit is paid up front",
+       "The credit ignores output",
+       "Credit depends on actual output"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "That is the ITC.",
+       "The PTC is based on output.",
+       "Lower output means less credit."
+      ],
+      "explanation": "The PTC pays over 10 years based on output. If output falls short, so does the credit."
+     },
+     "proReasoning": "Lenders stress-test output when credits depend on it.",
+     "commonMistake": "Assuming PTC income is fixed.",
+     "mentalModel": "Stress-test output."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your startup tracks labor rule compliance for developers.",
+      "prompt": "What is your pitch to this CFO?",
+      "options": [
+       "Missing the rules cuts credits to a fifth",
+       "Labor rules are optional with no cost",
+       "Labor rules only apply to the ITC"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "That loss is huge.",
+       "They cost four-fifths of the credit.",
+       "They apply to both."
+      ],
+      "explanation": "Without prevailing wage and apprenticeship rules, credits fall to a fifth. Compliance protects the value."
+     },
+     "proReasoning": "Founders size the loss their product prevents.",
+     "commonMistake": "Pitching compliance without the money at stake.",
+     "mentalModel": "Size the loss avoided."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You wonder why a project cannot claim both credits.",
+      "prompt": "What is the best explanation?",
+      "options": [
+       "Neither applies to solar",
+       "The law makes them alternatives",
+       "They pay exactly the same amount"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Solar can use either.",
+       "A project picks one.",
+       "They pay differently."
+      ],
+      "explanation": "A project generally cannot claim both for the same property. It picks the one that pays more."
+     },
+     "proReasoning": "Ask whether subsidies stack or compete.",
+     "commonMistake": "Assuming all credits can be stacked.",
+     "mentalModel": "Pick one."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:2ec9693bbd15"
+  ]
+ },
+ {
+  "id": "b38570c1-75f9-5dd1-ba67-a3877c2ae738",
+  "market_id": "cleanenergy",
+  "day": 26,
+  "slot": 1,
+  "content": {
+   "id": "cleanenergy-d26-c1",
+   "title": "First Solar sells its credits",
+   "lessonTitle": "Selling tax credits for cash",
+   "slot": 1,
+   "type": "apply",
+   "brief": {
+    "headline": "In December 2023, First Solar agreed to sell up to $700 million of its 2023 manufacturing tax credits to payments firm Fiserv. Fiserv pays 96 cents for each dollar of credit.",
+    "kicker": "Apply credit transfers to a solar panel maker.",
+    "fullText": "The credits come from the Inflation Reduction Act's 45X credit for advanced manufacturing. Selling them turns a tax benefit into cash now, at a small discount.\n\nFirst Solar expected to invest more than $2 billion in new and expanded factories in Alabama, Louisiana and Ohio by 2026. Fiserv, a fintech firm, uses the credits to lower its own tax bill.",
+    "sources": [
+     {
+      "url": "https://utilitydive.com/news/first-solar-45X-advanced-manufacturing-tax-credit-inflation-reduction-act-ira/703664",
+      "label": "Utility Dive, First Solar sells 45X credits to Fiserv"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "buildChain",
+    "prompt": "Put the credit sale in order.",
+    "steps": [
+     "First Solar makes panels in the US",
+     "It earns 45X manufacturing credits",
+     "Fiserv buys them at 96 cents per dollar",
+     "Fiserv uses them to cut its tax bill"
+    ],
+    "explanation": "The maker gets cash now. The buyer saves 4 cents on every dollar of tax it owes."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "How many cents did Fiserv pay per dollar of tax credit?",
+    "min": 50,
+    "max": 100,
+    "value": 96,
+    "unit": "¢",
+    "tolerance": 0.04,
+    "explanation": "96 cents per dollar, a 4% discount for the buyer."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You join a tax team at a large US company.",
+      "prompt": "How do you explain buying these credits?",
+      "options": [
+       "Paying 96 cents to cut a dollar of tax",
+       "Investing directly in a solar factory",
+       "Donating money to clean energy firms"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "The 4-cent gap is the saving.",
+       "You buy credits, not factory shares.",
+       "You get a tax benefit in return."
+      ],
+      "explanation": "Fiserv pays 96 cents and cuts its tax by a dollar. It is a purchase, not an investment in the plant."
+     },
+     "proReasoning": "Tax teams explain the saving per dollar before the climate story.",
+     "commonMistake": "Confusing a credit purchase with owning the project.",
+     "mentalModel": "Price per dollar of tax."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You analyze First Solar's cash flow.",
+      "prompt": "What does the sale do for the company?",
+      "options": [
+       "Gives Fiserv ownership of its factories",
+       "Turns tax credits into cash for its factories",
+       "Raises its tax bill for 2023"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Fiserv only buys the credits.",
+       "Cash helps fund over $2 billion of plants.",
+       "It sells credits it cannot fully use."
+      ],
+      "explanation": "Selling credits at 96 cents gives First Solar cash for expansion now."
+     },
+     "proReasoning": "Investors count sold credits as cash that funds growth.",
+     "commonMistake": "Ignoring credit sales when judging a maker's cash.",
+     "mentalModel": "Credits can become cash."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your startup runs a marketplace for tax credits.",
+      "prompt": "What does this deal show?",
+      "options": [
+       "Only utilities are allowed to buy these credits",
+       "Credits sell above face value",
+       "Non-energy firms will buy credits at a discount"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Fiserv is a payments company.",
+       "They sold at 96 cents.",
+       "A fintech firm bought them."
+      ],
+      "explanation": "A payments firm buying solar credits shows a wide pool of buyers. Marketplaces connect them."
+     },
+     "proReasoning": "Founders point to buyers outside the industry as proof of a big market.",
+     "commonMistake": "Assuming only energy companies buy energy credits.",
+     "mentalModel": "Buyers come from anywhere."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You wonder why a payments company buys solar credits.",
+      "prompt": "What is the main reason?",
+      "options": [
+       "It lowers its taxes for less than face value",
+       "It plans to build solar panels itself",
+       "The law requires all firms to buy them"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Pay 96 cents, save a dollar.",
+       "It just buys the credits.",
+       "Buying is voluntary."
+      ],
+      "explanation": "Fiserv pays 96 cents for each dollar of tax it can cut. It saves money."
+     },
+     "proReasoning": "Ask what a buyer gets from a deal.",
+     "commonMistake": "Assuming the buyer wants to make solar panels.",
+     "mentalModel": "Ask what the buyer gets."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:ed4f7e18ff06"
+  ]
+ },
+ {
+  "id": "14793845-c51a-527d-b7ff-8e743f0ac26d",
+  "market_id": "cleanenergy",
+  "day": 26,
+  "slot": 2,
+  "content": {
+   "id": "cleanenergy-d26-c2",
+   "title": "Credits that can be sold",
+   "lessonTitle": "Selling tax credits for cash",
+   "slot": 2,
+   "type": "connect",
+   "brief": {
+    "headline": "A clean power project can claim 30% of its cost or 3 cents per kWh for 10 years. In 2025, companies bought nearly $42 billion of these credits from developers.",
+    "kicker": "Connect day 25 and day 26: credits as a source of cash.",
+    "fullText": "Day 25 showed the two main credits: the investment credit and the production credit.\n\nToday's lesson shows how developers use them. Many lack big tax bills of their own. Since the 2022 law made credits transferable, they can sell them to companies that do. Transfers rose about 48% in 2025, and total tax credit financing reached $63 billion.",
+    "sources": [
+     {
+      "url": "https://www.energy.gov/sites/default/files/2023-04/Federal-Solar-Tax-Credits-for-Businesses-4-23.pdf",
+      "label": "US Department of Energy, federal solar tax credits for businesses"
+     },
+     {
+      "url": "https://www.pv-tech.org/us-clean-energy-finance-matured-in-2025-despite-policy-tightening-says-crux/",
+      "label": "PV Tech, US clean energy finance in 2025 according to Crux"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "multipleChoice",
+    "prompt": "Why would a developer sell its tax credits?",
+    "options": [
+     "It lacks enough tax to use them itself",
+     "Selling raises the value of the credits",
+     "The law bans developers from using them"
+    ],
+    "correctIndex": 0,
+    "explanation": "Developers often owe little tax. Selling turns credits into cash from firms that do owe tax."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "How many billion dollars did total tax credit financing reach in 2025?",
+    "min": 0,
+    "max": 100,
+    "value": 63,
+    "unit": "B",
+    "explanation": "$63 billion, including tax equity. Transfers alone were nearly $42 billion."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You join a developer's project finance team.",
+      "prompt": "How do credits help fund a project?",
+      "options": [
+       "They only cut the developer's own tax",
+       "They can be sold for cash to taxpaying firms",
+       "They are paid by power customers each month"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Transfers let others use them.",
+       "Transfers reached nearly $42 billion.",
+       "Credits come from the tax code."
+      ],
+      "explanation": "Developers can sell credits to companies with tax bills. That cash helps fund the build."
+     },
+     "proReasoning": "Finance teams treat credits as a source of project cash.",
+     "commonMistake": "Ignoring credits that the developer cannot use itself.",
+     "mentalModel": "Credits are cash."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You compare a PTC project and an ITC project.",
+      "prompt": "How does selling credits differ between them?",
+      "options": [
+       "They sell in exactly the same way, all at once",
+       "Only ITC credits can be sold",
+       "ITC credit comes at once; PTC credits over years"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Their timing differs.",
+       "Both can be transferred.",
+       "Timing changes how buyers pay."
+      ],
+      "explanation": "The ITC comes when built. The PTC arrives yearly for 10 years, so its sales spread out."
+     },
+     "proReasoning": "Investors match credit timing to when cash arrives.",
+     "commonMistake": "Treating both credits as one lump sum.",
+     "mentalModel": "Timing shapes cash."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your startup helps small developers sell credits.",
+      "prompt": "Why is now a good time?",
+      "options": [
+       "Transfers grew about 48% in 2025",
+       "Transfers were banned in 2025",
+       "Only large deals ever close"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "A growing market draws buyers.",
+       "They grew instead.",
+       "Mid-size buyers joined too."
+      ],
+      "explanation": "Transfers grew to nearly $42 billion. Smaller developers need help reaching buyers."
+     },
+     "proReasoning": "Founders enter markets growing fast.",
+     "commonMistake": "Ignoring a market that grew by half in a year.",
+     "mentalModel": "Enter growing markets."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You wonder how a developer with no profit uses a tax credit.",
+      "prompt": "What is the answer?",
+      "options": [
+       "It asks customers to pay the tax",
+       "It sells the credit to a firm that pays tax",
+       "It cannot use the credit at all, ever"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Customers do not pay it.",
+       "Transfers make that possible.",
+       "The 2022 law changed that."
+      ],
+      "explanation": "Since 2022, credits can be sold. Firms with tax bills buy them."
+     },
+     "proReasoning": "Ask how a benefit reaches someone who cannot use it.",
+     "commonMistake": "Assuming credits help only profitable firms.",
+     "mentalModel": "Credits can move."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:a04a44a41a2b"
+  ]
+ },
+ {
+  "id": "e8f4a54e-583a-58c6-9dfa-1473985a7df1",
+  "market_id": "cleanenergy",
+  "day": 26,
+  "slot": 3,
+  "content": {
+   "id": "cleanenergy-d26-c3",
+   "title": "Should we buy credits",
+   "lessonTitle": "Selling tax credits for cash",
+   "slot": 3,
+   "type": "decide",
+   "brief": {
+    "headline": "You are treasurer of a mid-size US company. Nearly a quarter of Fortune 1000 companies bought clean energy credits in 2025, cutting their tax rates by about 3 points.",
+    "kicker": "Decide whether to buy tax credits this year.",
+    "fullText": "Companies bought nearly $42 billion of transferable credits in 2025, up about 48%. Mid-cap participation reached 24%.\n\nBanks investing in projects for their tax benefits remained active, and hybrid deals held 68% of the market. Buying credits lowers your tax bill, but you must check that the project qualifies.",
+    "sources": [
+     {
+      "url": "https://www.pv-tech.org/us-clean-energy-finance-matured-in-2025-despite-policy-tightening-says-crux/",
+      "label": "PV Tech, US clean energy finance in 2025 according to Crux"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "sortSignal",
+    "prompt": "Does each point favor buying credits, or call for caution?",
+    "buckets": [
+     "Favors buying",
+     "Calls for caution"
+    ],
+    "items": [
+     {
+      "text": "Buyers cut tax rates about 3 points",
+      "bucket": 0
+     },
+     {
+      "text": "Mid-cap participation reached 24%",
+      "bucket": 0
+     },
+     {
+      "text": "The market grew about 48%",
+      "bucket": 0
+     },
+     {
+      "text": "A project might not qualify",
+      "bucket": 1
+     },
+     {
+      "text": "Credit rules keep changing",
+      "bucket": 1
+     }
+    ],
+    "explanation": "Peers save real tax by buying. The risks are whether a project qualifies and whether rules shift."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "By about how many percentage points did buyers cut their effective tax rates?",
+    "min": 0,
+    "max": 10,
+    "value": 3,
+    "unit": "points",
+    "explanation": "About three percentage points on average."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your CFO asks for a recommendation.",
+      "prompt": "What do you propose?",
+      "options": [
+       "Buy any credit offered at a discount",
+       "Avoid credits since few firms use them",
+       "Buy, after checking each project qualifies"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Some credits may not qualify.",
+       "A quarter of the Fortune 1000 did.",
+       "You save tax and limit risk."
+      ],
+      "explanation": "Peers cut tax rates about 3 points. Checking each project protects against a credit that fails."
+     },
+     "proReasoning": "Treasurers buy credits with diligence on the project.",
+     "commonMistake": "Buying on discount alone without checking the project.",
+     "mentalModel": "Buy with diligence."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You hold shares in this company.",
+      "prompt": "What would you want to know about credit buying?",
+      "options": [
+       "How much tax it saves and what risks it takes",
+       "Whether it now owns solar farms",
+       "Whether its logo appears on the solar panels"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Savings and risk drive value.",
+       "Buying credits is not ownership.",
+       "Branding is not the point."
+      ],
+      "explanation": "Credit buying can lower taxes by points. Investors want the savings and the risk if a credit fails."
+     },
+     "proReasoning": "Investors ask what a tax strategy saves and what it risks.",
+     "commonMistake": "Treating credit purchases as clean energy ownership.",
+     "mentalModel": "Savings and risk."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your startup checks whether projects qualify for credits.",
+      "prompt": "Who is your buyer?",
+      "options": [
+       "Utility regulators",
+       "Companies buying credits from developers",
+       "Homeowners who own rooftop solar systems"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "They do not buy credits.",
+       "They need to know credits are sound.",
+       "They rarely buy transferred credits."
+      ],
+      "explanation": "With $42 billion changing hands, buyers need proof each credit is valid."
+     },
+     "proReasoning": "Founders serve the party that carries the risk.",
+     "commonMistake": "Selling diligence to people who carry no risk.",
+     "mentalModel": "Serve the risk carrier."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You wonder why mid-size firms joined in.",
+      "prompt": "What is a likely reason?",
+      "options": [
+       "They are required to build solar",
+       "Credits pay them interest yearly",
+       "Buying credits cuts their tax bills"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "No such rule exists.",
+       "Credits are not bonds.",
+       "Peers saved about 3 points."
+      ],
+      "explanation": "Buying credits at a discount lowers tax. Mid-cap participation reached 24%."
+     },
+     "proReasoning": "Ask what spreads a deal type to new buyers.",
+     "commonMistake": "Assuming only giants use tax credits.",
+     "mentalModel": "Savings spread."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:33ed79f181e3"
+  ]
+ },
+ {
+  "id": "62877cfc-15af-5cee-8b58-253702da4550",
+  "market_id": "cleanenergy",
+  "day": 27,
+  "slot": 1,
+  "content": {
+   "id": "cleanenergy-d27-c1",
+   "title": "Home solar loses its credit",
+   "lessonTitle": "The deadline for wind and solar",
+   "slot": 1,
+   "type": "apply",
+   "brief": {
+    "headline": "The July 2025 law ended the 30% federal tax credit for homeowners who buy solar after 2025. The 2022 law had extended it through 2034.",
+    "kicker": "Apply the deadline to rooftop solar.",
+    "fullText": "EnergySage put the average savings at about $9,000 per homeowner. An 11 kW system cost about $28,160 before incentives. Paybacks of 8 to 10 years with the credit may stretch to 15 to 20.\n\nLeased systems and power purchase agreements use a different credit, which remains for systems placed in service before 2028. Those beginning after July 4, 2026 must be finished by the end of 2027.",
+    "sources": [
+     {
+      "url": "https://www.energysage.com/news/congress-passes-bill-ending-residential-solar-tax-credit/",
+      "label": "EnergySage, bill ends the residential solar tax credit"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "faceOff",
+    "prompt": "Which home solar route keeps a federal credit longer?",
+    "left": {
+     "name": "A lease or PPA",
+     "note": "Credit goes to the solar company"
+    },
+    "right": {
+     "name": "Buying the system",
+     "note": "Credit went to the homeowner"
+    },
+    "correctIndex": 0,
+    "explanation": "The homeowner credit ended after 2025. Leases and PPAs keep a credit for systems in service before 2028."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "About how many dollars did the credit save the average homeowner?",
+    "min": 0,
+    "max": 20,
+    "value": 9,
+    "unit": "K",
+    "explanation": "About $9,000 per homeowner."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You sell home solar for an installer.",
+      "prompt": "How do you adjust your offer for 2026?",
+      "options": [
+       "Stop selling solar until 2034",
+       "Lead with leases while their credit lasts",
+       "Promise buyers the 30% homeowner credit"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Demand still exists.",
+       "Leases keep a credit until 2028.",
+       "It ended after 2025."
+      ],
+      "explanation": "The homeowner credit is gone, but leases and PPAs keep one for a while. Offers shift there."
+     },
+     "proReasoning": "Installers move customers to the route that still earns a credit.",
+     "commonMistake": "Quoting a credit that no longer exists.",
+     "mentalModel": "Sell the route that still pays."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You lend to a residential solar company.",
+      "prompt": "Which business model holds up better?",
+      "options": [
+       "Cash sales relying on the homeowner credit",
+       "Both are equally affected",
+       "Leases and PPAs with a credit to 2028"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "That credit ended.",
+       "Only one lost its credit.",
+       "They keep a credit for now."
+      ],
+      "explanation": "Third-party ownership keeps a credit for systems in service before 2028."
+     },
+     "proReasoning": "Lenders check which credits still back a business model.",
+     "commonMistake": "Lending as if the homeowner credit still applied.",
+     "mentalModel": "Check which credit remains."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your startup sells home solar financing.",
+      "prompt": "Where is the opening now?",
+      "options": [
+       "Leases and PPAs while their credit lasts",
+       "Loans built on the homeowner credit",
+       "Products for systems placed after 2030"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "That credit still applies.",
+       "That credit ended.",
+       "Credits will be gone by then."
+      ],
+      "explanation": "Leases and PPAs keep a credit for systems in service before 2028. Financing that fits them has a window."
+     },
+     "proReasoning": "Founders build for the window a deadline leaves open.",
+     "commonMistake": "Building a product around a credit that ended.",
+     "mentalModel": "Build for the window."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend wonders if rooftop solar still pays off.",
+      "prompt": "What changed most?",
+      "options": [
+       "The credit was raised to 40%",
+       "Paybacks may stretch from 8-10 to 15-20 years",
+       "Solar panels stopped cutting household bills"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "It ended instead.",
+       "Losing $9,000 slows payback.",
+       "Panels still cut bills."
+      ],
+      "explanation": "Without the 30% credit, paybacks of 8 to 10 years may stretch to 15 to 20."
+     },
+     "proReasoning": "Ask how a lost credit changes payback.",
+     "commonMistake": "Assuming solar stops saving money without a credit.",
+     "mentalModel": "Check the payback."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:557b63b2ccf4"
+  ]
+ },
+ {
+  "id": "397e36b7-4124-580e-88d1-8d8210c80a76",
+  "market_id": "cleanenergy",
+  "day": 27,
+  "slot": 2,
+  "content": {
+   "id": "cleanenergy-d27-c2",
+   "title": "A $42 billion market meets a deadline",
+   "lessonTitle": "The deadline for wind and solar",
+   "slot": 2,
+   "type": "connect",
+   "brief": {
+    "headline": "Companies bought nearly $42 billion of clean energy tax credits in 2025. The July 2025 law ends wind and solar credits for projects starting after July 4, 2026 or entering service after 2027.",
+    "kicker": "Connect day 26 and day 27: a credit market with an end date.",
+    "fullText": "Day 26 showed a booming market for transferable credits, up about 48% in 2025.\n\nToday's lesson shows the limit. For wind and solar, new credits stop for projects starting after July 4, 2026 or entering service after 2027. In August 2025, IRS guidance removed the 5% cost test for most projects, leaving physical work as proof that construction began.",
+    "sources": [
+     {
+      "url": "https://www.pv-tech.org/us-clean-energy-finance-matured-in-2025-despite-policy-tightening-says-crux/",
+      "label": "PV Tech, US clean energy finance in 2025 according to Crux"
+     },
+     {
+      "url": "https://www.nelsonmullins.com/insights/blogs/tax-reports/all/notice-2025-42-eliminates-5-safe-harbor-for-most-new-solar-and-wind-tax-credit-projects",
+      "label": "Nelson Mullins, Notice 2025-42 eliminates the 5% safe harbor"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "spotFake",
+    "prompt": "Two statements match the law and guidance. Which one does not?",
+    "statements": [
+     "Credits end for wind and solar started after July 4, 2026",
+     "Most projects lost the 5% cost safe harbor",
+     "All clean power credits end in 2026"
+    ],
+    "fakeIndex": 2,
+    "explanation": "The cutoff targets wind and solar. Other credits, like those used for storage, follow different rules."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "Small solar of how many MW or less kept the old 5% cost option?",
+    "min": 0,
+    "max": 5,
+    "value": 1.5,
+    "unit": "MW",
+    "tolerance": 0.06,
+    "explanation": "1.5 MW or less. Larger projects need physical work to prove a start."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You work on a tax credit desk at a bank.",
+      "prompt": "What do you expect for wind and solar credit supply?",
+      "options": [
+       "Steady supply for years to come, with no change",
+       "Supply stops on July 5, 2026",
+       "A surge from projects racing the deadline, then less"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "The law cuts off new starts.",
+       "Started projects keep their credits.",
+       "Started projects can still finish."
+      ],
+      "explanation": "Projects that start in time still earn credits as they finish. New starts after the cutoff do not."
+     },
+     "proReasoning": "Credit desks map supply to when projects started.",
+     "commonMistake": "Assuming credit supply ends on the cutoff date.",
+     "mentalModel": "Map supply to start dates."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You plan to buy credits for several years.",
+      "prompt": "What should you secure now?",
+      "options": [
+       "Credits from projects that met the start rules",
+       "Credits from new projects starting in 2027",
+       "Only credits with no paperwork"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Those keep their eligibility.",
+       "Those would not qualify.",
+       "Paperwork proves eligibility."
+      ],
+      "explanation": "Only projects that started in time keep credits. Buyers need proof of physical work."
+     },
+     "proReasoning": "Buyers ask for evidence that construction truly began.",
+     "commonMistake": "Buying credits without checking the start date.",
+     "mentalModel": "Check the start proof."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your startup documents construction starts.",
+      "prompt": "Why does the August guidance help you?",
+      "options": [
+       "Start dates no longer matter",
+       "Physical work now needs proof",
+       "Spending 5% of cost still counts"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "They decide eligibility.",
+       "Projects must show real work.",
+       "Most projects lost that option."
+      ],
+      "explanation": "With the 5% cost test gone for most projects, developers must show physical work began."
+     },
+     "proReasoning": "Founders sell proof when rules demand evidence.",
+     "commonMistake": "Missing that a rule change created a need for proof.",
+     "mentalModel": "Sell the proof."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You wonder what happens to the credit market after the deadline.",
+      "prompt": "What is likely?",
+      "options": [
+       "It doubles every single year after 2026",
+       "It closes overnight in July 2026",
+       "It shrinks for wind and solar over time"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "The cutoff limits growth.",
+       "Started projects still earn them.",
+       "New starts lose credits."
+      ],
+      "explanation": "Projects already started keep earning credits for a few years, then wind and solar supply falls."
+     },
+     "proReasoning": "Ask what happens to started projects after a deadline.",
+     "commonMistake": "Assuming a cutoff ends everything at once.",
+     "mentalModel": "Deadlines taper."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:9cd3cbc4f3e9"
+  ]
+ },
+ {
+  "id": "f296bfd9-a2d9-5378-acc8-b1cfd2b6c9b3",
+  "market_id": "cleanenergy",
+  "day": 27,
+  "slot": 3,
+  "content": {
+   "id": "cleanenergy-d27-c3",
+   "title": "Start now or wait",
+   "lessonTitle": "The deadline for wind and solar",
+   "slot": 3,
+   "type": "decide",
+   "brief": {
+    "headline": "You run a solar developer with a 100 MW project still in design. To keep its tax credit, physical work must begin before July 5, 2026.",
+    "kicker": "Decide whether to start construction early.",
+    "fullText": "The law signed on July 4, 2025 ends wind and solar credits for projects starting after July 4, 2026 or entering service after 2027. A July 7 executive order told the Treasury to enforce the cutoff strictly.\n\nIRS guidance requires significant physical work for most projects. Projects placed in service within four years of starting are deemed to meet the continuity rule.",
+    "sources": [
+     {
+      "url": "https://www.nelsonmullins.com/insights/blogs/tax-reports/all/notice-2025-42-eliminates-5-safe-harbor-for-most-new-solar-and-wind-tax-credit-projects",
+      "label": "Nelson Mullins, Notice 2025-42 eliminates the 5% safe harbor"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "buildChain",
+    "prompt": "Order the steps to keep the credit.",
+    "steps": [
+     "Begin significant physical work before the cutoff",
+     "Keep building without long gaps",
+     "Place the project in service within four years",
+     "Claim the credit"
+    ],
+    "explanation": "Starting physical work in time, then finishing within four years, keeps the credit."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "Within how many years of starting must a project enter service to be deemed continuous?",
+    "min": 0,
+    "max": 10,
+    "value": 4,
+    "unit": "years",
+    "explanation": "Four years from the start of construction."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your CEO asks what to do before the cutoff.",
+      "prompt": "What do you recommend?",
+      "options": [
+       "Start real physical work and document it",
+       "Spend 5% of cost and call it started",
+       "Wait until the design is final in 2027"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "That meets the guidance.",
+       "Most projects lost that option.",
+       "The credit would be lost."
+      ],
+      "explanation": "Most projects now need significant physical work. Starting and documenting it keeps the credit."
+     },
+     "proReasoning": "Development leads plan starts around the proof the IRS wants.",
+     "commonMistake": "Relying on the old 5% spending test.",
+     "mentalModel": "Start real work."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You consider funding the project.",
+      "prompt": "What do you need to see?",
+      "options": [
+       "A design with no start date",
+       "Proof of physical work before the cutoff",
+       "A promise to start sometime in 2027"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "No start means no credit.",
+       "That keeps the credit.",
+       "Too late for the credit."
+      ],
+      "explanation": "Without proof of a timely start, the project loses its credit and its economics change."
+     },
+     "proReasoning": "Investors fund projects with documented starts.",
+     "commonMistake": "Funding on a start that cannot be proven.",
+     "mentalModel": "Fund proven starts."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your startup supplies early construction work.",
+      "prompt": "Why is demand high now?",
+      "options": [
+       "The deadline was pushed to 2030",
+       "Credits no longer depend on start dates",
+       "Developers must show physical work quickly"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "It was not pushed back.",
+       "Start dates decide credits.",
+       "Many race to start before the cutoff."
+      ],
+      "explanation": "Physical work is now the main proof of a start. Developers need it done before the cutoff."
+     },
+     "proReasoning": "Founders time their offer to a hard deadline.",
+     "commonMistake": "Missing the deadline that drives buyers.",
+     "mentalModel": "Sell to the deadline."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You wonder why developers are digging before designs are done.",
+      "prompt": "What explains it?",
+      "options": [
+       "Starting physical work locks in the credit",
+       "Digging early makes panels cheaper",
+       "The law requires digging at every site yearly"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "That is the deadline rule.",
+       "It is about the credit.",
+       "No such rule."
+      ],
+      "explanation": "Projects that start physical work before the cutoff keep their credits."
+     },
+     "proReasoning": "Ask what a rush is racing toward.",
+     "commonMistake": "Missing the tax deadline behind the rush.",
+     "mentalModel": "Find the deadline."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:1d45c267ac77"
+  ]
+ },
+ {
+  "id": "03d48d29-f278-5e89-8dad-dbce68dd3203",
+  "market_id": "cleanenergy",
+  "day": 28,
+  "slot": 1,
+  "content": {
+   "id": "cleanenergy-d28-c1",
+   "title": "NextEra's safe harbor plan",
+   "lessonTitle": "The race to safe harbor",
+   "slot": 1,
+   "type": "apply",
+   "brief": {
+    "headline": "In July 2025, NextEra said it expects to safe harbor its projects through 2029. It had signed 3.2 GW of new contracts since April, mostly due to start after 2028.",
+    "kicker": "Apply safe-harboring to the biggest US renewables developer.",
+    "fullText": "NextEra's CEO said the firm could use the law's rules for projects that begin construction before July 4, 2026 to lock in credits through 2029. Its development pipeline was nearly 30 GW, about a third of it storage.\n\nShares slipped nearly 5% after the call, even though earnings beat estimates. Its finance chief said the law is \"just changing the rule set.\"",
+    "sources": [
+     {
+      "url": "https://www.utilitydive.com/news/trumps-big-bill-is-tough-but-constructive-for-renewables-nextera/753888/",
+      "label": "Utility Dive, NextEra on the big bill"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "multipleChoice",
+    "prompt": "Through what year does NextEra expect to safe harbor its projects?",
+    "options": [
+     "2029",
+     "2026",
+     "2035"
+    ],
+    "correctIndex": 0,
+    "explanation": "Through 2029, by starting projects before July 4, 2026."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "How many GW of new contracts had NextEra signed since April 2025?",
+    "min": 0,
+    "max": 10,
+    "value": 3.2,
+    "unit": "GW",
+    "tolerance": 0.06,
+    "explanation": "3.2 GW, mostly slated to start operating after 2028."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You join NextEra's development team.",
+      "prompt": "What is your top priority in 2026?",
+      "options": [
+       "Pausing all projects until 2030",
+       "Switching entirely to coal plants",
+       "Starting projects before the cutoff"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Credits would be lost.",
+       "Not the company's plan.",
+       "That locks in credits through 2029."
+      ],
+      "explanation": "Projects started before July 4, 2026 can keep credits through 2029. Starts are the priority."
+     },
+     "proReasoning": "Developers sequence starts to protect credits.",
+     "commonMistake": "Letting projects slip past the start deadline.",
+     "mentalModel": "Start before the cutoff."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "NextEra shares fell nearly 5% after the call.",
+      "prompt": "What would you weigh?",
+      "options": [
+       "Credits locked through 2029, with less after",
+       "Credits secured forever",
+       "No effect at all from the new law on NextEra"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "That is the real timeline.",
+       "The window closes.",
+       "Shares fell for a reason."
+      ],
+      "explanation": "Safe-harboring protects projects through 2029. After that, the credit picture changes."
+     },
+     "proReasoning": "Investors look past a safe harbor window to what follows.",
+     "commonMistake": "Assuming safe harbor protects every future project.",
+     "mentalModel": "Look past the window."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your startup sells storage to developers.",
+      "prompt": "What does NextEra's pipeline suggest?",
+      "options": [
+       "Developers only build wind farms",
+       "Storage is a large share of plans",
+       "Storage is being dropped"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Solar and storage are large too.",
+       "About a third of 30 GW.",
+       "It is a third of the pipeline."
+      ],
+      "explanation": "Storage made up about a third of NextEra's nearly 30 GW pipeline."
+     },
+     "proReasoning": "Founders read a leader's pipeline for demand signals.",
+     "commonMistake": "Ignoring storage in a developer's plans.",
+     "mentalModel": "Read the pipeline."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You wonder how a firm can lock credits through 2029.",
+      "prompt": "What does \"safe harbor\" mean here?",
+      "options": [
+       "Moving projects to a seaport",
+       "Selling projects to the federal government",
+       "Starting early to keep credit eligibility"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "It is a tax term.",
+       "Not what it means.",
+       "That is the meaning."
+      ],
+      "explanation": "Starting construction in time keeps a project eligible, even if it finishes later."
+     },
+     "proReasoning": "Ask what a tax term means in practice.",
+     "commonMistake": "Taking jargon literally.",
+     "mentalModel": "Decode the jargon."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:101a26573d9e"
+  ]
+ },
+ {
+  "id": "e274e718-3a80-5ff3-b0bd-2614f6f073a4",
+  "market_id": "cleanenergy",
+  "day": 28,
+  "slot": 2,
+  "content": {
+   "id": "cleanenergy-d28-c2",
+   "title": "Why the cliff becomes a slope",
+   "lessonTitle": "The race to safe harbor",
+   "slot": 2,
+   "type": "connect",
+   "brief": {
+    "headline": "The July 2025 law cut off wind and solar credits for projects starting after July 4, 2026. Crux counted about 147 GW of solar safe-harbored in 2025, roughly 170 GW with wind.",
+    "kicker": "Connect day 27 and day 28: a deadline and the rush before it.",
+    "fullText": "Day 27 showed the deadline and the tighter IRS rules for proving a start.\n\nToday's lesson shows the response. Developers did enough early work to lock in eligibility for about 170 GW. Safe-harbored projects can be built over the next few years with credits intact, which smooths the drop after the deadline.",
+    "sources": [
+     {
+      "url": "https://www.nelsonmullins.com/insights/blogs/tax-reports/all/notice-2025-42-eliminates-5-safe-harbor-for-most-new-solar-and-wind-tax-credit-projects",
+      "label": "Nelson Mullins, Notice 2025-42 eliminates the 5% safe harbor"
+     },
+     {
+      "url": "https://www.pv-tech.org/us-clean-energy-finance-matured-in-2025-despite-policy-tightening-says-crux/",
+      "label": "PV Tech, US clean energy finance in 2025 according to Crux"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "faceOff",
+    "prompt": "What happens to solar building after the deadline?",
+    "left": {
+     "name": "A gradual decline",
+     "note": "Safe-harbored projects keep building"
+    },
+    "right": {
+     "name": "An instant stop",
+     "note": "All building ends at once"
+    },
+    "correctIndex": 0,
+    "explanation": "About 170 GW was locked in. Those projects keep building for years, so the drop is gradual."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "About how many GW of solar and wind were safe-harbored in total?",
+    "min": 0,
+    "max": 250,
+    "value": 170,
+    "unit": "GW",
+    "explanation": "Roughly 170 GW, with solar about 147 GW of it."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You plan hiring at a solar construction firm.",
+      "prompt": "How do you plan for 2027 and 2028?",
+      "options": [
+       "Expect work from safe-harbored projects",
+       "Lay off everyone in July 2026",
+       "Hire as if the credits will last forever"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "About 170 GW is locked in.",
+       "Work continues past the deadline.",
+       "New starts lose credits."
+      ],
+      "explanation": "Safe-harbored projects keep building for years. Work tapers instead of stopping."
+     },
+     "proReasoning": "Planners use the safe-harbored pipeline to size future work.",
+     "commonMistake": "Treating a start deadline as an end to all work.",
+     "mentalModel": "Plan for a taper."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You value a panel supplier.",
+      "prompt": "How do you model its US demand?",
+      "options": [
+       "Rising without limit",
+       "Strong for a few years, then lower",
+       "Zero demand right after July 2026"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "New starts lose credits.",
+       "Safe harbors carry demand forward.",
+       "Locked-in projects still buy."
+      ],
+      "explanation": "About 147 GW of solar was locked in. Demand holds for a while, then eases."
+     },
+     "proReasoning": "Investors model the pipeline locked in before a deadline.",
+     "commonMistake": "Modeling a cliff where the pipeline says slope.",
+     "mentalModel": "Model the slope."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your startup provides construction software.",
+      "prompt": "What is your US market after 2026?",
+      "options": [
+       "Gone, since credits ended",
+       "Only rooftop solar work remains",
+       "Large, from about 170 GW to be built"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Credits stay for safe-harbored work.",
+       "Utility-scale continues.",
+       "Locked-in projects need building."
+      ],
+      "explanation": "Safe-harbored projects still need to be built over the next few years."
+     },
+     "proReasoning": "Founders size markets by work locked in, not new starts.",
+     "commonMistake": "Assuming the deadline ended demand overnight.",
+     "mentalModel": "Size the locked-in work."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend says US solar will stop in July 2026.",
+      "prompt": "What would you say?",
+      "options": [
+       "Projects started in time keep building",
+       "They are right, it all stops",
+       "Solar will speed up after the cutoff"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "About 170 GW was locked in.",
+       "Safe harbors keep work going.",
+       "New starts lose credits."
+      ],
+      "explanation": "Safe-harbored projects can still be built with credits, so building continues for years."
+     },
+     "proReasoning": "Ask what was locked in before a deadline.",
+     "commonMistake": "Taking a deadline as a full stop.",
+     "mentalModel": "Check what was locked in."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:729b9e1feebe"
+  ]
+ },
+ {
+  "id": "fad7ba98-f81b-551d-93eb-62606d91c4d2",
+  "market_id": "cleanenergy",
+  "day": 28,
+  "slot": 3,
+  "content": {
+   "id": "cleanenergy-d28-c3",
+   "title": "Which projects to protect",
+   "lessonTitle": "The race to safe harbor",
+   "slot": 3,
+   "type": "decide",
+   "brief": {
+    "headline": "You run a developer with ten solar projects but money to safe harbor only four. About 147 GW of US solar was safe-harbored in 2025.",
+    "kicker": "Decide which projects to lock in.",
+    "fullText": "Safe-harboring means doing enough work early to lock in credit eligibility before deadlines. Projects that are safe-harbored can be built over the next few years with credits intact.\n\nAbout 19 GW of utility-scale storage was deployed in 2025, up 72%. Some of your sites also suit batteries.",
+    "sources": [
+     {
+      "url": "https://www.pv-tech.org/us-clean-energy-finance-matured-in-2025-despite-policy-tightening-says-crux/",
+      "label": "PV Tech, US clean energy finance in 2025 according to Crux"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "sortSignal",
+    "prompt": "Does each point favor safe-harboring a project, or not?",
+    "buckets": [
+     "Favors protecting it",
+     "Does not"
+    ],
+    "items": [
+     {
+      "text": "A buyer is already lined up",
+      "bucket": 0
+     },
+     {
+      "text": "Grid connection is secured",
+      "bucket": 0
+     },
+     {
+      "text": "The site has strong sun",
+      "bucket": 0
+     },
+     {
+      "text": "No permits or grid access yet",
+      "bucket": 1
+     },
+     {
+      "text": "Local opposition is strong",
+      "bucket": 1
+     }
+    ],
+    "explanation": "Protect the projects most likely to finish. A locked-in credit is worth nothing if the project never gets built."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "By about what percent did utility-scale storage deployments rise in 2025?",
+    "min": 0,
+    "max": 100,
+    "value": 72,
+    "unit": "%",
+    "explanation": "About 72%, to about 19 GW."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your board asks how you chose the four.",
+      "prompt": "What reason do you give?",
+      "options": [
+       "They were the first ones proposed",
+       "They are the most likely to be built",
+       "They are the largest on paper"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Order is not a reason.",
+       "A credit only pays if built.",
+       "Size alone does not mean done."
+      ],
+      "explanation": "Safe harbor spending only pays off if the project finishes. Pick the likeliest to be built."
+     },
+     "proReasoning": "Developers rank projects by how likely they are to finish.",
+     "commonMistake": "Spending safe harbor money on long-shot projects.",
+     "mentalModel": "Protect the likeliest."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You fund the developer's safe harbor spending.",
+      "prompt": "What do you ask for?",
+      "options": [
+       "A list of all ten, protected equally",
+       "A promise that rules will change",
+       "A ranking of projects by readiness"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Money covers only four.",
+       "Rules were just set.",
+       "Readiness predicts success."
+      ],
+      "explanation": "With limited money, ranking by readiness puts it where credits will pay off."
+     },
+     "proReasoning": "Investors fund safe harbors on the most ready projects.",
+     "commonMistake": "Spreading thin safe harbor money across every project.",
+     "mentalModel": "Rank by readiness."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your startup scores project readiness.",
+      "prompt": "Why does this decision help you?",
+      "options": [
+       "Developers must pick projects to protect",
+       "Every project will be protected anyway",
+       "Readiness no longer matters"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "They need a clear ranking.",
+       "Money is limited.",
+       "It decides which pay off."
+      ],
+      "explanation": "Limited safe harbor money forces choices. Readiness scores guide them."
+     },
+     "proReasoning": "Founders serve decisions forced by scarcity.",
+     "commonMistake": "Assuming developers can protect everything.",
+     "mentalModel": "Serve forced choices."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You wonder why developers do not protect every project.",
+      "prompt": "What is the main reason?",
+      "options": [
+       "Only one project can be protected",
+       "Early work costs money up front",
+       "Safe harbor is free for everyone"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Many can be protected.",
+       "Each costs real spending.",
+       "It costs money."
+      ],
+      "explanation": "Safe-harboring needs real early work. Developers spend where projects are likely to finish."
+     },
+     "proReasoning": "Ask what it costs to lock in a benefit.",
+     "commonMistake": "Assuming safe harbors are free.",
+     "mentalModel": "Locking in costs money."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:40109cc04abc"
+  ]
+ },
+ {
+  "id": "579ea6ea-db07-526e-a2b9-2161b2802ddd",
+  "market_id": "cleanenergy",
+  "day": 29,
+  "slot": 1,
+  "content": {
+   "id": "cleanenergy-d29-c1",
+   "title": "A bonus for low-income areas",
+   "lessonTitle": "Bonus credits for where and what",
+   "slot": 1,
+   "type": "apply",
+   "brief": {
+    "headline": "In October 2023, the US Energy Department opened a bonus of 10 or 20 percentage points on the investment tax credit. It covers small solar and wind in low-income areas and Tribal lands.",
+    "kicker": "Apply bonus credits to where a project is built.",
+    "fullText": "Projects must be smaller than 5 MW, and the program allocates 1.8 GW of capacity per year. The department runs it for the IRS and Treasury.\n\nThe base investment credit was 30%. Energy Secretary Jennifer Granholm said that with other incentives, projects could receive \"as much as a 70% credit.\"",
+    "sources": [
+     {
+      "url": "https://www.pv-tech.org/us-doe-announces-low-income-tax-bonus-for-solar-and-wind-projects",
+      "label": "PV Tech, DOE announces low-income tax bonus for solar and wind"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "spotFake",
+    "prompt": "Two statements match the low-income bonus. Which one does not?",
+    "statements": [
+     "It adds 10 or 20 percentage points",
+     "It allocates 1.8 GW a year",
+     "It covers projects of any size"
+    ],
+    "fakeIndex": 2,
+    "explanation": "Projects must be smaller than 5 MW, which targets small, local solar and wind."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "How many GW of capacity does the program allocate each year?",
+    "min": 0,
+    "max": 5,
+    "value": 1.8,
+    "unit": "GW",
+    "tolerance": 0.06,
+    "explanation": "1.8 GW per year, for projects under 5 MW."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You join a community solar developer.",
+      "prompt": "What do you check for each new site?",
+      "options": [
+       "Whether it qualifies for the location bonus",
+       "Whether it is larger than 5 MW",
+       "Whether it is far from any town or city"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Up to 20 extra points is a lot.",
+       "Larger projects do not qualify.",
+       "Location rules decide eligibility."
+      ],
+      "explanation": "A site in a qualifying area can add 10 or 20 points to the credit. That changes the economics."
+     },
+     "proReasoning": "Developers screen every site for location bonuses.",
+     "commonMistake": "Missing a bonus worth up to 20 points.",
+     "mentalModel": "Screen for bonuses."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You fund small solar projects.",
+      "prompt": "Which project offers more credit value?",
+      "options": [
+       "A 4 MW project with no location bonus",
+       "A 4 MW project in a qualifying area",
+       "A 50 MW project in any area"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Only the base credit.",
+       "It can earn the extra points.",
+       "Too large for this bonus."
+      ],
+      "explanation": "Projects under 5 MW in qualifying areas can earn 10 or 20 extra points."
+     },
+     "proReasoning": "Investors add bonus credits into project value.",
+     "commonMistake": "Valuing projects on the base credit alone.",
+     "mentalModel": "Count the bonus."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your startup maps sites for small solar.",
+      "prompt": "What feature fits this program?",
+      "options": [
+       "Finding only sites larger than 5 MW",
+       "Ignoring local income data",
+       "Flagging sites that qualify for the bonus"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Those do not qualify.",
+       "Income data decides eligibility.",
+       "Location decides the bonus."
+      ],
+      "explanation": "The bonus depends on where a project sits. Mapping eligible sites saves developers time."
+     },
+     "proReasoning": "Founders build tools around the rule that decides eligibility.",
+     "commonMistake": "Ignoring the location rules that drive value.",
+     "mentalModel": "Map the eligible sites."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You wonder how a project could get a 70% credit.",
+      "prompt": "What makes that possible?",
+      "options": [
+       "Bonuses stacked on the 30% base",
+       "A single new 70% credit",
+       "A grant that replaces all credits"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Bonuses add points on top.",
+       "It comes from stacking.",
+       "They are credits, not a grant."
+      ],
+      "explanation": "The 30% base plus location and other bonuses can add up to as much as 70%."
+     },
+     "proReasoning": "Ask how a headline figure is built up.",
+     "commonMistake": "Taking a stacked maximum as the typical credit.",
+     "mentalModel": "Ask how it stacks."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:afb5053b2eef"
+  ]
+ },
+ {
+  "id": "87c4ed4b-dadc-58c2-97b3-ddbfeb6805e3",
+  "market_id": "cleanenergy",
+  "day": 29,
+  "slot": 2,
+  "content": {
+   "id": "cleanenergy-d29-c2",
+   "title": "Tariffs and the domestic bonus",
+   "lessonTitle": "Bonus credits for where and what",
+   "slot": 2,
+   "type": "connect",
+   "brief": {
+    "headline": "In April 2025, the US set duties of up to 3,521% on solar goods from four Southeast Asian countries. A project meeting domestic content rules could raise its credit from 30% to 40%.",
+    "kicker": "Connect day 11 and day 29: a stick and a carrot.",
+    "fullText": "Day 11 showed tariffs on Cambodia, Malaysia, Thailand and Vietnam, which supplied about 77% of US module imports.\n\nToday's lesson shows the reward side. The domestic content bonus adds 10 points to the investment credit for using enough US-made steel, iron and parts. Tariffs make imports dearer; the bonus makes US-made parts pay more.",
+    "sources": [
+     {
+      "url": "https://fortune.com/asia/2025/04/22/us-solar-panel-tariffs-southeast-asia-cambodia/",
+      "label": "Fortune, US solar tariffs on Southeast Asia"
+     },
+     {
+      "url": "https://www.energy.gov/sites/default/files/2023-04/Federal-Solar-Tax-Credits-for-Businesses-4-23.pdf",
+      "label": "US Department of Energy, federal solar tax credits for businesses"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "sortSignal",
+    "prompt": "Is each a penalty on imports, or a reward for US-made parts?",
+    "buckets": [
+     "Penalty on imports",
+     "Reward for US parts"
+    ],
+    "items": [
+     {
+      "text": "Duties of up to 3,521%",
+      "bucket": 0
+     },
+     {
+      "text": "Tariffs on four Asian countries",
+      "bucket": 0
+     },
+     {
+      "text": "A 10-point domestic content bonus",
+      "bucket": 1
+     },
+     {
+      "text": "A credit raised from 30% to 40%",
+      "bucket": 1
+     }
+    ],
+    "explanation": "Tariffs push buyers away from imports. The bonus pulls them toward US-made parts."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "About what share of US module imports came from the four countries?",
+    "min": 0,
+    "max": 100,
+    "value": 77,
+    "unit": "%",
+    "explanation": "About 77%, worth $12.9 billion."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You buy equipment for a solar developer.",
+      "prompt": "How do you weigh US-made panels?",
+      "options": [
+       "Always buy the cheapest import",
+       "Count the bonus and avoided tariffs",
+       "Compare sticker prices only"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Tariffs may make it costly.",
+       "Both change the true cost.",
+       "That misses the bonus."
+      ],
+      "explanation": "US-made parts can earn 10 extra credit points, and imports may face high duties."
+     },
+     "proReasoning": "Buyers compare total cost after credits and duties.",
+     "commonMistake": "Comparing sticker prices and ignoring credits.",
+     "mentalModel": "Compare total cost."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You weigh a stake in a US panel factory.",
+      "prompt": "Which two policies support demand?",
+      "options": [
+       "Lower tariffs and fewer credits",
+       "Neither affects US factories",
+       "Import tariffs and the domestic bonus"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "That would hurt US makers.",
+       "Both matter a lot.",
+       "Both favor US-made parts."
+      ],
+      "explanation": "Tariffs raise import costs and the bonus rewards US content. Both lift US factory demand."
+     },
+     "proReasoning": "Investors list every policy pushing demand their way.",
+     "commonMistake": "Missing a second policy that supports demand.",
+     "mentalModel": "Count every push."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your startup tracks where solar parts come from.",
+      "prompt": "Why do developers need you now?",
+      "options": [
+       "Origin decides both bonus and duties",
+       "Origin no longer matters",
+       "Only the shipping cost matters now"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Proof earns the bonus and avoids duties.",
+       "It matters more than ever.",
+       "Policy costs are larger."
+      ],
+      "explanation": "Where parts come from decides the 10-point bonus and whether duties apply."
+     },
+     "proReasoning": "Founders serve rules that hinge on proof of origin.",
+     "commonMistake": "Ignoring the policies that make origin valuable.",
+     "mentalModel": "Origin is money."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You wonder why US solar policy uses both tariffs and credits.",
+      "prompt": "What is the idea?",
+      "options": [
+       "Ban solar from all countries",
+       "Push buyers away from imports, pull toward US",
+       "Lower the cost of every imported solar panel"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Solar remains allowed.",
+       "A stick and a carrot.",
+       "Tariffs raise import costs."
+      ],
+      "explanation": "Tariffs make imports dearer. The bonus makes US-made parts earn more credit."
+     },
+     "proReasoning": "Ask whether policies work together.",
+     "commonMistake": "Looking at one policy in isolation.",
+     "mentalModel": "Stick and carrot."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:30f80b49dccb"
+  ]
+ },
+ {
+  "id": "f03f33bf-6b1a-59de-b624-07ab7e4e79fa",
+  "market_id": "cleanenergy",
+  "day": 29,
+  "slot": 3,
+  "content": {
+   "id": "cleanenergy-d29-c3",
+   "title": "Chasing every bonus",
+   "lessonTitle": "Bonus credits for where and what",
+   "slot": 3,
+   "type": "decide",
+   "brief": {
+    "headline": "You plan a solar project in a former coal town. Domestic content could add 10 points to a 30% credit, and an energy community site another 10.",
+    "kicker": "Decide which bonuses to pursue.",
+    "fullText": "Under the 2022 rules, using enough US-made steel, iron and parts earned the domestic content bonus. Building in an area tied to fossil fuel jobs earned the energy community bonus.\n\nThe full rates also required meeting prevailing wage and apprenticeship rules. Without them, credits were a fifth of the full amount.",
+    "sources": [
+     {
+      "url": "https://www.energy.gov/sites/default/files/2023-04/Federal-Solar-Tax-Credits-for-Businesses-4-23.pdf",
+      "label": "US Department of Energy, federal solar tax credits for businesses"
+     },
+     {
+      "url": "https://www.hklaw.com/en/insights/publications/2025/05/irs-releases-2025-section-45-production-tax-credit-amounts",
+      "label": "Holland & Knight, IRS releases 2025 PTC amounts"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "buildChain",
+    "prompt": "Build up the credit from the base.",
+    "steps": [
+     "Meet labor rules for the 30% base",
+     "Add 10 points for domestic content",
+     "Add 10 points for an energy community",
+     "Reach a 50% investment credit"
+    ],
+    "explanation": "Labor rules secure the full base. Each bonus adds 10 points, for up to 50%."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "With both bonuses and labor rules met, what investment credit could the project reach?",
+    "min": 0,
+    "max": 80,
+    "value": 50,
+    "unit": "%",
+    "explanation": "30% base plus 10 for domestic content and 10 for an energy community."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your CFO asks where to start.",
+      "prompt": "What do you recommend?",
+      "options": [
+       "Chase bonuses first and skip the labor rules",
+       "Claim the base credit only",
+       "Lock in labor rules first, then the bonuses"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Bonuses on a fifth are small.",
+       "You leave 20 points unclaimed.",
+       "Without labor rules, credits shrink to a fifth."
+      ],
+      "explanation": "Labor rules protect the full rate. The two bonuses then add 20 points."
+     },
+     "proReasoning": "Finance leads secure the base before chasing bonuses.",
+     "commonMistake": "Chasing bonuses while losing four-fifths of the credit.",
+     "mentalModel": "Base first, then bonuses."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You compare this project with one in a city.",
+      "prompt": "What advantage does the coal town site have?",
+      "options": [
+       "The energy community bonus of 10 points",
+       "Stronger sun than the city in every season",
+       "No labor rules apply"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Location adds credit value.",
+       "The site is chosen for the bonus.",
+       "Labor rules still apply."
+      ],
+      "explanation": "An energy community site adds 10 points that the city project may not get."
+     },
+     "proReasoning": "Investors credit location bonuses in site comparisons.",
+     "commonMistake": "Comparing sites without location bonuses.",
+     "mentalModel": "Count location value."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your startup tracks US content in solar parts.",
+      "prompt": "Why does this developer need you?",
+      "options": [
+       "Only labor rules matter",
+       "Proving US content earns 10 points",
+       "US content no longer affects credits"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Bonuses matter too.",
+       "Proof earns the bonus.",
+       "It adds 10 points."
+      ],
+      "explanation": "The domestic content bonus needs proof of US-made steel, iron and parts."
+     },
+     "proReasoning": "Founders sell the proof that earns their buyers money.",
+     "commonMistake": "Underselling a 10-point bonus.",
+     "mentalModel": "Proof earns bonuses."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You wonder why a coal town gets a solar bonus.",
+      "prompt": "What is the idea?",
+      "options": [
+       "Coal towns have the most sunshine",
+       "Solar must be built near coal plants",
+       "Bring new energy jobs to fossil fuel areas"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Sun is not the reason.",
+       "No such rule.",
+       "That is the aim of the bonus."
+      ],
+      "explanation": "The energy community bonus rewards building where fossil fuel jobs were tied to the economy."
+     },
+     "proReasoning": "Ask what a bonus is trying to steer.",
+     "commonMistake": "Assuming bonuses follow resources like sun.",
+     "mentalModel": "Ask what it steers."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:d1254917bf9b"
+  ]
+ },
+ {
+  "id": "35282a4b-35c2-5c05-a603-f8c512d0a12a",
+  "market_id": "cleanenergy",
+  "day": 30,
+  "slot": 1,
+  "content": {
+   "id": "cleanenergy-d30-c1",
+   "title": "Tesla's storage record",
+   "lessonTitle": "The battery boom",
+   "slot": 1,
+   "type": "apply",
+   "brief": {
+    "headline": "Tesla deployed a record 46.7 GWh of energy storage in 2025, up 29%. Its fourth quarter alone was 14.2 GWh.",
+    "kicker": "Apply the battery boom to one major supplier.",
+    "fullText": "Tesla's energy segment earned about $12.8 billion in 2025, up 26.6%, and storage made up 13% of its revenue. Its gross margin reached a record 29.8% in the quarter.\n\nThe company expected margins to tighten in 2026. It sells the Powerwall for homes and the Megapack for utilities.",
+    "sources": [
+     {
+      "url": "https://battery-tech.net/battery-markets-news/tesla-energy-posts-46-7-gwh-storage-deployments-in-2025/",
+      "label": "Battery Tech, Tesla Energy posts 46.7 GWh of storage in 2025"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "faceOff",
+    "prompt": "Which grew faster for Tesla in 2025?",
+    "left": {
+     "name": "Storage deployments",
+     "note": "Up 29% to 46.7 GWh"
+    },
+    "right": {
+     "name": "Energy revenue",
+     "note": "Up 26.6% to about $12.8 billion"
+    },
+    "correctIndex": 0,
+    "explanation": "Deployments rose 29%, slightly faster than energy revenue at 26.6%."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "How many GWh of storage did Tesla deploy in 2025?",
+    "min": 0,
+    "max": 80,
+    "value": 46.7,
+    "unit": "GWh",
+    "tolerance": 0.05,
+    "explanation": "46.7 GWh, a record, with 14.2 GWh in the fourth quarter."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You interview for Tesla's energy team.",
+      "prompt": "How do you describe the business?",
+      "options": [
+       "Its main source of revenue",
+       "A fast-growing slice of Tesla's revenue",
+       "A tiny side project with no growth"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Cars remain larger.",
+       "13% of revenue and growing.",
+       "It grew 26.6% in revenue."
+      ],
+      "explanation": "Storage grew to 13% of revenue, with record deployments."
+     },
+     "proReasoning": "Candidates size a business unit before praising it.",
+     "commonMistake": "Overstating or understating a unit's size.",
+     "mentalModel": "Size it first."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You weigh Tesla's storage outlook.",
+      "prompt": "What warning do you note?",
+      "options": [
+       "Deployments fell in 2025",
+       "Storage revenue disappeared in 2025",
+       "Margins expected to tighten in 2026"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "They hit a record.",
+       "It grew 26.6%.",
+       "The company said so."
+      ],
+      "explanation": "Record growth came with a warning that margins would tighten in 2026."
+     },
+     "proReasoning": "Investors read guidance alongside records.",
+     "commonMistake": "Extrapolating a record margin forward.",
+     "mentalModel": "Read the guidance."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your startup makes software for grid batteries.",
+      "prompt": "What does Tesla's growth signal?",
+      "options": [
+       "More batteries need managing",
+       "Batteries are going out of use",
+       "Only homes buy batteries"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Record deployments mean more assets.",
+       "Deployments hit a record.",
+       "Utilities buy Megapacks too."
+      ],
+      "explanation": "Record deployments mean more batteries to operate. Software demand grows with them."
+     },
+     "proReasoning": "Founders ride growth in the hardware their software runs on.",
+     "commonMistake": "Ignoring the installed base their product serves.",
+     "mentalModel": "Ride the installed base."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend thinks Tesla only sells cars.",
+      "prompt": "What would surprise them?",
+      "options": [
+       "Storage is all for phones",
+       "Energy earned it about $12.8 billion",
+       "Tesla stopped selling cars in 2025"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "It is for homes and grids.",
+       "Its energy segment is large.",
+       "It still sells cars."
+      ],
+      "explanation": "Tesla's energy segment earned about $12.8 billion in 2025."
+     },
+     "proReasoning": "Ask what else a famous company sells.",
+     "commonMistake": "Seeing a company only through its best-known product.",
+     "mentalModel": "Look beyond the famous product."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:25bb79783b44"
+  ]
+ },
+ {
+  "id": "8f2eac8f-99e7-5317-af5b-0d3d46ae4c34",
+  "market_id": "cleanenergy",
+  "day": 30,
+  "slot": 2,
+  "content": {
+   "id": "cleanenergy-d30-c2",
+   "title": "Batteries fill the hourly gap",
+   "lessonTitle": "The battery boom",
+   "slot": 2,
+   "type": "connect",
+   "brief": {
+    "headline": "The GHG Protocol proposed matching clean power to use hour by hour. The US installed a record 18.9 GW of storage in 2025, up 52%.",
+    "kicker": "Connect day 17 and day 30: storage for every hour.",
+    "fullText": "Day 17 showed why hourly matching is harder than yearly matching. Solar alone cannot cover use at night.\n\nToday's lesson shows storage scaling up. Batteries store power when it is cheap and release it at peak demand, helping solar-heavy grids through the evening. Q4 2025 alone saw a record 5.8 GW installed.",
+    "sources": [
+     {
+      "url": "https://www.esgtoday.com/?p=26480",
+      "label": "ESG Today, GHG Protocol pushes back stricter Scope 2 rules"
+     },
+     {
+      "url": "https://www.woodmac.com/press-releases/2025-u.s.-energy-storage-installations-set-new-record-surpass-2024-by-52",
+      "label": "Wood Mackenzie, 2025 US energy storage installations set a record"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "multipleChoice",
+    "prompt": "How do batteries help a buyer under hourly matching?",
+    "options": [
+     "They make solar panels produce at night",
+     "They remove the need for any clean power",
+     "They move clean power into night hours"
+    ],
+    "correctIndex": 2,
+    "explanation": "Batteries store daytime solar and release it later, covering hours solar cannot."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "How many GW of storage did the US install in Q4 2025 alone?",
+    "min": 0,
+    "max": 15,
+    "value": 5.8,
+    "unit": "GW",
+    "tolerance": 0.06,
+    "explanation": "A record 5.8 GW in one quarter."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your company is preparing for hourly matching.",
+      "prompt": "What do you add to its clean power plan?",
+      "options": [
+       "More daytime solar only",
+       "Yearly credits to cover all of the gaps",
+       "Storage to cover evening and night hours"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Daytime is already covered.",
+       "Hourly rules do not accept that.",
+       "That fills the hours solar misses."
+      ],
+      "explanation": "Hourly matching needs clean power at night. Batteries shift daytime solar there."
+     },
+     "proReasoning": "Planners fill the hourly gaps, not the yearly total.",
+     "commonMistake": "Adding more solar to a night-time gap.",
+     "mentalModel": "Fill the gaps."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You weigh storage developers.",
+      "prompt": "Which demand source strengthens their case?",
+      "options": [
+       "Buyers needing clean power every hour",
+       "Buyers happy with yearly totals",
+       "Buyers leaving clean power goals"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Hourly goals need storage.",
+       "Yearly totals need less storage.",
+       "They would need less."
+      ],
+      "explanation": "As buyers move toward hourly goals, storage that covers night hours gains value."
+     },
+     "proReasoning": "Investors look for new demand behind a growth market.",
+     "commonMistake": "Missing the buyers behind storage growth.",
+     "mentalModel": "Find the new demand."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your startup schedules battery charging.",
+      "prompt": "What should your product optimize for?",
+      "options": [
+       "Running batteries at random times",
+       "Clean power in the hours that lack it",
+       "Charging only at the evening peak"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "That wastes their value.",
+       "That matches hourly goals.",
+       "That is the most costly time."
+      ],
+      "explanation": "Hourly goals reward shifting clean power into gaps. Scheduling software does that."
+     },
+     "proReasoning": "Founders optimize for the metric buyers are judged on.",
+     "commonMistake": "Optimizing for cost alone when buyers need hourly matching.",
+     "mentalModel": "Optimize for the hours."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You wonder why battery installs jumped 52%.",
+      "prompt": "Which reason fits the lessons?",
+      "options": [
+       "Solar panels started working well at night",
+       "Power demand fell sharply",
+       "Solar-heavy grids need power into the evening"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "They do not.",
+       "Demand is rising.",
+       "Batteries cover the evening."
+      ],
+      "explanation": "Batteries store cheap power and release it at peak, filling the evening gap."
+     },
+     "proReasoning": "Ask what problem a fast-growing technology solves.",
+     "commonMistake": "Missing the evening gap batteries fill.",
+     "mentalModel": "Ask what it solves."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:bb4f8f8581cb"
+  ]
+ },
+ {
+  "id": "d6c861a4-ea76-533b-a77c-8287c5f76ba4",
+  "market_id": "cleanenergy",
+  "day": 30,
+  "slot": 3,
+  "content": {
+   "id": "cleanenergy-d30-c3",
+   "title": "Building storage as prices rise",
+   "lessonTitle": "The battery boom",
+   "slot": 3,
+   "type": "decide",
+   "brief": {
+    "headline": "You run a storage developer. US installs hit a record 18.9 GW in 2025, but battery system prices rose 23%. Rules on foreign suppliers add risk.",
+    "kicker": "Decide how fast to grow your pipeline.",
+    "fullText": "Wood Mackenzie and the American Clean Power Association projected about half a terawatt-hour of storage installed from 2026 to 2031. Their high case depends on storage keeping easier access to tax credits, with workable rules on foreign suppliers.\n\nMuch battery supply comes from China. Rising prices and supplier rules could slow growth.",
+    "sources": [
+     {
+      "url": "https://www.woodmac.com/press-releases/2025-u.s.-energy-storage-installations-set-new-record-surpass-2024-by-52",
+      "label": "Wood Mackenzie, 2025 US energy storage installations set a record"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "sortSignal",
+    "prompt": "Does each point support faster growth, or call for caution?",
+    "buckets": [
+     "Supports growth",
+     "Calls for caution"
+    ],
+    "items": [
+     {
+      "text": "A record 18.9 GW installed",
+      "bucket": 0
+     },
+     {
+      "text": "About half a TWh projected to 2031",
+      "bucket": 0
+     },
+     {
+      "text": "Battery system prices up 23%",
+      "bucket": 1
+     },
+     {
+      "text": "Much supply comes from China",
+      "bucket": 1
+     },
+     {
+      "text": "Foreign supplier rules are unsettled",
+      "bucket": 1
+     }
+    ],
+    "explanation": "Demand is strong, but rising prices and supplier rules add risk to every project."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "By what percent did utility-scale battery system prices rise in 2025?",
+    "min": 0,
+    "max": 60,
+    "value": 23,
+    "unit": "%",
+    "explanation": "23%, even as installs hit a record."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your board asks how to plan the next two years.",
+      "prompt": "What do you recommend?",
+      "options": [
+       "Grow, but secure supply and check supplier rules",
+       "Grow as fast as possible, ignoring all costs",
+       "Stop building until prices fall"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "You capture demand and limit risk.",
+       "Prices rose 23%.",
+       "You would miss record demand."
+      ],
+      "explanation": "Demand is at a record, but prices and supplier rules can hurt projects. Plan for both."
+     },
+     "proReasoning": "Leaders grow into demand while hedging supply risk.",
+     "commonMistake": "Chasing growth without checking supply rules.",
+     "mentalModel": "Grow with hedges."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You consider lending to this developer.",
+      "prompt": "What would most reassure you?",
+      "options": [
+       "A big pipeline with no supplier named yet",
+       "Secured supply that meets supplier rules",
+       "A promise that prices will fall"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Supply is a key risk.",
+       "That reduces cost and rule risk.",
+       "Prices rose 23%."
+      ],
+      "explanation": "Supplier rules and rising prices threaten margins. Secured, compliant supply lowers both risks."
+     },
+     "proReasoning": "Lenders check supply contracts before pipelines.",
+     "commonMistake": "Lending on pipeline size alone.",
+     "mentalModel": "Check the supply."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your startup sources batteries from approved suppliers.",
+      "prompt": "Why could developers pay you?",
+      "options": [
+       "Supplier origin no longer matters",
+       "All batteries qualify equally",
+       "Supplier rules may decide credit access"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Rules make it matter.",
+       "Rules may exclude some.",
+       "Compliance protects credits."
+      ],
+      "explanation": "The high case depends on workable supplier rules. Compliant sourcing protects credits."
+     },
+     "proReasoning": "Founders sell compliance where rules decide money.",
+     "commonMistake": "Ignoring rules that decide whether projects get credits.",
+     "mentalModel": "Compliance is value."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You wonder why batteries got pricier during a boom.",
+      "prompt": "Which factor fits the lessons?",
+      "options": [
+       "Supply and supplier rules, not weak demand",
+       "Demand for batteries collapsed in 2025",
+       "Batteries stopped working"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Prices rose with record installs.",
+       "Installs hit a record.",
+       "They work fine."
+      ],
+      "explanation": "Prices rose 23% while installs hit a record. Supply and supplier rules, not weak demand, are the risks."
+     },
+     "proReasoning": "Ask whether a price rise comes from supply or demand.",
+     "commonMistake": "Assuming rising prices mean falling demand.",
+     "mentalModel": "Supply or demand?"
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:d7479109d6d1"
+  ]
  }
 ];
 

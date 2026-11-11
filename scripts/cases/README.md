@@ -33,7 +33,7 @@ builder that turns them into one migration per industry.
 | agtech | `0048_agtech_deep_cases.sql` | 1-15 | 45 of 90 |
 | logistics | `0052_logistics_deep_cases.sql` | 1-15 | 45 of 90 |
 
-The goal is days 1-30, three cases a day, for all 15 industries: 1,350 cases in all. 1,035 are done.
+The goal is days 1-30, three cases a day, for all 15 industries: 1,350 cases in all. 1,080 are done.
 
 Known to go stale: biotech day 13 says the FDA decision on povetacicept is pending (due by November 30,
 2026). Update that case once the FDA rules.
