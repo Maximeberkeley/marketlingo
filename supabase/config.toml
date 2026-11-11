@@ -65,3 +65,6 @@ verify_jwt = false
 
 [functions.load-deep-cases-2]
 verify_jwt = false
+
+[functions.load-deep-cases-3]
+verify_jwt = false
