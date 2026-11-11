@@ -65,4 +65,12 @@ SRC = {
     'esgt_sb253': {'url': 'https://www.esgtoday.com/california-sets-august-2026-deadline-for-first-corporate-climate-reports/', 'label': 'ESG Today, California sets an August 2026 deadline'},
     'ce_klm': {'url': 'https://www.clientearth.org/latest/press-office/press/historic-win-against-greenwashing-as-klm-s-advertising-ruled-illegal/', 'label': "ClientEarth, KLM's advertising ruled illegal"},
     'elr_methane': {'url': 'https://www.globalelr.com/2026/10/european-commission-proposes-targeted-delays-to-eu-methane-regulation-requirements/', 'label': 'Global Environmental Law Review, Commission proposes methane rule delays'},
+    'pbs_plastics': {'url': 'https://www.pbs.org/newshour/world/plastic-pollution-treaty-talks-in-geneva-end-without-an-agreement', 'label': 'PBS NewsHour, plastic treaty talks in Geneva end without an agreement'},
+    'epa_endanger': {'url': 'https://www.epa.gov/regulations-emissions-vehicles-and-engines/final-rule-rescission-greenhouse-gas-endangerment', 'label': 'EPA, final rule rescinding the greenhouse gas endangerment finding'},
+    'aj_klm': {'url': 'https://www.aljazeera.com/news/2024/3/20/dutch-court-finds-airline-guilty-of-greenwashing', 'label': 'Al Jazeera, Dutch court finds KLM guilty of greenwashing'},
+    'xbrl_ssbj': {'url': 'https://www.xbrl.org/news/japan-publishes-ifrs-aligned-sustainability-standards/', 'label': 'XBRL International, Japan publishes IFRS-aligned sustainability standards'},
+    'bsk_nysuper': {'url': 'https://bsk.com/news-events-videos/new-york-becomes-second-state-to-enact-climate-change-superfund-act', 'label': 'Bond, Schoeneck & King, New York enacts a Climate Change Superfund Act'},
+    'ieefa_ukets': {'url': 'https://ieefa.org/articles/low-uk-carbon-pricing-causes-ps29-billion-lost-revenues-over-two-years', 'label': 'IEEFA, low UK carbon prices cost £2.9 billion in revenue'},
+    'wmt_gigaton': {'url': 'https://corporate.walmart.com/news/2024/02/21/walmart-suppliers-lead-the-charge-help-deliver-project-gigaton-goal-more-than-six-years-early', 'label': 'Walmart, suppliers deliver the Project Gigaton goal early'},
+    'allens_au': {'url': 'https://www.allens.com.au/insights-news/insights/2024/09/mandatory-climate-related-financial-reporting-legislation/', 'label': 'Allens, Australia passes mandatory climate reporting'},
 }
