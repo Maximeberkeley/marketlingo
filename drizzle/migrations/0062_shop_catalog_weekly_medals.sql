@@ -1,3 +1,4 @@
+-- Lovable: run 0062a_*_schema.sql then 0062b_*_data.sql instead of this file (same statements, split by kind).
 -- Podium medals: earn-only held items granted once from WEEKLY CASE placements among friends, never sold and never
 -- taken back. Bronze = 3rd place 3 times, Silver = 2nd 5 times, Gold = 1st 7 times. A case only counts for a
 -- learner when at least 3 people on their friends board (them included) submitted it, so nobody farms a tiny board.

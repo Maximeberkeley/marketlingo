@@ -1,3 +1,4 @@
+-- Lovable: run 0063a_*_schema.sql then 0063b_*_data.sql instead of this file (same statements, split by kind).
 -- Founder decisions (Nov 11):
 --   * Weekly Case pays 200 XP (normal XP earned: counts for races and the crown). The phone pays it; nothing here.
 --   * Double XP is earn-only: every submitted Weekly Case grants one 15-minute token, never sold. It counts for
