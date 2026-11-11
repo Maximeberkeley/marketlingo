@@ -6716,6 +6716,6658 @@ const rows: unknown[] = [
    "handwritten-v1",
    "src:4dfb9506d2c2"
   ]
+ },
+ {
+  "id": "56b2bf91-3320-5616-846c-9c8518b8d626",
+  "market_id": "web3",
+  "day": 16,
+  "slot": 1,
+  "content": {
+   "id": "web3-d16-c1",
+   "title": "A 46-day line to leave",
+   "lessonTitle": "Over a quarter of all ETH is staked",
+   "slot": 1,
+   "type": "apply",
+   "brief": {
+    "headline": "In September 2025, Ethereum's exit queue reached about 2.65 million ETH, and the wait to unstake passed 46 days, an all-time high, according to Figment.",
+    "kicker": "Apply day 16: staked ETH earns rewards but cannot leave at once.",
+    "fullText": "Figment traced the spike mainly to one infrastructure provider that decided on September 9, 2025 to exit all its validators as a security precaution. That alone covered about 1.6 million ETH, worth about $7 billion and about 4.5% of all staked ETH.\n\nEthereum limits how fast stake can move. The churn limit lets about 57,600 ETH a day enter or leave, so a big exit turns into a long line.\n\nThrough the day 16 lens: over a quarter of ETH is staked to guard the network. The same rules that make that stake steady also make it slow to unwind.",
+    "sources": [
+     {
+      "url": "https://www.figment.io/insights/ethereums-exit-queue-hits-record-high-what-stakers-need-to-know/",
+      "label": "Figment, Ethereum's exit queue hits a record high, Sep 2025"
+     },
+     {
+      "url": "https://www.kucoin.com/news/flash/ethereum-staking-rate-hits-28-91-lido-holds-24-45-share",
+      "label": "KuCoin News, Ethereum staking rate hits 28.91%, Lido holds 24.45%"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "buildChain",
+    "prompt": "Put the record exit queue in order.",
+    "steps": [
+     "A provider decides to exit all its validators",
+     "About 1.6 million ETH joins the exit queue",
+     "The daily churn limit caps how much can leave",
+     "The queue reaches about 2.65 million ETH",
+     "The wait to unstake passes 46 days"
+    ],
+    "explanation": "One big exit met a fixed daily limit, so the line grew to a record."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "The wait to leave staking passed about how many days?",
+    "min": 0,
+    "max": 100,
+    "value": 46,
+    "explanation": "Over 46 days in September 2025, an all-time high, Figment said.",
+    "unit": "days"
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You interview at a staking company. They ask what the record exit queue shows.",
+      "prompt": "Which answer is strongest?",
+      "options": [
+       "Stakers can always withdraw within one hour",
+       "The queue proves staking is about to end",
+       "Staked ETH is steady because it cannot leave fast"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "The wait passed 46 days in September 2025.",
+       "One provider caused most of the spike.",
+       "The churn limit turns big exits into long waits."
+      ],
+      "explanation": "Ethereum caps how much stake moves each day. That protects the network and slows exits."
+     },
+     "proReasoning": "Strong candidates explain the churn limit and why it exists, not just the wait.",
+     "commonMistake": "Treating staked ETH like cash that can leave the same day.",
+     "mentalModel": "Steady by design."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You stake ETH you may need for a payment next month.",
+      "prompt": "What should you weigh first?",
+      "options": [
+       "Exits can take weeks when the queue is long",
+       "Staking rewards always cover any delay",
+       "Unstaked ETH is paid back within minutes"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "The exit wait topped 46 days in September 2025.",
+       "Rewards do not help if you need cash now.",
+       "Withdrawals follow a queue, not a timer."
+      ],
+      "explanation": "Staking ties ETH up. In a crowded queue, getting it back can take over a month."
+     },
+     "proReasoning": "Investors match staking to money they will not need soon.",
+     "commonMistake": "Staking funds you will need on a fixed date.",
+     "mentalModel": "Stake what can wait."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your startup offers staking to small savers.",
+      "prompt": "What do you build first?",
+      "options": [
+       "A hidden fee for leaving early",
+       "A live estimate of the exit wait",
+       "A promise of instant withdrawals"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Hidden fees destroy trust fast.",
+       "Users see the wait before they choose.",
+       "You cannot beat the protocol queue."
+      ],
+      "explanation": "The queue is set by the protocol. Showing it honestly is the best service you can offer."
+     },
+     "proReasoning": "Founders design around protocol limits instead of promising to beat them.",
+     "commonMistake": "Marketing staking as if exits were instant.",
+     "mentalModel": "Show the wait."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend asks why someone had to wait 46 days for their own ETH.",
+      "prompt": "What's the best answer?",
+      "options": [
+       "The bank that runs Ethereum was closed for weeks",
+       "Their password reset took six weeks",
+       "The network limits how much stake leaves each day"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "No bank runs Ethereum.",
+       "Passwords have nothing to do with the queue.",
+       "About 57,600 ETH a day can move, so a big rush builds a line."
+      ],
+      "explanation": "Ethereum lets only so much stake leave per day. When many leave at once, everyone waits."
+     },
+     "proReasoning": "Think of a stadium exit with a fixed number of turnstiles.",
+     "commonMistake": "Assuming the delay was someone's mistake.",
+     "mentalModel": "Fixed turnstiles."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:cb345c833abe"
+  ]
+ },
+ {
+  "id": "65b4a12f-c8b7-5672-86f1-7973aa155c24",
+  "market_id": "web3",
+  "day": 16,
+  "slot": 2,
+  "content": {
+   "id": "web3-d16-c2",
+   "title": "How much of the stake sits with Lido?",
+   "lessonTitle": "Over a quarter of all ETH is staked",
+   "slot": 2,
+   "type": "connect",
+   "brief": {
+    "headline": "In January 2026, about 35.9 million ETH was staked, and Lido held 24.45% of that stake. That works out to roughly 8.8 million ETH in one protocol.",
+    "kicker": "Connect day 15 and day 16: a big stake makes one share matter more.",
+    "fullText": "Day 15 showed why a single staking pool near one-third worries critics: above 33%, a pool could steer block space. Day 16 showed how big the staked pool has become, about 35.9 million ETH, or 28.91% of supply.\n\nPut together, Lido's 24.45% share is about 8.8 million ETH, by our arithmetic from the Dune figures. Its share fell from near one-third in 2023, but the stake behind it grew.",
+    "sources": [
+     {
+      "url": "https://www.kucoin.com/news/flash/ethereum-staking-rate-hits-28-91-lido-holds-24-45-share",
+      "label": "KuCoin News, Ethereum staking rate hits 28.91%, Lido holds 24.45%"
+     },
+     {
+      "url": "https://blockworks.co/news/lido-centralization-debate-ethereum",
+      "label": "Blockworks, the Lido centralization debate"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "faceOff",
+    "prompt": "Which number tells you how close Lido is to the one-third line?",
+    "left": {
+     "name": "Lido's share of staked ETH",
+     "note": "24.45% of all staked ETH in January 2026"
+    },
+    "right": {
+     "name": "Lido's ETH in raw coins",
+     "note": "About 8.8 million ETH by our arithmetic"
+    },
+    "correctIndex": 0,
+    "explanation": "The one-third worry is about share of the stake, not raw coins. Share is what decides power."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "Lido held about what percent of staked ETH in January 2026?",
+    "min": 0,
+    "max": 60,
+    "value": 24,
+    "explanation": "About 24.45%, below the one-third line critics warned about.",
+    "unit": "%"
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your manager asks you to brief the team on staking concentration.",
+      "prompt": "Which point leads?",
+      "options": [
+       "Share of stake decides power, not coin count",
+       "Bigger stake always means more risk",
+       "Lido now controls over half of Ethereum"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "The one-third line is a share threshold.",
+       "A larger total can dilute one pool's share.",
+       "Lido held 24.45%, well under half."
+      ],
+      "explanation": "Lido held more coins than before but a smaller share. Share is what matters for control."
+     },
+     "proReasoning": "Analysts separate absolute size from share. Each answers a different question.",
+     "commonMistake": "Confusing a big coin count with a dominant share.",
+     "mentalModel": "Share decides power."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You compare staking protocols for a client.",
+      "prompt": "Which risk do you flag about Lido?",
+      "options": [
+       "Lido stake can never be withdrawn",
+       "A share near one-third would give it real sway",
+       "Lido pays no staking rewards to any of its users"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Withdrawals opened at Shanghai.",
+       "Critics drew the line at 33%.",
+       "Lido does pay staking rewards."
+      ],
+      "explanation": "Concentration risk depends on how close one pool gets to one-third of the stake."
+     },
+     "proReasoning": "Investors track staking shares each quarter. Direction matters as much as level.",
+     "commonMistake": "Ignoring the trend in a protocol's share.",
+     "mentalModel": "Watch the share."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your startup runs a small staking pool.",
+      "prompt": "How do you pitch it to users?",
+      "options": [
+       "Our pool will soon pass one-third",
+       "Big pools pay more, so wait for us to grow",
+       "Spreading stake makes the network sturdier"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Passing one-third is the risk critics fear.",
+       "Size does not set Ethereum rewards.",
+       "Fewer giant pools means less single control."
+      ],
+      "explanation": "Many users care that no single pool dominates. A smaller pool can sell that."
+     },
+     "proReasoning": "Founders turn a network risk into a reason to choose them.",
+     "commonMistake": "Bragging about a share that would worry the network.",
+     "mentalModel": "Spread the stake."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend asks if Lido \"owns\" a quarter of Ethereum.",
+      "prompt": "What's the best answer?",
+      "options": [
+       "It runs about a quarter of the staked ETH",
+       "It owns a quarter of all ETH ever made",
+       "It owns Ethereum's code"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Lido held 24.45% of staked ETH, not of all ETH.",
+       "Only 28.91% of all ETH was staked.",
+       "No company owns Ethereum's code."
+      ],
+      "explanation": "Lido manages stake for many users. Its share is of staked ETH, which is under a third of supply."
+     },
+     "proReasoning": "A quarter of a quarter is a very different number than a quarter of everything.",
+     "commonMistake": "Mixing up share of stake with share of supply.",
+     "mentalModel": "A share of the stake."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:3a343452447f"
+  ]
+ },
+ {
+  "id": "e52ccbb4-6dab-5317-bbc5-dba8be6aeec3",
+  "market_id": "web3",
+  "day": 16,
+  "slot": 3,
+  "content": {
+   "id": "web3-d16-c3",
+   "title": "Stake it, or keep it liquid?",
+   "lessonTitle": "Over a quarter of all ETH is staked",
+   "slot": 3,
+   "type": "decide",
+   "brief": {
+    "headline": "You hold ETH for a small fund. About 28.91% of all ETH was staked in January 2026, earning rewards for helping secure the network.",
+    "kicker": "Decide how much of your ETH to stake.",
+    "fullText": "Staked ETH earns rewards but is tied up. Since withdrawals opened at the Shanghai upgrade, net inflows reached about 17.7 million ETH, so stakers kept adding rather than leaving.\n\nLiquid staking tokens let holders keep using staked ETH, but they add a layer of risk. Your fund may need cash at short notice.",
+    "sources": [
+     {
+      "url": "https://www.kucoin.com/news/flash/ethereum-staking-rate-hits-28-91-lido-holds-24-45-share",
+      "label": "KuCoin News, Ethereum staking rate hits 28.91%, Lido holds 24.45%"
+     },
+     {
+      "url": "https://www.figment.io/insights/ethereums-exit-queue-hits-record-high-what-stakers-need-to-know/",
+      "label": "Figment, Ethereum's exit queue hits a record high, Sep 2025"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "sortSignal",
+    "prompt": "Does this point toward staking more, or keeping ETH liquid?",
+    "buckets": [
+     "Stake more",
+     "Keep liquid"
+    ],
+    "items": [
+     {
+      "text": "You will not need the ETH for a year",
+      "bucket": 0
+     },
+     {
+      "text": "You want rewards on idle coins",
+      "bucket": 0
+     },
+     {
+      "text": "A payout is due in two weeks",
+      "bucket": 1
+     },
+     {
+      "text": "The exit queue is at a record",
+      "bucket": 1
+     },
+     {
+      "text": "Your fund may face sudden redemptions",
+      "bucket": 1
+     }
+    ],
+    "explanation": "Stake money that can wait. Keep enough liquid for known and surprise payouts."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "About what percent of all ETH was staked in January 2026?",
+    "min": 0,
+    "max": 100,
+    "value": 29,
+    "explanation": "About 28.91% of total supply.",
+    "unit": "%"
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your boss asks you to propose a staking split for the fund.",
+      "prompt": "What do you recommend?",
+      "options": [
+       "Stake nothing until rewards double",
+       "Stake the long-term part, keep a liquid buffer",
+       "Stake everything for the highest rewards"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "You give up rewards for no clear reason.",
+       "Rewards on idle ETH, cash for payouts.",
+       "One redemption wave could leave you stuck."
+      ],
+      "explanation": "Staking earns rewards but exits can take weeks. Split by when you need the money."
+     },
+     "proReasoning": "Treasury teams match each coin to its time horizon.",
+     "commonMistake": "Treating all ETH as if it were never needed.",
+     "mentalModel": "Split by horizon."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A fund you analyze stakes 100% of its ETH.",
+      "prompt": "What question do you ask?",
+      "options": [
+       "Why are its rewards so low?",
+       "Why does it not stake even more?",
+       "How would it pay a large redemption?"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Rewards are not the main risk here.",
+       "It cannot stake more than all.",
+       "A long exit queue could block payouts."
+      ],
+      "explanation": "Full staking leaves no buffer. In a record queue, exits took over 46 days."
+     },
+     "proReasoning": "Investors test liquidity under stress, not on a calm day.",
+     "commonMistake": "Only looking at the reward rate.",
+     "mentalModel": "Test the exit."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your startup builds a treasury tool for crypto funds.",
+      "prompt": "Which feature helps most?",
+      "options": [
+       "A planner that matches stake to payout dates",
+       "A button that stakes every coin at once",
+       "A forecast of next year's ETH price"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Funds see what can be staked safely.",
+       "It ignores cash needs.",
+       "Price calls do not solve liquidity."
+      ],
+      "explanation": "Funds struggle to balance rewards and access. Tools that plan both are useful."
+     },
+     "proReasoning": "Founders build around the real decision users face.",
+     "commonMistake": "Building for yield alone and ignoring liquidity.",
+     "mentalModel": "Plan both sides."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend asks why not stake all their ETH for free rewards.",
+      "prompt": "What's the best answer?",
+      "options": [
+       "Rewards are paid only once a decade",
+       "Staked ETH can take weeks to get back",
+       "Staking is banned in most countries"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Rewards flow continuously.",
+       "Exit waits passed 46 days in 2025.",
+       "That is not true."
+      ],
+      "explanation": "Rewards are real, but staked coins are tied up. Keep some ready for life."
+     },
+     "proReasoning": "It is like a savings account that takes a month to withdraw from.",
+     "commonMistake": "Locking up money you may need soon.",
+     "mentalModel": "Rewards, not cash."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:4d3fe962acb0"
+  ]
+ },
+ {
+  "id": "da1bf5b9-e82a-5f50-b59a-dfa38580bc02",
+  "market_id": "web3",
+  "day": 17,
+  "slot": 1,
+  "content": {
+   "id": "web3-d17-c1",
+   "title": "The rulebook arrives",
+   "lessonTitle": "America's first stablecoin law",
+   "slot": 1,
+   "type": "apply",
+   "brief": {
+    "headline": "In October 2026, the US bank regulator, the OCC, finalised its rule to implement the GENIUS Act for payment stablecoin issuers. It takes effect on January 18, 2027.",
+    "kicker": "Apply day 17: a law sets the goal, then regulators write the details.",
+    "fullText": "The OCC first published its proposal on February 25, 2026. The final rule covers permitted activities, reserve assets, redemption, risk management, audits, reporting, custody and capital backstops. Weekly and quarterly reporting forms were finalised too.\n\nAnti-money laundering and sanctions rules are being handled separately with the Treasury.\n\nThrough the day 17 lens: the July 2025 law set one-to-one reserves and banned paying holders interest. The OCC rule turns that into checklists that issuers must meet.",
+    "sources": [
+     {
+      "url": "https://thepaypers.com/regulations/news/occ-finalises-genius-act-rule-for-payment-stablecoin-issuers",
+      "label": "The Paypers, OCC finalises GENIUS Act rule for stablecoin issuers, Oct 2026"
+     },
+     {
+      "url": "https://www.everycrsreport.com/files/2026-08-20_IN12553_0b329134f6be0cc12f78017358552f4053d52c5e.html",
+      "label": "Congressional Research Service, overview of the GENIUS Act of 2025"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "buildChain",
+    "prompt": "Put the stablecoin rulemaking in order.",
+    "steps": [
+     "The GENIUS Act becomes law",
+     "The OCC publishes its proposal",
+     "The proposal appears in the Federal Register",
+     "The OCC finalises its rule",
+     "The rule takes effect"
+    ],
+    "explanation": "July 2025, February 2026, March 2026, October 2026, then January 18, 2027."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "About how many months passed from the law to the rule taking effect?",
+    "min": 0,
+    "max": 48,
+    "value": 18,
+    "explanation": "From July 2025 to January 2027 is about 18 months, by our count.",
+    "unit": "months"
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A stablecoin issuer is hiring a compliance analyst. They ask what changes on January 18, 2027.",
+      "prompt": "Which answer lands best?",
+      "options": [
+       "The OCC rule makes the law's duties enforceable",
+       "Stablecoins become securities that day",
+       "Issuers can start paying holders interest"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Reserves, redemption and reporting rules apply.",
+       "The law says payment stablecoins are not securities.",
+       "The law bans paying holders interest."
+      ],
+      "explanation": "The law set the principles. The OCC rule sets the reporting, audits and reserves issuers must show."
+     },
+     "proReasoning": "Compliance hires who know the effective date and the forms stand out.",
+     "commonMistake": "Treating the law's signing date as the day rules bite.",
+     "mentalModel": "Effective date matters."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You weigh a stablecoin issuer ahead of the rule.",
+      "prompt": "What do you check?",
+      "options": [
+       "Whether its token price will rise",
+       "Whether its reserves and reports fit the rule",
+       "Whether it pays holders the highest interest rate"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "A stablecoin aims to hold one dollar.",
+       "The rule tests reserves, redemption and reporting.",
+       "Paying holders interest is banned."
+      ],
+      "explanation": "Issuers that already meet the reserve and reporting rules face less risk in 2027."
+     },
+     "proReasoning": "Investors ask how ready a firm is for rules that are already written.",
+     "commonMistake": "Judging a stablecoin by yield it is not allowed to pay.",
+     "mentalModel": "Check readiness."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your startup plans a US payment stablecoin in 2027.",
+      "prompt": "What is your first workstream?",
+      "options": [
+       "Design a rewards rate to pay token holders",
+       "Launch first and apply later",
+       "Build weekly reporting and reserve audits"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Issuers may not pay holders interest.",
+       "The rule takes effect January 18, 2027.",
+       "Weekly and quarterly forms were finalised."
+      ],
+      "explanation": "The rule is final. Reporting and audit systems take months to build, so start now."
+     },
+     "proReasoning": "Founders treat compliance as product work with a hard deadline.",
+     "commonMistake": "Leaving reporting systems for after launch.",
+     "mentalModel": "Build reporting now."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend asks why a law from 2025 only \"kicks in\" in 2027.",
+      "prompt": "What's the best answer?",
+      "options": [
+       "Regulators first had to write the detailed rules",
+       "Congress forgot to sign it",
+       "Stablecoins were banned in the US until 2027"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "The OCC proposed in February 2026 and finalised in October.",
+       "It became law on July 18, 2025.",
+       "They were not banned."
+      ],
+      "explanation": "Laws often set goals. Agencies then write the detailed rules and give firms time to comply."
+     },
+     "proReasoning": "It is like a new building code that starts after inspectors get their checklists.",
+     "commonMistake": "Assuming a law works the day it is signed.",
+     "mentalModel": "Rules come after the law."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:120b0dfe71b7"
+  ]
+ },
+ {
+  "id": "0629dddb-f6f8-5365-b19f-305f4e9c4742",
+  "market_id": "web3",
+  "day": 17,
+  "slot": 2,
+  "content": {
+   "id": "web3-d17-c2",
+   "title": "Tether's cushion meets the new rule",
+   "lessonTitle": "America's first stablecoin law",
+   "slot": 2,
+   "type": "connect",
+   "brief": {
+    "headline": "Tether reported about $193 billion in assets backing about $186 billion of USDT in 2025. The GENIUS Act requires at least $1 of permitted reserves for every $1 of US payment stablecoins.",
+    "kicker": "Connect day 14 and day 17: profit from reserves, rules for reserves.",
+    "fullText": "Day 14 showed how Tether earns over $10 billion a year by holding reserves that pay interest. Its excess reserves were about $6.3 billion.\n\nDay 17 showed the new US rule: permitted reserves are cash-like assets such as insured deposits and short-dated Treasury bills, held one to one. Bitcoin and stocks do not count. Under the law, what is in the reserve matters as much as how big it is.",
+    "sources": [
+     {
+      "url": "https://www.theblock.co/post/387908/tether-rakes-10-billion-net-profit-2025-excess-reserves-6-3-billion",
+      "label": "The Block, Tether earns $10 billion net profit in 2025"
+     },
+     {
+      "url": "https://www.everycrsreport.com/files/2026-08-20_IN12553_0b329134f6be0cc12f78017358552f4053d52c5e.html",
+      "label": "Congressional Research Service, overview of the GENIUS Act of 2025"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "multipleChoice",
+    "prompt": "Under the GENIUS Act, which reserve asset counts toward the one-to-one rule?",
+    "options": [
+     "Short-dated Treasury bills",
+     "Bitcoin held in cold storage",
+     "Shares of large tech companies"
+    ],
+    "correctIndex": 0,
+    "explanation": "Permitted reserves are cash-like: cash, insured deposits and short-dated T-bills."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "Tether reported $193 billion of assets backing about how many billion dollars of USDT?",
+    "min": 0,
+    "max": 300,
+    "value": 186,
+    "explanation": "About $186 billion of USDT, leaving about $6.3 billion extra.",
+    "unit": "B"
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You join a stablecoin firm's treasury team. Your lead asks what the new law changes for reserves.",
+      "prompt": "Which answer is best?",
+      "options": [
+       "Reserves no longer need to be reported",
+       "What reserves hold now matters, not just size",
+       "Any asset counts as long as the total is large"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Reporting is central to the rules.",
+       "Only permitted, cash-like assets count.",
+       "Bitcoin and stocks do not count."
+      ],
+      "explanation": "A big cushion of the wrong assets does not meet the law. Composition is the test."
+     },
+     "proReasoning": "Treasury staff who sort assets into permitted and not permitted are valuable.",
+     "commonMistake": "Assuming a large surplus fixes everything.",
+     "mentalModel": "Composition counts."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You compare two stablecoins with the same reserve size.",
+      "prompt": "Which one carries less rule risk?",
+      "options": [
+       "The one holding bitcoin and gold bars instead",
+       "The one paying the highest yield",
+       "The one holding T-bills and insured deposits"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Those are not permitted reserves.",
+       "Paying holders interest is banned.",
+       "Those are permitted reserves."
+      ],
+      "explanation": "Same size, different quality. Only cash-like reserves meet the one-to-one rule."
+     },
+     "proReasoning": "Investors read the reserve breakdown, not just the total.",
+     "commonMistake": "Treating all reserves as equal.",
+     "mentalModel": "Read the breakdown."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your stablecoin startup wants to earn like Tether.",
+      "prompt": "Where can revenue come from under the law?",
+      "options": [
+       "Interest on permitted reserves like T-bills",
+       "Paying users interest to attract them",
+       "Investing reserves in growth stocks"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Reserves can still earn interest for the issuer.",
+       "Issuers may not pay holders interest.",
+       "Stocks are not permitted reserves."
+      ],
+      "explanation": "Issuers can keep the yield on safe reserves. They cannot pass it to holders or chase risk."
+     },
+     "proReasoning": "Founders model revenue on T-bill rates, which move with policy.",
+     "commonMistake": "Planning a business that depends on paying holders yield.",
+     "mentalModel": "Earn on safe reserves."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend asks how Tether can make $10 billion from a coin worth one dollar.",
+      "prompt": "What's the best answer?",
+      "options": [
+       "It charges a fee on every payment",
+       "It earns interest on the reserves behind the coins",
+       "It sells each coin for two dollars to new buyers"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Its profit comes mainly from reserves.",
+       "Reserves like T-bills pay interest.",
+       "Each USDT aims to stay at one dollar."
+      ],
+      "explanation": "People hand over dollars for tokens. Tether invests those dollars safely and keeps the interest."
+     },
+     "proReasoning": "It is like a bank that keeps the interest on your deposit.",
+     "commonMistake": "Thinking stablecoin profits come from the coin's price.",
+     "mentalModel": "Interest on reserves."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:3ab34cf5a87e"
+  ]
+ },
+ {
+  "id": "ccba8d9a-e072-5cd1-ae57-d1230f8dffe5",
+  "market_id": "web3",
+  "day": 17,
+  "slot": 3,
+  "content": {
+   "id": "web3-d17-c3",
+   "title": "State charter or federal oversight?",
+   "lessonTitle": "America's first stablecoin law",
+   "slot": 3,
+   "type": "decide",
+   "brief": {
+    "headline": "You run a fast-growing US stablecoin with $4 billion outstanding. Under the GENIUS Act, issuers with more than $10 billion outstanding fall under federal oversight.",
+    "kicker": "Decide how to plan for crossing $10 billion.",
+    "fullText": "The law requires $1 of permitted reserves for every $1 issued and bans paying holders interest. If an issuer fails, holders have priority over other claims.\n\nAbove $10 billion outstanding, an issuer falls under federal oversight. Your growth plan could take you past that line within two years.",
+    "sources": [
+     {
+      "url": "https://www.everycrsreport.com/files/2026-08-20_IN12553_0b329134f6be0cc12f78017358552f4053d52c5e.html",
+      "label": "Congressional Research Service, overview of the GENIUS Act of 2025"
+     },
+     {
+      "url": "https://thepaypers.com/regulations/news/occ-finalises-genius-act-rule-for-payment-stablecoin-issuers",
+      "label": "The Paypers, OCC finalises GENIUS Act rule for stablecoin issuers, Oct 2026"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "faceOff",
+    "prompt": "What should drive your plan for passing $10 billion?",
+    "left": {
+     "name": "Preparing early for federal oversight",
+     "note": "Build reports and audits that fit the federal rule now"
+    },
+    "right": {
+     "name": "Staying just under $10 billion forever",
+     "note": "Cap growth to avoid any change in supervisor"
+    },
+    "correctIndex": 0,
+    "explanation": "A cap limits the business. Preparing early makes the transition routine."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "Above how many billion dollars outstanding does federal oversight apply?",
+    "min": 0,
+    "max": 50,
+    "value": 10,
+    "explanation": "More than $10 billion outstanding.",
+    "unit": "B"
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your board asks for a two-year plan.",
+      "prompt": "What do you put first?",
+      "options": [
+       "A cap at $9.9 billion of tokens",
+       "A move offshore so the US law never applies",
+       "Systems that already meet federal standards"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "A cap throttles your own growth.",
+       "US users would still need a compliant coin.",
+       "Crossing the line becomes a formality."
+      ],
+      "explanation": "If growth is the plan, build for the next supervisor before you meet it."
+     },
+     "proReasoning": "Leaders prepare for the rules they will face at the next size.",
+     "commonMistake": "Designing the business around avoiding a threshold.",
+     "mentalModel": "Build for the next size."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "An issuer you follow is at $9 billion and growing.",
+      "prompt": "What do you watch?",
+      "options": [
+       "Its readiness for federal oversight",
+       "Whether it starts paying holders interest",
+       "Whether its token trades above one dollar"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "The jump in supervision is near.",
+       "Paying holders interest is banned.",
+       "It aims to hold one dollar."
+      ],
+      "explanation": "Crossing $10 billion changes who supervises the issuer. Readiness lowers the risk."
+     },
+     "proReasoning": "Investors look for thresholds that change a firm's rules.",
+     "commonMistake": "Ignoring a regulatory line the firm is about to cross.",
+     "mentalModel": "Watch the line."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your startup sells compliance software to issuers.",
+      "prompt": "Who is your best first customer?",
+      "options": [
+       "Projects that hold bitcoin as reserves",
+       "Issuers approaching $10 billion outstanding",
+       "Issuers that pay holders interest"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Those reserves are not permitted.",
+       "They face new oversight soon.",
+       "That is banned, so they have bigger problems."
+      ],
+      "explanation": "Firms near a threshold have urgent, funded needs. That is a strong first market."
+     },
+     "proReasoning": "Founders sell to customers whose deadline is closest.",
+     "commonMistake": "Selling to firms that cannot meet the law at all.",
+     "mentalModel": "Sell to the deadline."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend asks why a bigger stablecoin gets a different regulator.",
+      "prompt": "What's the best answer?",
+      "options": [
+       "Big issuers asked to be watched more",
+       "Small stablecoins are not allowed in the US",
+       "A failure would hurt more people, so rules rise"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Size, not preference, sets the rule.",
+       "Small issuers are allowed.",
+       "Above $10 billion, federal oversight applies."
+      ],
+      "explanation": "The more dollars a coin holds, the more people it affects if it fails."
+     },
+     "proReasoning": "It is like larger banks facing stricter checkups.",
+     "commonMistake": "Thinking every issuer faces the same supervisor.",
+     "mentalModel": "Bigger means closer watch."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:17aed380421b"
+  ]
+ },
+ {
+  "id": "c2f963e9-5984-56d4-adf6-0e1b0a35e9fa",
+  "market_id": "web3",
+  "day": 18,
+  "slot": 1,
+  "content": {
+   "id": "web3-d18-c1",
+   "title": "Five years for a privacy wallet",
+   "lessonTitle": "Can you sanction a piece of code?",
+   "slot": 1,
+   "type": "apply",
+   "brief": {
+    "headline": "In November 2025, Samourai Wallet's founders were sentenced in New York: CEO Keonne Rodriguez to five years in prison and CTO William Hill to four.",
+    "kicker": "Apply day 18: running a service is judged differently from writing code.",
+    "fullText": "Both were sentenced for conspiring to operate a money transmitting business that knowingly moved criminal proceeds. Prosecutors said more than $237 million of criminal proceeds went through Samourai's Whirlpool and Ricochet services, and over 80,000 bitcoin passed through them in total.\n\nEach was fined $250,000. Prosecutors cited marketing on a darknet forum.\n\nThrough the day 18 lens: courts said Tornado Cash's ownerless contracts were not property. Samourai was a company that ran a service, collected fees and marketed it.",
+    "sources": [
+     {
+      "url": "https://www.justice.gov/usao-sdny/pr/founders-samourai-wallet-cryptocurrency-mixing-service-sentenced-five-and-four-years",
+      "label": "US Attorney SDNY, Samourai Wallet founders sentenced, Nov 2025"
+     },
+     {
+      "url": "https://www.venable.com/insights/publications/2025/04/a-legal-whirlwind-settles-treasury-lifts-sanctions",
+      "label": "Venable, Treasury lifts sanctions on Tornado Cash"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "spotFake",
+    "prompt": "One of these is false. Tap it.",
+    "statements": [
+     "Rodriguez was sentenced to five years in prison",
+     "Prosecutors cited over $237 million of criminal proceeds",
+     "A court ruled Samourai was ownerless code"
+    ],
+    "fakeIndex": 2,
+    "explanation": "The ownerless ruling was about Tornado Cash. Samourai was run as a business that charged fees."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "Prosecutors said about how many million dollars of criminal proceeds went through Samourai?",
+    "min": 0,
+    "max": 600,
+    "value": 237,
+    "explanation": "Over $237 million, out of more than 80,000 bitcoin that passed through.",
+    "unit": "M"
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You interview for a crypto compliance role. They ask how Samourai differs from Tornado Cash.",
+      "prompt": "Which answer is strongest?",
+      "options": [
+       "Samourai was legal because it only used bitcoin, not ether",
+       "Samourai ran a paid service; the Tornado ruling was on code",
+       "Both were found innocent on all charges"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "The currency does not change the law.",
+       "Running and marketing a service carries liability.",
+       "Samourai's founders were sentenced."
+      ],
+      "explanation": "The line courts draw is between publishing code and running a service for money."
+     },
+     "proReasoning": "Strong candidates explain where liability sits, not just the verdicts.",
+     "commonMistake": "Treating every privacy tool case as the same.",
+     "mentalModel": "Service versus code."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You weigh a startup building a privacy feature for a wallet.",
+      "prompt": "What do you ask first?",
+      "options": [
+       "Will it be faster than every rival wallet?",
+       "Can it list a token next year?",
+       "Does the company run, control or charge for it?"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Speed is not the main risk.",
+       "A token does not answer the legal question.",
+       "Control and fees shaped the Samourai case."
+      ],
+      "explanation": "Legal risk rises when a company operates the service, takes fees and markets it."
+     },
+     "proReasoning": "Investors map where liability would land before they fund a privacy tool.",
+     "commonMistake": "Ignoring legal design until after launch.",
+     "mentalModel": "Find the liability."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your team is building a coin mixing feature.",
+      "prompt": "Which choice cuts your legal risk most?",
+      "options": [
+       "Never market it to criminals or take their funds",
+       "Advertise it on darknet forums for reach",
+       "Take a cut of every mixed transaction quietly"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Prosecutors cited darknet marketing at Samourai.",
+       "That was cited as evidence against Samourai.",
+       "Fees helped show it was a business."
+      ],
+      "explanation": "Samourai's founders were sentenced partly over marketing and fees. Do neither."
+     },
+     "proReasoning": "Founders get legal advice before building tools that hide fund flows.",
+     "commonMistake": "Assuming open-source status protects any business model.",
+     "mentalModel": "Watch the marketing."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend asks why a wallet maker went to prison but a code writer's sanctions were lifted.",
+      "prompt": "What's the best answer?",
+      "options": [
+       "The courts picked at random",
+       "One ran a paid service; the other was ownerless code",
+       "Prison terms depend on which coin the tool used"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Each case had its own facts.",
+       "That distinction runs through both cases.",
+       "Both involved crypto mixing."
+      ],
+      "explanation": "Courts look at who controls and profits from a tool. Code alone was not property; a business was liable."
+     },
+     "proReasoning": "It is the difference between writing a lock design and running a getaway service.",
+     "commonMistake": "Thinking the technology alone decides guilt.",
+     "mentalModel": "Control and profit."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:8097fac8008a"
+  ]
+ },
+ {
+  "id": "a29573d7-9562-5474-b8bb-025502f6afc3",
+  "market_id": "web3",
+  "day": 18,
+  "slot": 2,
+  "content": {
+   "id": "web3-d18-c2",
+   "title": "Code that cannot be deleted, or owned",
+   "lessonTitle": "Can you sanction a piece of code?",
+   "slot": 2,
+   "type": "connect",
+   "brief": {
+    "headline": "A deployed Ethereum smart contract cannot be deleted by default. In November 2024, a US appeals court ruled Tornado Cash's immutable contracts were not property that could be sanctioned.",
+    "kicker": "Connect day 13 and day 18: what you cannot change, no one may own.",
+    "fullText": "Day 13 showed that once deployed, a smart contract runs exactly as written and, by default, stays on the chain. Day 18 showed what a court made of that: contracts that no one owns, controls or can shut off lack the hallmarks of property.\n\nTreasury had sanctioned the mixer in August 2022 and lifted the sanctions in March 2025. The same permanence that makes contracts trustworthy put them outside a sanctions tool built for property.",
+    "sources": [
+     {
+      "url": "https://ethereum.org/developers/docs/smart-contracts/",
+      "label": "ethereum.org, smart contracts"
+     },
+     {
+      "url": "https://www.venable.com/insights/publications/2025/04/a-legal-whirlwind-settles-treasury-lifts-sanctions",
+      "label": "Venable, Treasury lifts sanctions on Tornado Cash"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "faceOff",
+    "prompt": "Why could the contracts not be sanctioned as property?",
+    "left": {
+     "name": "No one owned or controlled them",
+     "note": "Immutable code with no one able to change it"
+    },
+    "right": {
+     "name": "They held no crypto at all",
+     "note": "The contracts were empty when sanctioned"
+    },
+    "correctIndex": 0,
+    "explanation": "The court said they lacked ownership, control and exclusivity."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "About how many months passed between the sanctions and their lifting?",
+    "min": 0,
+    "max": 70,
+    "value": 31,
+    "explanation": "From August 2022 to March 2025 is about 31 months, by our count.",
+    "unit": "months"
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your manager at a crypto law firm asks you to explain the Tornado Cash ruling.",
+      "prompt": "Which summary is best?",
+      "options": [
+       "All smart contracts are now legal by default",
+       "Developers can never be prosecuted",
+       "Ownerless, unchangeable code is not property"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "The ruling was narrow.",
+       "Roman Storm still faces a retrial.",
+       "That is the core of the 2024 ruling."
+      ],
+      "explanation": "The ruling turned on control. It did not clear developers or every contract."
+     },
+     "proReasoning": "Precise summaries beat sweeping ones in legal work.",
+     "commonMistake": "Reading a narrow ruling as a blanket green light.",
+     "mentalModel": "Narrow ruling."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You hold a token whose contract has an admin key.",
+      "prompt": "What does the ruling suggest about it?",
+      "options": [
+       "Someone can control it, so rules can reach it",
+       "It is immune from any sanctions, like Tornado Cash",
+       "It cannot be upgraded by anyone"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Control makes something look more like property.",
+       "The ruling covered ownerless code.",
+       "An admin key means it can be changed."
+      ],
+      "explanation": "Control cuts both ways. It allows fixes, and it gives regulators a target."
+     },
+     "proReasoning": "Investors note who holds admin keys and what that means legally.",
+     "commonMistake": "Assuming the Tornado Cash ruling covers every contract.",
+     "mentalModel": "Control is a target."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your startup is choosing whether to keep an upgrade key.",
+      "prompt": "What do you weigh?",
+      "options": [
+       "Only how users feel about the logo",
+       "Fixing bugs versus being someone who controls it",
+       "Only which option is cheaper to deploy today"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Branding does not settle control.",
+       "An upgrade key allows fixes and creates control.",
+       "Cost is a small part of this choice."
+      ],
+      "explanation": "Keeping control lets you patch flaws. It also makes you answerable for the contract."
+     },
+     "proReasoning": "Founders decide on control with lawyers and engineers together.",
+     "commonMistake": "Choosing immutability or control without weighing both sides.",
+     "mentalModel": "Weigh fixes and liability."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend asks how a court can say code is not property.",
+      "prompt": "What's the best answer?",
+      "options": [
+       "Code is too small to count as anything",
+       "The judge did not understand how computers work",
+       "Property needs an owner, and no one controlled it"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Size had nothing to do with it.",
+       "The ruling explained its reasoning.",
+       "The court cited a lack of ownership and control."
+      ],
+      "explanation": "A deployed contract no one can change has no owner. That is why sanctions aimed at property did not fit."
+     },
+     "proReasoning": "It is like a public bench bolted down by no one.",
+     "commonMistake": "Thinking the ruling means code can never be regulated.",
+     "mentalModel": "No owner, no property."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:1daa050d60fe"
+  ]
+ },
+ {
+  "id": "70b5105c-03aa-5e76-8759-59c50cac3f95",
+  "market_id": "web3",
+  "day": 18,
+  "slot": 3,
+  "content": {
+   "id": "web3-d18-c3",
+   "title": "Ship the privacy tool as code, or as a service?",
+   "lessonTitle": "Can you sanction a piece of code?",
+   "slot": 3,
+   "type": "decide",
+   "brief": {
+    "headline": "You are building a privacy tool for crypto payments. Courts are still drawing the line between writing code and running a service, as the Tornado Cash and Samourai cases show.",
+    "kicker": "Decide how to ship your privacy tool.",
+    "fullText": "An appeals court said Tornado Cash's ownerless contracts were not sanctionable property. Yet developer Roman Storm was convicted on one count in August 2025 and faces a retrial in April 2027.\n\nSamourai's founders, who ran a service, collected fees and marketed it, were sentenced to five and four years. Your design and business model shape your risk.",
+    "sources": [
+     {
+      "url": "https://theblock.co/news/regulation/2026-08-26-tornado-cash-roman-storm-retrial-april-2027-412761",
+      "label": "The Block, Roman Storm's retrial pushed back to April 2027"
+     },
+     {
+      "url": "https://www.justice.gov/usao-sdny/pr/founders-samourai-wallet-cryptocurrency-mixing-service-sentenced-five-and-four-years",
+      "label": "US Attorney SDNY, Samourai Wallet founders sentenced, Nov 2025"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "sortSignal",
+    "prompt": "Does this make your tool look more like a service or more like code?",
+    "buckets": [
+     "More like a service",
+     "More like code"
+    ],
+    "items": [
+     {
+      "text": "You charge a fee on every use",
+      "bucket": 0
+     },
+     {
+      "text": "You can pause or block transactions",
+      "bucket": 0
+     },
+     {
+      "text": "You market it to specific users",
+      "bucket": 0
+     },
+     {
+      "text": "Anyone can run it without you",
+      "bucket": 1
+     },
+     {
+      "text": "You hold no keys and earn no fees",
+      "bucket": 1
+     }
+    ],
+    "explanation": "Control, fees and marketing make a tool look like a service you operate."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "Treasury lifted the Tornado Cash sanctions about how many months after the court ruling?",
+    "min": 0,
+    "max": 24,
+    "value": 4,
+    "explanation": "From November 2024 to March 2025, about 4 months.",
+    "unit": "months"
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your cofounder asks how to cut legal risk before launch.",
+      "prompt": "What do you propose?",
+      "options": [
+       "Get counsel and avoid running or marketing it as a service",
+       "Launch fast and handle lawyers later",
+       "Add fees now so they can fund any future legal bills"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Service traits drove the Samourai case.",
+       "Legal design is hard to change later.",
+       "Fees make it look more like a business."
+      ],
+      "explanation": "How you run a privacy tool matters as much as its code. Plan the model with counsel."
+     },
+     "proReasoning": "Founders treat legal structure as part of product design.",
+     "commonMistake": "Treating the Tornado Cash ruling as permission for any model.",
+     "mentalModel": "Design with counsel."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You are asked to fund a privacy tool startup.",
+      "prompt": "What makes you most cautious?",
+      "options": [
+       "A product with no token at all",
+       "A plan to charge fees and control transactions",
+       "A team that publishes all of its code openly"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "No token is not a red flag.",
+       "Those traits raise service liability.",
+       "Open code alone is not the main risk."
+      ],
+      "explanation": "Fees and control make a tool look like a money service, which carries real legal risk."
+     },
+     "proReasoning": "Investors weigh legal design as heavily as technology here.",
+     "commonMistake": "Funding a model that mirrors the cases that ended in prison.",
+     "mentalModel": "Fees plus control."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your startup needs revenue but wants low legal risk.",
+      "prompt": "Which model fits best?",
+      "options": [
+       "Take a cut of every private transfer",
+       "Run your own servers that route every payment",
+       "Sell audits and support, not a fee per mix"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Per-transfer fees signal a money service.",
+       "Routing funds looks like operating a service.",
+       "Revenue does not depend on moving funds."
+      ],
+      "explanation": "You can earn from services around the code without operating the flow of funds."
+     },
+     "proReasoning": "Founders separate their revenue from the act of moving money.",
+     "commonMistake": "Building revenue on the riskiest part of the product.",
+     "mentalModel": "Earn around, not through."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend building a privacy app asks if writing code is ever a crime.",
+      "prompt": "What's the best answer?",
+      "options": [
+       "Courts are still deciding; how you run it matters",
+       "Code is always legal, no matter what it is used for",
+       "Any privacy code is now illegal"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Storm faces a retrial in April 2027.",
+       "Samourai's founders were sentenced.",
+       "The 2024 ruling went the other way."
+      ],
+      "explanation": "The law is unsettled. Running, charging for and marketing a tool raise the risk most."
+     },
+     "proReasoning": "Like a chemist: publishing a formula differs from running a lab for a cartel.",
+     "commonMistake": "Assuming the question is settled either way.",
+     "mentalModel": "Still unsettled."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:1ca5b8913296"
+  ]
+ },
+ {
+  "id": "ca141734-0187-5cdc-aad0-2872f92f3e87",
+  "market_id": "web3",
+  "day": 19,
+  "slot": 1,
+  "content": {
+   "id": "web3-d19-c1",
+   "title": "A whole blockchain moves onto Ethereum",
+   "lessonTitle": "Why layer 2 fees fell 99%",
+   "slot": 1,
+   "type": "apply",
+   "brief": {
+    "headline": "On March 26, 2025, Celo halted block production on its own layer 1 and relaunched as a layer 2 on Ethereum, nearly two years after first proposing the move.",
+    "kicker": "Apply day 19: layer 2s settle back to Ethereum for its security.",
+    "fullText": "cLabs first proposed the switch in July 2023. Celo was rebuilt with the OP Stack, Optimism's toolkit, and now runs as an optimistic rollup that posts its data to Ethereum.\n\nBlock times dropped from 5 seconds to 1 second, and Celo gained native bridging to Ethereum. The stated aims were Ethereum's security with low-cost, fast transactions, and closer ties to Ethereum developers.\n\nThrough the day 19 lens: once Dencun gave rollups cheap data space, running on Ethereum got cheaper than ever.",
+    "sources": [
+     {
+      "url": "https://www.theblock.co/post/348146/celo-developers-finalize-ethereum-layer-2-transition-nearly-two-years-after-initial-proposal",
+      "label": "The Block, Celo finalizes its Ethereum layer 2 transition, Mar 2025"
+     },
+     {
+      "url": "https://www.theblock.co/post/282417/ethereum-layer-2s-show-dramatic-drop-in-transaction-fees-after-dencun",
+      "label": "The Block, layer 2 fees drop after Dencun, Mar 2024"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "buildChain",
+    "prompt": "Put Celo's move in order.",
+    "steps": [
+     "cLabs proposes moving Celo to a layer 2",
+     "Celo is rebuilt on the OP Stack",
+     "Layer 1 block production is halted",
+     "Celo runs as an optimistic rollup on Ethereum",
+     "Blocks arrive every second instead of five"
+    ],
+    "explanation": "Proposed in July 2023, switched on March 26, 2025."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "About how many months passed between the proposal and the switch?",
+    "min": 0,
+    "max": 48,
+    "value": 20,
+    "explanation": "From July 2023 to March 2025 is about 20 months, by our count.",
+    "unit": "months"
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You interview at a layer 2 team. They ask why a chain would give up being a layer 1.",
+      "prompt": "Which answer is strongest?",
+      "options": [
+       "To raise fees for its users",
+       "To stop other teams from building apps on it",
+       "To borrow Ethereum's security and developer base"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Lower costs were part of the goal.",
+       "It wanted more builders, not fewer.",
+       "Celo cited Ethereum security and ecosystem ties."
+      ],
+      "explanation": "A layer 2 settles to Ethereum, so it inherits its security instead of paying for its own."
+     },
+     "proReasoning": "Strong answers name the trade: less independence for more security and reach.",
+     "commonMistake": "Assuming every chain wants to stay a layer 1.",
+     "mentalModel": "Borrow security."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You hold tokens of a small layer 1 thinking about becoming a layer 2.",
+      "prompt": "What do you weigh?",
+      "options": [
+       "Stronger security versus less independence",
+       "Only whether the logo changes",
+       "Only whether block times stay the same"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "That trade sits at the center of such moves.",
+       "Branding is not the economic question.",
+       "Celo got faster, but speed is not the main point."
+      ],
+      "explanation": "Moving to a layer 2 swaps self-reliance for Ethereum's security and users."
+     },
+     "proReasoning": "Investors ask what a chain gains and what control it gives up.",
+     "commonMistake": "Judging the move by a single speed number.",
+     "mentalModel": "Weigh the trade."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your payments startup is choosing where to build.",
+      "prompt": "What does Celo's move suggest?",
+      "options": [
+       "Layer 2s cannot connect back to Ethereum at all",
+       "Layer 2s now offer cheap, fast settlement on Ethereum",
+       "Only a new layer 1 can be fast"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Celo gained native Ethereum bridging.",
+       "Celo cut block times to one second as a rollup.",
+       "Celo got faster after leaving layer 1."
+      ],
+      "explanation": "You can get speed and Ethereum security together on a layer 2."
+     },
+     "proReasoning": "Founders choose platforms by cost, speed and reach, not by layer label.",
+     "commonMistake": "Building a new chain when a rollup would do.",
+     "mentalModel": "Speed plus security."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend asks what it means that Celo \"became a layer 2.\"",
+      "prompt": "What's the best answer?",
+      "options": [
+       "It merged with Bitcoin to share one network",
+       "It shut down for good",
+       "It now posts its records to Ethereum for safety"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Bitcoin was not involved.",
+       "It kept running, faster than before.",
+       "Rollups settle their data back to Ethereum."
+      ],
+      "explanation": "A layer 2 runs its own transactions but leans on Ethereum to keep the records safe."
+     },
+     "proReasoning": "Like a shop moving into a mall with better security guards.",
+     "commonMistake": "Thinking a layer 2 is a weaker copy of a blockchain.",
+     "mentalModel": "Leaning on Ethereum."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:cf735927fe62"
+  ]
+ },
+ {
+  "id": "2f068a31-9b0c-54e0-8386-aedc681521a9",
+  "market_id": "web3",
+  "day": 19,
+  "slot": 2,
+  "content": {
+   "id": "web3-d19-c2",
+   "title": "Cheap enough to use contracts daily",
+   "lessonTitle": "Why layer 2 fees fell 99%",
+   "slot": 2,
+   "type": "connect",
+   "brief": {
+    "headline": "After Dencun in March 2024, a Starknet swap fell from over $6.80 to about $0.04, according to Argent. Smart contract use became practical for small, everyday amounts.",
+    "kicker": "Connect day 13 and day 19: contracts are only useful if people can afford them.",
+    "fullText": "Day 13 showed what smart contracts can do: programs that run as written on a blockchain. Each use costs a fee.\n\nDay 19 showed how Dencun cut that cost on layer 2s by giving rollups blobs, a cheaper place to post data. A swap that cost several dollars dropped to a few cents. That changes which contracts make sense for small users.",
+    "sources": [
+     {
+      "url": "https://www.theblock.co/post/282417/ethereum-layer-2s-show-dramatic-drop-in-transaction-fees-after-dencun",
+      "label": "The Block, layer 2 fees drop after Dencun, Mar 2024"
+     },
+     {
+      "url": "https://ethereum.org/developers/docs/smart-contracts/",
+      "label": "ethereum.org, smart contracts"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "multipleChoice",
+    "prompt": "What did Dencun give layer 2 networks?",
+    "options": [
+     "A way to skip Ethereum entirely",
+     "Blobs, a cheaper place to post data",
+     "A new coin to replace ETH"
+    ],
+    "correctIndex": 1,
+    "explanation": "Blobs gave rollups a cheaper place to post their data back to Ethereum."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "A Starknet swap fell to about how many cents after Dencun?",
+    "min": 0,
+    "max": 20,
+    "value": 4,
+    "explanation": "About $0.04, down from over $6.80, according to Argent.",
+    "unit": "cents"
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your team lead asks why app usage on layer 2s jumped after 2024.",
+      "prompt": "Which reason leads?",
+      "options": [
+       "Contract calls got cheap enough for small users",
+       "Ethereum stopped charging any fees",
+       "Layer 2s became fully separate from Ethereum"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Swaps fell from dollars to cents.",
+       "Users still pay small fees.",
+       "Rollups still post data to Ethereum."
+      ],
+      "explanation": "A $6.80 swap rules out small trades. At four cents, everyday use works."
+     },
+     "proReasoning": "Product teams track fees because they decide who can use an app.",
+     "commonMistake": "Ignoring cost when explaining user growth.",
+     "mentalModel": "Cost decides use."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A layer 2 app shows rising users after Dencun.",
+      "prompt": "What question do you ask?",
+      "options": [
+       "Will Ethereum shut down layer 2s?",
+       "Is growth lasting, or just cheaper trades?",
+       "Why does it charge its users any fees at all?"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Rollups depend on Ethereum by design.",
+       "Low fees can draw activity that is easy to lose.",
+       "Some fee is part of using a network."
+      ],
+      "explanation": "Cheap fees open the door. Investors still need to see users who stay."
+     },
+     "proReasoning": "Investors separate fee-driven activity from real demand.",
+     "commonMistake": "Reading every usage jump as lasting demand.",
+     "mentalModel": "Test the growth."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your startup wants to launch micro-payments with smart contracts.",
+      "prompt": "Where do you build?",
+      "options": [
+       "On Ethereum's main chain only",
+       "On paper until fees reach zero",
+       "On a layer 2 where fees are cents"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Main-chain fees are higher for small amounts.",
+       "Waiting for zero fees means never launching.",
+       "Small payments need tiny fees."
+      ],
+      "explanation": "Micro-payments only work when a fee is a small slice of the payment."
+     },
+     "proReasoning": "Founders match a product's ticket size to the platform's fee.",
+     "commonMistake": "Building small payments where fees eat the value.",
+     "mentalModel": "Match fee to payment."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend asks why crypto apps suddenly felt usable in 2024.",
+      "prompt": "What's the best answer?",
+      "options": [
+       "An upgrade made layer 2 fees fall to cents",
+       "Banks started paying the fees for their customers",
+       "Phones got faster that year"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Dencun cut swap fees from dollars to cents.",
+       "Banks do not pay these fees.",
+       "Fees, not phones, were the barrier."
+      ],
+      "explanation": "Each app action costs a fee. Dencun made those fees tiny on layer 2s."
+     },
+     "proReasoning": "Like a toll road dropping its toll from dollars to pennies.",
+     "commonMistake": "Thinking the apps changed rather than the costs.",
+     "mentalModel": "Tolls dropped."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:b86b4bcb7748"
+  ]
+ },
+ {
+  "id": "2dc51024-3515-518a-9411-28dc1846b7cf",
+  "market_id": "web3",
+  "day": 19,
+  "slot": 3,
+  "content": {
+   "id": "web3-d19-c3",
+   "title": "Layer 1 or layer 2 for your wallet app?",
+   "lessonTitle": "Why layer 2 fees fell 99%",
+   "slot": 3,
+   "type": "decide",
+   "brief": {
+    "headline": "You are launching a consumer wallet app. After Dencun, Base's median fee fell from about $0.50 to about $0.0012, based on Dune data.",
+    "kicker": "Decide where your users will transact.",
+    "fullText": "A layer 1 is the base blockchain. A layer 2 runs on top and settles back to it, bundling many transactions into one post.\n\nDencun gave rollups blobs, a cheaper place for that data. For a consumer app, a fee of half a dollar per action and a fee of a tenth of a cent are very different products.",
+    "sources": [
+     {
+      "url": "https://www.theblock.co/post/282417/ethereum-layer-2s-show-dramatic-drop-in-transaction-fees-after-dencun",
+      "label": "The Block, layer 2 fees drop after Dencun, Mar 2024"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "faceOff",
+    "prompt": "Which suits a consumer app with many small actions?",
+    "left": {
+     "name": "A layer 2 after Dencun",
+     "note": "Median fees around a tenth of a cent on Base"
+    },
+    "right": {
+     "name": "Ethereum's main chain",
+     "note": "Higher fees for each small action"
+    },
+    "correctIndex": 0,
+    "explanation": "Small actions need tiny fees. Layer 2s now offer them while settling to Ethereum."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "Before Dencun, Base's median fee was about how many cents?",
+    "min": 0,
+    "max": 80,
+    "value": 50,
+    "explanation": "About $0.50, falling to about $0.0012 after Dencun.",
+    "unit": "cents"
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your product lead asks where to launch.",
+      "prompt": "What do you recommend?",
+      "options": [
+       "A brand new layer 1 chain that we run ourselves",
+       "A layer 2 for daily actions, settling to Ethereum",
+       "The main chain for every tap"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "A new chain costs time and security.",
+       "Users pay fractions of a cent.",
+       "Fees would add up fast for users."
+      ],
+      "explanation": "For many small actions, the layer 2 fee level makes the app usable."
+     },
+     "proReasoning": "Product teams pick the layer that matches how often users act.",
+     "commonMistake": "Choosing the main chain out of habit.",
+     "mentalModel": "Fit the layer to usage."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You compare two wallet startups.",
+      "prompt": "Which plan looks stronger?",
+      "options": [
+       "Charging users full main-chain fees",
+       "Waiting for fees to vanish",
+       "Building on a low-fee layer 2"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "High fees drive users away.",
+       "Waiting delays any traction.",
+       "Low fees support everyday use."
+      ],
+      "explanation": "Fees shape retention. Investors favor products users can afford to use daily."
+     },
+     "proReasoning": "Investors ask what each user action costs.",
+     "commonMistake": "Ignoring per-action cost in the pitch.",
+     "mentalModel": "Ask the unit cost."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your startup must hit 10,000 daily users this year.",
+      "prompt": "Which move helps most?",
+      "options": [
+       "Launch on a layer 2 with sub-cent fees",
+       "Add more features on the main chain",
+       "Pay every fee yourself on the main chain"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Cheap actions keep users coming back.",
+       "Features do not fix a costly tap.",
+       "Subsidies burn cash fast."
+      ],
+      "explanation": "Cutting the cost of each action is the fastest way to more daily use."
+     },
+     "proReasoning": "Founders remove the biggest friction first.",
+     "commonMistake": "Paying to hide a cost you could avoid.",
+     "mentalModel": "Remove friction."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend asks what a layer 2 is.",
+      "prompt": "What's the best answer?",
+      "options": [
+       "A faster kind of Wi-Fi made for crypto apps",
+       "A network on Ethereum that bundles activity",
+       "A second Bitcoin"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "It is software, not a network cable.",
+       "Rollups post bundles of data back to Ethereum.",
+       "It is unrelated to Bitcoin."
+      ],
+      "explanation": "Layer 2s handle many transactions and settle a summary on Ethereum, sharing the cost."
+     },
+     "proReasoning": "Like carpooling to split one toll.",
+     "commonMistake": "Thinking a layer 2 is a separate, unconnected chain.",
+     "mentalModel": "Carpooling."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:950bc0c84be4"
+  ]
+ },
+ {
+  "id": "54ad8c2d-988e-527f-800f-d1012b0cda3a",
+  "market_id": "web3",
+  "day": 20,
+  "slot": 1,
+  "content": {
+   "id": "web3-d20-c1",
+   "title": "Uniswap builds its own layer 2",
+   "lessonTitle": "How a layer 2 makes money",
+   "slot": 1,
+   "type": "apply",
+   "brief": {
+    "headline": "On February 11, 2025, Uniswap Labs launched Unichain, its own Ethereum layer 2, with 1 to 2 second block times.",
+    "kicker": "Apply day 20: whoever runs the sequencer keeps the fees.",
+    "fullText": "Unichain launched two weeks after Uniswap v4. The team said 65% of Unichain's net chain revenue would go to validators and stakers in its Unichain Validation Network.\n\nUniswap has long run on other chains, where others collect the transaction fees. Running its own layer 2 means its own network earns the sequencer revenue.\n\nThrough the day 20 lens: a layer 2 earns fees minus data costs. Owning the chain lets an app capture that margin.",
+    "sources": [
+     {
+      "url": "https://www.theblock.co/post/339930/uniswap-labs-launches-unichain-ethereum-scaling-solution-in-mainnet",
+      "label": "The Block, Uniswap Labs launches Unichain on mainnet, Feb 2025"
+     },
+     {
+      "url": "https://www.talos.com/insights/state-of-the-network-350",
+      "label": "Talos, Base sequencer revenue estimate, Q4 2025"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "multipleChoice",
+    "prompt": "What share of Unichain's net chain revenue was set to go to validators and stakers?",
+    "options": [
+     "100%",
+     "10%",
+     "65%"
+    ],
+    "correctIndex": 2,
+    "explanation": "65% of net chain revenue, Uniswap Labs said."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "About what percent of net chain revenue was set for Unichain validators and stakers?",
+    "min": 0,
+    "max": 100,
+    "value": 65,
+    "explanation": "65%, as Uniswap Labs announced at launch.",
+    "unit": "%"
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You interview at a DeFi company. They ask why Uniswap launched a layer 2.",
+      "prompt": "Which answer lands best?",
+      "options": [
+       "To keep sequencer revenue its activity creates",
+       "To stop its users trading on Ethereum at all",
+       "To avoid paying any data costs"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Its trades earned fees for other chains.",
+       "It still settles to Ethereum.",
+       "Layer 2s still pay Ethereum for data."
+      ],
+      "explanation": "Big apps generate fees. Owning the chain lets them keep the sequencer margin."
+     },
+     "proReasoning": "Strong answers tie the move to who earns the fees.",
+     "commonMistake": "Thinking app chains are only about speed.",
+     "mentalModel": "Keep the margin."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You weigh a DeFi app launching its own layer 2.",
+      "prompt": "What do you check?",
+      "options": [
+       "Will block times stay over 10 seconds?",
+       "Will its fees cover data costs and shares?",
+       "Will it change its token's logo?"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Unichain runs 1 to 2 second blocks.",
+       "Revenue is fees minus costs and revenue shares.",
+       "Branding does not move revenue."
+      ],
+      "explanation": "An app chain needs enough paid activity to beat its data costs and payouts."
+     },
+     "proReasoning": "Investors model net revenue, not gross fees.",
+     "commonMistake": "Valuing an app chain on gross fees alone.",
+     "mentalModel": "Model net revenue."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your app has strong volume on a layer 2 you do not run.",
+      "prompt": "When does your own chain make sense?",
+      "options": [
+       "As soon as you have any users",
+       "Never, since chains earn nothing",
+       "When your fees would cover running it"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Small apps rarely cover the costs.",
+       "Base earned about $15 million net in one quarter.",
+       "Net revenue must beat costs."
+      ],
+      "explanation": "Owning a chain pays only at scale. Below that, renting space is cheaper."
+     },
+     "proReasoning": "Founders build infrastructure after demand proves it.",
+     "commonMistake": "Launching a chain before the volume justifies it.",
+     "mentalModel": "Scale first."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend asks why a trading app would launch its own blockchain.",
+      "prompt": "What's the best answer?",
+      "options": [
+       "So the fees its users pay stay in its network",
+       "To make trading on other networks illegal",
+       "Because Ethereum stopped working"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Sequencer fees go to whoever runs the chain.",
+       "It cannot ban other chains.",
+       "Ethereum kept working."
+      ],
+      "explanation": "Every trade pays a fee to someone. Running the chain means keeping more of it."
+     },
+     "proReasoning": "Like a shop opening its own payment terminal to stop paying card fees.",
+     "commonMistake": "Thinking the move was mainly technical.",
+     "mentalModel": "Keep the fees."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:e9c7981ad290"
+  ]
+ },
+ {
+  "id": "910e0e22-4cea-5c83-83e6-17999c692c15",
+  "market_id": "web3",
+  "day": 20,
+  "slot": 2,
+  "content": {
+   "id": "web3-d20-c2",
+   "title": "Cheaper data, thinner fees",
+   "lessonTitle": "How a layer 2 makes money",
+   "slot": 2,
+   "type": "connect",
+   "brief": {
+    "headline": "Dencun cut layer 2 data costs in March 2024. By Q4 2025, Base earned about $19 million in gross sequencer revenue and about $15 million net, a Talos estimate.",
+    "kicker": "Connect day 19 and day 20: the same upgrade cut costs and prices.",
+    "fullText": "Day 19 showed how Dencun gave rollups blobs and pushed Base's median fee from about $0.50 to about $0.0012. Day 20 showed what Base keeps: fees minus Ethereum data costs and its share to the Optimism Collective.\n\nCheaper data lowered Base's costs. It also let fees fall, so each transaction brings in less. In July 2026, Coinbase said Base revenue fell even as stablecoin volume grew sevenfold.",
+    "sources": [
+     {
+      "url": "https://www.theblock.co/post/282417/ethereum-layer-2s-show-dramatic-drop-in-transaction-fees-after-dencun",
+      "label": "The Block, layer 2 fees drop after Dencun, Mar 2024"
+     },
+     {
+      "url": "https://www.talos.com/insights/state-of-the-network-350",
+      "label": "Talos, Base sequencer revenue estimate, Q4 2025"
+     },
+     {
+      "url": "https://thedefiant.io/news/cefi/coinbase-says-revenue-from-its-base-layer-2-fell-despite-record-volume",
+      "label": "The Defiant, Coinbase says Base revenue fell despite record volume, Jul 2026"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "buildChain",
+    "prompt": "Trace how Dencun reached Base's revenue.",
+    "steps": [
+     "Dencun gives rollups cheap blob space",
+     "Base's data costs fall",
+     "Base's user fees fall too",
+     "Each transaction earns less",
+     "Revenue can fall even as volume grows"
+    ],
+    "explanation": "Lower costs and lower prices together squeezed revenue per transaction."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "Base's net sequencer revenue in Q4 2025 was about how many million dollars?",
+    "min": 0,
+    "max": 40,
+    "value": 15,
+    "explanation": "About $15 million net, from about $19 million gross.",
+    "unit": "M"
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your manager asks why Base revenue fell while volume rose.",
+      "prompt": "Which answer is best?",
+      "options": [
+       "Ethereum raised its data costs sharply that year",
+       "Fees per transaction fell faster than volume grew",
+       "Users stopped using Base entirely"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Dencun lowered data costs.",
+       "Cheap fees shrink revenue per transaction.",
+       "Stablecoin volume grew sevenfold."
+      ],
+      "explanation": "Revenue is price times volume. When price collapses, volume has to grow even faster."
+     },
+     "proReasoning": "Analysts break revenue into price and volume before explaining it.",
+     "commonMistake": "Assuming more usage always means more revenue.",
+     "mentalModel": "Price times volume."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You model a layer 2 business.",
+      "prompt": "What assumption is riskiest?",
+      "options": [
+       "That data costs will matter at all",
+       "That volume can grow",
+       "That fees per transaction stay high"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Data costs are part of the margin.",
+       "Volume did grow on Base.",
+       "Fees fell to fractions of a cent."
+      ],
+      "explanation": "Cheap fees help users but cap revenue. Plan for thin fees."
+     },
+     "proReasoning": "Investors test models against falling prices.",
+     "commonMistake": "Building a forecast on old fee levels.",
+     "mentalModel": "Plan for thin fees."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your startup sells to layer 2 teams.",
+      "prompt": "What pain can you solve?",
+      "options": [
+       "Revenue beyond thin transaction fees",
+       "Higher fees users will happily pay",
+       "Removing data costs entirely"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Layer 2s need other income.",
+       "Users left high fees behind.",
+       "Data costs are set by Ethereum."
+      ],
+      "explanation": "Layer 2s carry more traffic for less money. Tools that add revenue meet a real need."
+     },
+     "proReasoning": "Founders follow where their customers' margins are under pressure.",
+     "commonMistake": "Selling a plan to raise fees users just escaped.",
+     "mentalModel": "Solve the margin."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend asks how a busier network can earn less.",
+      "prompt": "What's the best answer?",
+      "options": [
+       "Fewer people used it",
+       "Each transaction got much cheaper",
+       "The network stopped charging fees"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Volume grew sevenfold.",
+       "Fees fell from cents to fractions of a cent.",
+       "It still charges small fees."
+      ],
+      "explanation": "If each sale is tiny, more sales can still add up to less money."
+     },
+     "proReasoning": "Like a shop cutting prices so far that full shelves earn less.",
+     "commonMistake": "Assuming busy always means profitable.",
+     "mentalModel": "Cheaper each time."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:c269ea5265fe"
+  ]
+ },
+ {
+  "id": "afc49f57-e836-556f-b513-c4cd9744aecf",
+  "market_id": "web3",
+  "day": 20,
+  "slot": 3,
+  "content": {
+   "id": "web3-d20-c3",
+   "title": "Where will your layer 2 earn money?",
+   "lessonTitle": "How a layer 2 makes money",
+   "slot": 3,
+   "type": "decide",
+   "brief": {
+    "headline": "You run a young layer 2. Base earned about $19 million gross from its sequencer in Q4 2025, yet later reported falling revenue as usage grew.",
+    "kicker": "Decide how your layer 2 will pay its way.",
+    "fullText": "A sequencer orders transactions and collects fees. A layer 2 keeps those fees minus Ethereum data costs and any revenue share.\n\nCheap fees cut both ways: they draw users but leave little per transaction. Your chain needs revenue that does not depend only on fees.",
+    "sources": [
+     {
+      "url": "https://www.talos.com/insights/state-of-the-network-350",
+      "label": "Talos, Base sequencer revenue estimate, Q4 2025"
+     },
+     {
+      "url": "https://thedefiant.io/news/cefi/coinbase-says-revenue-from-its-base-layer-2-fell-despite-record-volume",
+      "label": "The Defiant, Coinbase says Base revenue fell despite record volume, Jul 2026"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "sortSignal",
+    "prompt": "Is this a cost or a source of revenue for your layer 2?",
+    "buckets": [
+     "Cost",
+     "Revenue"
+    ],
+    "items": [
+     {
+      "text": "Posting data to Ethereum",
+      "bucket": 0
+     },
+     {
+      "text": "A share paid to a partner collective",
+      "bucket": 0
+     },
+     {
+      "text": "Fees users pay per transaction",
+      "bucket": 1
+     },
+     {
+      "text": "Services sold to apps on the chain",
+      "bucket": 1
+     },
+     {
+      "text": "Payments to run the sequencer hardware",
+      "bucket": 0
+     }
+    ],
+    "explanation": "Revenue minus data costs and shares is what a layer 2 keeps."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "Stablecoin volume on Base grew about how many times as revenue fell?",
+    "min": 0,
+    "max": 20,
+    "value": 7,
+    "explanation": "About sevenfold, while revenue fell, Coinbase said.",
+    "unit": "times"
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your board asks for a revenue plan.",
+      "prompt": "What do you propose?",
+      "options": [
+       "Raise transaction fees tenfold next year",
+       "Stop paying for Ethereum data",
+       "Add paid services, not just transaction fees"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Users would move to cheaper chains.",
+       "A rollup must post its data.",
+       "Fee income alone stays thin."
+      ],
+      "explanation": "Fees will stay low. A layer 2 needs other income to cover costs."
+     },
+     "proReasoning": "Leaders plan revenue around the market price, not the old one.",
+     "commonMistake": "Betting the chain on fees users will not pay.",
+     "mentalModel": "Diversify revenue."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A layer 2 you follow reports record volume.",
+      "prompt": "What do you look at next?",
+      "options": [
+       "Net revenue after data costs",
+       "The number of logos on its site",
+       "Its daily social media posts"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Volume alone can hide falling revenue.",
+       "Logos do not pay costs.",
+       "Posts are not revenue."
+      ],
+      "explanation": "Base showed volume can rise while revenue falls. Net revenue is the real test."
+     },
+     "proReasoning": "Investors look past volume to the margin.",
+     "commonMistake": "Celebrating volume without checking revenue.",
+     "mentalModel": "Check the margin."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your startup could build on a layer 2 or run its own.",
+      "prompt": "What tips the decision?",
+      "options": [
+       "Whether others launched chains too",
+       "Whether your fees would beat the costs",
+       "Whether you like the name better"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Following others is not a plan.",
+       "Running a chain has real costs.",
+       "Names do not cover costs."
+      ],
+      "explanation": "A chain is a business with costs. Run one only if your activity pays for it."
+     },
+     "proReasoning": "Founders do the margin math before building infrastructure.",
+     "commonMistake": "Launching a chain because it is fashionable.",
+     "mentalModel": "Do the math."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend asks how a layer 2 network makes money.",
+      "prompt": "What's the best answer?",
+      "options": [
+       "It mines new bitcoin",
+       "It charges a monthly subscription",
+       "It keeps user fees minus its data costs"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Layer 2s do not mine bitcoin.",
+       "Users pay per transaction.",
+       "That is the core sequencer model."
+      ],
+      "explanation": "Users pay small fees. The network pays Ethereum for data and keeps the rest."
+     },
+     "proReasoning": "Like a delivery service keeping fees after paying for the truck.",
+     "commonMistake": "Thinking layer 2s earn from token prices alone.",
+     "mentalModel": "Fees minus costs."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:b4de8137ce1a"
+  ]
+ },
+ {
+  "id": "ce5088f8-4602-5392-b7ee-bd6e262f9add",
+  "market_id": "web3",
+  "day": 21,
+  "slot": 1,
+  "content": {
+   "id": "web3-d21-c1",
+   "title": "The first ZK-rollup at Stage 1",
+   "lessonTitle": "Who can override a layer 2?",
+   "slot": 1,
+   "type": "apply",
+   "brief": {
+    "headline": "In May 2025, Starknet reached Stage 1, becoming the only ZK-rollup at that stage, according to L2BEAT data reported by FXStreet.",
+    "kicker": "Apply day 21: a stage tells you who can still override a layer 2.",
+    "fullText": "To get there, Starknet created a security council and added ways for users to avoid censorship. Its validity proof system is now governed by smart contracts.\n\nL2BEAT showed Starknet securing about $629 million, about 1.4% of layer 2 value, fifth largest. The four bigger networks were all optimistic rollups at Stage 1, and only three small layer 2s had reached Stage 2.\n\nThrough the day 21 lens: at Stage 1, proofs are live and a council can step in only in emergencies.",
+    "sources": [
+     {
+      "url": "https://www.fxstreet.com/cryptocurrencies/news/starknet-hits-stage-one-decentralization-tops-zk-rollups-for-value-locked-202505160850",
+      "label": "FXStreet, Starknet hits Stage 1 decentralization, May 2025"
+     },
+     {
+      "url": "https://www.growthepie.com/answers/ethereum-l2-maturity-stages",
+      "label": "growthepie, Ethereum L2 maturity stages"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "spotFake",
+    "prompt": "One of these is false. Tap it.",
+    "statements": [
+     "Starknet was the only ZK-rollup at Stage 1",
+     "The four larger layer 2s were all at Stage 1",
+     "Most layer 2s had already reached Stage 2"
+    ],
+    "fakeIndex": 2,
+    "explanation": "Only three small layer 2s had reached Stage 2, L2BEAT data showed."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "Starknet secured about how many million dollars in May 2025?",
+    "min": 0,
+    "max": 1500,
+    "value": 629,
+    "explanation": "About $629 million, about 1.4% of layer 2 value.",
+    "unit": "M"
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You interview at a layer 2 team. They ask what Stage 1 means.",
+      "prompt": "Which answer is strongest?",
+      "options": [
+       "A single company signs every block it ever makes",
+       "Proofs are live; a council acts only in emergencies",
+       "No one can ever change the network again"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "That is not what stages measure.",
+       "That matches the stage definition.",
+       "That would be closer to Stage 2."
+      ],
+      "explanation": "Stages measure who can override a rollup. Stage 1 keeps a council for emergencies only."
+     },
+     "proReasoning": "Strong candidates explain the training wheels that remain at each stage.",
+     "commonMistake": "Treating Stage 1 as fully trustless.",
+     "mentalModel": "Emergencies only."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You compare two layer 2 tokens for a research note.",
+      "prompt": "Which fact belongs in the risk section?",
+      "options": [
+       "Which logo color each network picked",
+       "How many tweets each team posted",
+       "Which stage each network has reached"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Colors carry no risk information.",
+       "Posts say little about control.",
+       "Stage shows who can override the chain."
+      ],
+      "explanation": "A Stage 0 network can be overridden by a council. That is a real risk for users."
+     },
+     "proReasoning": "Analysts check stage ratings before comparing growth.",
+     "commonMistake": "Ignoring who can change the rules.",
+     "mentalModel": "Check the stage."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your startup is choosing a rollup framework.",
+      "prompt": "What does Starknet's step show?",
+      "options": [
+       "A ZK design can reach Stage 1 with a council",
+       "Only optimistic rollups can reach Stage 1",
+       "Stages do not matter to app builders"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Starknet did it in May 2025.",
+       "Starknet was a ZK-rollup at Stage 1.",
+       "Users care who can override funds."
+      ],
+      "explanation": "Both rollup families can reach Stage 1. Pick on tech and stage, not one label."
+     },
+     "proReasoning": "Founders check the stage roadmap of any chain they build on.",
+     "commonMistake": "Assuming one rollup type is always safer.",
+     "mentalModel": "Both can mature."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend asks what the \"training wheels\" of a layer 2 are.",
+      "prompt": "What's the best answer?",
+      "options": [
+       "Speed limits on how fast you can trade on it",
+       "Powers a council keeps to step in or override",
+       "Extra coins handed out to new users"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Speed is a separate question.",
+       "Stages track how many of those powers remain.",
+       "Training wheels are about control."
+      ],
+      "explanation": "Young layer 2s keep override powers in case of bugs. Stages show how many remain."
+     },
+     "proReasoning": "Like a learner driver: the instructor's brake comes off in steps.",
+     "commonMistake": "Thinking all layer 2s are equally independent.",
+     "mentalModel": "Brakes come off in steps."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:8587008c0cef"
+  ]
+ },
+ {
+  "id": "a70f7e6e-2b03-5c40-bb7b-dabd6ff5efac",
+  "market_id": "web3",
+  "day": 21,
+  "slot": 2,
+  "content": {
+   "id": "web3-d21-c2",
+   "title": "The earner that kept the brakes",
+   "lessonTitle": "Who can override a layer 2?",
+   "slot": 2,
+   "type": "connect",
+   "brief": {
+    "headline": "Base earned about $15 million in net sequencer revenue in Q4 2025. It reached Stage 1 in 2025, so a security council can still act in emergencies.",
+    "kicker": "Connect day 20 and day 21: who earns the fees and who holds the brakes.",
+    "fullText": "Day 20 showed that Base, run by Coinbase, keeps user fees minus data costs. Talos estimated about $19 million gross and $15 million net in Q4 2025.\n\nDay 21 showed what Stage 1 means: proofs are live and a council can override only in emergencies. Vitalik Buterin has said he recognizes only Stage 1 or higher networks as rollups. A network can earn steadily while still keeping emergency powers.",
+    "sources": [
+     {
+      "url": "https://www.talos.com/insights/state-of-the-network-350",
+      "label": "Talos, Base sequencer revenue estimate, Q4 2025"
+     },
+     {
+      "url": "https://beincrypto.com/base-overtakes-arbitrum-layer-2/",
+      "label": "BeInCrypto, Base beats Arbitrum and reaches Stage 1"
+     },
+     {
+      "url": "https://www.growthepie.com/answers/ethereum-l2-maturity-stages",
+      "label": "growthepie, Ethereum L2 maturity stages"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "faceOff",
+    "prompt": "Which question tells you who can still change Base?",
+    "left": {
+     "name": "What stage it has reached",
+     "note": "Stage 1: a council acts only in emergencies"
+    },
+    "right": {
+     "name": "How much revenue it earned",
+     "note": "About $15 million net in Q4 2025"
+    },
+    "correctIndex": 0,
+    "explanation": "Revenue shows the business. Stage shows who holds the override powers."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "Base earned about how many million dollars of gross sequencer revenue in Q4 2025?",
+    "min": 0,
+    "max": 50,
+    "value": 19,
+    "explanation": "About $19 million gross, $15 million net, a Talos estimate.",
+    "unit": "M"
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your manager asks you to profile Base in one slide.",
+      "prompt": "Which pair of facts leads?",
+      "options": [
+       "Its logo history and office locations",
+       "Its block color and font choices",
+       "Its fee revenue and its Stage 1 status"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Those do not explain the business.",
+       "Those do not explain the risk.",
+       "Revenue plus control tells the full story."
+      ],
+      "explanation": "A layer 2 is a business and a set of powers. Show both."
+     },
+     "proReasoning": "Analysts pair economics with governance.",
+     "commonMistake": "Showing revenue with no word on control.",
+     "mentalModel": "Money plus powers."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You weigh a company that earns from its layer 2.",
+      "prompt": "What do you ask beside revenue?",
+      "options": [
+       "Who can override the chain and when",
+       "Whether the token has a mascot yet",
+       "Whether its fees will go back to $0.50"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Stage 1 limits overrides to emergencies.",
+       "Mascots do not change risk.",
+       "Fees fell after Dencun."
+      ],
+      "explanation": "Revenue depends on users trusting the chain. Override powers shape that trust."
+     },
+     "proReasoning": "Investors check control risks alongside cash flows.",
+     "commonMistake": "Valuing chain revenue without asking about control.",
+     "mentalModel": "Ask about control."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your startup plans its own layer 2 for revenue.",
+      "prompt": "What must you plan from day one?",
+      "options": [
+       "A plan to skip proofs to save costs",
+       "A path from Stage 0 to Stage 1",
+       "A way to keep full control forever"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Live proofs are needed for Stage 1.",
+       "Users and Vitalik look for Stage 1 or higher.",
+       "That keeps you at Stage 0."
+      ],
+      "explanation": "Revenue needs users, and users want limits on who can override."
+     },
+     "proReasoning": "Founders publish a stage roadmap early.",
+     "commonMistake": "Treating decentralization as a later problem.",
+     "mentalModel": "Plan the stages."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend asks if Coinbase controls Base.",
+      "prompt": "What's the best answer?",
+      "options": [
+       "No one runs Base, and no one earns from it at all",
+       "Coinbase can change any balance at will",
+       "It runs it, but a council has only emergency powers"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Coinbase earns its sequencer fees.",
+       "Stage 1 limits that power.",
+       "At Stage 1, overrides are for emergencies only."
+      ],
+      "explanation": "Coinbase runs Base and earns its fees. Stage 1 limits overrides to emergencies."
+     },
+     "proReasoning": "Running something and fully controlling it are different.",
+     "commonMistake": "Assuming the company can do anything it likes.",
+     "mentalModel": "Runs, but limited."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:9bcf7c647374"
+  ]
+ },
+ {
+  "id": "5a8301f9-17c1-5908-9ddc-eb670f40de2d",
+  "market_id": "web3",
+  "day": 21,
+  "slot": 3,
+  "content": {
+   "id": "web3-d21-c3",
+   "title": "Launch on a Stage 0 or Stage 1 network?",
+   "lessonTitle": "Who can override a layer 2?",
+   "slot": 3,
+   "type": "decide",
+   "brief": {
+    "headline": "You are launching a lending app on a layer 2. One network is at Stage 0, with a council that can override and no live proofs. Another is at Stage 1.",
+    "kicker": "Decide which network your users' funds should sit on.",
+    "fullText": "At Stage 0, a council can override the network and proofs are not live. At Stage 1, proofs are live and the council can act only in emergencies.\n\nThe Stage 0 network offers you a launch grant. By 2026, very few networks had reached Stage 2.",
+    "sources": [
+     {
+      "url": "https://www.growthepie.com/answers/ethereum-l2-maturity-stages",
+      "label": "growthepie, Ethereum L2 maturity stages"
+     },
+     {
+      "url": "https://beincrypto.com/base-overtakes-arbitrum-layer-2/",
+      "label": "BeInCrypto, Base beats Arbitrum and reaches Stage 1"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "sortSignal",
+    "prompt": "Does this point to the Stage 1 network or the Stage 0 one?",
+    "buckets": [
+     "Stage 1 network",
+     "Stage 0 network"
+    ],
+    "items": [
+     {
+      "text": "Users will deposit large sums",
+      "bucket": 0
+     },
+     {
+      "text": "You want live proofs protecting funds",
+      "bucket": 0
+     },
+     {
+      "text": "You are only testing with play money",
+      "bucket": 1
+     },
+     {
+      "text": "A grant matters more than safety now",
+      "bucket": 1
+     },
+     {
+      "text": "Partners ask who can override the chain",
+      "bucket": 0
+     }
+    ],
+    "explanation": "Real funds favor live proofs and limited overrides. Tests can tolerate more risk."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "How many stages does the layer 2 scale have, counting Stage 0?",
+    "min": 0,
+    "max": 10,
+    "value": 3,
+    "explanation": "Three: Stage 0, Stage 1 and Stage 2.",
+    "unit": "stages"
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your CEO asks where to launch.",
+      "prompt": "What do you recommend?",
+      "options": [
+       "The Stage 1 network for real user funds",
+       "The Stage 0 network because of the grant",
+       "Both at once with no stage disclosure"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Live proofs protect deposits.",
+       "A grant does not offset override risk.",
+       "Users deserve to know the risk."
+      ],
+      "explanation": "Lending holds user money. Pick the network with live proofs and limited overrides."
+     },
+     "proReasoning": "Leaders match platform risk to what users entrust to them.",
+     "commonMistake": "Letting a grant decide where deposits sit.",
+     "mentalModel": "Safety over grants."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A lending app you follow launches on a Stage 0 network.",
+      "prompt": "What risk do you flag?",
+      "options": [
+       "Stage 0 networks cannot hold stablecoins",
+       "A council could override the chain",
+       "Fees on Stage 0 are always higher"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "They can hold stablecoins.",
+       "That is the Stage 0 definition.",
+       "Stage is about control, not fees."
+      ],
+      "explanation": "At Stage 0, users rely on a council behaving well."
+     },
+     "proReasoning": "Investors read the stage before the growth chart.",
+     "commonMistake": "Assuming every layer 2 offers the same protection.",
+     "mentalModel": "Read the stage."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your startup wants grant money but also user trust.",
+      "prompt": "Which plan fits best?",
+      "options": [
+       "Put everything on Stage 0 to keep the grant",
+       "Skip layer 2s and build a new chain",
+       "Test on Stage 0, put real funds on Stage 1"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Real deposits face override risk.",
+       "A new chain adds cost and risk.",
+       "You get both learning and safety."
+      ],
+      "explanation": "Use the cheap network for testing. Keep real deposits where protections are stronger."
+     },
+     "proReasoning": "Founders separate experiments from user money.",
+     "commonMistake": "Mixing test risk with customer funds.",
+     "mentalModel": "Test cheap, hold safe."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend asks why stages matter if both networks work.",
+      "prompt": "What's the best answer?",
+      "options": [
+       "They show who could override your funds",
+       "They show which network is faster",
+       "They rank networks by their coin price"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Stage 0 lets a council override.",
+       "Speed is not what stages measure.",
+       "Price has nothing to do with stages."
+      ],
+      "explanation": "Two networks can feel the same until something goes wrong. Stages show who can step in."
+     },
+     "proReasoning": "Like checking who holds a spare key to your house.",
+     "commonMistake": "Judging a network only when things go well.",
+     "mentalModel": "Who holds the spare key."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:001c565ebd55"
+  ]
+ },
+ {
+  "id": "da99f718-b5e8-578e-b348-73f260834dd1",
+  "market_id": "web3",
+  "day": 22,
+  "slot": 1,
+  "content": {
+   "id": "web3-d22-c1",
+   "title": "More room than anyone used",
+   "lessonTitle": "Ethereum more than doubles its data room",
+   "slot": 1,
+   "type": "apply",
+   "brief": {
+    "headline": "In January 2026, MigaLabs found that after Fusaka's capacity increases, Ethereum was not reaching its new target of 14 blobs per slot. The median even fell from 6 to 4 blobs.",
+    "kicker": "Apply day 22: more data room only matters if demand fills it.",
+    "fullText": "MigaLabs studied over 750,000 slots. It found slots with 16 to 21 blobs were missed at higher rates, about 0.77% to 1.79%, against about 0.5% for smaller ones, though samples were small.\n\nIt advised against further increases until miss rates normalise and demand uses the space. An April 2026 follow-up found the link had disappeared, likely due to a client database issue.\n\nThrough the day 22 lens: Fusaka raised the target from 6 toward 14 blobs. Capacity rose faster than use.",
+    "sources": [
+     {
+      "url": "https://ethresear.ch/t/blob-analysis-after-fusaka-and-bpo-updates/23853",
+      "label": "MigaLabs on ethresear.ch, blob analysis after Fusaka and BPO updates, Jan 2026"
+     },
+     {
+      "url": "https://blog.ethereum.org/2025/11/06/fusaka-mainnet-announcement",
+      "label": "Ethereum Foundation blog, Fusaka mainnet announcement"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "buildChain",
+    "prompt": "Put the blob story in order.",
+    "steps": [
+     "Fusaka goes live on Ethereum",
+     "Blob targets are raised in steps",
+     "MigaLabs finds use below the new target",
+     "It advises pausing further increases",
+     "A follow-up finds the miss link disappeared"
+    ],
+    "explanation": "December 2025, January 2026 steps, the January report, then the April follow-up."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "MigaLabs studied over how many thousand slots?",
+    "min": 0,
+    "max": 2000,
+    "value": 750,
+    "explanation": "Over 750,000 slots.",
+    "unit": "K"
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You join an Ethereum research team. Your lead asks what the MigaLabs data shows.",
+      "prompt": "Which summary is best?",
+      "options": [
+       "Blobs became too expensive for layer 2s",
+       "Fusaka cut the blob target back to six",
+       "Capacity rose faster than demand for blobs"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Unused space pushes blob prices down.",
+       "The target rose toward 14.",
+       "The median fell while the target rose."
+      ],
+      "explanation": "The network had more room than layer 2s used. That is a demand question."
+     },
+     "proReasoning": "Researchers separate capacity from use.",
+     "commonMistake": "Assuming more capacity means more use.",
+     "mentalModel": "Supply ahead of demand."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You follow a layer 2 that posts data in blobs.",
+      "prompt": "What does spare blob space mean for it?",
+      "options": [
+       "Its data costs should stay low",
+       "It must stop posting data",
+       "Its users must pay more fees"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Unused space keeps blob prices down.",
+       "Rollups keep posting data.",
+       "Cheap data does not raise fees."
+      ],
+      "explanation": "When blob space goes unused, layer 2 data costs stay low."
+     },
+     "proReasoning": "Investors track blob use to model layer 2 costs.",
+     "commonMistake": "Ignoring data costs in layer 2 margins.",
+     "mentalModel": "Spare room is cheap."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your startup builds Ethereum node tools.",
+      "prompt": "What need does the MigaLabs report point to?",
+      "options": [
+       "Apps that hide missed slots from users",
+       "Monitoring that spots missed slots early",
+       "Tools that raise the blob target alone"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Hiding data helps no one.",
+       "Miss rates guided the advice.",
+       "Targets change through upgrades."
+      ],
+      "explanation": "Node teams need to see when bigger slots cause problems."
+     },
+     "proReasoning": "Founders build tools for questions researchers are asking.",
+     "commonMistake": "Building features no one can safely use.",
+     "mentalModel": "Measure the misses."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend asks why Ethereum added room no one used.",
+      "prompt": "What's the best answer?",
+      "options": [
+       "Users asked for fewer blobs per slot last year",
+       "The upgrade failed and was cancelled",
+       "It built ahead of demand, then paused to check"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Use fell, but no one asked for that.",
+       "Fusaka went live in December 2025.",
+       "MigaLabs advised waiting for demand."
+      ],
+      "explanation": "Ethereum raised capacity in steps. Researchers checked whether it was used and safe."
+     },
+     "proReasoning": "Like adding highway lanes before traffic grows.",
+     "commonMistake": "Thinking unused capacity means the upgrade failed.",
+     "mentalModel": "Lanes before traffic."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:2f5df408f727"
+  ]
+ },
+ {
+  "id": "06326bdb-fbad-500e-b561-7931471beb4a",
+  "market_id": "web3",
+  "day": 22,
+  "slot": 2,
+  "content": {
+   "id": "web3-d22-c2",
+   "title": "From six blobs to fourteen",
+   "lessonTitle": "Ethereum more than doubles its data room",
+   "slot": 2,
+   "type": "connect",
+   "brief": {
+    "headline": "Dencun introduced blobs in March 2024 and cut layer 2 fees sharply. Fusaka, live December 3, 2025, raised the blob target from 6 to 14 by January 2026.",
+    "kicker": "Connect day 19 and day 22: blobs cut fees, then the room grew.",
+    "fullText": "Day 19 showed how blobs gave rollups a cheaper place for data. Base's median fee fell from about $0.50 to about $0.0012.\n\nDay 22 showed the next step. Fusaka raised the target to 10 blobs in December and 14 in January, with a maximum of 21. PeerDAS lets nodes check data by sampling pieces rather than downloading everything.",
+    "sources": [
+     {
+      "url": "https://www.theblock.co/post/282417/ethereum-layer-2s-show-dramatic-drop-in-transaction-fees-after-dencun",
+      "label": "The Block, layer 2 fees drop after Dencun, Mar 2024"
+     },
+     {
+      "url": "https://blog.ethereum.org/2025/11/06/fusaka-mainnet-announcement",
+      "label": "Ethereum Foundation blog, Fusaka mainnet announcement"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "multipleChoice",
+    "prompt": "What lets Ethereum nodes check blob data without downloading all of it?",
+    "options": [
+     "A new layer 1 chain",
+     "PeerDAS sampling",
+     "A bigger gas token"
+    ],
+    "correctIndex": 1,
+    "explanation": "PeerDAS lets nodes sample pieces of blob data instead of downloading everything."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "Fusaka raised the blob target to how many by January 2026?",
+    "min": 0,
+    "max": 30,
+    "value": 14,
+    "explanation": "From 6 to 10 in December, then 14 in January.",
+    "unit": "blobs"
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your manager asks you to explain why Fusaka matters to rollups.",
+      "prompt": "Which answer leads?",
+      "options": [
+       "More blob room keeps rollup data cheap",
+       "It forces rollups to use the main chain",
+       "It ends the need for layer 2s"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "The target rose from 6 to 14.",
+       "Rollups still post into blobs.",
+       "Layer 2s still carry most activity."
+      ],
+      "explanation": "Blobs cut costs once. Fusaka added room so costs can stay low as use grows."
+     },
+     "proReasoning": "Analysts link each upgrade to its effect on costs.",
+     "commonMistake": "Treating each upgrade as unrelated.",
+     "mentalModel": "Room keeps it cheap."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You model a layer 2's costs for next year.",
+      "prompt": "What does Fusaka change?",
+      "options": [
+       "Nothing, since layer 2s pay no data costs",
+       "Data room grew, easing pressure on blob costs",
+       "Data costs rise because blobs are gone"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Layer 2s do pay for data.",
+       "Target rose to 14, max to 21.",
+       "Blobs remain."
+      ],
+      "explanation": "More blob space means more room before data prices rise."
+     },
+     "proReasoning": "Investors update cost models after each capacity change.",
+     "commonMistake": "Using pre-Fusaka capacity in a 2026 model.",
+     "mentalModel": "Update the model."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your startup is a data-heavy rollup.",
+      "prompt": "How do you plan around the upgrades?",
+      "options": [
+       "Move all data back to costly calldata",
+       "Wait for blobs to be removed",
+       "Use the extra blob room while it is cheap"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "That raises costs.",
+       "Blobs are growing, not going.",
+       "More room keeps costs down."
+      ],
+      "explanation": "Fusaka gave data-heavy apps more cheap room. Build to use it."
+     },
+     "proReasoning": "Founders plan products around new capacity.",
+     "commonMistake": "Ignoring cheaper data options.",
+     "mentalModel": "Use the room."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend asks what a blob is.",
+      "prompt": "What's the best answer?",
+      "options": [
+       "A cheap data space layer 2s post into",
+       "A new kind of coin traded on Ethereum",
+       "A bug that slows down Ethereum"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Blobs arrived with Dencun in 2024.",
+       "Blobs hold data, not value.",
+       "They were added on purpose."
+      ],
+      "explanation": "Blobs are temporary data space on Ethereum. Layer 2s use them to post records cheaply."
+     },
+     "proReasoning": "Like a cheap parcel locker next to a costly safe.",
+     "commonMistake": "Thinking a blob is a token.",
+     "mentalModel": "Cheap lockers."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:a14b4e10fa15"
+  ]
+ },
+ {
+  "id": "edbbacb8-9fda-5ee9-b4b8-6fbb2460d111",
+  "market_id": "web3",
+  "day": 22,
+  "slot": 3,
+  "content": {
+   "id": "web3-d22-c3",
+   "title": "Promise users cheaper fees after Fusaka?",
+   "lessonTitle": "Ethereum more than doubles its data room",
+   "slot": 3,
+   "type": "decide",
+   "brief": {
+    "headline": "You run marketing for a layer 2. Fusaka raised Ethereum's blob target from 6 to 14 by January 2026, and your team wants to promise users even cheaper fees.",
+    "kicker": "Decide what to promise users after Fusaka.",
+    "fullText": "Blobs give layer 2s cheap space to post data to Ethereum. Fusaka more than doubled that space and added PeerDAS sampling.\n\nYour fees are already a fraction of a cent. Data cost is only one part of what users pay.",
+    "sources": [
+     {
+      "url": "https://blog.ethereum.org/2025/11/06/fusaka-mainnet-announcement",
+      "label": "Ethereum Foundation blog, Fusaka mainnet announcement"
+     },
+     {
+      "url": "https://www.theblock.co/post/282417/ethereum-layer-2s-show-dramatic-drop-in-transaction-fees-after-dencun",
+      "label": "The Block, layer 2 fees drop after Dencun, Mar 2024"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "faceOff",
+    "prompt": "Which message is safer to publish?",
+    "left": {
+     "name": "More room keeps data costs low",
+     "note": "Ties the claim to blob capacity"
+    },
+    "right": {
+     "name": "Fees will fall to zero forever",
+     "note": "A promise no network can keep"
+    },
+    "correctIndex": 0,
+    "explanation": "Fusaka added room. It did not make fees free."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "Fusaka's maximum blobs per slot reached about how many?",
+    "min": 0,
+    "max": 30,
+    "value": 21,
+    "explanation": "The maximum rose from 9 to 21.",
+    "unit": "blobs"
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your CMO wants a headline for the launch.",
+      "prompt": "Which do you pick?",
+      "options": [
+       "\"Fusaka makes our chain fully free to use\"",
+       "\"More room on Ethereum keeps our fees low\"",
+       "\"Fees fall to zero forever after Fusaka\""
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Fees still exist.",
+       "Accurate and tied to the upgrade.",
+       "A promise you cannot keep."
+      ],
+      "explanation": "Make claims the upgrade supports. Overpromising invites backlash."
+     },
+     "proReasoning": "Marketers check claims with engineers.",
+     "commonMistake": "Promising what you cannot control.",
+     "mentalModel": "Claim what is true."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A layer 2 claims fees will hit zero after Fusaka.",
+      "prompt": "How do you read the claim?",
+      "options": [
+       "As proof the network is undervalued",
+       "As a signal that fees will rise",
+       "As hype, since data is one part of fees"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "That is a leap.",
+       "It says nothing about rises.",
+       "Other costs remain."
+      ],
+      "explanation": "Fusaka eased data costs. Zero fees forever is not a claim it supports."
+     },
+     "proReasoning": "Investors test bold claims against how costs are built.",
+     "commonMistake": "Taking marketing claims as forecasts.",
+     "mentalModel": "Test the claim."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your startup could pass Fusaka savings to users.",
+      "prompt": "What is the smartest move?",
+      "options": [
+       "Pass on savings but keep margin for costs",
+       "Cut fees to zero to win new users fast",
+       "Raise fees since demand is strong"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Users benefit and you stay viable.",
+       "Zero fees leave no revenue.",
+       "Users can move to cheaper chains."
+      ],
+      "explanation": "Share the gain without giving away the revenue you need."
+     },
+     "proReasoning": "Founders price for both growth and survival.",
+     "commonMistake": "Pricing below what keeps you running.",
+     "mentalModel": "Share, do not give away."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend asks if Ethereum fees will now be free.",
+      "prompt": "What's the best answer?",
+      "options": [
+       "No, fees went up after the upgrade",
+       "Cheaper data, but fees will not vanish",
+       "Yes, every transaction is now free"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Fusaka added capacity.",
+       "Data cost is one part of fees.",
+       "Fees still exist."
+      ],
+      "explanation": "Fusaka added room for cheap data. Fees stay low, not zero."
+     },
+     "proReasoning": "Like a bigger parking lot: easier to park, still not free.",
+     "commonMistake": "Assuming more capacity means free.",
+     "mentalModel": "Low, not zero."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:9664fb496012"
+  ]
+ },
+ {
+  "id": "7db48b57-d52f-5b3c-8474-3151be395fa9",
+  "market_id": "web3",
+  "day": 23,
+  "slot": 1,
+  "content": {
+   "id": "web3-d23-c1",
+   "title": "An XRP fund breaks a first-day record",
+   "lessonTitle": "The rule that opened crypto ETFs",
+   "slot": 1,
+   "type": "apply",
+   "brief": {
+    "headline": "Canary Capital's XRP ETF, XRPC, traded $59 million on its first day in November 2025, the highest first-day volume of any ETF launch that year, Nasdaq said.",
+    "kicker": "Apply day 23: new crypto ETFs reached the market in a wave.",
+    "fullText": "XRPC listed on Nasdaq and held about $250 million in assets after its first day. It joined other Canary funds tracking HBAR and Litecoin, and a staked Solana fund.\n\nThe press release does not say which listing route each fund used.\n\nThrough the day 23 lens: in September 2025, the SEC approved generic listing standards. Exchanges could list qualifying crypto ETFs without a separate review that could take up to 240 days.",
+    "sources": [
+     {
+      "url": "https://www.nasdaq.com/press-release/canary-capitals-crypto-etf-suite-accelerates-xrpc-sets-record-highest-first-day",
+      "label": "Nasdaq press release, Canary's XRPC sets a first-day record, Nov 2025"
+     },
+     {
+      "url": "https://crypto.news/sec-nods-generic-listing-standards-crypto-etfs-2025/",
+      "label": "crypto.news, SEC approves generic listing standards for crypto ETFs"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "spotFake",
+    "prompt": "One of these is false. Tap it.",
+    "statements": [
+     "XRPC traded $59 million on its first day",
+     "XRPC listed on Nasdaq",
+     "The release said XRPC used generic standards"
+    ],
+    "fakeIndex": 2,
+    "explanation": "The release did not say which listing route the fund used."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "XRPC held about how many million dollars after its first day?",
+    "min": 0,
+    "max": 600,
+    "value": 250,
+    "explanation": "About $250 million, according to Nasdaq's release.",
+    "unit": "M"
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You interview at an ETF issuer. They ask what the XRPC launch shows.",
+      "prompt": "Which answer is strongest?",
+      "options": [
+       "Demand exists beyond bitcoin and ether funds",
+       "XRP will outperform every other coin soon",
+       "Generic standards guarantee inflows"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "A record first day for an XRP fund.",
+       "That is a price call, not analysis.",
+       "Rules allow listing, not demand."
+      ],
+      "explanation": "A record first day showed real interest in a newer crypto fund."
+     },
+     "proReasoning": "Strong answers stick to what the data shows.",
+     "commonMistake": "Turning one launch into a price prediction.",
+     "mentalModel": "Stick to the data."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend says XRPC's record means XRP is a sure bet.",
+      "prompt": "How do you answer?",
+      "options": [
+       "Volume proves the price will double",
+       "First-day volume is not a forecast of returns",
+       "A record launch guarantees future gains"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "That claim has no support.",
+       "Volume measures trading, not future value.",
+       "No launch guarantees gains."
+      ],
+      "explanation": "Trading volume shows interest on one day. It says nothing certain about returns."
+     },
+     "proReasoning": "Investors separate launch buzz from long-run value.",
+     "commonMistake": "Treating launch volume as a buy signal.",
+     "mentalModel": "Buzz is not returns."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your startup provides services to ETF issuers.",
+      "prompt": "What does the launch wave suggest?",
+      "options": [
+       "Only bitcoin funds will ever list",
+       "ETF issuers no longer need custodians",
+       "More issuers need crypto fund services"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "XRP, HBAR and Litecoin funds listed.",
+       "Every fund needs a custodian.",
+       "Several new crypto ETFs launched."
+      ],
+      "explanation": "A wave of new funds means more demand for custody, data and compliance help."
+     },
+     "proReasoning": "Founders follow where new products create work.",
+     "commonMistake": "Assuming the market stops at bitcoin.",
+     "mentalModel": "Follow the wave."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend asks what an XRP ETF is.",
+      "prompt": "What's the best answer?",
+      "options": [
+       "A fund on a stock exchange that holds XRP",
+       "A new coin that replaces XRP",
+       "A bank account that pays XRP interest"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "It trades like a stock.",
+       "It holds XRP rather than replacing it.",
+       "It is a fund, not a bank account."
+      ],
+      "explanation": "An ETF holds the asset and trades on an exchange, so buyers do not need a wallet."
+     },
+     "proReasoning": "Like buying a share of a basket that holds the coin.",
+     "commonMistake": "Confusing a fund with the coin itself.",
+     "mentalModel": "A fund that holds it."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:f620a79fcd86"
+  ]
+ },
+ {
+  "id": "71bfc015-1dd2-59f0-a41e-e1001298ee2e",
+  "market_id": "web3",
+  "day": 23,
+  "slot": 2,
+  "content": {
+   "id": "web3-d23-c2",
+   "title": "Staking rewards inside an ETF",
+   "lessonTitle": "The rule that opened crypto ETFs",
+   "slot": 2,
+   "type": "connect",
+   "brief": {
+    "headline": "Bitwise's BSOL, launched in October 2025, stakes the Solana it holds through Helius. About 28.91% of all ETH was staked in January 2026, showing how common staking has become.",
+    "kicker": "Connect day 16 and day 23: staking moves into stock market funds.",
+    "fullText": "Day 16 showed staking at scale: about 35.9 million ETH earning rewards for helping secure Ethereum.\n\nDay 23 showed generic listing standards, approved in September 2025, which let exchanges list qualifying crypto ETFs faster. BSOL went further than holding coins: it stakes them, so the fund can earn network rewards.",
+    "sources": [
+     {
+      "url": "https://blockworks.com/news/bitwise-solana-etf-nyse",
+      "label": "Blockworks, Bitwise slated to launch US Solana ETF"
+     },
+     {
+      "url": "https://www.kucoin.com/news/flash/ethereum-staking-rate-hits-28-91-lido-holds-24-45-share",
+      "label": "KuCoin News, Ethereum staking rate hits 28.91%, Lido holds 24.45%"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "multipleChoice",
+    "prompt": "How does BSOL put its Solana to work?",
+    "options": [
+     "It stakes it through Helius",
+     "It lends it to day traders",
+     "It sells it every month"
+    ],
+    "correctIndex": 0,
+    "explanation": "BSOL stakes its SOL through Helius."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "About what percent of all ETH was staked in January 2026?",
+    "min": 0,
+    "max": 100,
+    "value": 29,
+    "explanation": "About 28.91%, about 35.9 million ETH.",
+    "unit": "%"
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your manager asks how staking ETFs differ from plain spot ETFs.",
+      "prompt": "Which answer is best?",
+      "options": [
+       "They pay a fixed bank interest rate yearly",
+       "They stake holdings to earn network rewards",
+       "They hold futures instead of coins"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Rewards vary with the network.",
+       "BSOL stakes through Helius.",
+       "Spot and staking funds hold coins."
+      ],
+      "explanation": "A staking ETF holds coins and stakes them, adding network rewards."
+     },
+     "proReasoning": "Analysts note who stakes for the fund and how.",
+     "commonMistake": "Treating staking ETFs as identical to spot ETFs.",
+     "mentalModel": "Holds and stakes."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You compare a staking ETF with a plain spot fund.",
+      "prompt": "What risk do you check?",
+      "options": [
+       "Whether the ticker is easy to say",
+       "Whether the fund has a mascot",
+       "The staking provider and its rules"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Tickers carry no risk.",
+       "Mascots carry no risk.",
+       "Staking adds a provider to trust."
+      ],
+      "explanation": "Staking adds rewards and a new party to rely on."
+     },
+     "proReasoning": "Investors read who stakes for the fund.",
+     "commonMistake": "Looking only at the reward rate.",
+     "mentalModel": "Check the staker."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your startup runs staking infrastructure.",
+      "prompt": "Where is a new customer type?",
+      "options": [
+       "ETF issuers that want to stake holdings",
+       "Retail traders who avoid staking at all",
+       "Funds that hold only futures"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "BSOL chose Helius to stake.",
+       "They are not looking for staking.",
+       "Futures funds cannot stake."
+      ],
+      "explanation": "Staking ETFs need reliable providers. That is a new institutional market."
+     },
+     "proReasoning": "Founders spot when big buyers adopt their service.",
+     "commonMistake": "Ignoring regulated funds as customers.",
+     "mentalModel": "Serve the funds."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend asks how an ETF can earn crypto rewards.",
+      "prompt": "What's the best answer?",
+      "options": [
+       "It charges investors a bonus fee",
+       "It stakes the coins it holds",
+       "It mines new coins in a warehouse"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Fees are costs, not rewards.",
+       "BSOL stakes its SOL.",
+       "Staking is not mining."
+      ],
+      "explanation": "Staking lets coin holders earn rewards for securing a network. An ETF can do it too."
+     },
+     "proReasoning": "Like a fund that rents out what it owns.",
+     "commonMistake": "Thinking rewards come from fees.",
+     "mentalModel": "Stakes what it holds."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:1ba5a6c1eb76"
+  ]
+ },
+ {
+  "id": "32a1a9dd-895c-5106-b83d-98c562cf6a8d",
+  "market_id": "web3",
+  "day": 23,
+  "slot": 3,
+  "content": {
+   "id": "web3-d23-c3",
+   "title": "Which crypto fund can list fastest?",
+   "lessonTitle": "The rule that opened crypto ETFs",
+   "slot": 3,
+   "type": "decide",
+   "brief": {
+    "headline": "You run product at an ETF issuer. Under the SEC's September 2025 generic listing standards, one way an asset qualifies is having six months of CFTC-regulated futures trading.",
+    "kicker": "Decide which crypto ETF to bring to market first.",
+    "fullText": "Before generic standards, a crypto ETF needed its own review, which could take up to 240 days. Nasdaq, NYSE Arca and Cboe adopted the new standards.\n\nYour team has three ideas. One asset has had regulated futures for over a year, one for two months, and one has none.",
+    "sources": [
+     {
+      "url": "https://crypto.news/sec-nods-generic-listing-standards-crypto-etfs-2025/",
+      "label": "crypto.news, SEC approves generic listing standards for crypto ETFs"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "sortSignal",
+    "prompt": "Does this asset look likely to qualify under generic standards soon?",
+    "buckets": [
+     "Likely to qualify",
+     "Not yet"
+    ],
+    "items": [
+     {
+      "text": "Over a year of CFTC-regulated futures",
+      "bucket": 0
+     },
+     {
+      "text": "Two months of regulated futures",
+      "bucket": 1
+     },
+     {
+      "text": "No regulated futures at all",
+      "bucket": 1
+     },
+     {
+      "text": "Six months of regulated futures",
+      "bucket": 0
+     }
+    ],
+    "explanation": "Six months of CFTC-regulated futures is one way to qualify."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "The old review could take up to how many days?",
+    "min": 0,
+    "max": 400,
+    "value": 240,
+    "explanation": "Up to 240 days, before generic standards.",
+    "unit": "days"
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your CEO asks which fund to file first.",
+      "prompt": "What do you recommend?",
+      "options": [
+       "The asset with no futures, just to be first",
+       "All three at once, ignoring the rules",
+       "The asset with over a year of regulated futures"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "It cannot use that route yet.",
+       "Two may not qualify.",
+       "It meets the six-month futures route."
+      ],
+      "explanation": "Lead with the product that meets the standard. It can list faster."
+     },
+     "proReasoning": "Product leaders sequence launches by readiness.",
+     "commonMistake": "Leading with the product least ready to list.",
+     "mentalModel": "Lead with ready."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "An issuer announces a fund on an asset with no futures.",
+      "prompt": "What do you expect?",
+      "options": [
+       "A slower path than generic standards",
+       "Listing the next morning",
+       "Automatic approval within one week"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "It cannot use the futures route.",
+       "It needs another route.",
+       "No such rule exists."
+      ],
+      "explanation": "Without futures history, the fund cannot use that generic route."
+     },
+     "proReasoning": "Analysts check which route a fund can use.",
+     "commonMistake": "Assuming every crypto ETF lists fast now.",
+     "mentalModel": "Check the route."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your startup sells data to ETF issuers.",
+      "prompt": "Which product fits?",
+      "options": [
+       "A list of coin logos",
+       "A tracker of futures history by asset",
+       "A forecast of each coin's price"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Logos do not help listing.",
+       "Issuers need to know who qualifies.",
+       "Price calls do not settle eligibility."
+      ],
+      "explanation": "Issuers need to know which assets meet the standards. Data on that is useful."
+     },
+     "proReasoning": "Founders build around the rule buyers must meet.",
+     "commonMistake": "Selling predictions instead of facts.",
+     "mentalModel": "Track eligibility."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend asks why some crypto funds launch faster than others.",
+      "prompt": "What's the best answer?",
+      "options": [
+       "The SEC picks its favorites at random each year",
+       "Faster funds paid higher fees",
+       "Some meet a standard, like six months of futures"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Rules decide, not chance.",
+       "Fees do not set listing speed.",
+       "That route skips the long review."
+      ],
+      "explanation": "Generic standards gave a fast lane to assets that meet set tests."
+     },
+     "proReasoning": "Like a fast lane for travelers with the right pass.",
+     "commonMistake": "Thinking listing speed is luck.",
+     "mentalModel": "A pass for the fast lane."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:631e7b26979e"
+  ]
+ },
+ {
+  "id": "2c5c4240-322a-520a-8c65-a31135da9ed5",
+  "market_id": "web3",
+  "day": 24,
+  "slot": 1,
+  "content": {
+   "id": "web3-d24-c1",
+   "title": "Circle opens its own blockchain",
+   "lessonTitle": "Stripe builds its own blockchain",
+   "slot": 1,
+   "type": "apply",
+   "brief": {
+    "headline": "On September 16, 2026, Circle opened public mainnet for Arc, its own layer 1 blockchain where fees are paid in USDC, with BlackRock, Visa and Mastercard among the founding validators.",
+    "kicker": "Apply day 24: payment firms are building their own chains.",
+    "fullText": "Arc launched with 11 founding validator institutions, including DTCC and ICE. It works with Ethereum tools and offers sub-second finality. Its test network handled over 700 million transactions after opening in October 2025.\n\nCircle minted 10 billion ARC tokens at genesis but said this was \"not a commitment to launch them publicly.\" Over 100 apps launched, including Aave, Morpho and Uniswap.\n\nThrough the day 24 lens: like Stripe's Tempo, Arc lets users pay fees in a stablecoin.",
+    "sources": [
+     {
+      "url": "https://www.theblock.co/news/ecosystems/2026-09-16-circle-launches-arc-mainnet-with-blackrock-and-visa-among-validators-mints-10-billion-arc-tokens-415250",
+      "label": "The Block, Circle launches Arc mainnet, Sep 2026"
+     },
+     {
+      "url": "https://crypto.news/stripe-and-paradigms-tempo-mainnet-goes-live-for-machine-payments/",
+      "label": "crypto.news, Stripe and Paradigm's Tempo mainnet goes live"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "spotFake",
+    "prompt": "One of these is false. Tap it.",
+    "statements": [
+     "Arc fees are paid in USDC",
+     "Arc had 11 founding validator institutions",
+     "Circle committed to a public ARC token sale"
+    ],
+    "fakeIndex": 2,
+    "explanation": "Circle said minting ARC was not a commitment to launch the tokens publicly."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "Arc's test network handled over how many million transactions?",
+    "min": 0,
+    "max": 1500,
+    "value": 700,
+    "explanation": "Over 700 million, after opening in October 2025.",
+    "unit": "M"
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You interview at a payments company. They ask why Circle built Arc.",
+      "prompt": "Which answer lands best?",
+      "options": [
+       "To replace Visa and Mastercard all at once",
+       "To run payments on a chain built around USDC",
+       "To stop USDC from working on Ethereum"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Visa and Mastercard are validators.",
+       "Fees are in USDC on Arc.",
+       "USDC still runs on other chains."
+      ],
+      "explanation": "Circle built a chain around its own stablecoin, with big finance firms as validators."
+     },
+     "proReasoning": "Strong answers name the strategy without hype.",
+     "commonMistake": "Assuming a new chain means leaving the old ones.",
+     "mentalModel": "Built around USDC."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You research Circle after Arc's launch.",
+      "prompt": "Which fact needs care in your note?",
+      "options": [
+       "Arc uses USDC to pay its network fees",
+       "Arc launched with over 100 apps live on it",
+       "ARC was minted but not promised to the public"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "That is reported plainly.",
+       "That is reported plainly.",
+       "Circle said no public commitment."
+      ],
+      "explanation": "Do not treat a minted token as a planned sale. Circle said it was not committed."
+     },
+     "proReasoning": "Researchers report exactly what a company said.",
+     "commonMistake": "Turning a genesis mint into a token launch rumor.",
+     "mentalModel": "Report exactly."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your fintech startup must choose a chain for payments.",
+      "prompt": "What does Arc add to your options?",
+      "options": [
+       "A chain with USDC fees and big validators",
+       "The only chain where USDC exists today",
+       "A chain that needs no apps"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Fees in USDC, validators like Visa.",
+       "USDC exists on many chains.",
+       "Apps make a chain useful."
+      ],
+      "explanation": "Arc and Tempo both let users pay fees in stablecoins. Compare cost and partners."
+     },
+     "proReasoning": "Founders compare payment chains on fees, speed and who backs them.",
+     "commonMistake": "Picking a chain on brand alone.",
+     "mentalModel": "Compare the options."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend asks why BlackRock and Visa run parts of a blockchain.",
+      "prompt": "What's the best answer?",
+      "options": [
+       "They mine bitcoin for Circle on the side",
+       "They are validators that confirm Arc's blocks",
+       "They bought Circle outright"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Arc does not mine bitcoin.",
+       "They are founding validators.",
+       "They did not buy Circle."
+      ],
+      "explanation": "Validators confirm transactions. Arc chose big finance firms for that role."
+     },
+     "proReasoning": "Like well-known auditors checking the books.",
+     "commonMistake": "Thinking validators own the chain.",
+     "mentalModel": "Trusted checkers."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:3185e2ecf88a"
+  ]
+ },
+ {
+  "id": "cde12546-4cc3-544e-87ed-6254765e8a03",
+  "market_id": "web3",
+  "day": 24,
+  "slot": 2,
+  "content": {
+   "id": "web3-d24-c2",
+   "title": "Stablecoin rules, stablecoin rails",
+   "lessonTitle": "Stripe builds its own blockchain",
+   "slot": 2,
+   "type": "connect",
+   "brief": {
+    "headline": "The GENIUS Act became law in July 2025. In March 2026, Stripe and Paradigm's Tempo launched as its own blockchain where fees are paid in stablecoins and no token was issued.",
+    "kicker": "Connect day 17 and day 24: rules for the coin, a road built for it.",
+    "fullText": "Day 17 showed the GENIUS Act: one-to-one reserves of cash-like assets, no interest to holders, and payment stablecoins treated as neither securities nor commodities.\n\nDay 24 showed Tempo: its own layer 1, compatible with Ethereum tools, paying fees in stablecoins. Klarna planned a stablecoin on it. Clear rules for the coin and a chain built for paying with it go together.",
+    "sources": [
+     {
+      "url": "https://www.everycrsreport.com/files/2026-08-20_IN12553_0b329134f6be0cc12f78017358552f4053d52c5e.html",
+      "label": "Congressional Research Service, overview of the GENIUS Act of 2025"
+     },
+     {
+      "url": "https://crypto.news/stripe-and-paradigms-tempo-mainnet-goes-live-for-machine-payments/",
+      "label": "crypto.news, Stripe and Paradigm's Tempo mainnet goes live"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "faceOff",
+    "prompt": "What makes Tempo different from most blockchains?",
+    "left": {
+     "name": "Fees are paid in stablecoins",
+     "note": "No separate gas token to buy"
+    },
+    "right": {
+     "name": "It has no connection to Ethereum",
+     "note": "It cannot run Ethereum tools"
+    },
+    "correctIndex": 0,
+    "explanation": "Tempo pays fees in stablecoins and works with Ethereum tools."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "About how many months passed between the GENIUS Act and Tempo's mainnet?",
+    "min": 0,
+    "max": 36,
+    "value": 8,
+    "explanation": "From July 2025 to March 2026 is about 8 months, by our count.",
+    "unit": "months"
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your manager asks why payment companies care about the GENIUS Act.",
+      "prompt": "Which answer leads?",
+      "options": [
+       "The law lets them pay holders a set interest",
+       "The law made stablecoins securities",
+       "Clear stablecoin rules make building rails safer"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "The law bans interest to holders.",
+       "It says they are not securities.",
+       "Rules lower legal uncertainty."
+      ],
+      "explanation": "Payment firms build when the rules are clear. The law gave that clarity."
+     },
+     "proReasoning": "Analysts connect regulation to product launches.",
+     "commonMistake": "Treating law and products as separate stories.",
+     "mentalModel": "Rules invite building."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You compare payment chains like Tempo.",
+      "prompt": "What do you weigh?",
+      "options": [
+       "Fees in stablecoins and the backers behind it",
+       "Whether it has the flashiest token on offer",
+       "Whether it hides its fee model"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Tempo issued no token.",
+       "No token was issued.",
+       "Fee models should be clear."
+      ],
+      "explanation": "Payment chains compete on cost, speed and trust, not token hype."
+     },
+     "proReasoning": "Investors judge payment rails on use.",
+     "commonMistake": "Looking for a token where none exists.",
+     "mentalModel": "Judge on use."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your startup issues a stablecoin for merchant payments.",
+      "prompt": "Why might Tempo appeal?",
+      "options": [
+       "Tempo exempts you from the GENIUS Act rules",
+       "Merchants pay fees in the coin they already hold",
+       "Tempo lets you pay holders interest"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "The law still applies.",
+       "No gas token to buy.",
+       "The law still bans that."
+      ],
+      "explanation": "Paying fees in the same stablecoin removes a step for merchants."
+     },
+     "proReasoning": "Founders cut steps between users and payment.",
+     "commonMistake": "Thinking a chain changes the law for you.",
+     "mentalModel": "Fewer steps."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend asks why Stripe built a blockchain.",
+      "prompt": "What's the best answer?",
+      "options": [
+       "To launch a coin and sell it to its users",
+       "To replace the US dollar entirely",
+       "To move stablecoin payments faster and cheaper"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "No token was issued.",
+       "Stablecoins track the dollar.",
+       "Tempo issued no token."
+      ],
+      "explanation": "Stripe wants a road built for stablecoin payments, with fees in stablecoins."
+     },
+     "proReasoning": "Like a payments company laying its own track.",
+     "commonMistake": "Assuming every new chain launches a coin.",
+     "mentalModel": "A road for payments."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:13b1b7703220"
+  ]
+ },
+ {
+  "id": "f5200787-0d7d-5e85-895a-528736b25089",
+  "market_id": "web3",
+  "day": 24,
+  "slot": 3,
+  "content": {
+   "id": "web3-d24-c3",
+   "title": "Build on Tempo or an existing layer 2?",
+   "lessonTitle": "Stripe builds its own blockchain",
+   "slot": 3,
+   "type": "decide",
+   "brief": {
+    "headline": "You run a payments startup. Tempo launched in March 2026 as its own layer 1 with stablecoin fees. Ethereum layer 2s already host many stablecoin apps.",
+    "kicker": "Decide where to build your payment product.",
+    "fullText": "Tempo works with Ethereum tools, pays fees in stablecoins and claims \"tens of thousands\" of transactions per second. It added a protocol for machine payments.\n\nLayer 2s settle to Ethereum and already have users and apps. Your choice affects costs, reach and who you depend on.",
+    "sources": [
+     {
+      "url": "https://crypto.news/stripe-and-paradigms-tempo-mainnet-goes-live-for-machine-payments/",
+      "label": "crypto.news, Stripe and Paradigm's Tempo mainnet goes live"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "sortSignal",
+    "prompt": "Does this point toward Tempo or an existing layer 2?",
+    "buckets": [
+     "Tempo",
+     "Existing layer 2"
+    ],
+    "items": [
+     {
+      "text": "You want fees paid in stablecoins",
+      "bucket": 0
+     },
+     {
+      "text": "You need machine payments support",
+      "bucket": 0
+     },
+     {
+      "text": "You need apps users already use",
+      "bucket": 1
+     },
+     {
+      "text": "You want Ethereum settlement",
+      "bucket": 1
+     },
+     {
+      "text": "You want Stripe in your stack",
+      "bucket": 0
+     }
+    ],
+    "explanation": "Tempo fits payment-first designs. Layer 2s fit reach and Ethereum settlement."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "Tempo launched mainnet in which month of 2026?",
+    "min": 0,
+    "max": 12,
+    "value": 3,
+    "explanation": "March 2026, month 3.",
+    "unit": "month"
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your board asks where to build.",
+      "prompt": "What do you recommend?",
+      "options": [
+       "Match the chain to your users and fees",
+       "Pick the newest chain every time",
+       "Build your own chain from scratch"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Each choice suits different needs.",
+       "New does not mean better.",
+       "That costs time and security."
+      ],
+      "explanation": "Tempo suits payment-first designs. Layer 2s offer reach. Choose by need."
+     },
+     "proReasoning": "Leaders choose platforms by fit.",
+     "commonMistake": "Following hype instead of users.",
+     "mentalModel": "Choose by fit."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A payments startup moves to Tempo.",
+      "prompt": "What do you ask?",
+      "options": [
+       "Will fees be paid in bitcoin?",
+       "Will its users and partners follow?",
+       "Will Tempo launch a token for it?"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Fees are in stablecoins.",
+       "Reach matters for payments.",
+       "Tempo issued no token."
+      ],
+      "explanation": "A new chain is useful only if users and partners are there."
+     },
+     "proReasoning": "Investors check where a startup's users are.",
+     "commonMistake": "Valuing the move on its novelty.",
+     "mentalModel": "Follow the users."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your startup could support both platforms.",
+      "prompt": "Is that wise?",
+      "options": [
+       "No, since chains can never talk to each other",
+       "Only if both launch tokens",
+       "Yes, if your tools work with Ethereum code"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Bridges and shared tools exist.",
+       "Tokens are not needed.",
+       "Tempo works with Ethereum tools."
+      ],
+      "explanation": "Shared Ethereum tooling lowers the cost of supporting both."
+     },
+     "proReasoning": "Founders reduce risk by not betting on one rail.",
+     "commonMistake": "Locking into one chain too early.",
+     "mentalModel": "Hedge with shared tools."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend asks why there are so many blockchains for payments.",
+      "prompt": "What's the best answer?",
+      "options": [
+       "Each trades off cost, speed and who backs it",
+       "Only one of them actually works",
+       "They are all the same chain under new names"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Tempo, Arc and layer 2s differ.",
+       "Several run today.",
+       "They are separate networks."
+      ],
+      "explanation": "Payment chains compete on fees, speed and partners."
+     },
+     "proReasoning": "Like card networks competing for merchants.",
+     "commonMistake": "Assuming one chain will do everything.",
+     "mentalModel": "Competing rails."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:72acf9eb9902"
+  ]
+ },
+ {
+  "id": "9edd91cd-94f5-50f1-8dff-0ec583412faa",
+  "market_id": "web3",
+  "day": 25,
+  "slot": 1,
+  "content": {
+   "id": "web3-d25-c1",
+   "title": "A letter asking for your 24 words",
+   "lessonTitle": "The words that hold your crypto",
+   "slot": 1,
+   "type": "apply",
+   "brief": {
+    "headline": "In April 2025, Ledger confirmed that scammers were mailing physical letters with its logo, asking hardware wallet owners to scan a QR code and enter their recovery phrase.",
+    "kicker": "Apply day 25: whoever has your seed words has your crypto.",
+    "fullText": "The letters demanded a \"mandatory wallet validation\" and warned that failure could restrict access to funds. Ledger said it will never call, message or ask for a customer's 24-word phrase.\n\nIn a July 2020 breach, data on more than 273,000 Ledger customers was later leaked. Ledger did not confirm how scammers got the addresses.\n\nThrough the day 25 lens: a seed phrase can restore a wallet on any compatible device, so sharing it hands over the funds.",
+    "sources": [
+     {
+      "url": "https://www.theblock.co/news/ecosystems/2025-04-30-ledger-confirms-physical-scam-letters-requesting-seed-phrase-352479",
+      "label": "The Block, Ledger confirms physical scam letters asking for seed phrases, Apr 2025"
+     },
+     {
+      "url": "https://trezor.io/learn/advanced/what-is-bip39",
+      "label": "Trezor, what is BIP39?"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "buildChain",
+    "prompt": "Put the scam in order.",
+    "steps": [
+     "Customer data leaks in a 2020 breach",
+     "Scammers mail letters with a wallet logo",
+     "A QR code leads to a fake page",
+     "The victim types in the recovery phrase",
+     "The scammer restores the wallet and moves funds"
+    ],
+    "explanation": "The phrase restores the wallet anywhere, so typing it in gives the funds away."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "Data on more than how many thousand Ledger customers leaked after the 2020 breach?",
+    "min": 0,
+    "max": 600,
+    "value": 273,
+    "explanation": "More than 273,000 customers.",
+    "unit": "K"
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You interview for a crypto security role. They ask what the letters show.",
+      "prompt": "Which answer is strongest?",
+      "options": [
+       "Hardware wallets can be hacked by mail",
+       "Paper letters are always genuine",
+       "Attackers target seed words, not the device"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "The device was not hacked.",
+       "These letters were fake.",
+       "The phrase restores funds anywhere."
+      ],
+      "explanation": "The device stayed secure. The scam tried to get the phrase, which controls the funds."
+     },
+     "proReasoning": "Strong candidates point to the weakest link: people.",
+     "commonMistake": "Thinking hardware alone protects funds.",
+     "mentalModel": "Words, not devices."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A client with a hardware wallet gets one of these letters.",
+      "prompt": "What do you tell them?",
+      "options": [
+       "Never enter the phrase; Ledger will not ask",
+       "Scan the code quickly to avoid lockout",
+       "Send the phrase to support by email"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Ledger said it never asks.",
+       "That is the scam.",
+       "No genuine support asks."
+      ],
+      "explanation": "No real company asks for your recovery phrase. The letter is the attack."
+     },
+     "proReasoning": "Advisers train clients on social engineering.",
+     "commonMistake": "Trusting a letter because it looks official.",
+     "mentalModel": "Never share it."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your startup makes a wallet app.",
+      "prompt": "Which feature helps most against this scam?",
+      "options": [
+       "A QR code that asks for the phrase",
+       "A warning never to share the phrase",
+       "A box to email your phrase to us"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "That copies the scam.",
+       "Users learn the rule early.",
+       "That copies the scam."
+      ],
+      "explanation": "Teach users that no one legitimate asks for the phrase."
+     },
+     "proReasoning": "Founders design against known scams.",
+     "commonMistake": "Building flows that look like scams.",
+     "mentalModel": "Teach the rule."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend got a letter asking for their wallet words.",
+      "prompt": "What's the best answer?",
+      "options": [
+       "Reply fast before the deadline",
+       "Share only half the words with them to be safe",
+       "Ignore it; anyone with the words takes the funds"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "The deadline is pressure.",
+       "Partial words still help attackers.",
+       "The words restore the wallet anywhere."
+      ],
+      "explanation": "Your words are the wallet. No company will ask for them."
+     },
+     "proReasoning": "Like a stranger asking for your house key by mail.",
+     "commonMistake": "Acting fast because a letter sounds urgent.",
+     "mentalModel": "Ignore and keep."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:57f85e34a933"
+  ]
+ },
+ {
+  "id": "96f690ce-d8fe-521f-865c-614ad1cdb6f1",
+  "market_id": "web3",
+  "day": 25,
+  "slot": 2,
+  "content": {
+   "id": "web3-d25-c2",
+   "title": "The key behind the words",
+   "lessonTitle": "The words that hold your crypto",
+   "slot": 2,
+   "type": "connect",
+   "brief": {
+    "headline": "A private key signs every transaction. A BIP39 seed phrase of 12 to 24 words encodes the secret that generates those keys, so it can restore a wallet on any compatible device.",
+    "kicker": "Connect day 5 and day 25: the words are the key in human form.",
+    "fullText": "Day 5 showed that a private key controls funds. If it is stolen, the network accepts the thief's signatures, as Bybit's $1.5 billion loss showed.\n\nDay 25 showed BIP39, from 2013. Each word comes from a list of 2,048 and carries 11 bits, with a checksum to catch typos. Twelve to 24 words encode 128 to 256 bits, enough to recreate every key.",
+    "sources": [
+     {
+      "url": "https://bitpay.com/blog/what-are-public-and-private-keys/",
+      "label": "BitPay, public and private keys"
+     },
+     {
+      "url": "https://trezor.io/learn/advanced/what-is-bip39",
+      "label": "Trezor, what is BIP39?"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "multipleChoice",
+    "prompt": "How many words are in the BIP39 word list?",
+    "options": [
+     "24",
+     "2,048",
+     "256"
+    ],
+    "correctIndex": 1,
+    "explanation": "Each word comes from a list of 2,048, so each carries 11 bits."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "Each BIP39 word carries how many bits?",
+    "min": 0,
+    "max": 40,
+    "value": 11,
+    "explanation": "Eleven bits, since the list has 2,048 words.",
+    "unit": "bits"
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your manager asks why seed phrases need such care.",
+      "prompt": "Which answer leads?",
+      "options": [
+       "They recreate every key in the wallet",
+       "They only open the device lock screen",
+       "They expire after one year of use"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "That is how restore works.",
+       "A PIN does that.",
+       "They do not expire."
+      ],
+      "explanation": "The words are the master secret. Whoever has them controls the keys."
+     },
+     "proReasoning": "Security teams treat the phrase as the key itself.",
+     "commonMistake": "Treating the phrase like a password reset.",
+     "mentalModel": "Words equal keys."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You assess how a firm backs up its wallet.",
+      "prompt": "What do you check?",
+      "options": [
+       "Whether the wallet came in a nice gift box",
+       "Where the seed words are kept and who sees them",
+       "The color of the hardware wallet case"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "That would be a major risk.",
+       "Storage decides theft risk.",
+       "Color is not risk."
+      ],
+      "explanation": "The phrase can restore the wallet anywhere. Its storage is the real security."
+     },
+     "proReasoning": "Auditors follow the secret, not the device.",
+     "commonMistake": "Checking the device but not the words.",
+     "mentalModel": "Follow the secret."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your startup designs wallet recovery.",
+      "prompt": "Which design is sound?",
+      "options": [
+       "A custom phrase only your app can read",
+       "No backup, to keep it simple",
+       "Standard BIP39 so users can restore anywhere"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Users would be locked in.",
+       "Lost devices mean lost funds.",
+       "Any compatible wallet can restore it."
+      ],
+      "explanation": "BIP39 is a standard. Users can recover even if your app disappears."
+     },
+     "proReasoning": "Founders follow standards that protect users.",
+     "commonMistake": "Locking users into a private format.",
+     "mentalModel": "Use the standard."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend asks how 12 words can hold a whole wallet.",
+      "prompt": "What's the best answer?",
+      "options": [
+       "They encode the secret that makes every key",
+       "Each word stores one coin",
+       "The words are a list of separate passwords"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Twelve words carry 128 bits.",
+       "Words do not store coins.",
+       "They form one secret."
+      ],
+      "explanation": "Words are a readable way to write down a very large secret number."
+     },
+     "proReasoning": "Like a combination written as words.",
+     "commonMistake": "Thinking the words hold the coins.",
+     "mentalModel": "A secret in words."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:6d4ee962bef5"
+  ]
+ },
+ {
+  "id": "d82725a6-1f4c-59e1-9e84-9a0f2cdcd333",
+  "market_id": "web3",
+  "day": 25,
+  "slot": 3,
+  "content": {
+   "id": "web3-d25-c3",
+   "title": "How should a small firm store its seed phrase?",
+   "lessonTitle": "The words that hold your crypto",
+   "slot": 3,
+   "type": "decide",
+   "brief": {
+    "headline": "You manage crypto for a small company. Its wallet uses a 24-word BIP39 phrase, and any compatible wallet can restore the funds from those words.",
+    "kicker": "Decide how to store the recovery phrase.",
+    "fullText": "BIP39 phrases run 12 to 24 words, encoding 128 to 256 bits, with a checksum. Whoever holds the words can move the funds from any compatible wallet.\n\nThe company needs to recover if a device is lost, without letting one person or one leak take everything.",
+    "sources": [
+     {
+      "url": "https://trezor.io/learn/advanced/what-is-bip39",
+      "label": "Trezor, what is BIP39?"
+     },
+     {
+      "url": "https://www.theblock.co/news/ecosystems/2025-04-30-ledger-confirms-physical-scam-letters-requesting-seed-phrase-352479",
+      "label": "The Block, Ledger confirms physical scam letters asking for seed phrases, Apr 2025"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "sortSignal",
+    "prompt": "Does this make the phrase safer or riskier?",
+    "buckets": [
+     "Safer",
+     "Riskier"
+    ],
+    "items": [
+     {
+      "text": "Writing it offline and storing it securely",
+      "bucket": 0
+     },
+     {
+      "text": "Keeping it in a cloud notes app",
+      "bucket": 1
+     },
+     {
+      "text": "Sharing it with support when asked",
+      "bucket": 1
+     },
+     {
+      "text": "Limiting who knows where it is",
+      "bucket": 0
+     },
+     {
+      "text": "Photographing it on a phone",
+      "bucket": 1
+     }
+    ],
+    "explanation": "Keep the words offline, limited and never shared."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "A 24-word phrase encodes up to how many bits?",
+    "min": 0,
+    "max": 400,
+    "value": 256,
+    "explanation": "Up to 256 bits; 12 words encode 128.",
+    "unit": "bits"
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your CFO asks for a storage plan.",
+      "prompt": "What do you propose?",
+      "options": [
+       "A photo saved in the company drive",
+       "Offline copies with limited, logged access",
+       "A shared document the whole team can edit"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Cloud files can leak.",
+       "Offline and controlled.",
+       "Anyone with access could steal."
+      ],
+      "explanation": "The words are the funds. Store them offline and limit who can reach them."
+     },
+     "proReasoning": "Treasury leads treat the phrase like vault keys.",
+     "commonMistake": "Storing the phrase where many people can see it.",
+     "mentalModel": "Offline and limited."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You review a firm that keeps its phrase in email.",
+      "prompt": "What do you flag?",
+      "options": [
+       "Email is the safest place for it",
+       "Nothing, since emails are always private",
+       "Anyone who gets into email gets the funds"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Email can be breached.",
+       "Accounts get hacked.",
+       "The words restore anywhere."
+      ],
+      "explanation": "If email is breached, the attacker can restore the wallet."
+     },
+     "proReasoning": "Auditors check where secrets live.",
+     "commonMistake": "Trusting online accounts with the master secret.",
+     "mentalModel": "Check where it lives."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your startup builds tools for company wallets.",
+      "prompt": "Which feature fits?",
+      "options": [
+       "Offline backup guidance with access logs",
+       "Auto-upload of phrases to the cloud",
+       "A feature that emails phrases daily"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Helps firms store safely.",
+       "Increases leak risk.",
+       "Creates copies to steal."
+      ],
+      "explanation": "Firms need safe storage habits, not more copies."
+     },
+     "proReasoning": "Founders reduce copies of secrets.",
+     "commonMistake": "Adding convenience that leaks secrets.",
+     "mentalModel": "Fewer copies."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend asks where to keep their seed words.",
+      "prompt": "What's the best answer?",
+      "options": [
+       "In an email they send to themselves",
+       "Offline and private, never typed online",
+       "In a note on their phone"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Email can be breached.",
+       "Anyone with the words takes the funds.",
+       "Phones get lost or hacked."
+      ],
+      "explanation": "Keep the words offline. Anyone who sees them can take the funds."
+     },
+     "proReasoning": "Treat it like the key to a safe.",
+     "commonMistake": "Saving the words where hackers can reach them.",
+     "mentalModel": "Offline only."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:a07bccca4076"
+  ]
+ },
+ {
+  "id": "3bcafbee-a8a0-5d36-8a81-24f10796d85f",
+  "market_id": "web3",
+  "day": 26,
+  "slot": 1,
+  "content": {
+   "id": "web3-d26-c1",
+   "title": "A crypto custodian lists on the NYSE",
+   "lessonTitle": "The wallet maker eyeing Wall Street",
+   "slot": 1,
+   "type": "apply",
+   "brief": {
+    "headline": "In January 2026, BitGo priced its US IPO at $18 a share, above its $15 to $17 range, raising about $212.8 million and valuing the company at over $2 billion.",
+    "kicker": "Apply day 26: crypto security firms are turning to public markets.",
+    "fullText": "BitGo, founded in 2013, began trading on the New York Stock Exchange as BTGO on January 22, 2026. It provides custody, wallets, staking and settlement, and received approval for a US banking charter in December 2025.\n\nGoldman Sachs and Citigroup led the offering.\n\nThrough the day 26 lens: Ledger, which makes hardware wallets, was reported to be exploring a New York IPO at over $4 billion. Firms that hold or protect crypto keys are seeking public investors.",
+    "sources": [
+     {
+      "url": "https://www.theblock.co/news/business/2026-01-21-bitgo-prices-us-ipo-386629",
+      "label": "The Block, BitGo prices its US IPO above range, Jan 2026"
+     },
+     {
+      "url": "https://www.theblock.co/news/business/2026-01-23-ledger-mulls-new-york-ipo-386810",
+      "label": "The Block, Ledger mulls New York IPO at over $4 billion valuation"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "spotFake",
+    "prompt": "One of these is false. Tap it.",
+    "statements": [
+     "BitGo priced above its expected range",
+     "BitGo trades on the NYSE as BTGO",
+     "BitGo makes consumer hardware wallets like Ledger"
+    ],
+    "fakeIndex": 2,
+    "explanation": "BitGo provides custody, wallets, staking and settlement for institutions. Ledger makes hardware wallets."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "BitGo raised about how many million dollars in its IPO?",
+    "min": 0,
+    "max": 500,
+    "value": 213,
+    "explanation": "About $212.8 million, at $18 a share.",
+    "unit": "M"
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You interview at a crypto custodian. They ask what BitGo's IPO signals.",
+      "prompt": "Which answer is strongest?",
+      "options": [
+       "Public investors were willing to fund crypto custody",
+       "Custody firms no longer need any regulators",
+       "Every crypto firm will list on an exchange this year"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "It priced above its range.",
+       "BitGo sought a banking charter.",
+       "One IPO does not predict all."
+      ],
+      "explanation": "Pricing above range showed demand for a regulated custody business."
+     },
+     "proReasoning": "Strong answers read the signal without overreaching.",
+     "commonMistake": "Turning one IPO into a trend for every firm.",
+     "mentalModel": "Read the signal."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You read BitGo's IPO coverage for a research note.",
+      "prompt": "Which point belongs in the note?",
+      "options": [
+       "It holds more bitcoin than any single ETF",
+       "It priced above range and sought a bank charter",
+       "Its shares are certain to rise from here"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "That was not reported.",
+       "Both are reported facts.",
+       "No one can promise that."
+      ],
+      "explanation": "Stick to reported facts. Price direction is not a fact."
+     },
+     "proReasoning": "Researchers separate facts from forecasts.",
+     "commonMistake": "Writing a forecast as if it were news.",
+     "mentalModel": "Facts, not forecasts."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your startup sells security tools to custodians.",
+      "prompt": "What does the IPO change for you?",
+      "options": [
+       "Custodians will stop buying security tools",
+       "Custody firms will ignore compliance now",
+       "Listed custodians face more audits and checks"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "They need more, not less.",
+       "Public status raises the bar.",
+       "Public firms need strong controls."
+      ],
+      "explanation": "Public companies face disclosure and audit duties. They need tools that prove controls."
+     },
+     "proReasoning": "Founders sell to customers whose obligations just grew.",
+     "commonMistake": "Missing that a listing raises a buyer's needs.",
+     "mentalModel": "Bigger duties, bigger needs."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend asks what BitGo does.",
+      "prompt": "What's the best answer?",
+      "options": [
+       "It holds crypto safely for big clients",
+       "It mines bitcoin in large warehouses",
+       "It runs a popular crypto meme coin"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Custody is its core service.",
+       "It is not a miner.",
+       "It is a custody business."
+      ],
+      "explanation": "BitGo stores and moves crypto for institutions, like a vault service."
+     },
+     "proReasoning": "Like a bank vault for digital assets.",
+     "commonMistake": "Confusing custodians with miners or coins.",
+     "mentalModel": "A vault for big clients."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:de8f2729ad09"
+  ]
+ },
+ {
+  "id": "5ccdb685-954d-58fe-b905-6b6bab31d37b",
+  "market_id": "web3",
+  "day": 26,
+  "slot": 2,
+  "content": {
+   "id": "web3-d26-c2",
+   "title": "From 24 words to a $4 billion company",
+   "lessonTitle": "The wallet maker eyeing Wall Street",
+   "slot": 2,
+   "type": "connect",
+   "brief": {
+    "headline": "Ledger, founded in 2014, makes hardware wallets that keep seed words offline. In January 2026, it was reported to be exploring a New York IPO at a valuation above $4 billion.",
+    "kicker": "Connect day 25 and day 26: protecting seed words became a business.",
+    "fullText": "Day 25 showed that a 12 to 24 word BIP39 phrase can restore every key in a wallet. Hardware wallets keep those secrets off internet-connected devices.\n\nDay 26 showed Ledger's reported IPO plans, at more than double its 2023 valuation of $1.5 billion. Its 2025 revenue was in the \"triple-digit million-euro range,\" and its reported advisers were Goldman Sachs, Barclays and Jefferies.",
+    "sources": [
+     {
+      "url": "https://trezor.io/learn/advanced/what-is-bip39",
+      "label": "Trezor, what is BIP39?"
+     },
+     {
+      "url": "https://www.theblock.co/news/business/2026-01-23-ledger-mulls-new-york-ipo-386810",
+      "label": "The Block, Ledger mulls New York IPO at over $4 billion valuation"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "faceOff",
+    "prompt": "What does a hardware wallet mainly protect?",
+    "left": {
+     "name": "The secret behind the seed words",
+     "note": "Kept offline, away from hackers"
+    },
+    "right": {
+     "name": "The price of the coins inside",
+     "note": "Shields holders from market drops"
+    },
+    "correctIndex": 0,
+    "explanation": "A hardware wallet protects keys. It does nothing about prices."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "Ledger's reported IPO valuation was above how many billion dollars?",
+    "min": 0,
+    "max": 10,
+    "value": 4,
+    "explanation": "Above $4 billion, more than double its 2023 valuation.",
+    "unit": "B"
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your manager asks what Ledger's business rests on.",
+      "prompt": "Which answer is best?",
+      "options": [
+       "Interest on customer deposits",
+       "People paying to keep their keys offline",
+       "Fees on every crypto trade worldwide"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "It does not hold deposits.",
+       "That is the hardware wallet model.",
+       "Ledger is not an exchange."
+      ],
+      "explanation": "Ledger sells devices that keep seed secrets offline. Demand follows self-custody."
+     },
+     "proReasoning": "Analysts tie revenue to the problem a product solves.",
+     "commonMistake": "Confusing wallet makers with exchanges.",
+     "mentalModel": "Selling safe keys."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You read reports on Ledger's possible IPO.",
+      "prompt": "What would you want to see in a filing?",
+      "options": [
+       "Whether its logo will change after listing",
+       "Whether it will make a meme coin",
+       "How revenue moves with crypto activity"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Branding is not the key risk.",
+       "That is not the business.",
+       "Device sales may swing with markets."
+      ],
+      "explanation": "Its revenue was in the \"triple-digit million-euro range.\" Filings would show how steady that is."
+     },
+     "proReasoning": "Investors look at how cyclical revenue is.",
+     "commonMistake": "Judging a company on headlines, not revenue.",
+     "mentalModel": "Read the revenue."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your startup builds a self-custody product.",
+      "prompt": "What lesson does Ledger offer?",
+      "options": [
+       "People will pay to protect their seed words",
+       "Users prefer to store words in the cloud",
+       "Self-custody has no paying customers"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Ledger built a large business on it.",
+       "Security buyers avoid that.",
+       "Ledger shows otherwise."
+      ],
+      "explanation": "Protecting keys is a problem people pay to solve."
+     },
+     "proReasoning": "Founders pick problems with proven willingness to pay.",
+     "commonMistake": "Assuming crypto users will not pay for security.",
+     "mentalModel": "Security sells."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend asks why a wallet company could be worth billions.",
+      "prompt": "What's the best answer?",
+      "options": [
+       "It prints new coins for its owners each year",
+       "Many people pay to keep their crypto keys safe",
+       "It owns the coins its users keep"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "It does not create coins.",
+       "Devices protect the seed secret.",
+       "Users keep their own coins."
+      ],
+      "explanation": "Ledger sells devices, not coins. Its value comes from people paying for security."
+     },
+     "proReasoning": "Like a company that makes safes, not the gold inside.",
+     "commonMistake": "Thinking the company owns its users' crypto.",
+     "mentalModel": "Safes, not gold."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:258b620b5a86"
+  ]
+ },
+ {
+  "id": "61e55fb7-db93-5ac0-ad00-742f9628c594",
+  "market_id": "web3",
+  "day": 26,
+  "slot": 3,
+  "content": {
+   "id": "web3-d26-c3",
+   "title": "Go public now or stay private?",
+   "lessonTitle": "The wallet maker eyeing Wall Street",
+   "slot": 3,
+   "type": "decide",
+   "brief": {
+    "headline": "You are CFO of a crypto wallet maker. Ledger was reported to be exploring an IPO above $4 billion, and your board asks whether you should list too.",
+    "kicker": "Decide how to prepare for a possible IPO.",
+    "fullText": "Ledger, founded in 2014, reported 2025 revenue in the \"triple-digit million-euro range\" and was valued at $1.5 billion in 2023. Its reported advisers were Goldman Sachs, Barclays and Jefferies.\n\nListing brings capital and public reporting duties. Device sales can swing with crypto activity.",
+    "sources": [
+     {
+      "url": "https://www.theblock.co/news/business/2026-01-23-ledger-mulls-new-york-ipo-386810",
+      "label": "The Block, Ledger mulls New York IPO at over $4 billion valuation"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "sortSignal",
+    "prompt": "Does this point toward listing soon or waiting?",
+    "buckets": [
+     "List soon",
+     "Wait"
+    ],
+    "items": [
+     {
+      "text": "Revenue is steady across market cycles",
+      "bucket": 0
+     },
+     {
+      "text": "Audited accounts are ready",
+      "bucket": 0
+     },
+     {
+      "text": "Sales swing hard with crypto prices",
+      "bucket": 1
+     },
+     {
+      "text": "Controls are not yet audit-ready",
+      "bucket": 1
+     },
+     {
+      "text": "You need capital to expand",
+      "bucket": 0
+     }
+    ],
+    "explanation": "Steady revenue and ready controls support listing. Volatile sales and weak controls argue for waiting."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "How many banks were reported as Ledger's IPO advisers?",
+    "min": 0,
+    "max": 10,
+    "value": 3,
+    "explanation": "Three: Goldman Sachs, Barclays and Jefferies.",
+    "unit": "banks"
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your board asks for a recommendation.",
+      "prompt": "What do you propose?",
+      "options": [
+       "List next month because Ledger might",
+       "Never list, since crypto is volatile",
+       "Get audit-ready first, then choose timing"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Copying a rival is not a plan.",
+       "That rules out real capital.",
+       "Readiness gives you options."
+      ],
+      "explanation": "Be ready to list when it suits you, not when a rival does."
+     },
+     "proReasoning": "CFOs build readiness before picking a window.",
+     "commonMistake": "Letting a competitor set your timing.",
+     "mentalModel": "Ready first."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A wallet maker you follow files to go public.",
+      "prompt": "What do you check first?",
+      "options": [
+       "How revenue holds up in weak markets",
+       "Whether the CEO posts often online",
+       "Whether its devices come in new colors"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Device sales can be cyclical.",
+       "Posts are not results.",
+       "Colors are not risk."
+      ],
+      "explanation": "Wallet sales may rise and fall with crypto activity. Check the down years."
+     },
+     "proReasoning": "Investors test revenue in bad markets.",
+     "commonMistake": "Judging a filing by a strong year alone.",
+     "mentalModel": "Test the down years."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your startup sells to wallet makers.",
+      "prompt": "What do they need before an IPO?",
+      "options": [
+       "Fewer security checks on devices",
+       "Audit-ready supply chains and controls",
+       "More meme coin partnerships"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Security is the product.",
+       "Public firms face audits.",
+       "That does not prepare a filing."
+      ],
+      "explanation": "Pre-IPO firms need controls that pass audits."
+     },
+     "proReasoning": "Founders sell to a customer's next milestone.",
+     "commonMistake": "Pitching features that add risk.",
+     "mentalModel": "Sell readiness."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend asks why a company would want to go public.",
+      "prompt": "What's the best answer?",
+      "options": [
+       "To stop sharing financial results",
+       "To avoid all government rules",
+       "To raise money from many investors"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Public firms must report results.",
+       "Public firms face more rules.",
+       "Public markets offer capital."
+      ],
+      "explanation": "An IPO raises money but adds reporting and rules."
+     },
+     "proReasoning": "Like opening a shop to more partners who all see the books.",
+     "commonMistake": "Thinking a listing means fewer rules.",
+     "mentalModel": "Money plus reporting."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:ff989431aaea"
+  ]
+ },
+ {
+  "id": "da66c785-7649-53fe-80ea-b9095ff37d2c",
+  "market_id": "web3",
+  "day": 27,
+  "slot": 1,
+  "content": {
+   "id": "web3-d27-c1",
+   "title": "BlackRock adds a second custodian",
+   "lessonTitle": "One custodian for most bitcoin ETFs",
+   "slot": 1,
+   "type": "apply",
+   "brief": {
+    "headline": "In April 2025, BlackRock added Anchorage Digital Bank as an additional custodian for its bitcoin and ether ETFs, IBIT and ETHA. Coinbase had been the only one.",
+    "kicker": "Apply day 27: a backup custodian reduces reliance on one firm.",
+    "fullText": "BlackRock said it had no current plans to move any bitcoin or ether, and cited its \"ongoing risk management approach.\" At the time, IBIT held about $45.1 billion and ETHA about $1.8 billion.\n\nAdding a custodian gives an issuer an option if one provider has problems.\n\nThrough the day 27 lens: Coinbase's CEO later said Coinbase holds more than 80% of US bitcoin ETF custody. One firm still holds most of it.",
+    "sources": [
+     {
+      "url": "https://www.etf.com/sections/news/blackrock-adds-new-digital-asset-custodian",
+      "label": "ETF.com, BlackRock adds a new digital asset custodian, Apr 2025"
+     },
+     {
+      "url": "https://bitcoinmagazine.com/news/coinbase-ceo-addresses-paper-bitcoin",
+      "label": "Bitcoin Magazine, Coinbase CEO addresses paper bitcoin concerns"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "buildChain",
+    "prompt": "Trace why an issuer adds a custodian.",
+    "steps": [
+     "One custodian holds all the fund's coins",
+     "That firm becomes a single point of failure",
+     "The issuer adds a second custodian",
+     "Coins can move if the first has trouble",
+     "Reliance on one firm falls"
+    ],
+    "explanation": "A second custodian gives the fund somewhere to go."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "IBIT held about how many billion dollars at the time?",
+    "min": 0,
+    "max": 100,
+    "value": 45,
+    "explanation": "About $45.1 billion, ETF.com reported.",
+    "unit": "B"
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You interview at an ETF issuer. They ask why BlackRock added Anchorage.",
+      "prompt": "Which answer is strongest?",
+      "options": [
+       "To move all its coins out at once",
+       "To have a backup and cut reliance on one firm",
+       "Because Coinbase lost the fund's bitcoin"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "It had no current plans to move coins.",
+       "BlackRock cited risk management.",
+       "Nothing like that was reported."
+      ],
+      "explanation": "An additional custodian is insurance against one provider failing."
+     },
+     "proReasoning": "Strong answers stay within what the issuer said.",
+     "commonMistake": "Inventing a crisis to explain a routine step.",
+     "mentalModel": "A backup, not a crisis."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You review custody risks for spot crypto ETFs.",
+      "prompt": "What does the Anchorage move show?",
+      "options": [
+       "All ETF coins left Coinbase in 2025",
+       "Custody no longer matters for ETFs",
+       "Issuers can add custodians to spread risk"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "It had no plans to move coins.",
+       "Custody is central to these funds.",
+       "BlackRock added one."
+      ],
+      "explanation": "Spreading custody lowers the risk from a single provider."
+     },
+     "proReasoning": "Analysts track custody arrangements across funds.",
+     "commonMistake": "Assuming custody is a solved issue.",
+     "mentalModel": "Spread the risk."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your startup offers crypto custody.",
+      "prompt": "What opening does this show?",
+      "options": [
+       "Large issuers want second custodians",
+       "Issuers will drop custody entirely",
+       "Only one custodian will ever exist"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "BlackRock added Anchorage.",
+       "Spot funds must hold coins.",
+       "There are now at least two."
+      ],
+      "explanation": "Big issuers may add backups. A credible custodian can win that role."
+     },
+     "proReasoning": "Founders aim for the backup slot first.",
+     "commonMistake": "Trying to replace the leader before earning trust.",
+     "mentalModel": "Win the backup slot."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend asks why a fund would use two vaults.",
+      "prompt": "What's the best answer?",
+      "options": [
+       "To pay twice the fees for fun",
+       "So one failure does not trap all the coins",
+       "Because one vault was robbed last year"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "It is about risk.",
+       "That is the risk logic.",
+       "No robbery was reported."
+      ],
+      "explanation": "Two custodians mean the fund is not stuck if one has trouble."
+     },
+     "proReasoning": "Like keeping a spare key with a second neighbor.",
+     "commonMistake": "Assuming a backup means something went wrong.",
+     "mentalModel": "A spare key."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:75057e1a64b8"
+  ]
+ },
+ {
+  "id": "940a41a7-537c-58ec-940e-aaaa1d00aca0",
+  "market_id": "web3",
+  "day": 27,
+  "slot": 2,
+  "content": {
+   "id": "web3-d27-c2",
+   "title": "Funds grow, custody concentrates",
+   "lessonTitle": "One custodian for most bitcoin ETFs",
+   "slot": 2,
+   "type": "connect",
+   "brief": {
+    "headline": "US spot bitcoin ETFs held about 1.25 million bitcoin in July 2025, and IBIT held over 700,000. In February 2026, Coinbase's CEO said it holds over 80% of US bitcoin ETF custody.",
+    "kicker": "Connect day 8 and day 27: big funds, one main vault.",
+    "fullText": "Day 8 showed how fast spot bitcoin ETFs grew, with IBIT becoming BlackRock's third-highest revenue ETF out of 1,197.\n\nDay 27 showed where those coins sit. Brian Armstrong said Coinbase holds more than 80% of US bitcoin ETF custody and dismissed \"paper bitcoin\" worries. Issuers can verify holdings on-chain, but client addresses are not published.",
+    "sources": [
+     {
+      "url": "https://www.theblock.co/amp/post/361525/blackrocks-spot-bitcoin-etf-ibit-surpasses-700000-btc-assets-under-management",
+      "label": "The Block, BlackRock's IBIT surpasses 700,000 BTC"
+     },
+     {
+      "url": "https://bitcoinmagazine.com/news/coinbase-ceo-addresses-paper-bitcoin",
+      "label": "Bitcoin Magazine, Coinbase CEO addresses paper bitcoin concerns"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "multipleChoice",
+    "prompt": "What can ETF issuers do to check their custodied bitcoin?",
+    "options": [
+     "Ask the SEC to count it",
+     "Check the coin price daily",
+     "Verify holdings on-chain"
+    ],
+    "correctIndex": 2,
+    "explanation": "Issuers can verify holdings on-chain, though client addresses are not published."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "Coinbase said it holds over what percent of US bitcoin ETF custody?",
+    "min": 0,
+    "max": 100,
+    "value": 80,
+    "explanation": "Over 80%, Brian Armstrong said in February 2026.",
+    "unit": "%"
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your manager asks for the biggest structural risk in bitcoin ETFs.",
+      "prompt": "Which answer leads?",
+      "options": [
+       "ETFs hold no real bitcoin at all",
+       "Fund fees are always zero",
+       "Most coins sit with one custodian"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Spot funds hold real coins.",
+       "Funds charge fees.",
+       "Coinbase holds over 80%."
+      ],
+      "explanation": "Concentration means one firm's problem could touch most funds."
+     },
+     "proReasoning": "Analysts name concentration risks plainly.",
+     "commonMistake": "Missing a single point of failure.",
+     "mentalModel": "Name the concentration."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You compare bitcoin ETFs.",
+      "prompt": "What do you look up?",
+      "options": [
+       "Who custodies each fund's coins",
+       "Which fund has the shortest name",
+       "Which ticker sounds best"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Custody is a key risk.",
+       "Names do not change risk.",
+       "Tickers do not change risk."
+      ],
+      "explanation": "Most funds share one custodian. Check whether yours has a backup."
+     },
+     "proReasoning": "Investors read the custody section.",
+     "commonMistake": "Assuming all funds carry different risks.",
+     "mentalModel": "Read custody."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your startup builds proof-of-reserves tools.",
+      "prompt": "What need does this point to?",
+      "options": [
+       "Tools that move coins without records",
+       "Clear, verifiable reporting of ETF holdings",
+       "Hiding which custodian holds coins"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "That removes trust.",
+       "Client addresses are not published.",
+       "That adds doubt."
+      ],
+      "explanation": "Issuers can verify on-chain. Tools that make this clearer meet a real need."
+     },
+     "proReasoning": "Founders build where trust gaps remain.",
+     "commonMistake": "Ignoring the verification question.",
+     "mentalModel": "Close the gap."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend asks if bitcoin ETFs really hold bitcoin.",
+      "prompt": "What's the best answer?",
+      "options": [
+       "No, they only hold IOUs from other firms",
+       "Only on weekends, when markets close",
+       "Yes, mostly held by Coinbase as custodian"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Armstrong dismissed that worry.",
+       "Holdings do not change by day.",
+       "Issuers can verify on-chain."
+      ],
+      "explanation": "Spot funds hold real coins, mostly with one custodian."
+     },
+     "proReasoning": "Like gold funds that keep bars in a vault.",
+     "commonMistake": "Believing rumors over what can be checked.",
+     "mentalModel": "Real coins, one vault."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:d36a91684597"
+  ]
+ },
+ {
+  "id": "cc8915ed-3db3-5b9c-8f6c-fb3d3f5183ef",
+  "market_id": "web3",
+  "day": 27,
+  "slot": 3,
+  "content": {
+   "id": "web3-d27-c3",
+   "title": "One custodian or two?",
+   "lessonTitle": "One custodian for most bitcoin ETFs",
+   "slot": 3,
+   "type": "decide",
+   "brief": {
+    "headline": "You are launching a spot bitcoin ETF. Coinbase holds more than 80% of US bitcoin ETF custody, according to its CEO, and issuers can verify holdings on-chain.",
+    "kicker": "Decide how to set up custody for your fund.",
+    "fullText": "Using the leading custodian is familiar to investors and regulators. But most bitcoin ETFs then share the same single point of failure.\n\nClient addresses are not published, so investors rely on the issuer and custodian for assurance.",
+    "sources": [
+     {
+      "url": "https://bitcoinmagazine.com/news/coinbase-ceo-addresses-paper-bitcoin",
+      "label": "Bitcoin Magazine, Coinbase CEO addresses paper bitcoin concerns"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "sortSignal",
+    "prompt": "Does this point toward one custodian or two?",
+    "buckets": [
+     "One custodian",
+     "Two custodians"
+    ],
+    "items": [
+     {
+      "text": "You want the simplest setup at launch",
+      "bucket": 0
+     },
+     {
+      "text": "Your fund grows very large",
+      "bucket": 1
+     },
+     {
+      "text": "Investors ask about single points of failure",
+      "bucket": 1
+     },
+     {
+      "text": "Fees for a second custodian are high",
+      "bucket": 0
+     },
+     {
+      "text": "Your board wants a backup plan",
+      "bucket": 1
+     }
+    ],
+    "explanation": "Small funds may start simple. Large ones and cautious boards favor a backup."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "Coinbase holds over what percent of US bitcoin ETF custody?",
+    "min": 0,
+    "max": 100,
+    "value": 80,
+    "explanation": "Over 80%, per its CEO in February 2026.",
+    "unit": "%"
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your board asks for a custody plan.",
+      "prompt": "What do you propose?",
+      "options": [
+       "Start with one, line up a backup custodian",
+       "Hold the bitcoin on staff laptops",
+       "Pick the cheapest firm with no checks"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Simple now, safer later.",
+       "That is not custody.",
+       "Cheap custody can be costly."
+      ],
+      "explanation": "A primary custodian plus a backup limits single-provider risk."
+     },
+     "proReasoning": "Leaders plan for provider failure.",
+     "commonMistake": "Treating custody as a cost to minimize.",
+     "mentalModel": "Primary plus backup."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A new bitcoin ETF uses only one custodian.",
+      "prompt": "What do you ask?",
+      "options": [
+       "Why does it hold real bitcoin?",
+       "Is there a plan if that custodian fails?",
+       "Why is the ticker four letters long?"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Spot funds must hold bitcoin.",
+       "Concentration is the key risk.",
+       "Tickers do not matter."
+      ],
+      "explanation": "One custodian is common. The question is what happens if it has trouble."
+     },
+     "proReasoning": "Investors ask about contingency plans.",
+     "commonMistake": "Ignoring custody because everyone uses it.",
+     "mentalModel": "Ask about the backup."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your startup is a smaller custodian.",
+      "prompt": "How do you pitch ETF issuers?",
+      "options": [
+       "As cheaper because you skip audits",
+       "As a firm that will hide holdings",
+       "As a backup that cuts concentration risk"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "No issuer wants that.",
+       "That destroys trust.",
+       "Issuers want backups."
+      ],
+      "explanation": "Most coins sit with one firm. A trusted backup solves a real issuer worry."
+     },
+     "proReasoning": "Founders position against the leader's weak point.",
+     "commonMistake": "Competing on price by cutting safety.",
+     "mentalModel": "Be the backup."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend asks why it matters who holds ETF bitcoin.",
+      "prompt": "What's the best answer?",
+      "options": [
+       "If that firm fails, many funds feel it",
+       "It does not matter at all",
+       "Custodians set the bitcoin price"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Over 80% sits with one firm.",
+       "Custody is central to the fund.",
+       "Markets set prices."
+      ],
+      "explanation": "When one firm holds most coins, its problems become everyone's."
+     },
+     "proReasoning": "Like many shops keeping cash in one vault.",
+     "commonMistake": "Assuming the holder is irrelevant.",
+     "mentalModel": "One vault, many shops."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:a16946ef9b4d"
+  ]
+ },
+ {
+  "id": "5cd0c352-325b-58c2-ab27-3f202212ca98",
+  "market_id": "web3",
+  "day": 28,
+  "slot": 1,
+  "content": {
+   "id": "web3-d28-c1",
+   "title": "When thieves come to the door",
+   "lessonTitle": "The everyday wallet thefts",
+   "slot": 1,
+   "type": "apply",
+   "brief": {
+    "headline": "CertiK counted 72 verified \"wrench attacks\" in 2025, physical attacks to force victims to hand over crypto, up 75% from the year before, Decrypt reported. Losses topped $40.9 million.",
+    "kicker": "Apply day 28: wallet theft is not only online.",
+    "fullText": "Europe accounted for over 40% of incidents, up from 22%, with France at 19 cases and the US at 8. Kidnapping was the most common method, and physical assaults rose 250%.\n\nIn January 2025, a Ledger co-founder was kidnapped in France, with a ransom of €10 million demanded; ten people were arrested.\n\nCertiK suggested decoy wallets, seed phrases kept apart from devices, multisig and time locks. Through the day 28 lens: personal wallets are a growing target.",
+    "sources": [
+     {
+      "url": "https://decrypt.co/356604/41m-in-losses-as-crypto-wrench-attacks-hit-record-high-in-2025",
+      "label": "Decrypt, crypto wrench attacks hit a record high in 2025, citing CertiK"
+     },
+     {
+      "url": "https://www.theblock.co/post/382477/crypto-hack-2025-chainalysis",
+      "label": "The Block, crypto hacks hit $3.4 billion in 2025: Chainalysis"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "spotFake",
+    "prompt": "One of these is false. Tap it.",
+    "statements": [
+     "Wrench attacks rose 75% in 2025",
+     "Europe had over 40% of incidents",
+     "The US had more incidents than France"
+    ],
+    "fakeIndex": 2,
+    "explanation": "France had 19 incidents and the US had 8."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "CertiK counted how many verified wrench attacks in 2025?",
+    "min": 0,
+    "max": 200,
+    "value": 72,
+    "explanation": "72, up 75% from the year before.",
+    "unit": "attacks"
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You interview for a security role at a crypto firm. They ask about wrench attacks.",
+      "prompt": "Which answer is strongest?",
+      "options": [
+       "Only online hackers threaten crypto",
+       "Strong passwords stop all wrench attacks",
+       "Physical threats need defenses like multisig"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Physical attacks rose 75%.",
+       "Force bypasses passwords.",
+       "CertiK listed multisig and time locks."
+      ],
+      "explanation": "If one person can move funds alone, they become a target. Spread control."
+     },
+     "proReasoning": "Strong candidates cover physical and digital security.",
+     "commonMistake": "Ignoring threats outside the screen.",
+     "mentalModel": "Spread control."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A client with large crypto holdings asks about safety.",
+      "prompt": "What do you suggest they look into?",
+      "options": [
+       "Multisig, time locks and keeping a low profile",
+       "Posting their holdings online for clarity",
+       "Keeping seed words next to their device"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "CertiK suggested these defenses.",
+       "That draws attention.",
+       "CertiK advised keeping them apart."
+      ],
+      "explanation": "Making sure no single person can move everything lowers the payoff of force."
+     },
+     "proReasoning": "Advisers think about personal safety, not just markets.",
+     "commonMistake": "Advertising wealth online.",
+     "mentalModel": "Lower the payoff."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your startup builds wallet software.",
+      "prompt": "Which feature responds to wrench attacks?",
+      "options": [
+       "A public page showing user balances",
+       "Time-locked withdrawals for large amounts",
+       "One-tap transfer of the whole balance"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "That exposes users.",
+       "Delays reduce the value of force.",
+       "That helps attackers."
+      ],
+      "explanation": "Time locks mean an attacker cannot get everything at once."
+     },
+     "proReasoning": "Founders design for the threats users actually face.",
+     "commonMistake": "Optimizing speed over safety.",
+     "mentalModel": "Slow down large moves."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend asks what a \"wrench attack\" is.",
+      "prompt": "What's the best answer?",
+      "options": [
+       "A bug that breaks a smart contract online",
+       "A sudden, fast drop in coin prices",
+       "Forcing someone in person to give up crypto"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "That is a hack.",
+       "That is a crash.",
+       "Kidnapping was the most common method."
+      ],
+      "explanation": "It means using force or threats in person to get someone's crypto."
+     },
+     "proReasoning": "The name comes from the idea that a wrench beats encryption.",
+     "commonMistake": "Thinking crypto risk is only digital.",
+     "mentalModel": "Force beats code."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:ab317412df4a"
+  ]
+ },
+ {
+  "id": "cb2be739-8116-51d7-b0ee-4ff764d663fb",
+  "market_id": "web3",
+  "day": 28,
+  "slot": 2,
+  "content": {
+   "id": "web3-d28-c2",
+   "title": "One heist, a record year",
+   "lessonTitle": "The everyday wallet thefts",
+   "slot": 2,
+   "type": "connect",
+   "brief": {
+    "headline": "In February 2025, hackers stole about $1.5 billion from Bybit, which the FBI attributed to North Korea. Chainalysis said North Korea stole at least $2.02 billion in 2025.",
+    "kicker": "Connect day 5 and day 28: stolen keys at scale and at home.",
+    "fullText": "Day 5 showed that whoever controls the private keys controls the funds, and Bybit's loss showed it at huge scale.\n\nDay 28 showed the full year: about $3.41 billion stolen, with North Korea taking at least $2.02 billion, $681 million more than in 2024. Personal wallet thefts fell to about $713 million, but hit at least 80,000 people.",
+    "sources": [
+     {
+      "url": "https://www.ic3.gov/PSA/2025/PSA250226",
+      "label": "FBI IC3, Bybit theft alert"
+     },
+     {
+      "url": "https://www.theblock.co/post/382477/crypto-hack-2025-chainalysis",
+      "label": "The Block, crypto hacks hit $3.4 billion in 2025: Chainalysis"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "faceOff",
+    "prompt": "Which loss made up most of North Korea's 2025 total?",
+    "left": {
+     "name": "The Bybit theft",
+     "note": "About $1.5 billion in one attack"
+    },
+    "right": {
+     "name": "Personal wallet thefts",
+     "note": "About $713 million across many people"
+    },
+    "correctIndex": 0,
+    "explanation": "Bybit alone was about $1.5 billion of North Korea's $2.02 billion or more."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "North Korea stole at least about how many billion dollars in 2025?",
+    "min": 0,
+    "max": 6,
+    "value": 2,
+    "explanation": "At least $2.02 billion, Chainalysis said.",
+    "unit": "B"
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your manager asks for the key theme in 2025 crypto theft.",
+      "prompt": "Which answer leads?",
+      "options": [
+       "A few huge key thefts drove most losses",
+       "Thefts stopped after new rules",
+       "Only small wallets were targeted that year"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Bybit was about $1.5 billion.",
+       "Thefts totaled about $3.41 billion.",
+       "Exchanges were hit hardest."
+      ],
+      "explanation": "One theft dwarfed the rest. Key control at large firms is the top risk."
+     },
+     "proReasoning": "Analysts look at how losses are distributed.",
+     "commonMistake": "Averaging away the biggest event.",
+     "mentalModel": "A few giant losses."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You assess an exchange's security.",
+      "prompt": "What do you focus on?",
+      "options": [
+       "How bright and modern its app looks",
+       "How it controls the keys to its wallets",
+       "How many coins it lists for trading"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Design is not security.",
+       "Bybit lost funds through keys.",
+       "Listings are not security."
+      ],
+      "explanation": "Large thefts came through key control. That is what to examine."
+     },
+     "proReasoning": "Investors ask how keys are stored and approved.",
+     "commonMistake": "Judging security by features.",
+     "mentalModel": "Follow the keys."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your startup sells security to exchanges.",
+      "prompt": "What does the 2025 data suggest?",
+      "options": [
+       "Attacks are fading away year after year",
+       "Only individuals need protection from attacks",
+       "Exchanges face skilled, well-funded attackers"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Losses rose in 2025.",
+       "Exchanges suffered the largest loss.",
+       "North Korea took over $2 billion."
+      ],
+      "explanation": "State-backed groups target large key holders. Defenses must match."
+     },
+     "proReasoning": "Founders size the threat before designing.",
+     "commonMistake": "Underestimating attacker skill.",
+     "mentalModel": "Match the threat."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend asks how one hack can steal $1.5 billion.",
+      "prompt": "What's the best answer?",
+      "options": [
+       "The attackers got control of the keys",
+       "They guessed the coin price right",
+       "They printed extra bitcoin"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Keys move funds.",
+       "Prices do not move funds.",
+       "No one can print bitcoin."
+      ],
+      "explanation": "Whoever controls the keys can move the funds, no matter who owns them."
+     },
+     "proReasoning": "Like stealing the master key to a vault.",
+     "commonMistake": "Thinking the blockchain itself was broken.",
+     "mentalModel": "The master key."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:b141b9547630"
+  ]
+ },
+ {
+  "id": "f9366e10-b2c5-5a8c-abd5-579836d6d2ba",
+  "market_id": "web3",
+  "day": 28,
+  "slot": 3,
+  "content": {
+   "id": "web3-d28-c3",
+   "title": "Protecting customers from everyday wallet theft",
+   "lessonTitle": "The everyday wallet thefts",
+   "slot": 3,
+   "type": "decide",
+   "brief": {
+    "headline": "You run security for a consumer wallet app. Chainalysis counted 158,000 personal wallet compromises in 2025, hitting at least 80,000 people and taking about $713 million.",
+    "kicker": "Decide where to put your security budget.",
+    "fullText": "Personal wallet losses fell from $1.5 billion in 2024 to about $713 million in 2025, but many more people were affected.\n\nTotal crypto theft was about $3.41 billion. Your users are mostly individuals with modest balances.",
+    "sources": [
+     {
+      "url": "https://www.theblock.co/post/382477/crypto-hack-2025-chainalysis",
+      "label": "The Block, crypto hacks hit $3.4 billion in 2025: Chainalysis"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "sortSignal",
+    "prompt": "Is this a likely threat to your users, or mostly a risk for big platforms?",
+    "buckets": [
+     "Likely for your users",
+     "Mostly big platforms"
+    ],
+    "items": [
+     {
+      "text": "Phishing links that drain wallets",
+      "bucket": 0
+     },
+     {
+      "text": "Seed phrases leaked by scams",
+      "bucket": 0
+     },
+     {
+      "text": "State-backed attacks on exchange keys",
+      "bucket": 1
+     },
+     {
+      "text": "Malicious approvals signed by mistake",
+      "bucket": 0
+     },
+     {
+      "text": "Billion-dollar exchange hacks",
+      "bucket": 1
+     }
+    ],
+    "explanation": "Individuals face phishing, scams and bad approvals. Giant heists target platforms."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "About how many thousand personal wallet compromises happened in 2025?",
+    "min": 0,
+    "max": 400,
+    "value": 158,
+    "explanation": "About 158,000, hitting at least 80,000 people.",
+    "unit": "K"
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your CEO asks where to spend.",
+      "prompt": "What do you recommend?",
+      "options": [
+       "Marketing that promises zero theft",
+       "Warnings on risky signatures and scams",
+       "Only harder server encryption"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "No one can promise that.",
+       "That fits everyday threats.",
+       "Most losses come at the user end."
+      ],
+      "explanation": "Personal thefts mostly start with users being tricked. Defend that moment."
+     },
+     "proReasoning": "Leaders spend where losses actually happen.",
+     "commonMistake": "Defending against the wrong threat.",
+     "mentalModel": "Defend the moment."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A wallet app highlights its \"bank-grade servers.\"",
+      "prompt": "What do you ask?",
+      "options": [
+       "How many servers it runs",
+       "Which colors the app uses on screen",
+       "How it protects users from scams"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Servers matter less here.",
+       "Colors are not security.",
+       "Scams drive personal theft."
+      ],
+      "explanation": "Most personal losses come from tricks, not server breaches."
+     },
+     "proReasoning": "Investors test security claims against real losses.",
+     "commonMistake": "Accepting marketing claims as protection.",
+     "mentalModel": "Ask about scams."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your startup could add one feature this quarter.",
+      "prompt": "Which helps most?",
+      "options": [
+       "Simulating transactions before signing",
+       "A new coin swap screen for traders",
+       "A dark mode theme for night use"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Users see what they approve.",
+       "Nice, but not protection.",
+       "Nice, but not protection."
+      ],
+      "explanation": "Showing what a signature will do stops many drains."
+     },
+     "proReasoning": "Founders fix the biggest source of user losses first.",
+     "commonMistake": "Shipping features while losses continue.",
+     "mentalModel": "Show before signing."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend asks how most people lose crypto.",
+      "prompt": "What's the best answer?",
+      "options": [
+       "Banks freezing their wallets at will",
+       "Being tricked into signing or sharing keys",
+       "Blockchains randomly deleting their coins"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Self-custody has no bank.",
+       "Scams drive personal losses.",
+       "Blockchains do not do that."
+      ],
+      "explanation": "Most personal theft starts with a scam. Slow down before signing."
+     },
+     "proReasoning": "Like a con artist, not a safecracker.",
+     "commonMistake": "Thinking only hackers with code are the danger.",
+     "mentalModel": "A con, not a crack."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:87daeca339b2"
+  ]
+ },
+ {
+  "id": "49879062-94e7-5465-b0bd-884b3da0b6a6",
+  "market_id": "web3",
+  "day": 29,
+  "slot": 1,
+  "content": {
+   "id": "web3-d29-c1",
+   "title": "A big bank resumes bitcoin custody",
+   "lessonTitle": "The accounting rule that kept banks out",
+   "slot": 1,
+   "type": "apply",
+   "brief": {
+    "headline": "In September 2025, U.S. Bank said it had resumed bitcoin custody for institutional investment managers, a service it first announced in 2021, and added support for bitcoin ETFs.",
+    "kicker": "Apply day 29: banks returned to crypto custody after the rule changed.",
+    "fullText": "U.S. Bank uses NYDIG as sub-custodian. It said: \"Following greater regulatory clarity, we've expanded our offering to include bitcoin ETFs.\" The bank reported $11.7 trillion in assets under custody and administration.\n\nIts announcement did not name a specific rule.\n\nThrough the day 29 lens: the SEC rescinded SAB 121 in January 2025. That guidance had required firms to record crypto held for clients as a liability at fair value.",
+    "sources": [
+     {
+      "url": "https://ir.usbank.com/news-events/news/news-details/2025/U-S--Bank-Resumes-Bitcoin-Cryptocurrency-Custody-Services-for-Institutional-Investment-Managers/default.aspx",
+      "label": "U.S. Bank, resumes bitcoin custody for institutional investment managers, Sep 2025"
+     },
+     {
+      "url": "https://www.withum.com/resources/sec-issues-sab-122-officially-rescinding-sab-121/",
+      "label": "Withum, SEC issues SAB 122 rescinding SAB 121"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "buildChain",
+    "prompt": "Put the events in order.",
+    "steps": [
+     "The bank first announces crypto custody",
+     "SAB 121 guidance is issued",
+     "The SEC rescinds SAB 121",
+     "The bank resumes bitcoin custody",
+     "It adds support for bitcoin ETFs"
+    ],
+    "explanation": "2021, March 2022, January 2025, then September 2025."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "About how many months after SAB 121 was rescinded did U.S. Bank resume custody?",
+    "min": 0,
+    "max": 24,
+    "value": 8,
+    "explanation": "From January to September 2025 is about 8 months, by our count.",
+    "unit": "months"
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You interview at a bank's custody unit. They ask what U.S. Bank's move shows.",
+      "prompt": "Which answer is strongest?",
+      "options": [
+       "Large banks are returning to crypto custody",
+       "Banks are leaving crypto entirely",
+       "Custody no longer needs sub-custodians"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "It resumed and expanded custody.",
+       "It did the opposite.",
+       "It uses NYDIG."
+      ],
+      "explanation": "A major bank resumed custody and cited greater regulatory clarity."
+     },
+     "proReasoning": "Strong candidates quote what the bank said.",
+     "commonMistake": "Claiming a cause the bank did not state.",
+     "mentalModel": "Quote, do not guess."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You write a note on banks and crypto.",
+      "prompt": "How do you describe the link to SAB 121?",
+      "options": [
+       "There is no rule history to mention",
+       "The timing follows it; the bank cited clarity",
+       "The bank said SAB 121 alone caused the move"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "The rescission is relevant.",
+       "Accurate and careful.",
+       "The release did not say that."
+      ],
+      "explanation": "Report the timing and the bank's words. Do not invent a cause."
+     },
+     "proReasoning": "Analysts separate timing from causation.",
+     "commonMistake": "Stating causation without evidence.",
+     "mentalModel": "Timing, not cause."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your startup offers custody technology.",
+      "prompt": "What does this suggest?",
+      "options": [
+       "Banks will build every part of it alone",
+       "Custody demand is shrinking",
+       "Banks may need partners to offer custody"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "It relies on a sub-custodian.",
+       "It expanded the service.",
+       "It relies on NYDIG as sub-custodian."
+      ],
+      "explanation": "Banks entering custody may partner with specialists, as U.S. Bank did."
+     },
+     "proReasoning": "Founders look for partners in new bank services.",
+     "commonMistake": "Assuming banks never partner.",
+     "mentalModel": "Partner with banks."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend asks why a bank would hold bitcoin for clients.",
+      "prompt": "What's the best answer?",
+      "options": [
+       "Clients want a trusted firm to guard it",
+       "Banks must own some bitcoin by federal law",
+       "To mine bitcoin inside its branches"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Custody is a service.",
+       "No such law exists.",
+       "Custody is not mining."
+      ],
+      "explanation": "Big investors want regulated firms to hold assets for them."
+     },
+     "proReasoning": "Like a bank safe-deposit box for digital assets.",
+     "commonMistake": "Thinking custody means the bank owns it.",
+     "mentalModel": "A safe-deposit box."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:2017c729888e"
+  ]
+ },
+ {
+  "id": "53ca54e1-b273-502f-8e0a-6dd9e9bc1e80",
+  "market_id": "web3",
+  "day": 29,
+  "slot": 2,
+  "content": {
+   "id": "web3-d29-c2",
+   "title": "Why one firm held most ETF bitcoin",
+   "lessonTitle": "The accounting rule that kept banks out",
+   "slot": 2,
+   "type": "connect",
+   "brief": {
+    "headline": "Coinbase holds more than 80% of US bitcoin ETF custody, its CEO said in February 2026. From March 2022 to January 2025, SAB 121 made crypto custody costly for banks.",
+    "kicker": "Connect day 27 and day 29: an accounting rule shaped who holds the coins.",
+    "fullText": "Day 27 showed custody concentration: most US bitcoin ETF coins sit with Coinbase.\n\nDay 29 showed SAB 121, which required firms holding crypto for clients to record a liability at fair value. For banks, that made custody expensive. SAB 122 rescinded it in January 2025, returning firms to standard accounting rules. It was described as removing \"non-technology-neutral barriers.\"",
+    "sources": [
+     {
+      "url": "https://bitcoinmagazine.com/news/coinbase-ceo-addresses-paper-bitcoin",
+      "label": "Bitcoin Magazine, Coinbase CEO addresses paper bitcoin concerns"
+     },
+     {
+      "url": "https://www.withum.com/resources/sec-issues-sab-122-officially-rescinding-sab-121/",
+      "label": "Withum, SEC issues SAB 122 rescinding SAB 121"
+     },
+     {
+      "url": "https://www.cliffordchance.com/briefings/2025/01/sec-rescinds-2022-accounting-guidance-regarding-crypto-assets-un.html",
+      "label": "Clifford Chance, SEC rescinds 2022 crypto custody accounting guidance"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "faceOff",
+    "prompt": "What did SAB 121 require firms holding crypto for clients to do?",
+    "left": {
+     "name": "Record a liability at fair value",
+     "note": "Put client crypto on their own books"
+    },
+    "right": {
+     "name": "Stop holding crypto entirely",
+     "note": "Ban all crypto custody services"
+    },
+    "correctIndex": 0,
+    "explanation": "SAB 121 required a liability at fair value, which made custody costly for banks."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "About how many months was SAB 121 in force?",
+    "min": 0,
+    "max": 60,
+    "value": 34,
+    "explanation": "From March 2022 to January 2025 is about 34 months, by our count.",
+    "unit": "months"
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your manager asks why banks were slow to offer crypto custody.",
+      "prompt": "Which answer leads?",
+      "options": [
+       "Bitcoin cannot be held by any bank",
+       "SAB 121 made it costly to hold client crypto",
+       "Banks were banned from touching crypto"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Banks can hold it.",
+       "A fair-value liability weighed on books.",
+       "It was guidance, not a ban."
+      ],
+      "explanation": "An accounting rule raised the cost of custody for banks."
+     },
+     "proReasoning": "Analysts look for rules behind market structure.",
+     "commonMistake": "Missing how accounting shapes behavior.",
+     "mentalModel": "Rules shape markets."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You consider custody concentration in ETFs.",
+      "prompt": "What may change after SAB 122?",
+      "options": [
+       "Coinbase must give up all of its custody",
+       "ETFs must stop using custodians",
+       "More banks could compete to hold ETF coins"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "No such rule exists.",
+       "Custody is required.",
+       "The barrier was removed."
+      ],
+      "explanation": "With the barrier gone, banks can compete. Concentration could ease."
+     },
+     "proReasoning": "Investors watch rule changes that reshape competition.",
+     "commonMistake": "Assuming market shares are fixed.",
+     "mentalModel": "Watch new entrants."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your startup serves banks entering custody.",
+      "prompt": "Why is timing good now?",
+      "options": [
+       "SAB 122 removed an accounting barrier",
+       "Banks are now forced to offer custody",
+       "Crypto no longer needs custody"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Banks can now compete.",
+       "Nothing forces them.",
+       "Custody is still needed."
+      ],
+      "explanation": "A rule that kept banks out is gone. Banks need help to enter."
+     },
+     "proReasoning": "Founders time products to regulatory openings.",
+     "commonMistake": "Missing a window that just opened.",
+     "mentalModel": "Use the opening."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend asks how an accounting rule kept banks out of crypto.",
+      "prompt": "What's the best answer?",
+      "options": [
+       "It forced banks to sell all their bitcoin",
+       "It made client crypto count against their books",
+       "It made holding crypto illegal for banks"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "It did not force sales.",
+       "A liability at fair value.",
+       "It was not a ban."
+      ],
+      "explanation": "Booking client crypto as a liability made custody costly."
+     },
+     "proReasoning": "Like counting a stored package as your own debt.",
+     "commonMistake": "Thinking only laws, not accounting, shape markets.",
+     "mentalModel": "Accounting matters."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:50a574062da2"
+  ]
+ },
+ {
+  "id": "5b8e85dc-9282-5f5c-8bec-7e128eb50529",
+  "market_id": "web3",
+  "day": 29,
+  "slot": 3,
+  "content": {
+   "id": "web3-d29-c3",
+   "title": "Should your bank offer crypto custody now?",
+   "lessonTitle": "The accounting rule that kept banks out",
+   "slot": 3,
+   "type": "decide",
+   "brief": {
+    "headline": "You lead custody at a mid-sized bank. SAB 121, issued in March 2022, was rescinded on January 23, 2025, and SAB 122 returned firms to standard accounting rules.",
+    "kicker": "Decide whether and how to enter crypto custody.",
+    "fullText": "SAB 121 had required a liability at fair value for crypto held for clients. Its rescission removed what SAB 122 called \"non-technology-neutral barriers.\"\n\nYour clients ask about bitcoin ETFs and direct holdings. Building custody needs secure key management, or a specialist partner.",
+    "sources": [
+     {
+      "url": "https://www.withum.com/resources/sec-issues-sab-122-officially-rescinding-sab-121/",
+      "label": "Withum, SEC issues SAB 122 rescinding SAB 121"
+     },
+     {
+      "url": "https://www.cliffordchance.com/briefings/2025/01/sec-rescinds-2022-accounting-guidance-regarding-crypto-assets-un.html",
+      "label": "Clifford Chance, SEC rescinds 2022 crypto custody accounting guidance"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "sortSignal",
+    "prompt": "Does this point toward partnering or building in-house?",
+    "buckets": [
+     "Partner first",
+     "Build in-house"
+    ],
+    "items": [
+     {
+      "text": "You need to launch within months",
+      "bucket": 0
+     },
+     {
+      "text": "Your team lacks key-management experience",
+      "bucket": 0
+     },
+     {
+      "text": "You expect huge volumes for years",
+      "bucket": 1
+     },
+     {
+      "text": "You want full control over every step",
+      "bucket": 1
+     },
+     {
+      "text": "You want to test client demand first",
+      "bucket": 0
+     }
+    ],
+    "explanation": "Partners speed entry. Building pays off at scale with strong expertise."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "SAB 121 was issued in which month of 2022?",
+    "min": 0,
+    "max": 12,
+    "value": 3,
+    "explanation": "March 2022, month 3.",
+    "unit": "month"
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your CEO asks how to enter custody.",
+      "prompt": "What do you recommend?",
+      "options": [
+       "Build everything in-house before asking clients",
+       "Wait for SAB 121 to come back",
+       "Start with a specialist partner, then decide"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Slow and costly.",
+       "It was rescinded.",
+       "Fast, lower risk."
+      ],
+      "explanation": "A partner lets you test demand. Build later if volumes justify it."
+     },
+     "proReasoning": "Leaders sequence entry to manage risk.",
+     "commonMistake": "Overbuilding before testing demand.",
+     "mentalModel": "Partner, then decide."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A bank announces crypto custody.",
+      "prompt": "What do you check?",
+      "options": [
+       "Who manages the keys and how",
+       "How many branches it has",
+       "Its logo redesign"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Key management is the risk.",
+       "Branches do not hold keys.",
+       "Logos do not hold keys."
+      ],
+      "explanation": "Custody quality rests on key management."
+     },
+     "proReasoning": "Investors ask who holds and approves keys.",
+     "commonMistake": "Judging custody by bank size.",
+     "mentalModel": "Check the keys."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your startup provides custody to banks.",
+      "prompt": "Who is your best first customer?",
+      "options": [
+       "Banks waiting for SAB 121 to return",
+       "Mid-sized banks that want to launch fast",
+       "Banks that refuse to touch crypto"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "It was rescinded.",
+       "They need speed and skill.",
+       "They are not buying."
+      ],
+      "explanation": "Banks that want quick entry without building are the best fit."
+     },
+     "proReasoning": "Founders sell to buyers who are ready now.",
+     "commonMistake": "Chasing customers who are not interested.",
+     "mentalModel": "Sell to the ready."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend asks why banks are only now offering crypto.",
+      "prompt": "What's the best answer?",
+      "options": [
+       "Bitcoin was illegal in the US until 2025",
+       "Banks only just heard of bitcoin this decade",
+       "An accounting rule that made it costly was dropped"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "It was not illegal.",
+       "Banks knew of it.",
+       "SAB 121 was rescinded in 2025."
+      ],
+      "explanation": "A rule made custody expensive. Its removal opened the door."
+     },
+     "proReasoning": "Like a fee that kept shops from opening until it was scrapped.",
+     "commonMistake": "Assuming banks were banned.",
+     "mentalModel": "The fee was scrapped."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:194b481d7484"
+  ]
+ },
+ {
+  "id": "40780d1a-bc94-5946-bd83-3719993b70b4",
+  "market_id": "web3",
+  "day": 30,
+  "slot": 1,
+  "content": {
+   "id": "web3-d30-c1",
+   "title": "August's phishing wave",
+   "lessonTitle": "Smart wallets and their new risks",
+   "slot": 1,
+   "type": "apply",
+   "brief": {
+    "headline": "In August 2025, crypto phishing drained more than $12 million from over 15,000 wallets, according to Scam Sniffer data reported by BeInCrypto. Losses rose 72% from July.",
+    "kicker": "Apply day 30: new wallet features can be turned into new tricks.",
+    "fullText": "The number of victims rose 67%. Scam Sniffer said EIP-7702 was the main tool in August's attacks.\n\nEIP-7702, added in the Pectra upgrade, lets an ordinary wallet delegate to smart contract code. That enables features like batching, but a single tricked signature can hand control to an attacker's contract.\n\nThrough the day 30 lens: smart wallets bring new conveniences and new risks.",
+    "sources": [
+     {
+      "url": "https://beincrypto.com/crypto-phishing-scams-rise-in-august-2025",
+      "label": "BeInCrypto, crypto phishing losses rise in August 2025, citing Scam Sniffer"
+     },
+     {
+      "url": "https://cointelegraph.com/news/wintermute-crimeenjoyor-flags-malicious-ethereum-contracts",
+      "label": "Cointelegraph, Wintermute's CrimeEnjoyor flags malicious Ethereum contracts"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "spotFake",
+    "prompt": "One of these is false. Tap it.",
+    "statements": [
+     "Phishing drained over $12 million in August",
+     "Losses rose 72% from July",
+     "EIP-7702 played no part in the attacks"
+    ],
+    "fakeIndex": 2,
+    "explanation": "Scam Sniffer said EIP-7702 was the main tool in August's attacks."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "Phishing hit over how many thousand wallets in August 2025?",
+    "min": 0,
+    "max": 40,
+    "value": 15,
+    "explanation": "Over 15,000 wallets.",
+    "unit": "K"
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You interview at a wallet company. They ask about EIP-7702 risks.",
+      "prompt": "Which answer is strongest?",
+      "options": [
+       "It only affects hardware wallets",
+       "One bad signature can delegate a wallet to attackers",
+       "EIP-7702 makes every wallet impossible to phish"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "It affects ordinary wallets.",
+       "That is how August's attacks worked.",
+       "Losses rose in August."
+      ],
+      "explanation": "Delegation is powerful. Tricking a user into it hands over control."
+     },
+     "proReasoning": "Strong candidates explain both the feature and its abuse.",
+     "commonMistake": "Treating new features as purely good.",
+     "mentalModel": "Power cuts both ways."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You assess wallet security trends.",
+      "prompt": "What does August show?",
+      "options": [
+       "Phishing is slowly disappearing",
+       "Only exchanges face phishing attacks",
+       "Attackers adapt quickly to new features"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Losses rose 72%.",
+       "Over 15,000 wallets were hit.",
+       "EIP-7702 was the main tool."
+      ],
+      "explanation": "New features create new attack paths within months."
+     },
+     "proReasoning": "Investors watch how fast threats follow upgrades.",
+     "commonMistake": "Assuming upgrades only reduce risk.",
+     "mentalModel": "Threats follow features."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your startup builds a smart wallet.",
+      "prompt": "What do you add before launch?",
+      "options": [
+       "Clear warnings before any delegation",
+       "Silent delegation to save a tap",
+       "Auto-approval of every request"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Users see what they approve.",
+       "That helps attackers.",
+       "That helps attackers."
+      ],
+      "explanation": "Make delegation visible and deliberate."
+     },
+     "proReasoning": "Founders design for misuse.",
+     "commonMistake": "Hiding powerful actions to cut friction.",
+     "mentalModel": "Make it visible."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend asks how a wallet gets drained by phishing.",
+      "prompt": "What's the best answer?",
+      "options": [
+       "Their phone battery runs out mid-transfer",
+       "They sign something that hands over control",
+       "The blockchain makes a random mistake"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Battery has no effect.",
+       "Signatures authorize actions.",
+       "The chain does what is signed."
+      ],
+      "explanation": "Phishing tricks people into signing approvals that let attackers move funds."
+     },
+     "proReasoning": "Like signing a blank check.",
+     "commonMistake": "Thinking the blockchain itself failed.",
+     "mentalModel": "A blank check."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:4b80c8744c9e"
+  ]
+ },
+ {
+  "id": "4d631d16-fcd0-538e-9514-86cb19da6f24",
+  "market_id": "web3",
+  "day": 30,
+  "slot": 2,
+  "content": {
+   "id": "web3-d30-c2",
+   "title": "From seed words to signatures",
+   "lessonTitle": "Smart wallets and their new risks",
+   "slot": 2,
+   "type": "connect",
+   "brief": {
+    "headline": "A seed phrase restores every key in a wallet, so guarding it was the main rule. Since Pectra in May 2025, EIP-7702 lets wallets delegate to code, and over 97% of early delegations went to the same sweeper contract.",
+    "kicker": "Connect day 25 and day 30: a wallet can be lost without sharing its words.",
+    "fullText": "Day 25 showed that whoever holds the seed words controls the funds.\n\nDay 30 showed a new path. With EIP-7702, one signature can delegate a wallet to a contract. Wintermute found over 97% of early delegations went to the same sweeper contract, which drains funds. One user lost $146,550. The seed words stayed secret, but the signature gave control away.",
+    "sources": [
+     {
+      "url": "https://trezor.io/learn/advanced/what-is-bip39",
+      "label": "Trezor, what is BIP39?"
+     },
+     {
+      "url": "https://cointelegraph.com/news/wintermute-crimeenjoyor-flags-malicious-ethereum-contracts",
+      "label": "Cointelegraph, Wintermute's CrimeEnjoyor flags malicious Ethereum contracts"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "multipleChoice",
+    "prompt": "How did early EIP-7702 victims lose funds?",
+    "options": [
+     "By posting their seed words online",
+     "By losing their hardware device",
+     "By signing a delegation to a sweeper"
+    ],
+    "correctIndex": 2,
+    "explanation": "They signed delegations to a sweeper contract. Seed words were not needed."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "Over what percent of early delegations went to the same sweeper contract?",
+    "min": 0,
+    "max": 100,
+    "value": 97,
+    "explanation": "Over 97%, Wintermute found.",
+    "unit": "%"
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your manager asks how wallet security advice must change.",
+      "prompt": "Which answer leads?",
+      "options": [
+       "Seed words no longer matter at all",
+       "Signatures can never move funds",
+       "Guard signatures as well as seed words"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Words still restore wallets.",
+       "Delegations moved funds.",
+       "Delegation can drain a wallet."
+      ],
+      "explanation": "The old rule still holds. A new one joins it: check what you sign."
+     },
+     "proReasoning": "Security teams update advice when features change.",
+     "commonMistake": "Teaching only last year's threat.",
+     "mentalModel": "Two rules now."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You review a wallet provider.",
+      "prompt": "What do you check?",
+      "options": [
+       "How it warns users about delegations",
+       "Whether it shows seed words on screen",
+       "How many coins it supports"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Delegation is the new risk.",
+       "That would be a flaw.",
+       "Coins do not affect this risk."
+      ],
+      "explanation": "Providers must help users spot dangerous delegations."
+     },
+     "proReasoning": "Investors check whether products keep up with threats.",
+     "commonMistake": "Assuming seed safety covers everything.",
+     "mentalModel": "Check delegations."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your startup teaches wallet safety.",
+      "prompt": "What lesson do you add?",
+      "options": [
+       "Approve requests quickly to save gas",
+       "Read what a signature authorizes",
+       "Share seed words with trusted apps"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Speed helps attackers.",
+       "Delegations can drain wallets.",
+       "Never share seed words."
+      ],
+      "explanation": "Users need to know signatures can hand over control."
+     },
+     "proReasoning": "Founders teach the newest scams.",
+     "commonMistake": "Leaving signature risks out of training.",
+     "mentalModel": "Read before signing."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend asks how they could lose crypto without sharing their words.",
+      "prompt": "What's the best answer?",
+      "options": [
+       "They cannot lose it that way, not ever",
+       "Only if the blockchain shuts down",
+       "By signing a request that gives control away"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Victims lost funds that way.",
+       "Chains kept running.",
+       "EIP-7702 delegations did that."
+      ],
+      "explanation": "A signature can authorize code to move your funds."
+     },
+     "proReasoning": "Like signing over power of attorney by mistake.",
+     "commonMistake": "Thinking seed words are the only risk.",
+     "mentalModel": "Power of attorney."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:9f77377e9d3f"
+  ]
+ },
+ {
+  "id": "08fb8b9b-8dc5-5482-b2ae-15aa22299cce",
+  "market_id": "web3",
+  "day": 30,
+  "slot": 3,
+  "content": {
+   "id": "web3-d30-c3",
+   "title": "Ship smart wallet features or wait?",
+   "lessonTitle": "Smart wallets and their new risks",
+   "slot": 3,
+   "type": "decide",
+   "brief": {
+    "headline": "You run product at a wallet app. Pectra's EIP-7702 lets wallets delegate to smart contract code, and Fusaka added support for passkey signatures through secp256r1.",
+    "kicker": "Decide how to roll out smart wallet features.",
+    "fullText": "Passkeys let users sign with a phone's built-in security instead of managing seed words. EIP-7702 allows batching and other features.\n\nBut Wintermute found over 97% of early 7702 delegations went to one sweeper contract, and one user lost $146,550.",
+    "sources": [
+     {
+      "url": "https://cointelegraph.com/news/wintermute-crimeenjoyor-flags-malicious-ethereum-contracts",
+      "label": "Cointelegraph, Wintermute's CrimeEnjoyor flags malicious Ethereum contracts"
+     },
+     {
+      "url": "https://blog.ethereum.org/2025/11/06/fusaka-mainnet-announcement",
+      "label": "Ethereum Foundation blog, Fusaka mainnet announcement"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "sortSignal",
+    "prompt": "Does this make smart wallet features safer or riskier?",
+    "buckets": [
+     "Safer",
+     "Riskier"
+    ],
+    "items": [
+     {
+      "text": "Showing clear delegation warnings",
+      "bucket": 0
+     },
+     {
+      "text": "Allowing only audited contracts",
+      "bucket": 0
+     },
+     {
+      "text": "Delegating silently in the background",
+      "bucket": 1
+     },
+     {
+      "text": "Letting any site request delegation",
+      "bucket": 1
+     },
+     {
+      "text": "Passkeys backed by device security",
+      "bucket": 0
+     }
+    ],
+    "explanation": "Clear warnings, audited contracts and passkeys help. Silent, open delegation hurts."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "Pectra went live in which month of 2025?",
+    "min": 0,
+    "max": 12,
+    "value": 5,
+    "explanation": "May 2025, month 5.",
+    "unit": "month"
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your CEO asks whether to ship.",
+      "prompt": "What do you recommend?",
+      "options": [
+       "Ship with audited contracts and clear warnings",
+       "Ship with silent delegation to make it easier",
+       "Never ship smart wallet features"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Benefits with guardrails.",
+       "Silent delegation helps attackers.",
+       "You lose the benefits."
+      ],
+      "explanation": "Smart wallets help users. Guardrails keep delegation from becoming a trap."
+     },
+     "proReasoning": "Product leaders ship features with safety rails.",
+     "commonMistake": "Choosing between all or nothing.",
+     "mentalModel": "Ship with rails."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A wallet app launches 7702 features.",
+      "prompt": "What do you look for?",
+      "options": [
+       "Whether it has a new logo to match the launch",
+       "Limits on which contracts users can pick",
+       "How fast it added the new feature"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Logos are not safety.",
+       "Limits reduce sweeper risk.",
+       "Speed is not safety."
+      ],
+      "explanation": "Most early delegations went to one sweeper. Limits matter."
+     },
+     "proReasoning": "Investors check guardrails on risky features.",
+     "commonMistake": "Praising speed over safety.",
+     "mentalModel": "Check guardrails."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your startup could lead with passkeys.",
+      "prompt": "Why is that appealing?",
+      "options": [
+       "Passkeys remove every bit of phishing risk",
+       "Passkeys need no device at all",
+       "Users sign with device security, not words"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Phishing still exists.",
+       "They use the device.",
+       "Fusaka added secp256r1 support."
+      ],
+      "explanation": "Passkeys make signing easier. Phishing still needs guarding."
+     },
+     "proReasoning": "Founders pair convenience with clear warnings.",
+     "commonMistake": "Selling passkeys as total protection.",
+     "mentalModel": "Easier, not immune."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend asks if smart wallets are safer.",
+      "prompt": "What's the best answer?",
+      "options": [
+       "Easier to use, with new risks to watch",
+       "Totally safe, nothing to worry about",
+       "Always more dangerous than old wallets"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Delegation scams rose.",
+       "Over 97% of early delegations hit one sweeper.",
+       "Passkeys can help."
+      ],
+      "explanation": "Smart wallets add features and new ways to be tricked."
+     },
+     "proReasoning": "Like a smart lock: handy, but guard the app.",
+     "commonMistake": "Assuming new means safe or new means bad.",
+     "mentalModel": "Handy, with care."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:66fe8042e97e"
+  ]
  }
 ];
 
