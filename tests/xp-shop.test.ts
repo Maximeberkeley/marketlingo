@@ -224,3 +224,10 @@ describe('seasonal promo card', () => {
     expect(picks.has('bundle-angel')).toBe(true);
   });
 });
+
+describe('streak rewards', () => {
+  it('unlocks the Eternal flame halo at a 150-day streak, on the phone and the server', () => {
+    expect(COSMETICS.find(c => c.id === 'eternal-flame-halo')).toMatchObject({ requires: { min_streak_days: 150 }, rule: '150-day streak' });
+    expect(readFileSync('drizzle/migrations/0067_eternal_flame_150.sql', 'utf8')).toContain(`'{"min_streak_days":150}'::jsonb WHERE id = 'eternal-flame-halo'`);
+  });
+});
