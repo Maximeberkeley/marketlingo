@@ -463,6 +463,13 @@
       "when": 1794500000068,
       "tag": "0068_shop_catalog_stethoscope",
       "breakpoints": true
+    },
+    {
+      "idx": 66,
+      "version": "7",
+      "when": 1794500000069,
+      "tag": "0069_shop_art_ember_blazer_scarf",
+      "breakpoints": true
     }
   ]
 }
