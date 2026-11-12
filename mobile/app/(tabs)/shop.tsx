@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo, useState } from 'react';
-import { ScrollView, StyleSheet, Text, TouchableOpacity, View, RefreshControl, useWindowDimensions } from 'react-native';
+import { Platform, ScrollView, StyleSheet, Text, TouchableOpacity, View, RefreshControl, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { router, useFocusEffect } from 'expo-router';
 import { Feather } from '@expo/vector-icons';
@@ -77,6 +77,8 @@ export default function ShopScreen() {
     .map(c => ({ c, p: requirementProgress(c.requires, shop.stats) }))
     .sort((a, b) => b.p.current / b.p.target - a.p.current / a.p.target)
     .slice(0, 8);
+  // The Earn band is the last thing on the page unless the "buying opens soon" note follows it.
+  const endsOnBand = earnable.length > 0 && !(!shop.available && shop.ready);
 
   return (
     <View style={styles.root}>
@@ -102,7 +104,8 @@ export default function ShopScreen() {
         onScroll={e => watch.onScroll(e.nativeEvent.contentOffset.y)}
         scrollEventThrottle={120}
         onLayout={e => watch.onViewport(e.nativeEvent.layout.height)}
-        contentContainerStyle={{ paddingBottom: insets.bottom + 110, paddingTop: 6 }}
+        // The page ends on the purple Earn band: no empty space after it, and the bounce shows purple, not white.
+        contentContainerStyle={{ paddingBottom: endsOnBand ? 0 : 40, paddingTop: 6 }}
         showsVerticalScrollIndicator={false}
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={COLORS.accent} />}
       >
@@ -301,6 +304,8 @@ export default function ShopScreen() {
             </LinearGradient>
           </Rise>
         )}
+        {/* Phones only: on the web an absolute child would lengthen the page instead of colouring the bounce. */}
+        {endsOnBand && Platform.OS !== 'web' && <View pointerEvents="none" style={[styles.bandOverscroll, { backgroundColor: isDark ? '#1B1240' : '#4C1D95' }]} />}
 
         {!shop.available && shop.ready && (
           <Text maxFontSizeMultiplier={1.3} style={styles.offline}>Buying opens soon. Your XP is safe and keeps growing.</Text>
@@ -463,7 +468,7 @@ const styles = StyleSheet.create({
   freezeBadge: { position: 'absolute', right: -10, top: -6, flexDirection: 'row', alignItems: 'center', gap: 1, height: 20, paddingHorizontal: 4, borderRadius: 10, backgroundColor: isDark ? '#0C4A6E' : '#E0F2FE', borderWidth: 2, borderColor: COLORS.bg0 },
   freezeBadgeText: { fontSize: 11, fontWeight: '900', color: isDark ? '#BAE6FD' : '#0369A1' },
 
-  promo: { borderRadius: 26, borderBottomWidth: 5, borderColor: '#06081F' },
+  promo: { borderRadius: 26, borderBottomWidth: 5, borderColor: '#2B1670' },
   promoClip: { ...StyleSheet.absoluteFillObject, borderRadius: 26, overflow: 'hidden', backgroundColor: '#0A0E2C' },
   promoText: { position: 'absolute', left: 18, top: 18, bottom: 18, width: '47%' },
   promoKicker: { flexDirection: 'row', alignItems: 'center', gap: 5, alignSelf: 'flex-start', paddingHorizontal: 9, height: 24, borderRadius: 12, backgroundColor: 'rgba(253,230,138,0.16)', borderWidth: 1, borderColor: 'rgba(253,230,138,0.4)' },
@@ -536,7 +541,8 @@ const styles = StyleSheet.create({
   bundleCount: { position: 'absolute', right: 10, bottom: 8, paddingHorizontal: 8, height: 22, lineHeight: 22, borderRadius: 11, overflow: 'hidden', backgroundColor: 'rgba(0,0,0,0.28)', fontSize: 11.5, fontWeight: '800', color: '#FFFFFF' },
   saveBadge: { position: 'absolute', top: 8, left: 8, paddingHorizontal: 8, height: 22, borderRadius: 7, backgroundColor: '#E11D48', alignItems: 'center', justifyContent: 'center' },
 
-  earnBand: { paddingVertical: 22, paddingLeft: 20 },
+  earnBand: { paddingTop: 22, paddingBottom: 30, paddingLeft: 20 },
+  bandOverscroll: { position: 'absolute', left: 0, right: 0, bottom: -800, height: 800 },
   earnTitle: { fontSize: 22, fontWeight: '900', color: '#FFFFFF' },
   earnSub: { fontSize: 13, fontWeight: '600', color: '#DDD6FE', marginTop: 2 },
   earnTile: { width: 168, padding: 12, borderRadius: 20, backgroundColor: 'rgba(255,255,255,0.08)', borderWidth: 1.5, borderColor: 'rgba(255,255,255,0.16)' },

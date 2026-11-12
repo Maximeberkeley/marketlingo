@@ -21,7 +21,7 @@ import { supabase } from "../../lib/supabase";
 import { COLORS, TYPE, SHADOWS } from "../../lib/constants";
 import { Feather } from "@expo/vector-icons";
 import { MentorChatOverlay } from "../ai/MentorChatOverlay";
-import { getMentorForContext } from "../../data/mentors";
+import { getMentorForContext, mentors } from "../../data/mentors";
 import { ImmersiveNewsOverlay } from "./ImmersiveNewsOverlay";
 import { triggerHaptic } from "../../lib/haptics";
 import { log } from "../../lib/logger";
@@ -410,7 +410,7 @@ function DailyNews({ marketId, learningGoal, autoOpen = false }) {
     const item = items[safe];
     if (item) intel.recordRead(item.id);
   }, [intel]);
-  const kaiMentor = getMentorForContext("news") || {
+  const kaiMentor = mentors.find((m) => m.id === "sophia") || getMentorForContext("news") || {
     id: "kai",
     name: "Kai",
     title: "Market Analyst",

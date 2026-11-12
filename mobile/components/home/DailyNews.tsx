@@ -21,7 +21,7 @@ import { supabase } from '../../lib/supabase';
 import { COLORS, TYPE, SHADOWS } from '../../lib/constants';
 import { Feather } from '@expo/vector-icons';
 import { MentorChatOverlay } from '../ai/MentorChatOverlay';
-import { getMentorForContext } from '../../data/mentors';
+import { getMentorForContext, mentors } from '../../data/mentors';
 import type { Mentor } from '../../data/mentors';
 import { ImmersiveNewsOverlay } from './ImmersiveNewsOverlay';
 import { triggerHaptic } from '../../lib/haptics';
@@ -725,7 +725,8 @@ export function DailyNews({ marketId, learningGoal, autoOpen = false }: DailyNew
     if (item) intel.recordRead(item.id);
   }, [intel]);
 
-  const kaiMentor: Mentor = getMentorForContext('news') || {
+  // Sophia narrates the stories, so she also answers questions about them.
+  const kaiMentor: Mentor = mentors.find(m => m.id === 'sophia') || getMentorForContext('news') || {
     id: 'kai', name: 'Kai', title: 'Market Analyst', expertise: ['markets'],
     personality: 'analytical', emoji: '', greeting: 'Hi!', specialties: ['news'],
     voiceId: 'iP95p4xoKVk53GoZ742B',
