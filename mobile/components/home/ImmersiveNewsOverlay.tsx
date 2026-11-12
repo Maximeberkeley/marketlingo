@@ -1,7 +1,7 @@
 /**
  * ImmersiveNewsOverlay — TikTok/Stories-style fullscreen news experience.
  * Sophia narrates why each article matters for the user's goal.
- * Swipe left/right = next/previous story, scroll to read, Ask Sophia = voice Q&A.
+ * Swipe right/left = next/prev article, swipe up = close, tap Sophia = voice Q&A.
  */
 
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
@@ -17,7 +17,6 @@ import {
   ActivityIndicator,
   Linking,
   StatusBar,
-  ScrollView,
   useWindowDimensions,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -334,8 +333,8 @@ export function ImmersiveNewsOverlay({
     PanResponder.create({
       onStartShouldSetPanResponder: () => false,
       onMoveShouldSetPanResponder: (_, g) => {
-        // Only clearly sideways swipes change story; vertical drags scroll the story.
-        return Math.abs(g.dx) > 18 && Math.abs(g.dx) > Math.abs(g.dy) * 1.4;
+        // Only claim the gesture if horizontal movement is significant
+        return Math.abs(g.dx) > 15 || (g.dy < -15 && Math.abs(g.dy) > Math.abs(g.dx));
       },
       onMoveShouldSetPanResponderCapture: () => false,
       onPanResponderGrant: () => {
@@ -344,10 +343,24 @@ export function ImmersiveNewsOverlay({
         translateY.stopAnimation();
       },
       onPanResponderMove: (_, g) => {
-        translateX.setValue(g.dx);
+        if (Math.abs(g.dy) > Math.abs(g.dx) && g.dy < 0) {
+          translateY.setValue(g.dy);
+        } else {
+          translateX.setValue(g.dx);
+        }
       },
       onPanResponderRelease: (_, g) => {
         const idx = currentIndexRef.current;
+
+        // Swipe up → close
+        if (g.dy < -SWIPE_THRESHOLD && Math.abs(g.dy) > Math.abs(g.dx)) {
+          Animated.timing(translateY, { toValue: -windowSize.current.h, duration: 300, useNativeDriver: true }).start(() => {
+            translateY.setValue(0);
+            onClose();
+          });
+          return;
+        }
+        Animated.spring(translateY, { toValue: 0, friction: 8, useNativeDriver: true }).start();
 
         // Swipe left → next
         if (g.dx < -SWIPE_THRESHOLD && Math.abs(g.dx) > Math.abs(g.dy)) {
@@ -490,226 +503,379 @@ User's goal: ${learningGoal}`;
     }
   }, [isRecording, article, narrationText, marketId, learningGoal]);
 
-  // Play Sophia again, or stop her mid-sentence.
-  const handleReplay = useCallback(async () => {
-    if (soundRef.current) {
-      try { await soundRef.current.stopAsync(); await soundRef.current.unloadAsync(); } catch {}
-      soundRef.current = null;
-      setIsSpeaking(false);
-      setIsDoneSpeaking(true);
-      return;
-    }
-    if (!narrationText) return;
-    if (mutedRef.current) { mutedRef.current = false; setMuted(false); AsyncStorage.setItem(SOPHIA_MUTED_KEY, '0').catch(() => {}); }
-    const sound = await speakText(narrationText, SOPHIA_VOICE_ID);
-    soundRef.current = sound;
-    if (!sound) return;
-    setIsSpeaking(true);
-    setIsDoneSpeaking(false);
-    sound.setOnPlaybackStatusUpdate((status) => {
-      if ('didJustFinish' in status && status.didJustFinish) {
-        setIsSpeaking(false);
-        setIsDoneSpeaking(true);
-        soundRef.current = null;
-      }
-    });
-  }, [narrationText]);
-
   if (!visible || !article) return null;
 
   const hasNext = currentIndex < articles.length - 1;
   const hasPrev = currentIndex > 0;
-  const columnW = Math.min(windowW, STORY_COLUMN_MAX);
-  const imageH = Math.round((columnW - 40) * 0.6);
-  const status = isRecording ? 'Listening. Tap again to send.'
-    : isTranscribing ? 'Getting your question…'
-    : isGenerating ? 'Sophia is reading the story…'
-    : null;
 
   return (
-    <Modal visible={visible} animationType="none" transparent statusBarTranslucent onRequestClose={onClose}>
+    <Modal visible={visible} animationType="none" transparent statusBarTranslucent>
       <StatusBar barStyle="light-content" />
-      <Animated.View style={[st.container, { opacity: fadeAnim }]} {...panResponder.panHandlers}>
-        {/* Progress, one segment per story, then source and controls */}
-        <View style={[st.column, st.top, { paddingTop: Math.max(insets.top, 20) + 6 }]}>
-          <View style={st.segments} accessibilityLabel={`Story ${currentIndex + 1} of ${articles.length}`}>
-            {articles.map((_, i) => (
-              <View key={i} style={[st.segment, i < currentIndex && st.segmentSeen, i === currentIndex && st.segmentNow]} />
-            ))}
-          </View>
-          <View style={st.topRow}>
-            <View style={st.sourceBadge}><Text style={st.sourceInitial}>{(article.sourceName || '?').trim().charAt(0).toUpperCase()}</Text></View>
-            <View style={{ flex: 1 }}>
-              <Text style={st.sourceName} numberOfLines={1} maxFontSizeMultiplier={1.3}>{article.sourceName}</Text>
-              <Text style={st.sourceDate} maxFontSizeMultiplier={1.3}>{article.publishedAt}</Text>
-            </View>
-            <TouchableOpacity style={st.topBtn} onPress={toggleMute} accessibilityRole="button" accessibilityLabel={muted ? 'Unmute Sophia' : 'Mute Sophia'}>
-              <Feather name={muted ? 'volume-x' : 'volume-2'} size={19} color="#fff" />
-            </TouchableOpacity>
-            <TouchableOpacity style={st.topBtn} onPress={onClose} accessibilityRole="button" accessibilityLabel="Close stories">
-              <Feather name="x" size={21} color="#fff" />
-            </TouchableOpacity>
-          </View>
-        </View>
-
-        <Animated.View style={{ flex: 1, transform: [{ translateX }] }}>
-          <ScrollView
-            key={article.id}
-            style={{ flex: 1 }}
-            contentContainerStyle={[st.column, st.scroll, { paddingBottom: 120 + Math.max(insets.bottom, 12) }]}
-            showsVerticalScrollIndicator={false}
-          >
-            {/* The picture */}
-            <View style={[st.imageCard, { height: imageH }]}>
-              {article.imageUrl ? (
-                <Image source={{ uri: article.imageUrl }} style={StyleSheet.absoluteFill} resizeMode="cover" />
-              ) : (
-                <View style={[StyleSheet.absoluteFill, st.noImage]}><Feather name="radio" size={40} color="rgba(255,255,255,0.35)" /></View>
-              )}
-              {article.categoryTag ? <View style={st.category}><Text style={st.categoryText} maxFontSizeMultiplier={1.3}>{article.categoryTag}</Text></View> : null}
-            </View>
-
-            {/* The story itself */}
-            <Text style={st.title} maxFontSizeMultiplier={1.3}>{article.title}</Text>
-            <Text style={st.summary} maxFontSizeMultiplier={1.4}>
-              {article.summary || 'Open the source to read the full story.'}
-            </Text>
-            {article.sourceUrl ? (
-              <TouchableOpacity style={st.sourceLink} onPress={() => Linking.openURL(article.sourceUrl).catch(() => {})} accessibilityRole="link">
-                <Text style={st.sourceLinkText} maxFontSizeMultiplier={1.3}>Read it on {article.sourceName}</Text>
-                <Feather name="arrow-up-right" size={16} color={DARK.accent} />
-              </TouchableOpacity>
-            ) : null}
-
-            {/* Sophia: why it matters to you */}
-            <View style={st.sophiaCard}>
-              <View style={st.sophiaHead}>
-                <Animated.View style={[st.sophiaRing, {
-                  transform: [{ scale: Animated.multiply(sophiaScale, pulseAnim) }],
-                  borderColor: isRecording ? '#F87171' : isSpeaking ? DARK.accent : 'transparent',
-                }]}>
-                  <Image source={sophiaAvatar} style={st.sophiaAvatar} />
-                </Animated.View>
-                <View style={{ flex: 1 }}>
-                  <Text style={st.sophiaTitle} maxFontSizeMultiplier={1.3}>Why it matters to you</Text>
-                  <Text style={st.sophiaSub} maxFontSizeMultiplier={1.3}>Sophia, growth advisor</Text>
-                </View>
-                {narrationText && !isGenerating ? (
-                  <TouchableOpacity style={st.playBtn} onPress={handleReplay} accessibilityRole="button" accessibilityLabel={isSpeaking ? 'Stop Sophia' : 'Play Sophia'}>
-                    <Feather name={isSpeaking ? 'pause' : 'play'} size={17} color="#fff" />
-                  </TouchableOpacity>
-                ) : null}
-              </View>
-              {isGenerating ? (
-                <View style={st.skeleton}>
-                  <View style={[st.skelLine, { width: '96%' }]} />
-                  <View style={[st.skelLine, { width: '88%' }]} />
-                  <View style={[st.skelLine, { width: '64%' }]} />
-                </View>
-              ) : narrationText ? (
-                <Text style={st.narration} maxFontSizeMultiplier={1.4}>{narrationText}</Text>
-              ) : null}
-              <View style={st.askRow}>
-                <TouchableOpacity
-                  style={[st.askBtn, isRecording && st.askBtnLive]}
-                  onPress={handleSophiaTap}
-                  disabled={isTranscribing || isGenerating}
-                  accessibilityRole="button"
-                  accessibilityLabel={isRecording ? 'Send your question' : 'Ask Sophia out loud'}
-                >
-                  <Feather name={isRecording ? 'send' : 'mic'} size={15} color="#fff" />
-                  <Text style={st.askText} maxFontSizeMultiplier={1.3}>{isRecording ? 'Send' : 'Ask Sophia'}</Text>
-                </TouchableOpacity>
-                {status ? (
-                  <View style={st.statusRow}>
-                    {isRecording ? <View style={st.recordDot} /> : <ActivityIndicator size="small" color={DARK.accent} />}
-                    <Text style={st.statusText} maxFontSizeMultiplier={1.3}>{status}</Text>
-                  </View>
-                ) : null}
-              </View>
-            </View>
-          </ScrollView>
+      <Animated.View
+        style={[st.container, { opacity: fadeAnim, transform: [{ translateY }] }]}
+        {...panResponder.panHandlers}
+      >
+        {/* Background image */}
+        <Animated.View style={[st.bgContainer, { transform: [{ translateX }] }]}>
+          {article.imageUrl ? (
+            <Image source={{ uri: article.imageUrl }} style={st.bgImage} blurRadius={1} />
+          ) : (
+            <View style={[st.bgImage, { backgroundColor: '#1A1035' }]} />
+          )}
+          <View style={st.bgOverlay} />
         </Animated.View>
 
-        {/* Actions stay in reach */}
-        <View style={[st.bottom, { paddingBottom: Math.max(insets.bottom, 12) + 4 }]}>
-          <View style={[st.column, st.bottomRow]}>
-            <TouchableOpacity
-              style={st.discussBtn}
-              onPress={() => { onClose(); setTimeout(() => onOpenChat(article), 300); }}
-              accessibilityRole="button"
-              accessibilityLabel="Discuss this story"
-            >
-              <Feather name="message-circle" size={18} color="#fff" />
-              <Text style={st.discussText} maxFontSizeMultiplier={1.3}>Discuss</Text>
-            </TouchableOpacity>
+        {/* Top bar */}
+        <View style={[st.topBar, { paddingTop: Math.max(insets.top, 20) + 12 }]}>
+          {/* Article counter */}
+          <View style={st.counterBadge}>
+            <Text style={st.counterText}>{currentIndex + 1}/{articles.length}</Text>
+          </View>
+
+          <View style={st.topBarRight}>
             {onQuiz ? (
-              <TouchableOpacity style={st.quizBtn} onPress={() => onQuiz(article)} accessibilityRole="button" accessibilityLabel="Quiz me on this story">
-                <Text style={st.quizText} maxFontSizeMultiplier={1.3}>Quiz me</Text>
+              <TouchableOpacity
+                style={st.quizButton}
+                onPress={() => onQuiz(article)}
+                accessibilityRole="button"
+                accessibilityLabel="Take quiz about this story"
+              >
+                <Feather name="help-circle" size={17} color={COLORS.textOnAccent} />
+                <Text style={st.quizButtonText}>Quiz</Text>
               </TouchableOpacity>
             ) : null}
+            {/* Mute Sophia (remembered) */}
+            <TouchableOpacity
+              style={st.topBtn}
+              onPress={toggleMute}
+              accessibilityRole="button"
+              accessibilityLabel={muted ? 'Unmute Sophia' : 'Mute Sophia'}
+            >
+              <Feather name={muted ? 'volume-x' : 'volume-2'} size={20} color="#fff" />
+            </TouchableOpacity>
+            {/* Discuss with AI */}
+            <TouchableOpacity
+              style={st.topBtn}
+              onPress={() => { onClose(); setTimeout(() => onOpenChat(article), 300); }}
+            >
+              <Feather name="message-circle" size={20} color="#fff" />
+            </TouchableOpacity>
+
+            {/* Close */}
+            <TouchableOpacity style={st.topBtn} onPress={onClose}>
+              <Feather name="x" size={22} color="#fff" />
+            </TouchableOpacity>
           </View>
-          {hasNext || hasPrev ? (
-            <Text style={st.swipeHint} maxFontSizeMultiplier={1.3}>{hasNext ? 'Swipe for the next story' : 'Swipe back for the last story'}</Text>
-          ) : null}
         </View>
+
+        {/* Sophia center stage */}
+        <View style={st.centerStage}>
+          <Animated.View style={[st.sophiaRing, {
+            transform: [{ scale: Animated.multiply(sophiaScale, pulseAnim) }],
+            borderColor: isRecording ? '#EF4444' : isSpeaking ? COLORS.accent : 'rgba(255,255,255,0.3)',
+          }]}>
+            <TouchableOpacity onPress={handleSophiaTap} activeOpacity={0.8}>
+              <Image source={sophiaAvatar} style={st.sophiaAvatar} />
+              {isRecording && (
+                <View style={st.micBadge}>
+                  <Feather name="mic" size={14} color="#fff" />
+                </View>
+              )}
+            </TouchableOpacity>
+          </Animated.View>
+
+          {/* Status text */}
+          <View style={st.statusContainer}>
+            {isGenerating && (
+              <View style={st.statusRow}>
+                <ActivityIndicator size="small" color={COLORS.accent} />
+                <Text style={st.statusText}>Sophia is thinking...</Text>
+              </View>
+            )}
+            {isTranscribing && (
+              <View style={st.statusRow}>
+                <ActivityIndicator size="small" color={COLORS.accent} />
+                <Text style={st.statusText}>Transcribing your question...</Text>
+              </View>
+            )}
+            {isRecording && (
+              <View style={st.statusRow}>
+                <View style={st.recordDot} />
+                <Text style={st.statusText}>Listening... Tap again to send</Text>
+              </View>
+            )}
+            {isSpeaking && !isGenerating && (
+              <Text style={st.statusText}>🎙 Sophia is speaking...</Text>
+            )}
+            {isDoneSpeaking && !isGenerating && !isRecording && !isTranscribing && (
+              <Text style={st.statusText}>Tap Sophia to ask a question</Text>
+            )}
+          </View>
+
+          {/* Narration text (subtitle-style, tap to expand) */}
+          {narrationText && !isGenerating && (
+            <TouchableOpacity
+              style={st.subtitleBox}
+              onPress={() => setSubtitlesExpanded(!subtitlesExpanded)}
+              activeOpacity={0.8}
+            >
+              <Text style={st.subtitleText} numberOfLines={subtitlesExpanded ? undefined : 2}>
+                {narrationText}
+              </Text>
+              {!subtitlesExpanded && narrationText.length > 80 && (
+                <Text style={st.expandHint}>Tap to read more</Text>
+              )}
+            </TouchableOpacity>
+          )}
+        </View>
+
+        {/* Article title */}
+        <View style={[st.column, st.titleContainer]}>
+          <Text style={st.articleTitle} numberOfLines={3}>{article.title}</Text>
+          <Text style={st.articleMeta}>{article.sourceName} · {article.publishedAt}</Text>
+        </View>
+
+        {/* Bottom bar */}
+        <View style={[st.column, st.bottomBar]}>
+          <TouchableOpacity
+            style={st.sourceBtn}
+            onPress={() => Linking.openURL(article.sourceUrl).catch(() => {})}
+          >
+            <Feather name="external-link" size={16} color="#fff" />
+            <Text style={st.sourceBtnText}>Read Full Article</Text>
+          </TouchableOpacity>
+
+          {/* Swipe hints */}
+          {isDoneSpeaking && hasNext && (
+            <Text style={st.swipeHint}>Swipe left for next article →</Text>
+          )}
+        </View>
+
+        {/* Navigation dots */}
+        <View style={[st.dotsRow, { paddingBottom: Math.max(insets.bottom, 16) + 8 }]}>
+          {articles.map((_, i) => (
+            <View
+              key={i}
+              style={[st.dot, i === currentIndex && st.dotActive]}
+            />
+          ))}
+        </View>
+
       </Animated.View>
     </Modal>
   );
 }
 
 // ── Styles ──
-/** Stories always read on a dark stage, whatever the app theme. */
-const DARK = { bg: '#0E0F14', card: '#1A1C24', line: 'rgba(255,255,255,0.10)', text: '#F5F5F7', soft: 'rgba(245,245,247,0.74)', muted: 'rgba(245,245,247,0.5)', accent: '#B9A4FF' };
-
 const st = StyleSheet.create({
-  container: { flex: 1, backgroundColor: DARK.bg },
+  container: {
+    flex: 1,
+    backgroundColor: '#000',
+  },
+  bgContainer: {
+    ...StyleSheet.absoluteFillObject,
+  },
+  bgImage: {
+    ...StyleSheet.absoluteFillObject,
+    width: '100%',
+    height: '100%',
+    resizeMode: 'cover',
+  },
+  bgOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(0,0,0,0.55)',
+  },
+
+  // Top bar
+  topBar: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 20,
+    zIndex: 10,
+  },
+  topBarRight: {
+    flexDirection: 'row',
+    gap: 12,
+  },
+  topBtn: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: 'rgba(255,255,255,0.15)',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  quizButton: {
+    height: 40,
+    borderRadius: 20,
+    paddingHorizontal: 15,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    backgroundColor: COLORS.accent,
+  },
+  quizButtonText: { fontSize: 13, fontWeight: '800', color: COLORS.textOnAccent },
+  counterBadge: {
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 16,
+    backgroundColor: 'rgba(255,255,255,0.15)',
+  },
+  counterText: {
+    fontSize: 12,
+    fontWeight: '700',
+    color: 'rgba(255,255,255,0.8)',
+  },
+
+  // Center Sophia
+  centerStage: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 30,
+    zIndex: 10,
+  },
+  sophiaRing: {
+    width: 130,
+    height: 130,
+    borderRadius: 65,
+    borderWidth: 3,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'rgba(0,0,0,0.3)',
+  },
+  sophiaAvatar: {
+    width: 120,
+    height: 120,
+    borderRadius: 60,
+  },
+  micBadge: {
+    position: 'absolute',
+    bottom: 2,
+    right: 2,
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    backgroundColor: '#EF4444',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 2,
+    borderColor: '#000',
+  },
+
+  // Status
+  statusContainer: {
+    marginTop: 16,
+    alignItems: 'center',
+    minHeight: 30,
+  },
+  statusRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  statusText: {
+    fontSize: 13,
+    color: 'rgba(255,255,255,0.7)',
+    fontWeight: '500',
+  },
+  recordDot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: '#EF4444',
+  },
+
+  // Subtitle
+  subtitleBox: {
+    marginTop: 20,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    borderRadius: 16,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    maxWidth: 620,
+  },
+  subtitleText: {
+    fontSize: 14,
+    lineHeight: 21,
+    color: '#fff',
+    textAlign: 'center',
+    fontWeight: '400',
+  },
+  expandHint: {
+    fontSize: 11,
+    color: 'rgba(255,255,255,0.5)',
+    textAlign: 'center',
+    marginTop: 4,
+    fontWeight: '600',
+  },
+
   column: { width: '100%', maxWidth: STORY_COLUMN_MAX, alignSelf: 'center' },
-  top: { paddingHorizontal: 20, paddingBottom: 10 },
-  segments: { flexDirection: 'row', gap: 4 },
-  segment: { flex: 1, height: 3, borderRadius: 2, backgroundColor: 'rgba(255,255,255,0.18)' },
-  segmentSeen: { backgroundColor: 'rgba(255,255,255,0.55)' },
-  segmentNow: { backgroundColor: '#FFFFFF' },
-  topRow: { flexDirection: 'row', alignItems: 'center', gap: 10, marginTop: 12 },
-  sourceBadge: { width: 34, height: 34, borderRadius: 17, backgroundColor: '#2A2D38', alignItems: 'center', justifyContent: 'center' },
-  sourceInitial: { fontSize: 15, fontWeight: '900', color: DARK.text },
-  sourceName: { fontSize: 14.5, fontWeight: '800', color: DARK.text },
-  sourceDate: { fontSize: 12.5, fontWeight: '600', color: DARK.muted },
-  topBtn: { width: 38, height: 38, borderRadius: 19, backgroundColor: 'rgba(255,255,255,0.10)', alignItems: 'center', justifyContent: 'center' },
 
-  scroll: { paddingHorizontal: 20, paddingTop: 6 },
-  imageCard: { borderRadius: 20, overflow: 'hidden', backgroundColor: DARK.card },
-  noImage: { alignItems: 'center', justifyContent: 'center', backgroundColor: '#24203A' },
-  category: { position: 'absolute', left: 12, top: 12, paddingHorizontal: 10, height: 26, borderRadius: 13, backgroundColor: 'rgba(0,0,0,0.55)', justifyContent: 'center' },
-  categoryText: { fontSize: 12.5, fontWeight: '800', color: '#FFFFFF' },
-  title: { fontSize: 25, lineHeight: 31, fontWeight: '900', color: DARK.text, marginTop: 18, letterSpacing: -0.3 },
-  summary: { fontSize: 17, lineHeight: 26, color: DARK.soft, marginTop: 10 },
-  sourceLink: { flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 12, alignSelf: 'flex-start', paddingVertical: 4 },
-  sourceLinkText: { fontSize: 15, fontWeight: '800', color: DARK.accent },
+  // Title
+  titleContainer: {
+    paddingHorizontal: 24,
+    paddingBottom: 12,
+  },
+  articleTitle: {
+    fontSize: 20,
+    fontWeight: '800',
+    color: '#fff',
+    lineHeight: 26,
+    marginBottom: 4,
+  },
+  articleMeta: {
+    fontSize: 12,
+    color: 'rgba(255,255,255,0.5)',
+    fontWeight: '500',
+  },
 
-  sophiaCard: { marginTop: 22, padding: 16, borderRadius: 20, backgroundColor: DARK.card, borderWidth: 1, borderColor: DARK.line },
-  sophiaHead: { flexDirection: 'row', alignItems: 'center', gap: 12 },
-  sophiaRing: { width: 50, height: 50, borderRadius: 25, borderWidth: 2.5, alignItems: 'center', justifyContent: 'center' },
-  sophiaAvatar: { width: 42, height: 42, borderRadius: 21 },
-  sophiaTitle: { fontSize: 16, fontWeight: '900', color: DARK.text },
-  sophiaSub: { fontSize: 12.5, fontWeight: '600', color: DARK.muted, marginTop: 1 },
-  playBtn: { width: 38, height: 38, borderRadius: 19, backgroundColor: '#7C5CE6', alignItems: 'center', justifyContent: 'center' },
-  skeleton: { gap: 8, marginTop: 14 },
-  skelLine: { height: 12, borderRadius: 6, backgroundColor: 'rgba(255,255,255,0.10)' },
-  narration: { fontSize: 16, lineHeight: 24, color: DARK.text, marginTop: 12 },
-  askRow: { flexDirection: 'row', alignItems: 'center', gap: 12, marginTop: 14, flexWrap: 'wrap' },
-  askBtn: { flexDirection: 'row', alignItems: 'center', gap: 7, height: 38, paddingHorizontal: 14, borderRadius: 19, backgroundColor: 'rgba(255,255,255,0.10)' },
-  askBtnLive: { backgroundColor: '#DC2626' },
-  askText: { fontSize: 14, fontWeight: '800', color: '#FFFFFF' },
-  statusRow: { flexDirection: 'row', alignItems: 'center', gap: 8, flexShrink: 1 },
-  statusText: { fontSize: 13, fontWeight: '600', color: DARK.soft, flexShrink: 1 },
-  recordDot: { width: 9, height: 9, borderRadius: 5, backgroundColor: '#F87171' },
+  // Bottom
+  bottomBar: {
+    paddingHorizontal: 24,
+    paddingBottom: 10,
+    alignItems: 'center',
+    gap: 12,
+    zIndex: 10,
+  },
+  sourceBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    paddingHorizontal: 24,
+    paddingVertical: 14,
+    borderRadius: 28,
+    backgroundColor: 'rgba(255,255,255,0.15)',
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.2)',
+  },
+  sourceBtnText: {
+    fontSize: 14,
+    fontWeight: '700',
+    color: '#fff',
+  },
+  swipeHint: {
+    fontSize: 12,
+    color: 'rgba(255,255,255,0.4)',
+    fontWeight: '500',
+  },
 
-  bottom: { position: 'absolute', left: 0, right: 0, bottom: 0, paddingTop: 12, paddingHorizontal: 20, backgroundColor: DARK.bg, borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: DARK.line },
-  bottomRow: { flexDirection: 'row', gap: 10 },
-  discussBtn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, height: 52, paddingHorizontal: 18, borderRadius: 16, backgroundColor: 'rgba(255,255,255,0.10)' },
-  discussText: { fontSize: 16, fontWeight: '800', color: '#FFFFFF' },
-  quizBtn: { flex: 1, height: 52, borderRadius: 16, backgroundColor: '#A78BFA', alignItems: 'center', justifyContent: 'center', borderBottomWidth: 4, borderBottomColor: '#7C5CE6' },
-  quizText: { fontSize: 17, fontWeight: '900', color: '#1B1530' },
-  swipeHint: { fontSize: 12.5, fontWeight: '600', color: DARK.muted, textAlign: 'center', marginTop: 10 },
+  // Dots
+  dotsRow: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    gap: 4,
+  },
+  dot: {
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+    backgroundColor: 'rgba(255,255,255,0.25)',
+  },
+  dotActive: {
+    backgroundColor: COLORS.bg2,
+    width: 18,
+    borderRadius: 3,
+  },
 });

@@ -20,9 +20,9 @@ describe('Intel stories follow the live window on iPad', () => {
     const overlay = read('mobile/components/home/ImmersiveNewsOverlay.tsx');
     expect(overlay).not.toMatch(/Dimensions\.get|SCREEN_W|SCREEN_H|TOP_PADDING|BOTTOM_PADDING/);
     expect(overlay).toContain('useWindowDimensions()');
-    expect(overlay).toContain('paddingTop: Math.max(insets.top, 20) + 6');
+    expect(overlay).toContain('paddingTop: Math.max(insets.top, 20) + 12');
     expect(overlay).toContain('export const STORY_COLUMN_MAX = 720;');
-    expect(overlay).toContain("column: { width: '100%', maxWidth: STORY_COLUMN_MAX, alignSelf: 'center' },");
+    expect(overlay).toContain('<View style={[st.column, st.titleContainer]}>');
   });
 
   it('sizes the featured carousel and sheets from the current window', () => {
