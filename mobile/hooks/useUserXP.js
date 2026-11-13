@@ -155,8 +155,9 @@ function useUserXP(marketId) {
     const { data: existingCompletion, error: completionFetchError } = await supabase.from("daily_completions").select("*").eq("user_id", user.id).eq("market_id", marketId).eq("completion_date", today).maybeSingle();
     if (completionFetchError && completionFetchError.code !== "PGRST116") {
       log.error("Error fetching daily completion for XP update:", completionFetchError);
+      return updatedXP;
     }
-    const baseCompletion = existingCompletion || dailyCompletion;
+    const baseCompletion = existingCompletion || (dailyCompletion?.completion_date === today && dailyCompletion.user_id === user.id && dailyCompletion.market_id === marketId ? dailyCompletion : null);
     const isGameReward = sourceType === "game" || sourceType === "deep_case";
     const isDrillReward = sourceType.startsWith("drill") || sourceType === "arena";
     const { data: updatedCompletion, error: completionUpsertError } = await supabase.from("daily_completions").upsert(
@@ -219,7 +220,7 @@ function useUserXP(marketId) {
     return Math.min(100, Math.max(0, progress));
   };
   const isLessonCompletedToday = () => {
-    return dailyCompletion?.lesson_completed || false;
+    return dailyCompletion?.completion_date === localDateString() && dailyCompletion.user_id === user?.id && dailyCompletion.market_id === marketId && dailyCompletion.lesson_completed;
   };
   return {
     xpData,

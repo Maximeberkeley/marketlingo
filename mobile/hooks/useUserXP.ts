@@ -228,9 +228,14 @@ export function useUserXP(marketId?: string) {
 
     if (completionFetchError && completionFetchError.code !== 'PGRST116') {
       log.error('Error fetching daily completion for XP update:', completionFetchError);
+      return updatedXP;
     }
 
-    const baseCompletion = existingCompletion || dailyCompletion;
+    const baseCompletion = existingCompletion || (
+      dailyCompletion?.completion_date === today &&
+      dailyCompletion.user_id === user.id && dailyCompletion.market_id === marketId
+        ? dailyCompletion : null
+    );
     // Current modules: Deep Case verdicts count as "games", Arena runs as "drills".
     const isGameReward = sourceType === 'game' || sourceType === 'deep_case';
     const isDrillReward = sourceType.startsWith('drill') || sourceType === 'arena';
@@ -331,7 +336,9 @@ export function useUserXP(marketId?: string) {
   };
 
   const isLessonCompletedToday = () => {
-    return dailyCompletion?.lesson_completed || false;
+    return dailyCompletion?.completion_date === localDateString() &&
+      dailyCompletion.user_id === user?.id && dailyCompletion.market_id === marketId &&
+      dailyCompletion.lesson_completed;
   };
 
   return {
