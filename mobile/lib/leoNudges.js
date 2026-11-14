@@ -3,6 +3,7 @@ import { localDateString } from "./dayMath";
 import { normalizeDisplayName } from "./displayName";
 import { log } from "./logger";
 import { storage } from "./storage";
+const dateTrigger = (date) => ({ type: "date", date });
 let notificationsCache = null;
 async function loadNotifications() {
   if (notificationsCache) return notificationsCache;
@@ -140,7 +141,7 @@ async function scheduleRolling(lessonCompletedToday) {
           sound: true,
           data: { type: "leo_rolling_nudge", route: "/(tabs)/home", localDate: localDateString(now) }
         },
-        trigger: fireAt
+        trigger: dateTrigger(fireAt)
       });
       ids.push(id);
     }
@@ -205,7 +206,7 @@ async function scheduleDailyFallbacks() {
             sound: true,
             data: { type: "daily_fallback", route: "/(tabs)/home", slot: slot.key, localDate: localDateString(fireAt) }
           },
-          trigger: fireAt
+          trigger: dateTrigger(fireAt)
         });
       }
     }
@@ -252,7 +253,7 @@ async function scheduleLapseNudges() {
           sound: true,
           data: { type: "lapse_nudge", route: "/(tabs)/home", days }
         },
-        trigger: fireAt
+        trigger: dateTrigger(fireAt)
       });
     }
   } catch (error) {

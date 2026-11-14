@@ -59,8 +59,21 @@ for (const path of ['mobile/lib/leoNudges.ts', 'mobile/lib/leoNudges.js']) {
       await h.api.scheduleDailyFallbackReminders();
       const today = h.alerts().filter(n => n.content.data.localDate === '2026-11-10');
       expect(today).toHaveLength(1);
-      expect(today[0].trigger.getHours()).toBe(20);
-      expect(today[0].trigger.getMinutes()).toBe(30);
+      // expo-notifications' documented date trigger, so the alarm still fires at 20:30 that day.
+      expect(today[0].trigger.type).toBe('date');
+      expect(today[0].trigger.date.getHours()).toBe(20);
+      expect(today[0].trigger.date.getMinutes()).toBe(30);
+    });
+    it('schedules every reminder with a dated trigger, never a bare Date', async () => {
+      const h = harness(path, false);
+      await h.api.scheduleDailyFallbackReminders();
+      await h.api.scheduleRollingLeoNudges(false);
+      const fresh = h.alerts().filter(n => n.identifier !== 'legacy');
+      expect(new Set(fresh.map(n => n.content.data.type))).toEqual(new Set(['daily_fallback', 'lapse_nudge', 'leo_rolling_nudge']));
+      for (const n of fresh) {
+        expect(n.trigger.type).toBe('date');
+        expect(n.trigger.date.getTime()).toBeGreaterThan(new Date(2026, 10, 10, 18, 0, 0).getTime());
+      }
     });
     it('does not arm today if completion verification fails offline', async () => {
       const h = harness(path, false, true);

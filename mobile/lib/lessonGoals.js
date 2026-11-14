@@ -14,7 +14,7 @@ function lessonGoalLabels(objectives, slides) {
   const authored = Array.isArray(objectives) ? objectives.filter((o) => typeof o === "string") : [];
   const verified = authored.filter((o) => isCompleteGoal(o) && isLessonGrounded(o, slides));
   if (verified.length >= 3) return [...new Set(verified)].slice(0, 3);
-  const beatTitles = [1, 2, 4, 3, 5, 0].map((i) => slides[i]?.title?.replace(/^(?:Recap|Concept|Mechanism|Case|Check|Takeaway)\s*:\s*/i, "").trim()).filter((title) => Boolean(title) && title.length >= 8 && title.length <= 65 && !dangling.test(title));
+  const beatTitles = [1, 2, 4, 3, 5, 0].map((i) => slides[i]?.title?.replace(/^(?:Recap|Concept|Mechanism|Case|Check|Takeaway)\s*:\s*/i, "").trim()).filter((title) => typeof title === "string" && title.length >= 8 && title.length <= 65 && !dangling.test(title));
   return [...new Set(beatTitles)].slice(0, 3);
 }
 export {
