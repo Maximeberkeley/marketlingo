@@ -477,6 +477,13 @@
       "when": 1794500000070,
       "tag": "0070_ai_handwritten_days_31_60",
       "breakpoints": true
+    },
+    {
+      "idx": 68,
+      "version": "7",
+      "when": 1794500000071,
+      "tag": "0071_shop_catalog_new_arrivals",
+      "breakpoints": true
     }
   ]
 }
