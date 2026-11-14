@@ -1,20 +1,40 @@
 import React, { useRef, useEffect, useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Tabs } from "expo-router";
-import { View, StyleSheet, Animated, Easing } from "react-native";
-import { Feather } from "@expo/vector-icons";
+import { View, Image, StyleSheet, Animated, Easing } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { COLORS } from "../../lib/constants";
+import { isDark } from "../../lib/theme";
 import { triggerHaptic } from "../../lib/haptics";
 import { LessonNavigationProvider, useLessonNavigation } from "../../lib/lessonNavigation";
 const TAB_ICONS = {
-  home: "home",
-  roadmap: "radio",
-  practice: "zap",
-  shop: "shopping-bag",
-  notebook: "edit-3",
-  profile: "user"
+  home: {
+    active: require("../../assets/tabs/course-active.png"),
+    inactive: require("../../assets/tabs/course-inactive.png"),
+    inactiveDark: require("../../assets/tabs/course-inactive-dark.png")
+  },
+  roadmap: {
+    active: require("../../assets/tabs/intel-active.png"),
+    inactive: require("../../assets/tabs/intel-inactive.png"),
+    inactiveDark: require("../../assets/tabs/intel-inactive-dark.png")
+  },
+  practice: {
+    active: require("../../assets/tabs/practice-active.png"),
+    inactive: require("../../assets/tabs/practice-inactive.png"),
+    inactiveDark: require("../../assets/tabs/practice-inactive-dark.png")
+  },
+  shop: {
+    active: require("../../assets/tabs/shop-active.png"),
+    inactive: require("../../assets/tabs/shop-inactive.png"),
+    inactiveDark: require("../../assets/tabs/shop-inactive-dark.png")
+  },
+  profile: {
+    active: require("../../assets/tabs/you-active.png"),
+    inactive: require("../../assets/tabs/you-inactive.png"),
+    inactiveDark: require("../../assets/tabs/you-inactive-dark.png")
+  }
 };
+const TAB_ICON_SIZE = 22;
 function TabBarIcon({ name, focused, dot = false }) {
   const scaleAnim = useRef(new Animated.Value(1)).current;
   useEffect(() => {
@@ -27,15 +47,9 @@ function TabBarIcon({ name, focused, dot = false }) {
       Animated.timing(scaleAnim, { toValue: 1, duration: 150, useNativeDriver: true }).start();
     }
   }, [focused]);
-  const iconName = TAB_ICONS[name] || "circle";
-  return /* @__PURE__ */ React.createElement(View, { style: styles.tabIcon }, /* @__PURE__ */ React.createElement(Animated.View, { style: { transform: [{ scale: scaleAnim }] } }, /* @__PURE__ */ React.createElement(
-    Feather,
-    {
-      name: iconName,
-      size: 22,
-      color: focused ? COLORS.textPrimary : COLORS.textMuted
-    }
-  )), dot && /* @__PURE__ */ React.createElement(View, { style: styles.newDot }));
+  const icons = TAB_ICONS[name];
+  const source = icons ? focused ? icons.active : isDark ? icons.inactiveDark : icons.inactive : void 0;
+  return /* @__PURE__ */ React.createElement(View, { style: styles.tabIcon }, /* @__PURE__ */ React.createElement(Animated.View, { style: { transform: [{ scale: scaleAnim }] } }, source ? /* @__PURE__ */ React.createElement(Image, { source, style: styles.tabImage, resizeMode: "contain", fadeDuration: 0 }) : null), dot && /* @__PURE__ */ React.createElement(View, { style: styles.newDot }));
 }
 function TabLayout() {
   return /* @__PURE__ */ React.createElement(LessonNavigationProvider, null, /* @__PURE__ */ React.createElement(TabNavigator, null));
@@ -150,6 +164,7 @@ function TabNavigator() {
 }
 const styles = StyleSheet.create({
   newDot: { position: "absolute", top: 0, right: -1, width: 8, height: 8, borderRadius: 4, backgroundColor: COLORS.error, borderWidth: 1.5, borderColor: COLORS.bg0 },
+  tabImage: { width: TAB_ICON_SIZE, height: TAB_ICON_SIZE },
   tabIcon: {
     width: 28,
     height: 28,
