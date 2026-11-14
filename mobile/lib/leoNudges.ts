@@ -3,11 +3,17 @@ import { localDateString } from './dayMath';
 import { normalizeDisplayName } from './displayName';
 import { log } from './logger';
 import { storage } from './storage';
+import type { DateTriggerInput, SchedulableTriggerInputTypes } from 'expo-notifications';
 
 // The native notifications bridge is loaded lazily: this module is imported
 // eagerly by launch-path code (useUserXP → Home), so a top-level native import
 // can crash the app before the first screen mounts on a stale archive.
 type NotificationsModule = typeof import('expo-notifications');
+// expo-notifications' documented date-trigger form. The literal 'date' is the
+// value of SchedulableTriggerInputTypes.DATE; reading the enum off the lazily
+// loaded module would need the native bridge before scheduling and, if absent,
+// would silently turn the trigger into an immediate notification.
+const dateTrigger = (date: Date): DateTriggerInput => ({ type: 'date' as SchedulableTriggerInputTypes.DATE, date });
 let notificationsCache: NotificationsModule | null = null;
 async function loadNotifications(): Promise<NotificationsModule | null> {
   if (notificationsCache) return notificationsCache;
@@ -172,7 +178,7 @@ async function scheduleRolling(lessonCompletedToday: boolean): Promise<void> {
           sound: true,
           data: { type: 'leo_rolling_nudge', route: '/(tabs)/home', localDate: localDateString(now) },
         },
-        trigger: fireAt,
+        trigger: dateTrigger(fireAt),
       });
       ids.push(id);
     }
@@ -253,7 +259,7 @@ async function scheduleDailyFallbacks(): Promise<void> {
           sound: true,
           data: { type: 'daily_fallback', route: '/(tabs)/home', slot: slot.key, localDate: localDateString(fireAt) },
         },
-        trigger: fireAt,
+        trigger: dateTrigger(fireAt),
       });
       }
     }
@@ -310,7 +316,7 @@ async function scheduleLapseNudges(): Promise<void> {
           sound: true,
           data: { type: 'lapse_nudge', route: '/(tabs)/home', days },
         },
-        trigger: fireAt,
+        trigger: dateTrigger(fireAt),
       });
     }
   } catch (error) {
