@@ -26,7 +26,7 @@ export const markets: MarketInfo[] = [
     name: "AI & Machine Learning",
     description: "Artificial intelligence, ML, and automation",
     color: "#3B82F6",
-    themes: ["AI Foundations", "ML Infrastructure", "Enterprise AI", "Generative AI", "AI Safety & Ethics", "AI Business Models"],
+    themes: ["AI Foundations", "Large Language Models", "AI Applications", "AI Infrastructure", "AI Safety & Governance", "AI Business Strategy"],
   },
   {
     id: "fintech",
