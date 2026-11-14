@@ -428,6 +428,8 @@ export default function FriendsScreen() {
     raceAction: sheetAction(friendRow.id, 'race'),
     streakAction: sheetAction(friendRow.id, 'streak'),
     nudged: isNudged(friendRow.id),
+    look: looks[friendRow.id]?.look,
+    crowned: friendsBoard[0]?.id === friendRow.id && friendsBoard[0].xp > 0,
   } : null;
   /** Button for the friend sheet: start one, accept theirs, or show why not. */
   function sheetAction(friendId: string, mode: 'streak' | 'race'): { label: string; enabled: boolean } {

@@ -5,7 +5,8 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { COLORS } from '../../lib/constants';
 import { StreakFlame } from '../ui/StreakFlame';
 import { XPFlask } from '../ui/XPFlask';
-import { SocialAvatar } from './SocialAvatar';
+import { LeoAvatar } from '../shop/LeoAvatar';
+import type { Look } from '../../lib/shopEconomy';
 import { ChunkyButton } from './ChunkyButton';
 
 export interface FriendSheetInfo {
@@ -22,6 +23,9 @@ export interface FriendSheetInfo {
   raceAction: { label: string; enabled: boolean };
   streakAction: { label: string; enabled: boolean };
   nudged: boolean;
+  /** Their Leo as they dressed it; undefined (look unknown) falls back to their letter. */
+  look?: Look;
+  crowned?: boolean;
 }
 
 /** Everything you can do with one friend, so the board rows stay clean. */
@@ -49,7 +53,7 @@ export function FriendSheet({ friend, social, onClose, onNudge, onRace, onStreak
 
         <View style={styles.top}>
           <View>
-            <SocialAvatar name={friend.name} size={76} ring={COLORS.accent} ringWidth={3} />
+            <LeoAvatar look={friend.look} crown={friend.crowned} name={friend.name} size={76} ring={COLORS.accent} ringWidth={3} />
             {friend.online && <View style={styles.online} />}
           </View>
           <Text style={styles.name} numberOfLines={1}>{friend.name}</Text>

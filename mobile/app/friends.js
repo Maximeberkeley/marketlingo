@@ -406,7 +406,9 @@ function FriendsScreen() {
     online: isActive(friendRow),
     raceAction: sheetAction(friendRow.id, "race"),
     streakAction: sheetAction(friendRow.id, "streak"),
-    nudged: isNudged(friendRow.id)
+    nudged: isNudged(friendRow.id),
+    look: looks[friendRow.id]?.look,
+    crowned: friendsBoard[0]?.id === friendRow.id && friendsBoard[0].xp > 0
   } : null;
   function sheetAction(friendId, mode) {
     const taken = takenFor(friendId, mode);
