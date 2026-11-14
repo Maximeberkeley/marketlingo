@@ -8,9 +8,13 @@ import { batches, dayProblems, stackRecord, stacksToWrite, type LessonStack } fr
 
 const FNS = readdirSync('supabase/functions').filter(f => /^load-handwritten-lessons(-\d+)?$/.test(f)).map(f => `supabase/functions/${f}`);
 const fnOf = (market: string) => FNS.find(fn => readdirSync(`${fn}/data`).includes(`${market}.ts`))!;
-const MIGRATIONS = readdirSync('drizzle/migrations').filter(f => /^\d{4}_[a-z0-9]+_handwritten_days_6_30\.sql$/.test(f));
+const MIGRATIONS = readdirSync('drizzle/migrations').filter(f => /^\d{4}_[a-z0-9]+_handwritten_days_\d+_\d+\.sql$/.test(f));
 const marketOf = (file: string) => file.split('_')[1];
 const MARKETS = MIGRATIONS.map(marketOf);
+/** Stacks per market: four goals for each day the file covers (days 6-30 is 100, ai's 31-60 is 120). */
+const daysOf = (file: string) => { const [, a, b] = file.match(/_days_(\d+)_(\d+)\.sql$/)!.map(Number); return b - a + 1; };
+const COUNT: Record<string, number> = Object.fromEntries(MIGRATIONS.map(f => [marketOf(f), daysOf(f) * 4]));
+const TOTAL = Object.values(COUNT).reduce((a, b) => a + b, 0);
 
 const dataRows = (market: string): LessonStack[] => {
   const text = readFileSync(`${fnOf(market)}/data/${market}.ts`, 'utf8');
@@ -34,15 +38,15 @@ describe('load-handwritten-lessons ships the same lessons as the migrations', ()
     expect(execFileSync('python3', ['scripts/lessons/export_loader.py', '--check'], { encoding: 'utf8' })).toContain('up to date');
   }, 120000);
 
-  it('covers all ten markets, row for row: same stack ids, titles, tags and slide counts', () => {
-    expect(MARKETS.length).toBe(10);
+  it('covers all eleven markets, row for row: same stack ids, titles, tags and slide counts', () => {
+    expect(MARKETS.length).toBe(11);
     for (const file of MIGRATIONS) {
       const market = marketOf(file);
       expect(fnOf(market), market).toBeTruthy();
       const rows = dataRows(market);
       const { sql, stackIds, slides } = fromMigration(file);
       expect(rows.map(r => r.id), market).toEqual(stackIds);
-      expect(rows.length, market).toBe(100);
+      expect(rows.length, market).toBe(COUNT[market]);
       for (const row of rows) {
         expect(row.market_id).toBe(market);
         expect(row.tags).toContain('handwritten-v1');
@@ -163,16 +167,16 @@ describe('the function, run against in-memory tables', () => {
     const preview = await (await handler(new Request('http://x'))).json();
     expect(preview.mode).toMatch(/preview/);
     expect(stacks.size).toBe(0);
-    for (const m of MARKETS) expect(preview.report[m]).toEqual({ bundled: 100, written: 0, alreadyCurrent: 0 });
+    for (const m of MARKETS) expect(preview.report[m]).toEqual({ bundled: COUNT[m], written: 0, alreadyCurrent: 0 });
 
     const first = await (await handler(new Request('http://x', { method: 'POST' }))).json();
     expect(Object.keys(first.report).sort()).toEqual([...MARKETS].sort());
     for (const m of MARKETS) {
-      expect(first.report[m].written).toBe(100);
-      expect(first.totals[m]).toBe(100);
+      expect(first.report[m].written).toBe(COUNT[m]);
+      expect(first.totals[m]).toBe(COUNT[m]);
     }
     expect(first.problems).toEqual([]);
-    expect(stacks.size).toBe(1000);
+    expect(stacks.size).toBe(TOTAL);
     const expectedSlides = MARKETS.reduce((n, m) => n + dataRows(m).reduce((k, r) => k + r.slides.length, 0), 0);
     expect(slides.size).toBe(expectedSlides);
     const one = [...stacks.values()][0];
@@ -182,6 +186,6 @@ describe('the function, run against in-memory tables', () => {
     const before = writes;
     const second = await (await handler(new Request('http://x', { method: 'POST' }))).json();
     expect(writes).toBe(before);
-    for (const m of MARKETS) expect(second.report[m]).toMatchObject({ written: 0, alreadyCurrent: 100 });
+    for (const m of MARKETS) expect(second.report[m]).toMatchObject({ written: 0, alreadyCurrent: COUNT[m] });
   }, 60000);
 });

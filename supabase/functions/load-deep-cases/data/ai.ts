@@ -13362,6 +13362,13954 @@ const rows: unknown[] = [
    "handwritten-v1",
    "src:6a79f1727fd3"
   ]
+ },
+ {
+  "id": "0196aa28-08a6-502a-a9e7-3b919bc8696d",
+  "market_id": "ai",
+  "day": 31,
+  "slot": 1,
+  "content": {
+   "id": "ai-d31-c1",
+   "title": "A GPT for about $100",
+   "lessonTitle": "What the letters in GPT mean",
+   "slot": 1,
+   "type": "apply",
+   "brief": {
+    "headline": "In October 2025, Andrej Karpathy released nanochat, a full recipe for a small ChatGPT-style model. One run on an 8-GPU H100 machine took 3 hours 51 minutes and cost about $92.",
+    "kicker": "Apply day 31: the GPT recipe, shrunk to a $100 budget.",
+    "fullText": "The model is a Transformer with 20 layers and about 560 million parameters. It trains on about 11.2 billion tokens, roughly 20 tokens for each parameter. The machine rented for about $24 an hour.\n\nThe stages follow the GPT pattern: train a tokenizer, pre-train on raw text, then midtrain and fine-tune for chat. Reinforcement learning is an optional last stage.\n\nIts base model scores 0.22 on the CORE benchmark, slightly above GPT-2 large at 0.21 and below GPT-2 XL at 0.26.",
+    "sources": [
+     {
+      "url": "https://github.com/karpathy/nanochat/discussions/1",
+      "label": "Andrej Karpathy, Introducing nanochat, Oct 2025"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "buildChain",
+    "prompt": "Put the nanochat stages in order.",
+    "steps": [
+     "Train the tokenizer",
+     "Pre-train on raw text",
+     "Midtrain the model",
+     "Fine-tune on chat examples",
+     "Optionally, reinforcement learning"
+    ],
+    "explanation": "Pre-train first, specialize after. It is the same split OpenAI used for its first GPT in 2018."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "The run took 3 hours 51 minutes at about $24 an hour. What did it cost, in dollars?",
+    "min": 0,
+    "max": 250,
+    "value": 92,
+    "unit": "$",
+    "explanation": "About $92.40, under the $100 in its title."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "An interviewer asks what makes a model a GPT, using nanochat as the example.",
+      "prompt": "What's the best answer?",
+      "options": [
+       "Any model that can chat with its users",
+       "A model with over 100 billion parameters",
+       "A decoder pre-trained on text, then fine-tuned"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Chat is a use, not the design.",
+       "nanochat has about 560 million parameters and is still a GPT.",
+       "nanochat follows exactly that recipe at about 560 million parameters."
+      ],
+      "explanation": "A GPT is defined by its design and training, not its size."
+     },
+     "proReasoning": "Define a GPT by how it is built and trained. Size and chat are details on top.",
+     "commonMistake": "Assuming a model only counts as a GPT if it is huge.",
+     "mentalModel": "Design and training, not size.",
+     "sources": [
+      {
+       "url": "https://github.com/karpathy/nanochat/discussions/1",
+       "label": "Andrej Karpathy, Introducing nanochat, Oct 2025"
+      },
+      {
+       "url": "https://huggingface.co/docs/transformers/model_doc/openai-gpt",
+       "label": "Hugging Face Transformers docs, OpenAI GPT"
+      }
+     ]
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A startup pitches that it trained its own small chat model, so it has a moat.",
+      "prompt": "What do you weigh?",
+      "options": [
+       "A small GPT now costs about $100 to train",
+       "Training any chat model takes years",
+       "Owning a model always means a moat"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "A public recipe did it in under four hours for about $92.",
+       "nanochat trained in under four hours.",
+       "If anyone can train one cheaply, owning one is no barrier."
+      ],
+      "explanation": "A small trained model is not a moat when the recipe is public and cheap."
+     },
+     "proReasoning": "Investors ask what a rival would pay to copy the asset. For a small GPT, a public recipe puts it near $100.",
+     "commonMistake": "Treating any home-trained model as a moat.",
+     "mentalModel": "Price the copy.",
+     "sources": [
+      {
+       "url": "https://github.com/karpathy/nanochat/discussions/1",
+       "label": "Andrej Karpathy, Introducing nanochat, Oct 2025"
+      }
+     ]
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You want a model that speaks your niche's jargon. nanochat shows a small GPT can be trained for about $92.",
+      "prompt": "What do you do first?",
+      "options": [
+       "Wait until training costs nothing at all",
+       "Fine-tune a strong pre-trained model on your data",
+       "Train a 560M model from scratch and ship it"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Waiting hands the niche to someone else.",
+       "Pre-training is the costly step, and someone already paid for it.",
+       "Its base model scores below GPT-2 XL."
+      ],
+      "explanation": "Cheap training is great for learning. For a product, fine-tune on top of the strongest model you can use."
+     },
+     "proReasoning": "Founders use toy runs to learn and strong pre-trained models to ship.",
+     "commonMistake": "Shipping a tiny model trained from scratch because it was cheap.",
+     "mentalModel": "Learn small, ship on strong.",
+     "sources": [
+      {
+       "url": "https://github.com/karpathy/nanochat/discussions/1",
+       "label": "Andrej Karpathy, Introducing nanochat, Oct 2025"
+      },
+      {
+       "url": "https://openai.com/index/language-unsupervised/",
+       "label": "OpenAI, Improving language understanding with unsupervised learning, Jun 2018"
+      }
+     ]
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend thinks only giant labs can build a GPT.",
+      "prompt": "What's the fairer view?",
+      "options": [
+       "Only labs with billions can train any GPT",
+       "GPTs cannot be trained, only bought",
+       "Anyone can train a small one for about $100"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Frontier models cost far more, but small GPTs do not.",
+       "nanochat publishes every training stage.",
+       "nanochat did it on a rented machine in under four hours."
+      ],
+      "explanation": "The recipe is open. What costs billions is the frontier scale, not the idea."
+     },
+     "proReasoning": "Separate the idea from the scale. The GPT recipe is cheap to try; frontier size is not.",
+     "commonMistake": "Thinking the GPT design itself is out of reach.",
+     "mentalModel": "The recipe is cheap; scale is not.",
+     "sources": [
+      {
+       "url": "https://github.com/karpathy/nanochat/discussions/1",
+       "label": "Andrej Karpathy, Introducing nanochat, Oct 2025"
+      }
+     ]
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:e01a3160e472"
+  ]
+ },
+ {
+  "id": "5101bd7e-64d0-5957-8f8c-afbff0d722c5",
+  "market_id": "ai",
+  "day": 31,
+  "slot": 2,
+  "content": {
+   "id": "ai-d31-c2",
+   "title": "From translator to writer",
+   "lessonTitle": "What the letters in GPT mean",
+   "slot": 2,
+   "type": "connect",
+   "brief": {
+    "headline": "The 2017 Transformer was built to translate, with an encoder and a decoder of six layers each. OpenAI's 2018 GPT kept the decoder and trained it to predict the next word.",
+    "kicker": "Connect day 7 and day 31: the parallel design became GPT.",
+    "fullText": "On day 7 you saw that the Transformer dropped recurrence, so it could process a sequence in parallel. Its English to French model trained for 3.5 days on eight GPUs.\n\nOn day 31 you saw what OpenAI did with half of it. The decoder's mask lets each prediction see only earlier words, which is what predicting the next word needs. OpenAI pre-trained it for one month on 8 GPUs, then fine-tuned it for each task.\n\nA design built for translation became the base of a model that writes.",
+    "sources": [
+     {
+      "url": "https://arxiv.org/abs/1706.03762",
+      "label": "Vaswani et al., Attention Is All You Need, arXiv abstract"
+     },
+     {
+      "url": "https://arxiv.org/html/1706.03762v7",
+      "label": "Vaswani et al., Attention Is All You Need, 2017"
+     },
+     {
+      "url": "https://huggingface.co/docs/transformers/model_doc/openai-gpt",
+      "label": "Hugging Face Transformers docs, OpenAI GPT"
+     },
+     {
+      "url": "https://openai.com/index/language-unsupervised/",
+      "label": "OpenAI, Improving language understanding with unsupervised learning, Jun 2018"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "sortSignal",
+    "prompt": "Which model does each fact describe?",
+    "buckets": [
+     "2017 Transformer",
+     "2018 GPT"
+    ],
+    "items": [
+     {
+      "text": "Built to translate between languages",
+      "bucket": 0
+     },
+     {
+      "text": "Encoder and decoder, six layers each",
+      "bucket": 0
+     },
+     {
+      "text": "Trained 3.5 days on eight GPUs",
+      "bucket": 0
+     },
+     {
+      "text": "Decoder only, predicting the next word",
+      "bucket": 1
+     },
+     {
+      "text": "One month on 8 GPUs, then fine-tuned",
+      "bucket": 1
+     }
+    ],
+    "explanation": "GPT took the decoder half and a new job: predicting the next word on raw text."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "Take one month as about 30 days. About how many times longer than 3.5 days did GPT-1 pre-train?",
+    "min": 0,
+    "max": 30,
+    "value": 9,
+    "unit": "times",
+    "explanation": "30 divided by 3.5 is about 8.6, so roughly 9 times, on the same number of GPUs."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "An interviewer asks how GPT differs from the original 2017 Transformer.",
+      "prompt": "What's the best answer?",
+      "options": [
+       "Only the decoder, trained to predict next words",
+       "It adds recurrence back to read longer text",
+       "Only the encoder, trained to label sentences"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "That is the split: GPT trains the decoder to predict the next word.",
+       "Dropping recurrence is what made the Transformer parallel.",
+       "Labeling sentences is an encoder job, not what GPT does."
+      ],
+      "explanation": "GPT is the decoder half of the Transformer with a next-word objective."
+     },
+     "proReasoning": "Explain GPT as a change to a known design: keep the decoder, change the job.",
+     "commonMistake": "Describing GPT as a brand new architecture unrelated to 2017.",
+     "mentalModel": "Same parts, new job.",
+     "sources": [
+      {
+       "url": "https://huggingface.co/docs/transformers/model_doc/openai-gpt",
+       "label": "Hugging Face Transformers docs, OpenAI GPT"
+      },
+      {
+       "url": "https://arxiv.org/html/1706.03762v7",
+       "label": "Vaswani et al., Attention Is All You Need, 2017"
+      }
+     ]
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A pitch says its new model design will 'replace the Transformer'.",
+      "prompt": "What history check do you make?",
+      "options": [
+       "Whether it uses more layers than 2017",
+       "Whether it trains in parallel and scales",
+       "Whether its name sounds newer than GPT"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Layer count alone says little about a design.",
+       "Parallel training is what let the Transformer scale.",
+       "A name says nothing about training cost."
+      ],
+      "explanation": "On day 7, the rule was that designs that run in parallel are the ones that scale."
+     },
+     "proReasoning": "Investors test new architectures against what made the last one win.",
+     "commonMistake": "Judging a new design by its marketing.",
+     "mentalModel": "Ask what scales.",
+     "sources": [
+      {
+       "url": "https://arxiv.org/abs/1706.03762",
+       "label": "Vaswani et al., Attention Is All You Need, arXiv abstract"
+      }
+     ]
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your team must pick a model design for a product that writes text.",
+      "prompt": "Which design fits the job?",
+      "options": [
+       "An encoder that only labels text",
+       "A recurrent network reading step by step",
+       "A decoder that predicts the next word"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Labeling text does not produce new text.",
+       "Recurrent networks are slow to train in parallel.",
+       "Writing is next-word prediction, which is what a GPT decoder does."
+      ],
+      "explanation": "Pick the design whose training job matches your product."
+     },
+     "proReasoning": "Founders match the model design to the product job: decoders write.",
+     "commonMistake": "Choosing a design without checking what it was trained to do.",
+     "mentalModel": "Match design to job.",
+     "sources": [
+      {
+       "url": "https://huggingface.co/docs/transformers/model_doc/openai-gpt",
+       "label": "Hugging Face Transformers docs, OpenAI GPT"
+      },
+      {
+       "url": "https://arxiv.org/abs/1706.03762",
+       "label": "Vaswani et al., Attention Is All You Need, arXiv abstract"
+      }
+     ]
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend asks how a design built for translation ended up writing essays.",
+      "prompt": "What's the best answer?",
+      "options": [
+       "Predicting the next word works for any text",
+       "OpenAI rebuilt it from scratch for essays",
+       "It was always meant to write essays"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Any text is a sequence of next words to predict.",
+       "GPT reused the Transformer decoder.",
+       "The 2017 paper was about translation."
+      ],
+      "explanation": "A general job, predicting the next word, made a translation design useful for any text."
+     },
+     "proReasoning": "Notice when a general training job turns a narrow tool into a broad one.",
+     "commonMistake": "Thinking GPT was designed for essays from the start.",
+     "mentalModel": "General job, broad use.",
+     "sources": [
+      {
+       "url": "https://arxiv.org/abs/1706.03762",
+       "label": "Vaswani et al., Attention Is All You Need, arXiv abstract"
+      },
+      {
+       "url": "https://openai.com/index/better-language-models/",
+       "label": "OpenAI, Better language models and their implications, Feb 2019"
+      }
+     ]
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:73352144066e"
+  ]
+ },
+ {
+  "id": "e2971905-f19c-5a5b-839c-0fa2dcbc0dee",
+  "market_id": "ai",
+  "day": 31,
+  "slot": 3,
+  "content": {
+   "id": "ai-d31-c3",
+   "title": "Pre-train or fine-tune?",
+   "lessonTitle": "What the letters in GPT mean",
+   "slot": 3,
+   "type": "decide",
+   "brief": {
+    "headline": "You run a legal software startup with a modest compute budget. You want a model that drafts contract clauses in your clients' style.",
+    "kicker": "Decide: use day 31's split between pre-training and fine-tuning.",
+    "fullText": "Day 31 showed how a GPT is made. OpenAI pre-trained its first one for a month on 8 GPUs, using a few thousand books, about 5GB of text. That costly step only had to be done once.\n\nThen it fine-tuned the same model on much smaller labeled datasets, one per task. Strong pre-trained models are now available to build on.\n\nYour question is which step you need to pay for yourself.",
+    "sources": [
+     {
+      "url": "https://openai.com/index/language-unsupervised/",
+      "label": "OpenAI, Improving language understanding with unsupervised learning, Jun 2018"
+     },
+     {
+      "url": "https://www.ibm.com/think/topics/gpt",
+      "label": "IBM, What is GPT (generative pretrained transformer)?"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "faceOff",
+    "prompt": "Which step costs more compute?",
+    "left": {
+     "name": "Pre-training",
+     "note": "Learns from raw text, done once"
+    },
+    "right": {
+     "name": "Fine-tuning",
+     "note": "Small labeled dataset per task"
+    },
+    "correctIndex": 0,
+    "explanation": "OpenAI called pre-training the expensive step. Fine-tuning reuses it on far less data."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "OpenAI's first GPT pre-trained on about how many gigabytes of text?",
+    "min": 0,
+    "max": 30,
+    "value": 5,
+    "unit": "GB",
+    "explanation": "About 5GB, from a few thousand books. Later models used far more."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your manager asks whether to pre-train your own model for contract drafting.",
+      "prompt": "What do you recommend?",
+      "options": [
+       "Use a general model as is, unchanged",
+       "Fine-tune a pre-trained model on our clauses",
+       "Pre-train from scratch on our own contracts"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "A general model will not know your clients' style.",
+       "The costly step is already paid; you add your style on top.",
+       "Your contracts are far too little text to pre-train on."
+      ],
+      "explanation": "Pre-train once, fine-tune per task. Someone else already paid for the first part."
+     },
+     "proReasoning": "Recommend the cheapest step that gets the job done, and say why.",
+     "commonMistake": "Proposing to pre-train when a fine-tune would do.",
+     "mentalModel": "Pay only for the step you need.",
+     "sources": [
+      {
+       "url": "https://openai.com/index/language-unsupervised/",
+       "label": "OpenAI, Improving language understanding with unsupervised learning, Jun 2018"
+      }
+     ]
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You compare two legal AI startups. One spends most of its funding on pre-training.",
+      "prompt": "What do you ask it?",
+      "options": [
+       "How many GPUs it owns outright today",
+       "Whether its office is near a data center",
+       "What its pre-training adds over fine-tuning"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Owning GPUs does not show the spend is needed.",
+       "Location says nothing about the model.",
+       "That spend only pays if it beats building on existing models."
+      ],
+      "explanation": "Pre-training is the fixed cost. A startup should show why it must pay it again."
+     },
+     "proReasoning": "Investors ask whether a big fixed cost buys something a cheap fine-tune cannot.",
+     "commonMistake": "Reading heavy compute spending as a sign of strength by itself.",
+     "mentalModel": "Justify the fixed cost.",
+     "sources": [
+      {
+       "url": "https://openai.com/index/language-unsupervised/",
+       "label": "OpenAI, Improving language understanding with unsupervised learning, Jun 2018"
+      }
+     ]
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You have a few thousand of your clients' clauses, each marked good or bad.",
+      "prompt": "How do you use them?",
+      "options": [
+       "As a labeled set to fine-tune a model",
+       "As the only text to pre-train a model",
+       "As marketing copy for the website"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Fine-tuning is built for small labeled sets like this.",
+       "A few thousand clauses are far too little to pre-train on.",
+       "That wastes your most useful training data."
+      ],
+      "explanation": "Small labeled data is exactly what fine-tuning uses."
+     },
+     "proReasoning": "Founders turn their small, labeled data into a fine-tune. It is their edge on top of a shared base.",
+     "commonMistake": "Trying to pre-train on a tiny private dataset.",
+     "mentalModel": "Labeled data feeds fine-tunes.",
+     "sources": [
+      {
+       "url": "https://openai.com/index/language-unsupervised/",
+       "label": "OpenAI, Improving language understanding with unsupervised learning, Jun 2018"
+      }
+     ]
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend asks why their legal app did not need its own supercomputer.",
+      "prompt": "What's the best answer?",
+      "options": [
+       "The app runs on one big book of legal rules",
+       "It fine-tuned a model someone else pre-trained",
+       "Legal text needs no model training of any kind"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Modern apps run on trained models, not rulebooks.",
+       "The costly step was done once, by someone else.",
+       "Any model needs training to know legal text."
+      ],
+      "explanation": "Pre-training happens once. Many apps share it and add a cheap fine-tune."
+     },
+     "proReasoning": "See the split: one costly pre-training, many cheap fine-tunes on top.",
+     "commonMistake": "Assuming every AI app trained its own model from scratch.",
+     "mentalModel": "One base, many fine-tunes.",
+     "sources": [
+      {
+       "url": "https://openai.com/index/language-unsupervised/",
+       "label": "OpenAI, Improving language understanding with unsupervised learning, Jun 2018"
+      }
+     ]
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:61e30ae4ec73"
+  ]
+ },
+ {
+  "id": "b3d6fe9e-54f9-5c67-b076-f4d0a77df914",
+  "market_id": "ai",
+  "day": 32,
+  "slot": 1,
+  "content": {
+   "id": "ai-d32-c1",
+   "title": "How Meta sized Llama 3",
+   "lessonTitle": "Predict the loss, then pay",
+   "slot": 1,
+   "type": "apply",
+   "brief": {
+    "headline": "For a budget of 3.8 × 10^25 FLOPs, Meta's scaling laws pointed to a 402 billion parameter model trained on 16.55 trillion tokens. Meta trained a 405B model on 15.6 trillion tokens.",
+    "kicker": "Apply day 32: small runs chose the size of a flagship.",
+    "fullText": "Meta built its scaling laws from models trained with budgets between 6 × 10^18 and 10^22 FLOPs. Then it extrapolated to the flagship budget.\n\nThe curves get flatter near the best size as budgets grow, so a size close to 402B works about as well. Meta chose 405B.\n\nMeta also forecast benchmark scores, extrapolating over four orders of magnitude. The forecast only slightly underestimated the final model.",
+    "sources": [
+     {
+      "url": "https://ar5iv.labs.arxiv.org/html/2407.21783",
+      "label": "Meta, The Llama 3 Herd of Models, 2024"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "multipleChoice",
+    "prompt": "Why could Meta train 405B parameters instead of exactly 402B?",
+    "options": [
+     "The rules forbid models below 405B",
+     "405B was the most its GPUs could store",
+     "Near the best size, the curve is flat"
+    ],
+    "correctIndex": 2,
+    "explanation": "At large budgets the curve flattens around the minimum, so small size changes cost little."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "Meta's biggest scaling run used 10^22 FLOPs; the flagship used 3.8 × 10^25. How many times more, in thousands?",
+    "min": 0,
+    "max": 10,
+    "value": 3.8,
+    "unit": "K",
+    "explanation": "About 3,800 times more. The forecast still landed close."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "An interviewer asks how a lab chooses the size of its next big model.",
+      "prompt": "What's the best answer?",
+      "options": [
+       "It fits scaling laws on small runs first",
+       "It doubles the size of its last model",
+       "It matches the largest rival model"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Meta did this for Llama 3, from runs up to 10^22 FLOPs.",
+       "Doubling ignores the budget and the data.",
+       "A rival sized its model for its own budget."
+      ],
+      "explanation": "Size follows from the compute budget and the curve, not from habit."
+     },
+     "proReasoning": "Name a real example. Meta sized its flagship from runs thousands of times smaller.",
+     "commonMistake": "Saying labs just build the biggest model they can.",
+     "mentalModel": "Size comes from the curve.",
+     "sources": [
+      {
+       "url": "https://ar5iv.labs.arxiv.org/html/2407.21783",
+       "label": "Meta, The Llama 3 Herd of Models, 2024"
+      }
+     ]
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A lab asks investors for a very large training budget.",
+      "prompt": "Which answer should reassure you most?",
+      "options": [
+       "Rival labs spend even more on training",
+       "Small runs predicted the result, then held",
+       "The team feels confident about the result"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Rival spending says nothing about this run.",
+       "Meta forecast its flagship over four orders of magnitude.",
+       "Confidence is not a forecast."
+      ],
+      "explanation": "A track record of forecasts that held is the best evidence a big spend is not a gamble."
+     },
+     "proReasoning": "Ask for the forecast and how past forecasts did. Meta's only slightly underestimated.",
+     "commonMistake": "Funding a big run on vision alone.",
+     "mentalModel": "Ask for the curve.",
+     "sources": [
+      {
+       "url": "https://ar5iv.labs.arxiv.org/html/2407.21783",
+       "label": "Meta, The Llama 3 Herd of Models, 2024"
+      }
+     ]
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You will train a custom model for a client and must pick its size.",
+      "prompt": "How do you pick?",
+      "options": [
+       "Choose the biggest size you can afford",
+       "Pick a size at random, fix it later",
+       "Test a few small sizes and extrapolate"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Too big for the data wastes compute.",
+       "Fixing it later means paying twice.",
+       "Cheap runs show where the best size sits."
+      ],
+      "explanation": "Small, cheap runs make the big decision safer. Meta did the same at far larger scale."
+     },
+     "proReasoning": "Founders run cheap experiments before the expensive one.",
+     "commonMistake": "Spending the whole budget on a guess.",
+     "mentalModel": "Test small, then commit.",
+     "sources": [
+      {
+       "url": "https://ar5iv.labs.arxiv.org/html/2407.21783",
+       "label": "Meta, The Llama 3 Herd of Models, 2024"
+      }
+     ]
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend asks how Meta knew how big to make Llama 3.",
+      "prompt": "What's the best answer?",
+      "options": [
+       "It fit curves to much smaller models",
+       "It copied the size of GPT-4",
+       "It trained many giant models, kept one"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Meta used runs up to 10^22 FLOPs to pick the size.",
+       "GPT-4's size was never disclosed.",
+       "Training many giants would cost far too much."
+      ],
+      "explanation": "Small models trace a curve, and the curve says where the big one should sit."
+     },
+     "proReasoning": "Explain the trick simply: small models draw the curve, the big one follows it.",
+     "commonMistake": "Imagining labs train many giant models and pick the best.",
+     "mentalModel": "Small runs draw the curve.",
+     "sources": [
+      {
+       "url": "https://ar5iv.labs.arxiv.org/html/2407.21783",
+       "label": "Meta, The Llama 3 Herd of Models, 2024"
+      },
+      {
+       "url": "https://arxiv.org/html/2303.08774v6",
+       "label": "OpenAI, GPT-4 Technical Report, 2023"
+      }
+     ]
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:712e2fa9e1c2"
+  ]
+ },
+ {
+  "id": "e66fcbe7-8689-5771-b1f5-bda5121ba71c",
+  "market_id": "ai",
+  "day": 32,
+  "slot": 2,
+  "content": {
+   "id": "ai-d32-c2",
+   "title": "Three recipes in four years",
+   "lessonTitle": "Predict the loss, then pay",
+   "slot": 2,
+   "type": "connect",
+   "brief": {
+    "headline": "In 2020, a scaling law said 10x more compute should buy about 5x more parameters and 2x more data. In 2022, Chinchilla said to grow both equally. In 2024, Meta trained a small model far past that.",
+    "kicker": "Connect day 10 and day 32: the best recipe kept changing.",
+    "fullText": "On day 32 you saw the 2020 recipe from OpenAI researchers: spend extra compute mostly on a bigger model. On day 10 you saw DeepMind's correction: for every doubling of model size, double the training tokens. Chinchilla, at 70 billion parameters, beat far larger models on the same compute.\n\nThen serving costs entered the math. The Chinchilla-optimal amount for an 8B Llama 3 was about 200B tokens. Meta trained far past it, because smaller models are much more efficient during inference.\n\nEach recipe answers a different question: the best model for a training budget, or the best model to serve.",
+    "sources": [
+     {
+      "url": "https://arxiv.org/pdf/2001.08361",
+      "label": "Kaplan et al., Scaling Laws for Neural Language Models, 2020"
+     },
+     {
+      "url": "https://arxiv.org/abs/2203.15556",
+      "label": "Hoffmann et al., Training Compute-Optimal Large Language Models, 2022"
+     },
+     {
+      "url": "https://ai.meta.com/blog/meta-llama-3/",
+      "label": "Meta, Introducing Meta Llama 3, Apr 2024"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "sortSignal",
+    "prompt": "Which recipe does each fact belong to?",
+    "buckets": [
+     "2020: go bigger",
+     "2022: grow both",
+     "2024: train longer"
+    ],
+    "items": [
+     {
+      "text": "About 5x parameters per 10x compute",
+      "bucket": 0
+     },
+     {
+      "text": "Spend extra compute mostly on size",
+      "bucket": 0
+     },
+     {
+      "text": "Double tokens with each doubling of size",
+      "bucket": 1
+     },
+     {
+      "text": "A 70B model beats 280B Gopher",
+      "bucket": 1
+     },
+     {
+      "text": "An 8B model trained far past 200B tokens",
+      "bucket": 2
+     }
+    ],
+    "explanation": "The first two optimize the training budget. The third adds the cost of serving the model."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "Under the 2020 recipe, 10x more compute meant about how many times more parameters?",
+    "min": 0,
+    "max": 20,
+    "value": 5,
+    "unit": "times",
+    "explanation": "About 5x more parameters and only 2x more data. Chinchilla later said to grow both equally."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "An interviewer asks whether a bigger model is always better for a fixed budget.",
+      "prompt": "What's the best answer?",
+      "options": [
+       "Yes, as long as the model is open",
+       "No; Chinchilla showed data must grow too",
+       "Yes; the 2020 law proved size wins"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Openness has nothing to do with it.",
+       "A 70B model beat 280B Gopher on the same compute.",
+       "Chinchilla corrected that recipe in 2022."
+      ],
+      "explanation": "For a fixed budget, size and data have to grow together."
+     },
+     "proReasoning": "Show you know the recipe changed, and why.",
+     "commonMistake": "Quoting the 2020 recipe as if it still held.",
+     "mentalModel": "Recipes get revised.",
+     "sources": [
+      {
+       "url": "https://arxiv.org/abs/2203.15556",
+       "label": "Hoffmann et al., Training Compute-Optimal Large Language Models, 2022"
+      },
+      {
+       "url": "https://arxiv.org/pdf/2001.08361",
+       "label": "Kaplan et al., Scaling Laws for Neural Language Models, 2020"
+      }
+     ]
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A lab plans to serve its model to millions of users every day.",
+      "prompt": "Which recipe matters most for its costs?",
+      "options": [
+       "Make the model as large as compute allows",
+       "Stop training at the compute-optimal point",
+       "Train a smaller model longer, serve it cheaply"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "A huge model costs more on every answer.",
+       "Optimal for training is not optimal for serving.",
+       "Meta says smaller models are much more efficient during inference."
+      ],
+      "explanation": "At high usage, serving costs dominate. That favors small models trained long."
+     },
+     "proReasoning": "Investors look past the training bill to the serving bill that comes every day.",
+     "commonMistake": "Judging a lab only by its training efficiency.",
+     "mentalModel": "Serving cost wins at scale.",
+     "sources": [
+      {
+       "url": "https://ai.meta.com/blog/meta-llama-3/",
+       "label": "Meta, Introducing Meta Llama 3, Apr 2024"
+      }
+     ]
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your app answers millions of short queries a day. You can use a large model or a small one trained much longer.",
+      "prompt": "Which do you test first?",
+      "options": [
+       "The small, longer-trained model",
+       "The largest model you can find",
+       "Whichever was released most recently"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "It is cheaper on every one of those millions of queries.",
+       "You pay for its size on every answer.",
+       "New is not the same as right for your workload."
+      ],
+      "explanation": "High volume makes serving cost your biggest line."
+     },
+     "proReasoning": "Founders pick models for their real workload, often small ones trained long.",
+     "commonMistake": "Defaulting to the biggest model for simple, high-volume tasks.",
+     "mentalModel": "Volume favors small.",
+     "sources": [
+      {
+       "url": "https://ai.meta.com/blog/meta-llama-3/",
+       "label": "Meta, Introducing Meta Llama 3, Apr 2024"
+      }
+     ]
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend says the rules for building AI models are settled science.",
+      "prompt": "What's the fairer view?",
+      "options": [
+       "Only the hardware has changed, not recipes",
+       "The best recipe changed twice in four years",
+       "It has not changed since the 2017 paper"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "The data recipe changed too.",
+       "2020, 2022 and 2024 each shifted the recipe.",
+       "Scaling laws arrived only in 2020."
+      ],
+      "explanation": "Scaling advice keeps being revised as labs learn more and costs shift."
+     },
+     "proReasoning": "Treat AI rules of thumb as current best guesses, with dates attached.",
+     "commonMistake": "Treating any AI recipe as permanent.",
+     "mentalModel": "Rules of thumb have dates.",
+     "sources": [
+      {
+       "url": "https://arxiv.org/pdf/2001.08361",
+       "label": "Kaplan et al., Scaling Laws for Neural Language Models, 2020"
+      },
+      {
+       "url": "https://arxiv.org/abs/2203.15556",
+       "label": "Hoffmann et al., Training Compute-Optimal Large Language Models, 2022"
+      },
+      {
+       "url": "https://ai.meta.com/blog/meta-llama-3/",
+       "label": "Meta, Introducing Meta Llama 3, Apr 2024"
+      }
+     ]
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:bce41823231b"
+  ]
+ },
+ {
+  "id": "3a29bdb2-2d72-5583-8f54-e1d3585df28e",
+  "market_id": "ai",
+  "day": 32,
+  "slot": 3,
+  "content": {
+   "id": "ai-d32-c3",
+   "title": "One run, one forecast",
+   "lessonTitle": "Predict the loss, then pay",
+   "slot": 3,
+   "type": "decide",
+   "brief": {
+    "headline": "You run research at a lab with budget for one large training run. The board wants a forecast of the result before it signs.",
+    "kicker": "Decide: use day 32's scaling laws before the big spend.",
+    "fullText": "Day 32 showed the tool. OpenAI predicted GPT-4's final loss from models trained with up to 10,000 times less compute, and a coding pass rate from models with at most 1,000 times less. Its report says it could reliably predict some aspects of GPT-4's performance, not all.\n\nThe curves behind this, from 2020, held over more than seven orders of magnitude.\n\nServing costs matter too: Meta trained a small Llama 3 far past the compute-optimal point because small models are cheaper to run.",
+    "sources": [
+     {
+      "url": "https://arxiv.org/html/2303.08774v6",
+      "label": "OpenAI, GPT-4 Technical Report, 2023"
+     },
+     {
+      "url": "https://arxiv.org/pdf/2001.08361",
+      "label": "Kaplan et al., Scaling Laws for Neural Language Models, 2020"
+     },
+     {
+      "url": "https://ai.meta.com/blog/meta-llama-3/",
+      "label": "Meta, Introducing Meta Llama 3, Apr 2024"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "spotFake",
+    "prompt": "One of these is false. Tap it.",
+    "statements": [
+     "GPT-4's loss was predicted from far smaller runs.",
+     "Scaling laws predict exact scores on every task.",
+     "The 2020 trends held over seven orders of magnitude."
+    ],
+    "fakeIndex": 1,
+    "explanation": "OpenAI said it could predict some aspects of GPT-4. Loss is predictable; every skill is not."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "GPT-4's coding pass rate was predicted from models with at most how many times less compute, in thousands?",
+    "min": 0,
+    "max": 5,
+    "value": 1,
+    "unit": "K",
+    "explanation": "At most 1,000 times less. The loss forecast reached even further, up to 10,000 times."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "The board asks what the forecast can and cannot promise.",
+      "prompt": "What do you tell them?",
+      "options": [
+       "It guarantees the score on every benchmark",
+       "It promises nothing, so we should skip it",
+       "It predicts loss well, some skills less so"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "OpenAI claimed only some aspects were predictable.",
+       "Skipping it means spending blind.",
+       "That matches what OpenAI reported for GPT-4."
+      ],
+      "explanation": "Be precise about the forecast's reach. Overclaiming costs trust later."
+     },
+     "proReasoning": "State what the forecast covers and what it does not.",
+     "commonMistake": "Selling a loss forecast as a guarantee of every capability.",
+     "mentalModel": "Claim what the curve shows.",
+     "sources": [
+      {
+       "url": "https://arxiv.org/html/2303.08774v6",
+       "label": "OpenAI, GPT-4 Technical Report, 2023"
+      }
+     ]
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You sit on the board and must approve the run.",
+      "prompt": "What do you ask to see first?",
+      "options": [
+       "The small runs and the curve fitted to them",
+       "A live demo of the finished, trained model",
+       "The size of the largest rival training run"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "That is the evidence the forecast rests on.",
+       "The finished model does not exist yet.",
+       "Rival runs say nothing about this one."
+      ],
+      "explanation": "The small runs are the only evidence before the money is spent."
+     },
+     "proReasoning": "Board members ask for the data behind the forecast, not a pitch.",
+     "commonMistake": "Approving a big run without seeing the small ones.",
+     "mentalModel": "See the small runs.",
+     "sources": [
+      {
+       "url": "https://arxiv.org/html/2303.08774v6",
+       "label": "OpenAI, GPT-4 Technical Report, 2023"
+      }
+     ]
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "The forecast says the model will be strong but costly to serve to your users.",
+      "prompt": "What do you change?",
+      "options": [
+       "Cut the testing budget instead",
+       "Train a smaller model for longer",
+       "Train it even bigger, to be safe"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Less testing does not lower serving costs.",
+       "Meta did this with Llama 3 to cut serving costs.",
+       "Bigger makes every answer cost more."
+      ],
+      "explanation": "Plan for the serving bill before you train, not after."
+     },
+     "proReasoning": "Founders size models for what they will cost to run, not only to train.",
+     "commonMistake": "Optimizing the training run and ignoring the serving bill.",
+     "mentalModel": "Plan for serving.",
+     "sources": [
+      {
+       "url": "https://ai.meta.com/blog/meta-llama-3/",
+       "label": "Meta, Introducing Meta Llama 3, Apr 2024"
+      }
+     ]
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend asks how a lab can know a model's quality before building it.",
+      "prompt": "What's the best answer?",
+      "options": [
+       "Labs guess, then announce whatever happens next",
+       "They copy the results of older, similar models",
+       "Small models trace a curve the big one follows"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "The forecast came before the run finished.",
+       "Older models were built differently.",
+       "OpenAI predicted GPT-4's loss this way."
+      ],
+      "explanation": "Scaling laws make the outcome of a big run predictable in part."
+     },
+     "proReasoning": "Explain scaling laws as a forecast drawn from small, cheap runs.",
+     "commonMistake": "Thinking big AI runs are pure trial and error.",
+     "mentalModel": "Small runs forecast big ones.",
+     "sources": [
+      {
+       "url": "https://arxiv.org/html/2303.08774v6",
+       "label": "OpenAI, GPT-4 Technical Report, 2023"
+      }
+     ]
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:cf4c89bdfcb1"
+  ]
+ },
+ {
+  "id": "b1d3a2e2-0886-5571-85c1-757d7784d696",
+  "market_id": "ai",
+  "day": 33,
+  "slot": 1,
+  "content": {
+   "id": "ai-d33-c1",
+   "title": "OpenAI opens the weights again",
+   "lessonTitle": "Who gets the weights",
+   "slot": 1,
+   "type": "apply",
+   "brief": {
+    "headline": "On August 5, 2025, OpenAI released gpt-oss, its first open-weight language models since GPT-2. The larger one has 117 billion parameters and runs on a single 80 GB GPU.",
+    "kicker": "Apply day 33: the same company, on the other side of the weights.",
+    "fullText": "Both models use the permissive Apache 2.0 license. gpt-oss-120b is a mixture of experts: only 5.1 billion of its 117 billion parameters are active for each token. OpenAI says it nearly matches its own o4-mini on core reasoning tests. The smaller gpt-oss-20b runs with 16 GB of memory.\n\nOpenAI also warned that once open weights are out, adversaries may be able to fine-tune them for malicious purposes. It filtered harmful chemical, biological, radiological and nuclear data from training.\n\nIn 2019, the same company held back GPT-2's weights over misuse concerns.",
+    "sources": [
+     {
+      "url": "https://openai.com/index/introducing-gpt-oss/",
+      "label": "OpenAI, Introducing gpt-oss, Aug 2025"
+     },
+     {
+      "url": "https://www.theregister.com/2025/08/05/openai_open_gpt/",
+      "label": "The Register, OpenAI launches first open-weights models since GPT-2, Aug 2025"
+     },
+     {
+      "url": "https://openai.com/index/better-language-models/",
+      "label": "OpenAI, Better language models and their implications, Feb 2019"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "faceOff",
+    "prompt": "After release, which kind of model can its maker still restrict?",
+    "left": {
+     "name": "API-only model",
+     "note": "Reached through the maker's servers"
+    },
+    "right": {
+     "name": "Open-weight model",
+     "note": "Anyone with the weights can run it"
+    },
+    "correctIndex": 0,
+    "explanation": "OpenAI chose an API for GPT-3 so it could restrict access. Released weights cannot be called back."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "gpt-oss-120b has 117B parameters, with 5.1B active per token. About what percent is active?",
+    "min": 0,
+    "max": 20,
+    "value": 4.4,
+    "unit": "%",
+    "explanation": "5.1 divided by 117 is about 4.4%. Each token uses a small slice of the model."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "An interviewer asks what changes for OpenAI once the gpt-oss weights are public.",
+      "prompt": "What's the best answer?",
+      "options": [
+       "It still decides who may use them",
+       "It can no longer limit who runs them",
+       "It can recall the weights at any time"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "That describes an API model, not open weights.",
+       "OpenAI itself warned that adversaries may fine-tune open weights.",
+       "Released weights cannot be called back."
+      ],
+      "explanation": "Releasing weights hands control of use to whoever downloads them."
+     },
+     "proReasoning": "Explain open weights as a transfer of control, with risks the maker accepted.",
+     "commonMistake": "Thinking a company can take back weights it has released.",
+     "mentalModel": "Released weights are gone.",
+     "sources": [
+      {
+       "url": "https://www.theregister.com/2025/08/05/openai_open_gpt/",
+       "label": "The Register, OpenAI launches first open-weights models since GPT-2, Aug 2025"
+      },
+      {
+       "url": "https://openai.com/index/openai-api/",
+       "label": "OpenAI, OpenAI API, Jun 2020"
+      }
+     ]
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You hold shares in a firm that resells access to closed models. gpt-oss is free under Apache 2.0.",
+      "prompt": "What do you watch?",
+      "options": [
+       "Whether OpenAI pulls the released weights back",
+       "Whether Apache 2.0 bans commercial business use",
+       "Whether customers switch to free open models"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Released weights cannot be pulled back.",
+       "Apache 2.0 avoids limits on commercial use.",
+       "A free model near o4-mini level competes with paid access."
+      ],
+      "explanation": "Strong free models pressure anyone charging for similar access."
+     },
+     "proReasoning": "Investors track when free models get close to paid ones. That is when pricing power shifts.",
+     "commonMistake": "Ignoring open releases because they come from a closed-model company.",
+     "mentalModel": "Free and close is a threat.",
+     "sources": [
+      {
+       "url": "https://openai.com/index/introducing-gpt-oss/",
+       "label": "OpenAI, Introducing gpt-oss, Aug 2025"
+      },
+      {
+       "url": "https://www.theregister.com/2025/08/05/openai_open_gpt/",
+       "label": "The Register, OpenAI launches first open-weights models since GPT-2, Aug 2025"
+      }
+     ]
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your product must run on a customer's own servers, with no calls to outside APIs.",
+      "prompt": "Which model fits?",
+      "options": [
+       "An open-weight model like gpt-oss-120b",
+       "An API-only model, as GPT-3 was",
+       "None; no model fits on one server"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "It runs on a single 80 GB GPU under Apache 2.0.",
+       "API access means sending requests to the provider.",
+       "gpt-oss-120b runs on one 80 GB GPU."
+      ],
+      "explanation": "When data cannot leave the building, you need weights you can host."
+     },
+     "proReasoning": "Founders match the access model to the customer: open weights for on-site, APIs for speed to market.",
+     "commonMistake": "Promising on-site deployment on top of an API-only model.",
+     "mentalModel": "On-site needs weights.",
+     "sources": [
+      {
+       "url": "https://openai.com/index/introducing-gpt-oss/",
+       "label": "OpenAI, Introducing gpt-oss, Aug 2025"
+      }
+     ]
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend asks if OpenAI has ever released a model anyone can download.",
+      "prompt": "What's the best answer?",
+      "options": [
+       "Only GPT-4, which it released in 2023",
+       "Yes, GPT-2 in 2019 and gpt-oss in 2025",
+       "No, OpenAI has only ever offered its API"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "GPT-4's report did not even give its size.",
+       "gpt-oss was its first open-weight release since GPT-2.",
+       "GPT-2 and gpt-oss are both downloadable."
+      ],
+      "explanation": "OpenAI went from open GPT-2 to API-only models, then released open weights again."
+     },
+     "proReasoning": "Know that one company can sit on both sides of the weights question over time.",
+     "commonMistake": "Assuming a company is always open or always closed.",
+     "mentalModel": "Policies change.",
+     "sources": [
+      {
+       "url": "https://www.theregister.com/2025/08/05/openai_open_gpt/",
+       "label": "The Register, OpenAI launches first open-weights models since GPT-2, Aug 2025"
+      },
+      {
+       "url": "https://openai.com/index/gpt-2-1-5b-release/",
+       "label": "OpenAI, GPT-2: 1.5B release, Nov 2019"
+      }
+     ]
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:1dc99871e725"
+  ]
+ },
+ {
+  "id": "57fa67c4-938b-5593-af5a-b4482e769284",
+  "market_id": "ai",
+  "day": 33,
+  "slot": 2,
+  "content": {
+   "id": "ai-d33-c2",
+   "title": "Publish the idea, guard the weights",
+   "lessonTitle": "Who gets the weights",
+   "slot": 2,
+   "type": "connect",
+   "brief": {
+    "headline": "Google researchers published the Transformer openly in 2017. OpenAI built GPT on it, kept GPT-3 behind an API, and ChatGPT reached about 100 million users two months after launch.",
+    "kicker": "Connect day 9 and day 33: ideas spread, weights are guarded.",
+    "fullText": "On day 9 you saw the Transformer paper go public in June 2017, and ChatGPT become the fastest-growing consumer app in history, according to a UBS study. On day 33 you saw how OpenAI handled its own models: GPT-2 held back at first, GPT-3 sold through an API, and an exclusive license for Microsoft.\n\nAnyone could read the idea. Access to a trained model depended on who held its weights.",
+    "sources": [
+     {
+      "url": "https://arxiv.org/html/1706.03762v7",
+      "label": "Vaswani et al., Attention Is All You Need, 2017"
+     },
+     {
+      "url": "https://business.inquirer.net/384799/chatgpt-sets-record-for-fastest-growing-user-base-analyst-note",
+      "label": "UBS via Reuters/Inquirer, ChatGPT sets user growth record, Feb 2023"
+     },
+     {
+      "url": "https://openai.com/index/better-language-models/",
+      "label": "OpenAI, Better language models and their implications, Feb 2019"
+     },
+     {
+      "url": "https://openai.com/index/openai-api/",
+      "label": "OpenAI, OpenAI API, Jun 2020"
+     },
+     {
+      "url": "https://www.infoq.com/news/2020/09/microsoft-license-gpt-3",
+      "label": "InfoQ, Microsoft licenses GPT-3, Sep 2020"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "multipleChoice",
+    "prompt": "What did OpenAI control that Google's 2017 paper did not?",
+    "options": [
+     "The idea of attention itself",
+     "The right to publish on arXiv",
+     "Access to its trained model"
+    ],
+    "correctIndex": 2,
+    "explanation": "The paper gave the idea to everyone. The weights of a trained model stay with whoever holds them."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "ChatGPT reached about 100 million monthly users how many months after launch?",
+    "min": 0,
+    "max": 12,
+    "value": 2,
+    "unit": "months",
+    "explanation": "About two months, by the UBS estimate."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "An interviewer asks where power sits in AI: in research papers or in trained models.",
+      "prompt": "What's the best answer?",
+      "options": [
+       "In papers, since ideas always come first",
+       "In neither; it sits only in the chips",
+       "In trained models and who can access them"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "The paper was open, but the value went to products.",
+       "Chips matter, but access to models matters too.",
+       "Google published the idea; OpenAI controlled access to GPT-3."
+      ],
+      "explanation": "Open ideas spread to everyone. Control sits with whoever holds the model."
+     },
+     "proReasoning": "Use the Transformer story to show that publishing and controlling are different things.",
+     "commonMistake": "Assuming the inventor of an idea keeps the power it creates.",
+     "mentalModel": "Ideas spread; weights stay.",
+     "sources": [
+      {
+       "url": "https://arxiv.org/html/1706.03762v7",
+       "label": "Vaswani et al., Attention Is All You Need, 2017"
+      },
+      {
+       "url": "https://openai.com/index/openai-api/",
+       "label": "OpenAI, OpenAI API, Jun 2020"
+      }
+     ]
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Two AI firms publish equally strong research. Only one controls a popular model's weights.",
+      "prompt": "Which is better placed to capture value?",
+      "options": [
+       "The one that controls the weights",
+       "The one with more papers cited",
+       "Both equally, since research is open"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Control of access is what OpenAI licensed to Microsoft.",
+       "Citations do not pay the bills.",
+       "Open research benefits everyone, not one firm."
+      ],
+      "explanation": "Value follows control over who can use the model."
+     },
+     "proReasoning": "Investors look for control over access, not just research output.",
+     "commonMistake": "Valuing a lab by citations alone.",
+     "mentalModel": "Control beats citations.",
+     "sources": [
+      {
+       "url": "https://www.infoq.com/news/2020/09/microsoft-license-gpt-3",
+       "label": "InfoQ, Microsoft licenses GPT-3, Sep 2020"
+      },
+      {
+       "url": "https://openai.com/index/openai-api/",
+       "label": "OpenAI, OpenAI API, Jun 2020"
+      }
+     ]
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your team invents a training trick that cuts costs.",
+      "prompt": "What protects your edge best?",
+      "options": [
+       "Keep it secret and never ship it",
+       "Ship a product built on it, fast",
+       "Publish it and wait for the credit"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "An unshipped secret earns nothing.",
+       "Shipping turned an open idea into ChatGPT's user base.",
+       "Google published and others shipped."
+      ],
+      "explanation": "On day 9, the company that shipped to users captured the value."
+     },
+     "proReasoning": "Founders turn an idea into a product and users before others can copy it.",
+     "commonMistake": "Counting on credit for an idea to protect a business.",
+     "mentalModel": "Ship it.",
+     "sources": [
+      {
+       "url": "https://business.inquirer.net/384799/chatgpt-sets-record-for-fastest-growing-user-base-analyst-note",
+       "label": "UBS via Reuters/Inquirer, ChatGPT sets user growth record, Feb 2023"
+      }
+     ]
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend asks why Google did not end up with ChatGPT.",
+      "prompt": "What's the best answer?",
+      "options": [
+       "Google never worked on language models",
+       "ChatGPT does not use the Transformer",
+       "It published the idea; others shipped first"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Google researchers invented the Transformer.",
+       "GPT is a Transformer decoder.",
+       "OpenAI built GPT on Google's published design."
+      ],
+      "explanation": "Publishing spreads an idea. Shipping and holding the model captures the users."
+     },
+     "proReasoning": "See the gap between inventing something and owning what it becomes.",
+     "commonMistake": "Thinking the inventor always wins the market.",
+     "mentalModel": "Inventing is not owning.",
+     "sources": [
+      {
+       "url": "https://arxiv.org/html/1706.03762v7",
+       "label": "Vaswani et al., Attention Is All You Need, 2017"
+      },
+      {
+       "url": "https://huggingface.co/docs/transformers/model_doc/openai-gpt",
+       "label": "Hugging Face Transformers docs, OpenAI GPT"
+      }
+     ]
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:5ead79655a40"
+  ]
+ },
+ {
+  "id": "9e7c2ac1-c3ff-54bb-acf1-553bb414ccea",
+  "market_id": "ai",
+  "day": 33,
+  "slot": 3,
+  "content": {
+   "id": "ai-d33-c3",
+   "title": "API or open weights?",
+   "lessonTitle": "Who gets the weights",
+   "slot": 3,
+   "type": "decide",
+   "brief": {
+    "headline": "You run a startup that drafts customer emails for banks. You must build on a model reached through an API, or on open weights you host yourself.",
+    "kicker": "Decide: apply day 33's question of who holds the weights.",
+    "fullText": "Day 33 showed both sides. OpenAI held back GPT-2 at first, then sold GPT-3 through an API. It said an API lets it restrict access over time, which open-sourcing cannot.\n\nAn API gives you the model without running it. Open weights give you control, and the job of hosting.\n\nIn 2020, Microsoft got an exclusive license to GPT-3, while others kept API access.",
+    "sources": [
+     {
+      "url": "https://openai.com/index/better-language-models/",
+      "label": "OpenAI, Better language models and their implications, Feb 2019"
+     },
+     {
+      "url": "https://openai.com/index/openai-api/",
+      "label": "OpenAI, OpenAI API, Jun 2020"
+     },
+     {
+      "url": "https://www.infoq.com/news/2020/09/microsoft-license-gpt-3",
+      "label": "InfoQ, Microsoft licenses GPT-3, Sep 2020"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "spotFake",
+    "prompt": "One of these is false. Tap it.",
+    "statements": [
+     "OpenAI said an API lets it restrict access over time.",
+     "Microsoft got an exclusive license to GPT-3 in 2020.",
+     "GPT-3 was first offered as a free download."
+    ],
+    "fakeIndex": 2,
+    "explanation": "GPT-3 launched through an API in June 2020. OpenAI never released its weights."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "GPT-2 was held back in February 2019 and fully released in November 2019. About how many months apart?",
+    "min": 0,
+    "max": 24,
+    "value": 9,
+    "unit": "months",
+    "explanation": "About nine months, from February 14 to November 5, 2019."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your CTO asks for the main risk of building only on one provider's API.",
+      "prompt": "What do you say?",
+      "options": [
+       "Access or terms can change without our say",
+       "The model would run far too fast for us",
+       "We would end up owning too much of it"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "OpenAI said it chose an API so it could restrict access.",
+       "Speed is not the control risk.",
+       "With an API, you own none of the model."
+      ],
+      "explanation": "An API is access on someone else's terms."
+     },
+     "proReasoning": "Name the dependency plainly and suggest a fallback.",
+     "commonMistake": "Treating API access as if it were ownership.",
+     "mentalModel": "Access is not ownership.",
+     "sources": [
+      {
+       "url": "https://openai.com/index/openai-api/",
+       "label": "OpenAI, OpenAI API, Jun 2020"
+      }
+     ]
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You review the startup for a funding round. Every feature relies on one provider's API.",
+      "prompt": "What do you ask the founders?",
+      "options": [
+       "How many GPUs they own today",
+       "How they would switch if access changed",
+       "Why they did not train their own GPT-4"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "GPU count does not address the dependency.",
+       "A switch plan limits the damage if terms change.",
+       "Training a frontier model is not a fair ask."
+      ],
+      "explanation": "One provider can change price or access. A plan B protects the business."
+     },
+     "proReasoning": "Investors test single points of failure, and API dependence is a common one.",
+     "commonMistake": "Ignoring a business's dependence on one supplier.",
+     "mentalModel": "Ask for plan B.",
+     "sources": [
+      {
+       "url": "https://openai.com/index/openai-api/",
+       "label": "OpenAI, OpenAI API, Jun 2020"
+      }
+     ]
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your bank customers say no customer data may leave their own servers.",
+      "prompt": "Which option fits?",
+      "options": [
+       "Send data to an API and promise care",
+       "Turn away every bank customer",
+       "Host an open-weight model on their servers"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "An API means sending text to the provider.",
+       "That throws away your market.",
+       "With the weights on site, data stays on their servers."
+      ],
+      "explanation": "When the data cannot move, the model has to come to it."
+     },
+     "proReasoning": "Founders let the customer's data rules pick the access model.",
+     "commonMistake": "Promising data stays put while sending it to an outside API.",
+     "mentalModel": "Bring the model to the data.",
+     "sources": [
+      {
+       "url": "https://openai.com/index/openai-api/",
+       "label": "OpenAI, OpenAI API, Jun 2020"
+      }
+     ]
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend asks why some AI models can be downloaded and others cannot.",
+      "prompt": "What's the best answer?",
+      "options": [
+       "Their makers chose who holds the weights",
+       "Downloadable ones are always weaker",
+       "Laws ban downloading big models"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "OpenAI made that choice differently for GPT-2 and GPT-3.",
+       "Strength depends on the model, not how it ships.",
+       "No such ban appears in these stories."
+      ],
+      "explanation": "It is a choice by the maker, driven by safety, money and control."
+     },
+     "proReasoning": "See release as a choice with reasons, like OpenAI's for GPT-2 and GPT-3.",
+     "commonMistake": "Assuming closed models are closed for technical reasons.",
+     "mentalModel": "Release is a choice.",
+     "sources": [
+      {
+       "url": "https://openai.com/index/better-language-models/",
+       "label": "OpenAI, Better language models and their implications, Feb 2019"
+      },
+      {
+       "url": "https://openai.com/index/openai-api/",
+       "label": "OpenAI, OpenAI API, Jun 2020"
+      }
+     ]
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:488ca8a0a820"
+  ]
+ },
+ {
+  "id": "65a8818b-075e-586e-a426-06929aebfa10",
+  "market_id": "ai",
+  "day": 34,
+  "slot": 1,
+  "content": {
+   "id": "ai-d34-c1",
+   "title": "Count only what is active",
+   "lessonTitle": "Six operations per parameter",
+   "slot": 1,
+   "type": "apply",
+   "brief": {
+    "headline": "DeepSeek-V3 has 671 billion parameters, but only 37 billion are active for each token. It was pre-trained on 14.8 trillion tokens and needed 2.788 million H800 GPU hours in all.",
+    "kicker": "Apply day 34: in a mixture of experts, count the active part.",
+    "fullText": "The rule of 6 × parameters × tokens assumes every parameter works on every token. The GPT-3 paper even lists the fraction of parameters active per token; for GPT-3 it was 1.0.\n\nDeepSeek-V3 is a mixture-of-experts model, so each token passes through only some of its experts. With 37 billion active parameters and 14.8 trillion tokens, the rule gives about 3.3 × 10^24 operations. Using all 671 billion would overstate it about 18 times.\n\nThat is under a tenth of the 3.8 × 10^25 used by Llama 3's flagship.",
+    "sources": [
+     {
+      "url": "https://arxiv.org/html/2412.19437v2",
+      "label": "DeepSeek-AI, DeepSeek-V3 Technical Report"
+     },
+     {
+      "url": "https://ar5iv.labs.arxiv.org/html/2005.14165",
+      "label": "Brown et al., Language Models are Few-Shot Learners (GPT-3), 2020"
+     },
+     {
+      "url": "https://ar5iv.labs.arxiv.org/html/2407.21783",
+      "label": "Meta, The Llama 3 Herd of Models, 2024"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "multipleChoice",
+    "prompt": "Which parameter count goes into the 6 × N × D rule for DeepSeek-V3?",
+    "options": [
+     "671 billion, the total",
+     "37 billion, active per token",
+     "14.8 trillion, the tokens"
+    ],
+    "correctIndex": 1,
+    "explanation": "Only active parameters do work on a token. The token count is D, not N."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "With 37B active parameters and 14.8T tokens, the rule gives about how many × 10^24 operations?",
+    "min": 0,
+    "max": 10,
+    "value": 3.3,
+    "unit": "× 10^24",
+    "explanation": "6 × 37 billion × 14.8 trillion is about 3.3 × 10^24."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "An interviewer asks you to estimate DeepSeek-V3's training compute.",
+      "prompt": "Which estimate do you give?",
+      "options": [
+       "6 × 671B total × 14.8T tokens",
+       "2 × 671B total × 14.8T tokens",
+       "6 × 37B active × 14.8T tokens"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "That overstates it about 18 times.",
+       "That uses the total and skips the backward pass.",
+       "About 3.3 × 10^24, counting only active parameters."
+      ],
+      "explanation": "Use active parameters and the factor of 6."
+     },
+     "proReasoning": "Adjust the rule for mixtures of experts out loud. It shows you understand what the rule counts.",
+     "commonMistake": "Plugging the headline parameter count into the rule.",
+     "mentalModel": "Count active parameters.",
+     "sources": [
+      {
+       "url": "https://arxiv.org/html/2412.19437v2",
+       "label": "DeepSeek-AI, DeepSeek-V3 Technical Report"
+      },
+      {
+       "url": "https://ar5iv.labs.arxiv.org/html/2005.14165",
+       "label": "Brown et al., Language Models are Few-Shot Learners (GPT-3), 2020"
+      }
+     ]
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A lab touts a model with a record total parameter count.",
+      "prompt": "What do you ask first?",
+      "options": [
+       "How many parameters are active per token",
+       "How many people work at the lab",
+       "Whether the count includes the logo"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Active parameters drive compute; DeepSeek-V3 uses 37B of 671B.",
+       "Headcount says little about the model.",
+       "That is not a real question."
+      ],
+      "explanation": "Total size can flatter a mixture-of-experts model. Active size drives cost."
+     },
+     "proReasoning": "Investors look past headline parameter counts to what each token actually uses.",
+     "commonMistake": "Treating total parameters as a measure of cost or power.",
+     "mentalModel": "Active, not total.",
+     "sources": [
+      {
+       "url": "https://arxiv.org/html/2412.19437v2",
+       "label": "DeepSeek-AI, DeepSeek-V3 Technical Report"
+      }
+     ]
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You will serve a model to many users and pay by the GPU hour.",
+      "prompt": "Why might a mixture-of-experts model help?",
+      "options": [
+       "It has fewer total parameters",
+       "Each token uses part of the model",
+       "It needs no GPUs to run at all"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Its total, 671B, is larger than most.",
+       "Mixture of experts cuts the parameters active per input.",
+       "DeepSeek-V3 itself trained on H800 GPUs."
+      ],
+      "explanation": "Fewer active parameters per token means less work per token."
+     },
+     "proReasoning": "Founders weigh active size when they estimate serving costs.",
+     "commonMistake": "Rejecting a model because its total size looks huge.",
+     "mentalModel": "Work per token is what you pay.",
+     "sources": [
+      {
+       "url": "https://arxiv.org/html/2412.19437v2",
+       "label": "DeepSeek-AI, DeepSeek-V3 Technical Report"
+      },
+      {
+       "url": "https://openai.com/index/introducing-gpt-oss/",
+       "label": "OpenAI, Introducing gpt-oss, Aug 2025"
+      }
+     ]
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend says a 671B model must take far more compute to train than a 405B one.",
+      "prompt": "What's the fairer view?",
+      "options": [
+       "Yes, total size sets the whole bill",
+       "Parameter count never matters at all",
+       "Not if only 37B are active per token"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Only the active part works on each token.",
+       "Active parameters matter a lot.",
+       "By the rule, it used under a tenth of Llama 3 405B's compute."
+      ],
+      "explanation": "A bigger total can still mean less compute when most of the model sits idle per token."
+     },
+     "proReasoning": "Ask what part of a model works on each token before comparing sizes.",
+     "commonMistake": "Comparing models by total parameters alone.",
+     "mentalModel": "Size on paper is not work done.",
+     "sources": [
+      {
+       "url": "https://arxiv.org/html/2412.19437v2",
+       "label": "DeepSeek-AI, DeepSeek-V3 Technical Report"
+      },
+      {
+       "url": "https://ar5iv.labs.arxiv.org/html/2407.21783",
+       "label": "Meta, The Llama 3 Herd of Models, 2024"
+      }
+     ]
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:b827b4310f4e"
+  ]
+ },
+ {
+  "id": "3204b8d1-13a9-5cf1-ab69-668115424050",
+  "market_id": "ai",
+  "day": 34,
+  "slot": 2,
+  "content": {
+   "id": "ai-d34-c2",
+   "title": "A rule meets a growth rate",
+   "lessonTitle": "Six operations per parameter",
+   "slot": 2,
+   "type": "connect",
+   "brief": {
+    "headline": "Epoch AI estimates frontier training compute grew about 4 to 5 times a year. GPT-3 used 3.14 × 10^23 operations in 2020, and Llama 3's flagship used 3.8 × 10^25 in 2024: about 121 times more.",
+    "kicker": "Connect day 4 and day 34: check the rule against the trend.",
+    "fullText": "On day 4 you saw Epoch AI's estimate: frontier model compute grew about 5.3 times a year from 2010 to May 2024, slowing to about 4.2 times after 2018. For frontier language models after mid-2020, it was around 5 times a year.\n\nOn day 34 you saw how to count compute: about 6 × parameters × tokens. Apply it to two real models four years apart and you get about 121 times. Growing 4 times a year for four years would give 256 times; about 3.3 times a year gives roughly 120.\n\nOne pair of models is not a trend, but it lets you sanity-check one.",
+    "sources": [
+     {
+      "url": "https://epoch.ai/blog/training-compute-of-frontier-ai-models-grows-by-4-5x-per-year",
+      "label": "Epoch AI, training compute growth"
+     },
+     {
+      "url": "https://ar5iv.labs.arxiv.org/html/2005.14165",
+      "label": "Brown et al., Language Models are Few-Shot Learners (GPT-3), 2020"
+     },
+     {
+      "url": "https://ar5iv.labs.arxiv.org/html/2407.21783",
+      "label": "Meta, The Llama 3 Herd of Models, 2024"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "buildChain",
+    "prompt": "Put these training runs in order, smallest compute first.",
+    "steps": [
+     "GPT-3: 3.14 × 10^23",
+     "DeepSeek-V3: about 3.3 × 10^24",
+     "Llama 3 405B: 3.8 × 10^25"
+    ],
+    "explanation": "Each step is roughly ten times the last. DeepSeek-V3 counts only its 37B active parameters."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "At 4 times a year, how many times more compute after four years?",
+    "min": 0,
+    "max": 600,
+    "value": 256,
+    "unit": "times",
+    "explanation": "4 × 4 × 4 × 4 is 256. The GPT-3 to Llama 3 jump was about 121, a bit slower."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "An interviewer asks how fast frontier training compute grows.",
+      "prompt": "What's the best answer?",
+      "options": [
+       "About 4 to 5 times a year",
+       "About 2 times every two years",
+       "About 10 percent a year"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "That is Epoch AI's estimate for frontier models.",
+       "That is closer to Moore's law for chips.",
+       "That would be far too slow."
+      ],
+      "explanation": "Quote the rate and a check: GPT-3 to Llama 3 was about 121 times in four years."
+     },
+     "proReasoning": "Pair a trend with a worked example. It makes the number stick.",
+     "commonMistake": "Confusing AI compute growth with chip improvement rates.",
+     "mentalModel": "Trend plus example.",
+     "sources": [
+      {
+       "url": "https://epoch.ai/blog/training-compute-of-frontier-ai-models-grows-by-4-5x-per-year",
+       "label": "Epoch AI, training compute growth"
+      },
+      {
+       "url": "https://ar5iv.labs.arxiv.org/html/2005.14165",
+       "label": "Brown et al., Language Models are Few-Shot Learners (GPT-3), 2020"
+      },
+      {
+       "url": "https://ar5iv.labs.arxiv.org/html/2407.21783",
+       "label": "Meta, The Llama 3 Herd of Models, 2024"
+      }
+     ]
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A chip supplier's forecast assumes frontier compute keeps growing 5 times a year.",
+      "prompt": "What do you check?",
+      "options": [
+       "Whether last quarter set a sales record",
+       "Whether the trend is slowing, as after 2018",
+       "Whether the CEO personally believes in it"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "One quarter does not make a trend.",
+       "Epoch saw frontier growth slow from 5.3x to about 4.2x a year.",
+       "Belief is not data."
+      ],
+      "explanation": "Small changes in a yearly multiple compound into big forecast gaps."
+     },
+     "proReasoning": "Investors stress-test compounding assumptions. A slower multiple changes everything downstream.",
+     "commonMistake": "Extrapolating a peak growth rate forever.",
+     "mentalModel": "Test the multiple.",
+     "sources": [
+      {
+       "url": "https://epoch.ai/blog/training-compute-of-frontier-ai-models-grows-by-4-5x-per-year",
+       "label": "Epoch AI, training compute growth"
+      }
+     ]
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your startup's edge is a model trained with about 10^23 operations, GPT-3 scale.",
+      "prompt": "How long does that edge last?",
+      "options": [
+       "Forever, since compute is paid for once",
+       "It grows, since old models gain value",
+       "Not long; frontier compute grows 4x yearly"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Rivals keep spending, so a fixed run falls behind.",
+       "Older models get overtaken.",
+       "Frontier runs were about 121 times bigger four years later."
+      ],
+      "explanation": "A compute lead decays fast. Build your edge on data, users or product."
+     },
+     "proReasoning": "Founders treat compute as a wasting asset and build edges that last.",
+     "commonMistake": "Calling one training run a lasting moat.",
+     "mentalModel": "Compute leads decay.",
+     "sources": [
+      {
+       "url": "https://epoch.ai/blog/training-compute-of-frontier-ai-models-grows-by-4-5x-per-year",
+       "label": "Epoch AI, training compute growth"
+      },
+      {
+       "url": "https://ar5iv.labs.arxiv.org/html/2407.21783",
+       "label": "Meta, The Llama 3 Herd of Models, 2024"
+      }
+     ]
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend asks whether GPT-3 is still a big model by compute.",
+      "prompt": "What's the best answer?",
+      "options": [
+       "Small next to 2024 flagships",
+       "Still the largest ever trained",
+       "Larger than Llama 3 405B"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Llama 3's flagship used about 121 times more.",
+       "Many runs have passed it since 2020.",
+       "Llama 3 405B used far more compute."
+      ],
+      "explanation": "At 4 to 5 times a year, yesterday's giant is soon ordinary."
+     },
+     "proReasoning": "Read model sizes with dates. Compounding makes any record short-lived.",
+     "commonMistake": "Treating a 2020 record as still current.",
+     "mentalModel": "Records age fast.",
+     "sources": [
+      {
+       "url": "https://ar5iv.labs.arxiv.org/html/2005.14165",
+       "label": "Brown et al., Language Models are Few-Shot Learners (GPT-3), 2020"
+      },
+      {
+       "url": "https://ar5iv.labs.arxiv.org/html/2407.21783",
+       "label": "Meta, The Llama 3 Herd of Models, 2024"
+      }
+     ]
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:7ac418bcc509"
+  ]
+ },
+ {
+  "id": "3bac4683-05de-5513-b545-dffe3f455169",
+  "market_id": "ai",
+  "day": 34,
+  "slot": 3,
+  "content": {
+   "id": "ai-d34-c3",
+   "title": "Will the run fit the budget?",
+   "lessonTitle": "Six operations per parameter",
+   "slot": 3,
+   "type": "decide",
+   "brief": {
+    "headline": "You lead training at a startup. The plan is a 70 billion parameter model trained on 20 trillion tokens, and you must say how much compute it needs.",
+    "kicker": "Decide: size the run with day 34's rule of thumb.",
+    "fullText": "Day 34 gave you the rule: training compute is about 6 × parameters × tokens. The forward pass costs about 2 operations per parameter per token, and the backward pass adds about 4 more. Attention is left out because it usually takes under 10% of compute.\n\nFor scale, GPT-3 took about 3.14 × 10^23 operations. Llama 3's flagship took 3.8 × 10^25.\n\nYour budget covers about 6 × 10^24 operations.",
+    "sources": [
+     {
+      "url": "https://ar5iv.labs.arxiv.org/html/2005.14165",
+      "label": "Brown et al., Language Models are Few-Shot Learners (GPT-3), 2020"
+     },
+     {
+      "url": "https://arxiv.org/pdf/2001.08361",
+      "label": "Kaplan et al., Scaling Laws for Neural Language Models, 2020"
+     },
+     {
+      "url": "https://ar5iv.labs.arxiv.org/html/2407.21783",
+      "label": "Meta, The Llama 3 Herd of Models, 2024"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "sortSignal",
+    "prompt": "Does each change raise or cut the compute needed?",
+    "buckets": [
+     "Raises compute",
+     "Cuts compute"
+    ],
+    "items": [
+     {
+      "text": "Doubling the parameters",
+      "bucket": 0
+     },
+     {
+      "text": "Training on more tokens",
+      "bucket": 0
+     },
+     {
+      "text": "Halving the token count",
+      "bucket": 1
+     },
+     {
+      "text": "A smaller model on the same data",
+      "bucket": 1
+     }
+    ],
+    "explanation": "Compute scales with both parameters and tokens. Change either and the bill moves with it."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "6 × 70B parameters × 20T tokens is about how many × 10^24 operations?",
+    "min": 0,
+    "max": 20,
+    "value": 8.4,
+    "unit": "× 10^24",
+    "explanation": "6 × 70 billion × 20 trillion is 8.4 × 10^24, above your budget of 6 × 10^24."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your manager wants a quick compute estimate in the meeting.",
+      "prompt": "What do you say?",
+      "options": [
+       "Nobody can say before training",
+       "About 8.4 × 10^24, from 6 × N × D",
+       "About 1.4 × 10^24, from N × D alone"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "The rule exists so you can say it now.",
+       "That is the rule from the GPT-3 paper.",
+       "That leaves out the factor of 6."
+      ],
+      "explanation": "Multiply 6 by parameters and tokens. It takes seconds."
+     },
+     "proReasoning": "Give the estimate and the formula together, so others can check it.",
+     "commonMistake": "Forgetting the factor of 6, or refusing to estimate.",
+     "mentalModel": "Six N D, out loud.",
+     "sources": [
+      {
+       "url": "https://ar5iv.labs.arxiv.org/html/2005.14165",
+       "label": "Brown et al., Language Models are Few-Shot Learners (GPT-3), 2020"
+      }
+     ]
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "The startup's pitch says this run needs less compute than GPT-3.",
+      "prompt": "Is that plausible?",
+      "options": [
+       "Yes; 70B is smaller than 175B",
+       "Yes; newer runs always need less",
+       "No; 8.4 × 10^24 is about 27x GPT-3"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Size is only half the formula.",
+       "Compute depends on N and D, not the year.",
+       "Far more tokens outweigh the smaller model."
+      ],
+      "explanation": "Tokens count as much as parameters. A smaller model on far more data can cost more."
+     },
+     "proReasoning": "Investors check pitch numbers with the rule before trusting them.",
+     "commonMistake": "Comparing compute by parameter count alone.",
+     "mentalModel": "Tokens count too.",
+     "sources": [
+      {
+       "url": "https://ar5iv.labs.arxiv.org/html/2005.14165",
+       "label": "Brown et al., Language Models are Few-Shot Learners (GPT-3), 2020"
+      }
+     ]
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "The estimate is 8.4 × 10^24 operations. Your budget covers 6 × 10^24.",
+      "prompt": "What fits the budget?",
+      "options": [
+       "Fewer tokens or a smaller model",
+       "The same plan, with faster code",
+       "Skip the backward pass to save"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Cutting N or D cuts compute in proportion.",
+       "Faster code does not change the operation count.",
+       "Without the backward pass, the model cannot learn."
+      ],
+      "explanation": "The rule tells you exactly which knobs move the bill."
+     },
+     "proReasoning": "Founders size the run to the budget before booking a single GPU.",
+     "commonMistake": "Starting a run that the budget cannot finish.",
+     "mentalModel": "Fit the run to the money.",
+     "sources": [
+      {
+       "url": "https://ar5iv.labs.arxiv.org/html/2005.14165",
+       "label": "Brown et al., Language Models are Few-Shot Learners (GPT-3), 2020"
+      }
+     ]
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend wonders why the rule of thumb ignores attention.",
+      "prompt": "What's the best answer?",
+      "options": [
+       "Attention only runs after training",
+       "It usually takes under 10% of compute",
+       "Attention costs nothing to run"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Attention runs in every training step.",
+       "The GPT-3 paper leaves it out for that reason.",
+       "It costs something, just not much here."
+      ],
+      "explanation": "A good rule of thumb drops the small terms to stay simple."
+     },
+     "proReasoning": "Know what a rule of thumb leaves out and why.",
+     "commonMistake": "Treating an estimate as an exact count.",
+     "mentalModel": "Drop the small terms.",
+     "sources": [
+      {
+       "url": "https://ar5iv.labs.arxiv.org/html/2005.14165",
+       "label": "Brown et al., Language Models are Few-Shot Learners (GPT-3), 2020"
+      }
+     ]
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:419436f0f918"
+  ]
+ },
+ {
+  "id": "c11ce457-d7b9-5917-8722-57a86844aa32",
+  "market_id": "ai",
+  "day": 35,
+  "slot": 1,
+  "content": {
+   "id": "ai-d35-c1",
+   "title": "Meta says no to the code",
+   "lessonTitle": "Laws that count operations",
+   "slot": 1,
+   "type": "apply",
+   "brief": {
+    "headline": "On July 18, 2025, Meta said it would not sign the EU's voluntary code of practice for general-purpose AI. Its global affairs chief, Joel Kaplan, said Europe is heading down the wrong path on AI.",
+    "kicker": "Apply day 35: a maker above the line refuses the code.",
+    "fullText": "The code is meant to help companies comply with the AI Act. It asks for regularly updated documentation, bans training on pirated content, and requires honoring requests from content owners to exclude their works. Kaplan said it brings legal uncertainty and goes far beyond the scope of the Act.\n\nMeta's 405B Llama 3 used 3.8 × 10^25 FLOPs, above the EU's 10^25 line. Signing is voluntary, but the Act's duties for general-purpose models still apply: from August 2, 2025, or by August 2, 2027, for models already on the market.",
+    "sources": [
+     {
+      "url": "https://techcrunch.com/2025/07/18/meta-refuses-to-sign-eus-ai-code-of-practice",
+      "label": "TechCrunch, Meta refuses to sign the EU's AI code of practice, Jul 2025"
+     },
+     {
+      "url": "https://ar5iv.labs.arxiv.org/html/2407.21783",
+      "label": "Meta, The Llama 3 Herd of Models, 2024"
+     },
+     {
+      "url": "https://digital-strategy.ec.europa.eu/en/faqs/guidelines-obligations-gpai-providers",
+      "label": "European Commission, FAQ on obligations for GPAI providers"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "spotFake",
+    "prompt": "One of these is false. Tap it.",
+    "statements": [
+     "The code of practice is voluntary.",
+     "Not signing exempts a model from the AI Act.",
+     "Llama 3 405B was trained above 10^25 FLOPs."
+    ],
+    "fakeIndex": 1,
+    "explanation": "The code is one way to show compliance. The AI Act's duties apply either way."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "Llama 3 405B used 3.8 × 10^25 FLOPs. How many times the EU's 10^25 line is that?",
+    "min": 0,
+    "max": 10,
+    "value": 3.8,
+    "unit": "times",
+    "explanation": "About 3.8 times the line, so the systemic-risk presumption applies."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You work in policy at an AI lab that may skip the code, as Meta did.",
+      "prompt": "What do you tell leadership?",
+      "options": [
+       "The AI Act duties still apply without it",
+       "Skipping it ends our EU obligations",
+       "The law requires us to sign the code"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "The code is voluntary; the Act's duties are not.",
+       "The obligations come from the Act itself.",
+       "Signing is voluntary."
+      ],
+      "explanation": "Separate the voluntary code from the binding law."
+     },
+     "proReasoning": "Keep voluntary codes and binding law apart in any advice.",
+     "commonMistake": "Treating a refusal to sign as an exit from the rules.",
+     "mentalModel": "Code is optional; law is not.",
+     "sources": [
+      {
+       "url": "https://techcrunch.com/2025/07/18/meta-refuses-to-sign-eus-ai-code-of-practice",
+       "label": "TechCrunch, Meta refuses to sign the EU's AI code of practice, Jul 2025"
+      },
+      {
+       "url": "https://digital-strategy.ec.europa.eu/en/faqs/guidelines-obligations-gpai-providers",
+       "label": "European Commission, FAQ on obligations for GPAI providers"
+      }
+     ]
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A model maker refuses the EU code and calls the rules overreach.",
+      "prompt": "Which risk do you weigh?",
+      "options": [
+       "None, since the AI Act is voluntary",
+       "Enforcement and fines from August 2026",
+       "An automatic ban on all its EU sales"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "The code is voluntary; the AI Act is law.",
+       "The Commission enforces with fines from August 2, 2026.",
+       "The Act sets duties and fines, not an automatic ban."
+      ],
+      "explanation": "Refusing the code does not remove the law. It changes how compliance gets shown."
+     },
+     "proReasoning": "Investors price regulatory friction as a cost, not as a yes or no event.",
+     "commonMistake": "Reading a public refusal as either doom or freedom.",
+     "mentalModel": "Friction is a cost.",
+     "sources": [
+      {
+       "url": "https://digital-strategy.ec.europa.eu/en/faqs/guidelines-obligations-gpai-providers",
+       "label": "European Commission, FAQ on obligations for GPAI providers"
+      },
+      {
+       "url": "https://techcrunch.com/2025/07/18/meta-refuses-to-sign-eus-ai-code-of-practice",
+       "label": "TechCrunch, Meta refuses to sign the EU's AI code of practice, Jul 2025"
+      }
+     ]
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your startup builds on open models and sells into the EU.",
+      "prompt": "What do you track?",
+      "options": [
+       "Which models have the most downloads",
+       "Which models have the newest logos",
+       "Which base models sit above 10^25"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Downloads say nothing about legal status.",
+       "Branding does not affect the rules.",
+       "Models above the line carry extra duties for their makers."
+      ],
+      "explanation": "Know the legal status of the models you build on."
+     },
+     "proReasoning": "Founders know which of their suppliers fall under heavier rules.",
+     "commonMistake": "Choosing a base model with no thought for its legal status.",
+     "mentalModel": "Know your supplier's rules.",
+     "sources": [
+      {
+       "url": "https://ai-act-service-desk.ec.europa.eu/en/ai-act/article-51",
+       "label": "EU AI Act Service Desk, Article 51"
+      },
+      {
+       "url": "https://ar5iv.labs.arxiv.org/html/2407.21783",
+       "label": "Meta, The Llama 3 Herd of Models, 2024"
+      }
+     ]
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend asks why a company would refuse a voluntary code.",
+      "prompt": "What's the best answer?",
+      "options": [
+       "It said the code goes beyond the law",
+       "Signing would cost it its models",
+       "The code bans all open models"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Kaplan said it goes far beyond the scope of the AI Act.",
+       "Signing does not take away any models.",
+       "The code covers documentation and copyright."
+      ],
+      "explanation": "Meta objected to the code's scope, not to having rules at all."
+     },
+     "proReasoning": "Look for the stated reason behind a refusal before judging it.",
+     "commonMistake": "Assuming a refusal means a company ignores all rules.",
+     "mentalModel": "Read the reason.",
+     "sources": [
+      {
+       "url": "https://techcrunch.com/2025/07/18/meta-refuses-to-sign-eus-ai-code-of-practice",
+       "label": "TechCrunch, Meta refuses to sign the EU's AI code of practice, Jul 2025"
+      }
+     ]
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:d260b57b16e7"
+  ]
+ },
+ {
+  "id": "b5db8b6c-2e65-56d8-b8de-feb66362c164",
+  "market_id": "ai",
+  "day": 35,
+  "slot": 2,
+  "content": {
+   "id": "ai-d35-c2",
+   "title": "Risk by use, risk by size",
+   "lessonTitle": "Laws that count operations",
+   "slot": 2,
+   "type": "connect",
+   "brief": {
+    "headline": "The EU AI Act sorts AI systems into four risk tiers by what they are used for. For general-purpose models, it adds a second test: training compute above 10^25 operations.",
+    "kicker": "Connect day 5 and day 35: two ways the EU measures risk.",
+    "fullText": "On day 5 you saw the four tiers: banned uses, high-risk uses like CV sorting for recruitment or credit scoring, transparency duties, and minimal risk. The AI Act entered into force on August 1, 2024.\n\nOn day 35 you saw the size test. Since August 2, 2025, a general-purpose model above 10^25 operations is presumed to carry systemic risk. Its provider must notify the Commission within two weeks, test the model, and report serious incidents.\n\nOne model can face both tests: the size rules for its maker, and the use rules for the products built on it.",
+    "sources": [
+     {
+      "url": "https://digital-strategy.ec.europa.eu/en/policies/regulatory-framework-ai",
+      "label": "European Commission, AI Act regulatory framework"
+     },
+     {
+      "url": "https://ai-act-service-desk.ec.europa.eu/en/ai-act/article-51",
+      "label": "EU AI Act Service Desk, Article 51"
+     },
+     {
+      "url": "https://digital-strategy.ec.europa.eu/en/faqs/guidelines-obligations-gpai-providers",
+      "label": "European Commission, FAQ on obligations for GPAI providers"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "faceOff",
+    "prompt": "Which test does a CV-screening tool for hiring trigger?",
+    "left": {
+     "name": "The use test",
+     "note": "Four tiers, set by purpose"
+    },
+    "right": {
+     "name": "The size test",
+     "note": "Training compute above 10^25"
+    },
+    "correctIndex": 0,
+    "explanation": "CV sorting for recruitment is a high-risk use, whatever the size of the model behind it."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "The Act took force on August 1, 2024. About how many months later did duties for general-purpose models apply?",
+    "min": 0,
+    "max": 36,
+    "value": 12,
+    "unit": "months",
+    "explanation": "About 12 months, on August 2, 2025."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "An interviewer asks how the EU decides whether an AI model is risky.",
+      "prompt": "What's the best answer?",
+      "options": [
+       "Only by which country built the model",
+       "By its use, and for big models, by compute",
+       "Only by how many users the model has"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Origin does not set the tier.",
+       "Four use tiers, plus the 10^25 compute presumption.",
+       "User numbers are not the main test."
+      ],
+      "explanation": "Two tests: what a system is used for, and how much compute trained the model."
+     },
+     "proReasoning": "Explain both EU tests in one breath. Most people only know one.",
+     "commonMistake": "Describing EU AI rules as only about model size, or only about use.",
+     "mentalModel": "Use and size.",
+     "sources": [
+      {
+       "url": "https://digital-strategy.ec.europa.eu/en/policies/regulatory-framework-ai",
+       "label": "European Commission, AI Act regulatory framework"
+      },
+      {
+       "url": "https://ai-act-service-desk.ec.europa.eu/en/ai-act/article-51",
+       "label": "EU AI Act Service Desk, Article 51"
+      }
+     ]
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A company sells a CV-screening tool built on a small model.",
+      "prompt": "Which rules weigh on its revenue?",
+      "options": [
+       "Systemic-risk rules for its size",
+       "None, since the model is small",
+       "High-risk rules for its hiring use"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "A small model sits far below 10^25.",
+       "Small models in risky uses are still covered.",
+       "CV sorting for recruitment is a high-risk use."
+      ],
+      "explanation": "For most companies, the use test matters more than the size test."
+     },
+     "proReasoning": "Investors map a product to its use tier first. Size rules hit only a few labs.",
+     "commonMistake": "Assuming small models escape EU rules.",
+     "mentalModel": "Use sets most rules.",
+     "sources": [
+      {
+       "url": "https://digital-strategy.ec.europa.eu/en/policies/regulatory-framework-ai",
+       "label": "European Commission, AI Act regulatory framework"
+      }
+     ]
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You fine-tune a small model for credit scoring in the EU.",
+      "prompt": "What sets your compliance work?",
+      "options": [
+       "The credit-scoring use, a high-risk tier",
+       "The compute line at 10^25 operations",
+       "Nothing, since you are below the line"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Credit scoring is listed as a high-risk use.",
+       "Your model sits far below that line.",
+       "Being below the size line does not clear the use test."
+      ],
+      "explanation": "Your product's use decides your duties, not your model's size."
+     },
+     "proReasoning": "Founders check the use tier before writing any code.",
+     "commonMistake": "Thinking compute is the only line that matters.",
+     "mentalModel": "Check the use tier.",
+     "sources": [
+      {
+       "url": "https://digital-strategy.ec.europa.eu/en/policies/regulatory-framework-ai",
+       "label": "European Commission, AI Act regulatory framework"
+      }
+     ]
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend thinks only giant models are regulated in the EU.",
+      "prompt": "What's the fairer view?",
+      "options": [
+       "No, no AI is regulated in the EU yet",
+       "Small models in risky uses are covered too",
+       "Yes, only models above 10^25 are covered"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "The AI Act took force in August 2024.",
+       "High-risk uses like credit scoring face strict rules.",
+       "The use tiers apply at any size."
+      ],
+      "explanation": "Size adds duties at the top. Use sets duties for everyone."
+     },
+     "proReasoning": "See two layers: rules on what AI does, and extra rules on the biggest models.",
+     "commonMistake": "Thinking only frontier labs face AI rules.",
+     "mentalModel": "Two layers of rules.",
+     "sources": [
+      {
+       "url": "https://digital-strategy.ec.europa.eu/en/policies/regulatory-framework-ai",
+       "label": "European Commission, AI Act regulatory framework"
+      },
+      {
+       "url": "https://ai-act-service-desk.ec.europa.eu/en/ai-act/article-51",
+       "label": "EU AI Act Service Desk, Article 51"
+      }
+     ]
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:4467b4f59bfb"
+  ]
+ },
+ {
+  "id": "37f6030b-757d-5896-b5d2-6639b99d9284",
+  "market_id": "ai",
+  "day": 35,
+  "slot": 3,
+  "content": {
+   "id": "ai-d35-c3",
+   "title": "Just over the line",
+   "lessonTitle": "Laws that count operations",
+   "slot": 3,
+   "type": "decide",
+   "brief": {
+    "headline": "You run a European lab. Your next model is planned at 1.2 × 10^25 operations, just above the EU's line. California's SB 53 starts at 10^26, so it does not reach this model.",
+    "kicker": "Decide: plan around day 35's compute line.",
+    "fullText": "Day 35 set out the duties. Once you know a model will cross 10^25, you must notify the European Commission within two weeks. You may argue it poses no systemic risk; the Commission decides. Then come evaluations with adversarial testing, serious incident reports and cybersecurity.\n\nThe Commission enforces with fines from August 2, 2026.\n\nYou are not alone above the line: by June 2025, Epoch AI counted over 30 models from 12 developers.",
+    "sources": [
+     {
+      "url": "https://digital-strategy.ec.europa.eu/en/faqs/guidelines-obligations-gpai-providers",
+      "label": "European Commission, FAQ on obligations for GPAI providers"
+     },
+     {
+      "url": "https://ai-act-service-desk.ec.europa.eu/en/ai-act/article-51",
+      "label": "EU AI Act Service Desk, Article 51"
+     },
+     {
+      "url": "https://epoch.ai/data-insights/models-over-1e25-flop",
+      "label": "Epoch AI, models over 10^25 FLOP, Jun 2025"
+     },
+     {
+      "url": "https://fpf.org/blog/californias-sb-53-the-first-frontier-ai-law-explained/",
+      "label": "Future of Privacy Forum, California's SB 53 explained"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "multipleChoice",
+    "prompt": "What must you do once you know the model will cross 10^25?",
+    "options": [
+     "Apply to California for a license",
+     "Wait until the model is on sale",
+     "Notify the Commission within two weeks"
+    ],
+    "correctIndex": 2,
+    "explanation": "Notice comes without delay, within two weeks at the latest, once you know the line will be crossed."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "1.2 × 10^25 is what percent above the 10^25 line?",
+    "min": 0,
+    "max": 100,
+    "value": 20,
+    "unit": "%",
+    "explanation": "20% above. Small margins still trigger the full set of duties."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your CEO asks whether to trim training to stay under the line.",
+      "prompt": "What do you advise?",
+      "options": [
+       "Always stay under, whatever it costs",
+       "Ignore the line; it is never enforced",
+       "Weigh the duties against lost capability"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Cutting compute can cost capability you need.",
+       "The Commission enforces with fines from August 2026.",
+       "Duties are real, and so is the value of a stronger model."
+      ],
+      "explanation": "The line is a cost to weigh, not a wall or a myth."
+     },
+     "proReasoning": "Frame the line as a trade-off with costs on both sides.",
+     "commonMistake": "Treating the threshold as either a wall or a bluff.",
+     "mentalModel": "Weigh both costs.",
+     "sources": [
+      {
+       "url": "https://digital-strategy.ec.europa.eu/en/faqs/guidelines-obligations-gpai-providers",
+       "label": "European Commission, FAQ on obligations for GPAI providers"
+      }
+     ]
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You back the lab. It plans to cross the line next quarter.",
+      "prompt": "Which cost do you add to its plan?",
+      "options": [
+       "Testing, incident reports and security",
+       "A license fee in every EU country",
+       "A ban on selling outside Europe"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Those are the systemic-risk duties.",
+       "The Act sets duties, not national license fees.",
+       "Nothing in the rules bans sales elsewhere."
+      ],
+      "explanation": "Crossing the line adds ongoing compliance work to the budget."
+     },
+     "proReasoning": "Investors turn rules into line items and add them to the plan.",
+     "commonMistake": "Leaving compliance out of a lab's cost model.",
+     "mentalModel": "Rules are line items.",
+     "sources": [
+      {
+       "url": "https://digital-strategy.ec.europa.eu/en/faqs/guidelines-obligations-gpai-providers",
+       "label": "European Commission, FAQ on obligations for GPAI providers"
+      }
+     ]
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You believe your model poses no systemic risk, even though it crosses 10^25.",
+      "prompt": "What can you do?",
+      "options": [
+       "Rename the model to reset the count",
+       "Argue it in your notice to the Commission",
+       "Skip the notice, since you disagree"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "The rule counts compute, not names.",
+       "Providers may argue this; the Commission decides.",
+       "The notice is required within two weeks."
+      ],
+      "explanation": "The law gives you a channel to contest. Use it rather than skipping the duty."
+     },
+     "proReasoning": "Founders use the formal route to contest a rule, and keep complying meanwhile.",
+     "commonMistake": "Deciding a rule does not apply and skipping the notice.",
+     "mentalModel": "Contest through the channel.",
+     "sources": [
+      {
+       "url": "https://digital-strategy.ec.europa.eu/en/faqs/guidelines-obligations-gpai-providers",
+       "label": "European Commission, FAQ on obligations for GPAI providers"
+      }
+     ]
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend asks how many models already sit above the EU line.",
+      "prompt": "What's the best answer?",
+      "options": [
+       "Only GPT-4, the first to cross it",
+       "None so far; the line is far ahead",
+       "Over 30, from 12 developers, by mid-2025"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "GPT-4 was first, in 2023, but many followed.",
+       "About two new models a month crossed it in 2024.",
+       "That is Epoch AI's June 2025 count."
+      ],
+      "explanation": "A line drawn for the frontier is now crossed routinely."
+     },
+     "proReasoning": "Notice when a frontier line becomes common. It changes who the rule affects.",
+     "commonMistake": "Assuming the line only touches one or two labs.",
+     "mentalModel": "Frontier lines get crowded.",
+     "sources": [
+      {
+       "url": "https://epoch.ai/data-insights/models-over-1e25-flop",
+       "label": "Epoch AI, models over 10^25 FLOP, Jun 2025"
+      }
+     ]
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:687a4a09130a"
+  ]
+ },
+ {
+  "id": "12397fd7-9ed8-53f1-a9ce-0ae8014e63a5",
+  "market_id": "ai",
+  "day": 36,
+  "slot": 1,
+  "content": {
+   "id": "ai-d36-c1",
+   "title": "GPT-5 decides when to think",
+   "lessonTitle": "When bigger stopped being enough",
+   "slot": 1,
+   "type": "apply",
+   "brief": {
+    "headline": "On August 7, 2025, OpenAI released GPT-5, its first unified model. A real-time router decides whether to answer fast or take extra time to think.",
+    "kicker": "Apply day 36: thinking time, built into the flagship.",
+    "fullText": "GPT-5 combines the fast responses of the GPT series with the reasoning of the o-series. It became the default for free ChatGPT users, the first time free users got a reasoning model.\n\nIn the API, GPT-5 cost $1.25 per million input tokens and $10 per million output tokens. GPT-4.5, OpenAI's largest model, had cost $75 and $150.\n\nOn SWE-bench Verified, a test of real coding tasks, GPT-5 scored 74.9% on its first attempt.",
+    "sources": [
+     {
+      "url": "https://techcrunch.com/2025/08/07/openais-gpt-5-is-here/",
+      "label": "TechCrunch, OpenAI's GPT-5 is here, Aug 2025"
+     },
+     {
+      "url": "https://techcrunch.com/2025/02/27/openai-unveils-gpt-4-5-orion-its-largest-ai-model-yet",
+      "label": "TechCrunch, OpenAI unveils GPT-4.5, Feb 2025"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "buildChain",
+    "prompt": "Put these OpenAI moves in order.",
+    "steps": [
+     "o1 shows thinking time pays off",
+     "GPT-4.5 launches at $75 per million",
+     "OpenAI says GPT-4.5 will leave the API",
+     "GPT-5 launches with a router"
+    ],
+    "explanation": "September 2024, February 2025, April 2025, August 2025. The flagship went from bigger to smarter about effort."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "GPT-4.5 cost $75 per million input tokens; GPT-5 cost $1.25. How many times cheaper is GPT-5?",
+    "min": 0,
+    "max": 150,
+    "value": 60,
+    "unit": "times",
+    "explanation": "75 divided by 1.25 is 60."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "An interviewer asks what GPT-5's router says about where AI is heading.",
+      "prompt": "What's the best answer?",
+      "options": [
+       "Reasoning models were a dead end",
+       "Labs now spend compute at answer time",
+       "Pre-training size is all that matters"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "GPT-5 builds reasoning into the flagship.",
+       "The router decides when extra thinking is worth it.",
+       "GPT-4.5 showed size alone was not enough."
+      ],
+      "explanation": "The frontier shifted from bigger models to smarter use of thinking time."
+     },
+     "proReasoning": "Read product design as a signal of strategy. A router means effort is now a dial.",
+     "commonMistake": "Describing progress only in terms of model size.",
+     "mentalModel": "Effort is a dial now.",
+     "sources": [
+      {
+       "url": "https://techcrunch.com/2025/08/07/openais-gpt-5-is-here/",
+       "label": "TechCrunch, OpenAI's GPT-5 is here, Aug 2025"
+      },
+      {
+       "url": "https://techcrunch.com/2025/02/27/openai-unveils-gpt-4-5-orion-its-largest-ai-model-yet",
+       "label": "TechCrunch, OpenAI unveils GPT-4.5, Feb 2025"
+      }
+     ]
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A flagship model fell from $75 to $1.25 per million input tokens in six months.",
+      "prompt": "What does that tell you?",
+      "options": [
+       "Prices will soon climb back to $75 again",
+       "Bigger models always cost more per token",
+       "Price per token can fall fast at the top"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "GPT-4.5 left the API at that price.",
+       "GPT-5 beat GPT-4.5 on price.",
+       "GPT-5 cost 60 times less per input token than GPT-4.5."
+      ],
+      "explanation": "Business models built on today's token prices can be overtaken within months."
+     },
+     "proReasoning": "Investors assume token prices fall and test which businesses still work when they do.",
+     "commonMistake": "Building a forecast on a single launch price.",
+     "mentalModel": "Token prices fall.",
+     "sources": [
+      {
+       "url": "https://techcrunch.com/2025/08/07/openais-gpt-5-is-here/",
+       "label": "TechCrunch, OpenAI's GPT-5 is here, Aug 2025"
+      },
+      {
+       "url": "https://techcrunch.com/2025/02/27/openai-unveils-gpt-4-5-orion-its-largest-ai-model-yet",
+       "label": "TechCrunch, OpenAI unveils GPT-4.5, Feb 2025"
+      }
+     ]
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your app sends both easy and hard questions to one expensive model.",
+      "prompt": "What does GPT-5's design suggest?",
+      "options": [
+       "Route easy ones fast, hard ones to thinking",
+       "Send everything to the biggest model there is",
+       "Answer everything instantly to save money"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "That is what GPT-5's router does.",
+       "You pay top price for easy questions.",
+       "Hard questions get weak answers."
+      ],
+      "explanation": "Spend thinking time only where it changes the answer."
+     },
+     "proReasoning": "Founders route work by difficulty, as GPT-5 does internally.",
+     "commonMistake": "Paying for deep thinking on every simple request.",
+     "mentalModel": "Route by difficulty.",
+     "sources": [
+      {
+       "url": "https://techcrunch.com/2025/08/07/openais-gpt-5-is-here/",
+       "label": "TechCrunch, OpenAI's GPT-5 is here, Aug 2025"
+      }
+     ]
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend notices GPT-5 sometimes answers at once and sometimes pauses.",
+      "prompt": "What's the best answer?",
+      "options": [
+       "It sometimes forgets the question",
+       "A router chooses when it should think",
+       "The servers slow down at random"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "It is deciding how hard to think.",
+       "The pause is the model thinking before it answers.",
+       "The pause is a choice, not a glitch."
+      ],
+      "explanation": "A pause means the model chose to spend more effort on that question."
+     },
+     "proReasoning": "See the pause as a feature: effort matched to the question.",
+     "commonMistake": "Reading a pause as a slow server.",
+     "mentalModel": "A pause is thinking.",
+     "sources": [
+      {
+       "url": "https://techcrunch.com/2025/08/07/openais-gpt-5-is-here/",
+       "label": "TechCrunch, OpenAI's GPT-5 is here, Aug 2025"
+      }
+     ]
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:5baf5ef8e520"
+  ]
+ },
+ {
+  "id": "f4240699-11a9-5c96-80e8-76c07d444d5f",
+  "market_id": "ai",
+  "day": 36,
+  "slot": 2,
+  "content": {
+   "id": "ai-d36-c2",
+   "title": "Peak data meets the data wall",
+   "lessonTitle": "When bigger stopped being enough",
+   "slot": 2,
+   "type": "connect",
+   "brief": {
+    "headline": "In June 2024, Epoch AI estimated about 300 trillion tokens of quality public human text, possibly used up between 2026 and 2032. In December 2024, Ilya Sutskever said: \"we've achieved peak data.\"",
+    "kicker": "Connect day 16 and day 36: when text runs short, scale something else.",
+    "fullText": "On day 16 you saw Epoch AI's data wall estimate, and that heavy overtraining could hit it sooner. On day 36 you saw what labs did next. GPT-4.5 scaled up pre-training and still trailed reasoning models on hard math and science tests.\n\nOpenAI's o1 took a different route. It improves with more reinforcement learning and with more time to think, and it scored 74% on the 2024 AIME against 12% for GPT-4o.\n\nOpenAI says the limits on scaling this approach differ a lot from those of pre-training.",
+    "sources": [
+     {
+      "url": "https://epoch.ai/blog/will-we-run-out-of-data-limits-of-llm-scaling-based-on-human-generated-data",
+      "label": "Epoch AI, Will we run out of data?, Jun 2024"
+     },
+     {
+      "url": "https://techcrunch.com/2025/02/27/openai-unveils-gpt-4-5-orion-its-largest-ai-model-yet",
+      "label": "TechCrunch, OpenAI unveils GPT-4.5, Feb 2025"
+     },
+     {
+      "url": "https://openai.com/index/learning-to-reason-with-llms/",
+      "label": "OpenAI, Learning to reason with LLMs, Sep 2024"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "spotFake",
+    "prompt": "One of these is false. Tap it.",
+    "statements": [
+     "Epoch estimated about 300 trillion tokens of quality text.",
+     "o1 improves with more time to think.",
+     "Sutskever said data would keep growing for decades."
+    ],
+    "fakeIndex": 2,
+    "explanation": "He said \"we've achieved peak data\" and that pre-training as we know it will end."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "How many years wide is Epoch's 2026 to 2032 window for using up public text?",
+    "min": 0,
+    "max": 20,
+    "value": 6,
+    "unit": "years",
+    "explanation": "Six years, and sooner if models are heavily overtrained."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "An interviewer asks why labs moved toward reasoning models.",
+      "prompt": "What's the best answer?",
+      "options": [
+       "Reasoning models need no training at all",
+       "Users asked for slower, longer answers",
+       "Pre-training is running into data limits"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "o1 is trained with reinforcement learning.",
+       "Speed was not the reason given.",
+       "Epoch saw public text running short; Sutskever called it peak data."
+      ],
+      "explanation": "When one input runs short, labs scale another."
+     },
+     "proReasoning": "Link the shift to a constraint. Data limits pushed labs toward thinking time.",
+     "commonMistake": "Describing reasoning models as a fashion rather than a response to limits.",
+     "mentalModel": "Constraints steer research.",
+     "sources": [
+      {
+       "url": "https://epoch.ai/blog/will-we-run-out-of-data-limits-of-llm-scaling-based-on-human-generated-data",
+       "label": "Epoch AI, Will we run out of data?, Jun 2024"
+      },
+      {
+       "url": "https://techcrunch.com/2025/02/27/openai-unveils-gpt-4-5-orion-its-largest-ai-model-yet",
+       "label": "TechCrunch, OpenAI unveils GPT-4.5, Feb 2025"
+      },
+      {
+       "url": "https://openai.com/index/learning-to-reason-with-llms/",
+       "label": "OpenAI, Learning to reason with LLMs, Sep 2024"
+      }
+     ]
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A lab's plan relies only on scaling pre-training with more public text.",
+      "prompt": "What do you question?",
+      "options": [
+       "Whether enough quality text is left",
+       "Whether its logo tests well",
+       "Whether chip prices stay flat"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Epoch puts the limit between 2026 and 2032.",
+       "Branding does not fix a data shortfall.",
+       "Cheaper chips do not make new text."
+      ],
+      "explanation": "A plan that needs more of a shrinking input has a built-in limit."
+     },
+     "proReasoning": "Investors find the input a plan needs most and ask whether it will run out.",
+     "commonMistake": "Assuming yesterday's scaling recipe has no ceiling.",
+     "mentalModel": "Find the scarce input.",
+     "sources": [
+      {
+       "url": "https://epoch.ai/blog/will-we-run-out-of-data-limits-of-llm-scaling-based-on-human-generated-data",
+       "label": "Epoch AI, Will we run out of data?, Jun 2024"
+      }
+     ]
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You hold a large private dataset that no public web crawl can reach.",
+      "prompt": "Why could it matter more now?",
+      "options": [
+       "Labs no longer need any data",
+       "Quality public text is running short",
+       "Private data costs nothing to collect"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Models still learn from data.",
+       "Scarce public text makes unique data more valuable.",
+       "Collecting data has real costs."
+      ],
+      "explanation": "When the common supply runs short, unique supply gains value."
+     },
+     "proReasoning": "Founders treat unique data as an asset whose value rises as public text runs out.",
+     "commonMistake": "Giving away a unique dataset cheaply.",
+     "mentalModel": "Scarcity raises value.",
+     "sources": [
+      {
+       "url": "https://epoch.ai/blog/will-we-run-out-of-data-limits-of-llm-scaling-based-on-human-generated-data",
+       "label": "Epoch AI, Will we run out of data?, Jun 2024"
+      }
+     ]
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend asks whether AI can just keep reading more of the internet.",
+      "prompt": "What's the fairer view?",
+      "options": [
+       "The internet grows faster than any need",
+       "AI never needed internet text",
+       "Quality public text may run out by 2032"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Epoch estimates a finite stock, about 300 trillion tokens.",
+       "Pre-training is built on text like this.",
+       "That is Epoch AI's window: 2026 to 2032."
+      ],
+      "explanation": "The supply is large but finite, which is why labs look for new ways to improve."
+     },
+     "proReasoning": "Remember the internet is big but finite. That limit shapes what labs try next.",
+     "commonMistake": "Assuming text for training is endless.",
+     "mentalModel": "Big is not infinite.",
+     "sources": [
+      {
+       "url": "https://epoch.ai/blog/will-we-run-out-of-data-limits-of-llm-scaling-based-on-human-generated-data",
+       "label": "Epoch AI, Will we run out of data?, Jun 2024"
+      }
+     ]
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:4c26d29d5b8e"
+  ]
+ },
+ {
+  "id": "4d00b2f2-f563-56ea-9c77-64830040fbbc",
+  "market_id": "ai",
+  "day": 36,
+  "slot": 3,
+  "content": {
+   "id": "ai-d36-c3",
+   "title": "Bigger model or longer thinking?",
+   "lessonTitle": "When bigger stopped being enough",
+   "slot": 3,
+   "type": "decide",
+   "brief": {
+    "headline": "You run AI at a tutoring company. You can pay for a very large pre-trained model, or a reasoning model that thinks longer on hard problems.",
+    "kicker": "Decide: apply day 36's shift from size to thinking time.",
+    "fullText": "Day 36 showed the trade. GPT-4.5, OpenAI's largest model, cost $75 per million input tokens, 30 times GPT-4o. It trailed reasoning models on hard math and science tests, and OpenAI pulled it from its API by July 14, 2025.\n\nOpenAI's o1, which thinks before answering, scored 74% on the 2024 AIME math exam where GPT-4o scored 12%.\n\nYour students mostly ask easy questions, with some hard proofs.",
+    "sources": [
+     {
+      "url": "https://techcrunch.com/2025/02/27/openai-unveils-gpt-4-5-orion-its-largest-ai-model-yet",
+      "label": "TechCrunch, OpenAI unveils GPT-4.5, Feb 2025"
+     },
+     {
+      "url": "https://techcrunch.com/2025/04/14/openai-plans-to-wind-down-gpt-4-5-its-largest-ever-ai-model-in-its-api",
+      "label": "TechCrunch, OpenAI to wind down GPT-4.5 in its API, Apr 2025"
+     },
+     {
+      "url": "https://openai.com/index/learning-to-reason-with-llms/",
+      "label": "OpenAI, Learning to reason with LLMs, Sep 2024"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "faceOff",
+    "prompt": "Which did better on hard math tests in early 2025?",
+    "left": {
+     "name": "GPT-4.5",
+     "note": "Largest pre-trained model"
+    },
+    "right": {
+     "name": "Reasoning models",
+     "note": "Think before answering"
+    },
+    "correctIndex": 1,
+    "explanation": "GPT-4.5 trailed reasoning models like o3-mini on AIME and GPQA."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "GPT-4.5 cost $75 per million input tokens and GPT-4o cost $2.50. How many times more is that?",
+    "min": 0,
+    "max": 80,
+    "value": 30,
+    "unit": "times",
+    "explanation": "75 divided by 2.50 is 30."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your boss asks which model to pilot for step-by-step math help.",
+      "prompt": "What do you recommend?",
+      "options": [
+       "A reasoning model that thinks first",
+       "The largest model, whatever its price",
+       "The cheapest model, answering instantly"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "o1 beat GPT-4o on AIME, 74% to 12%, by thinking.",
+       "The largest model trailed reasoning models on math.",
+       "Instant answers are weak on multi-step problems."
+      ],
+      "explanation": "For multi-step math, thinking time beats raw size."
+     },
+     "proReasoning": "Match the model to the task and cite the evidence.",
+     "commonMistake": "Recommending the biggest model by default.",
+     "mentalModel": "Task first, size second.",
+     "sources": [
+      {
+       "url": "https://openai.com/index/learning-to-reason-with-llms/",
+       "label": "OpenAI, Learning to reason with LLMs, Sep 2024"
+      },
+      {
+       "url": "https://techcrunch.com/2025/02/27/openai-unveils-gpt-4-5-orion-its-largest-ai-model-yet",
+       "label": "TechCrunch, OpenAI unveils GPT-4.5, Feb 2025"
+      }
+     ]
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "The company plans its budget around one big model's current price.",
+      "prompt": "What risk do you flag?",
+      "options": [
+       "Large models never get updates",
+       "Its maker may pull it, as with GPT-4.5",
+       "Its price is fixed by law for years"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Models get replaced often.",
+       "OpenAI pulled GPT-4.5 from its API within months.",
+       "No law fixes model prices."
+      ],
+      "explanation": "A model you rent can disappear. Plan for switching."
+     },
+     "proReasoning": "Investors ask how a business copes when a model it relies on is withdrawn.",
+     "commonMistake": "Assuming a model will stay on sale at today's price.",
+     "mentalModel": "Rented models can vanish.",
+     "sources": [
+      {
+       "url": "https://techcrunch.com/2025/04/14/openai-plans-to-wind-down-gpt-4-5-its-largest-ever-ai-model-in-its-api",
+       "label": "TechCrunch, OpenAI to wind down GPT-4.5 in its API, Apr 2025"
+      }
+     ]
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Most student questions are easy, but a few are hard proofs.",
+      "prompt": "How do you keep costs down?",
+      "options": [
+       "Send every question to the largest model",
+       "Refuse the hard questions",
+       "Think longer only on the hard ones"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "You pay the top price for easy questions.",
+       "Hard questions are where students need help most.",
+       "You pay for effort only where it changes the answer."
+      ],
+      "explanation": "Spend thinking time where it matters, and answer the rest cheaply."
+     },
+     "proReasoning": "Founders spend compute where it changes outcomes.",
+     "commonMistake": "Using one expensive setting for every question.",
+     "mentalModel": "Spend where it counts.",
+     "sources": [
+      {
+       "url": "https://openai.com/index/learning-to-reason-with-llms/",
+       "label": "OpenAI, Learning to reason with LLMs, Sep 2024"
+      }
+     ]
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A student asks why a reasoning model beats a bigger model at math.",
+      "prompt": "What's the best answer?",
+      "options": [
+       "It spends more effort on each answer",
+       "It was trained on the exact test",
+       "Bigger models cannot do math at all"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "o1 works through steps before it answers.",
+       "Nothing here says it saw the test.",
+       "GPT-4o scored 12%, not zero."
+      ],
+      "explanation": "Thinking through steps helps on problems that need many of them."
+     },
+     "proReasoning": "Explain that effort at answer time can matter as much as size.",
+     "commonMistake": "Assuming the biggest model is always the smartest.",
+     "mentalModel": "Effort can beat size.",
+     "sources": [
+      {
+       "url": "https://openai.com/index/learning-to-reason-with-llms/",
+       "label": "OpenAI, Learning to reason with LLMs, Sep 2024"
+      }
+     ]
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:28f6f0df9ce0"
+  ]
+ },
+ {
+  "id": "5e39d801-c4eb-5be3-a5ba-a14c5caec60e",
+  "market_id": "ai",
+  "day": 37,
+  "slot": 1,
+  "content": {
+   "id": "ai-d37-c1",
+   "title": "Six million or a billion?",
+   "lessonTitle": "The final run is a fraction of the bill",
+   "slot": 1,
+   "type": "apply",
+   "brief": {
+    "headline": "In January 2025, Anthropic's CEO wrote that DeepSeek's reported $6 million covered training one model, not its overall research. He put DeepSeek's 50,000 Hopper chips at roughly $1 billion.",
+    "kicker": "Apply day 37: one run versus the whole program.",
+    "fullText": "Dario Amodei's essay took DeepSeek's $6 million figure at face value, but said it was the cost of training one specific model. Overall research and development, he wrote, costs much more, and nobody could be completely sure of the $6 million.\n\nHe also said Anthropic's Claude 3.5 Sonnet, a mid-sized model, cost a few tens of millions of dollars to train, and was not trained using a larger model.\n\nOn day 37 you saw the same gap at OpenAI: about $500 million of final runs inside about $5 billion of R&D compute in 2024.",
+    "sources": [
+     {
+      "url": "https://darioamodei.com/post/on-deepseek-and-export-controls",
+      "label": "Dario Amodei, On DeepSeek and Export Controls, Jan 2025"
+     },
+     {
+      "url": "https://epoch.ai/gradient-updates/r-and-d-vs-training-compute",
+      "label": "Epoch AI, Final training runs account for a minority of R&D compute spending, Mar 2026"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "multipleChoice",
+    "prompt": "By Amodei's reading, what did DeepSeek's $6 million figure cover?",
+    "options": [
+     "Training one specific model",
+     "DeepSeek's whole R&D program",
+     "The chips DeepSeek owns"
+    ],
+    "correctIndex": 0,
+    "explanation": "It was the cost of one training run. The research and the chip fleet behind it cost far more."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "Amodei put DeepSeek's chips at about $1 billion. About how many times the $6 million training figure is that?",
+    "min": 0,
+    "max": 500,
+    "value": 167,
+    "unit": "x",
+    "explanation": "$1 billion divided by $6 million is about 167. The run was a sliver of the hardware behind it."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "An interviewer asks why DeepSeek's $6 million did not mean frontier AI got 100 times cheaper overnight.",
+      "prompt": "What's your best answer?",
+      "options": [
+       "DeepSeek made the number up entirely",
+       "DeepSeek got its chips for free",
+       "It counted one run, not the research"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "He took the figure at face value, while noting some doubt.",
+       "Its chips cost on the order of $1 billion.",
+       "Amodei said overall R&D costs much more than one run."
+      ],
+      "explanation": "A final run is only a slice of what a model costs. Separate the two and the headline makes sense."
+     },
+     "proReasoning": "Strong candidates accept a number and then say what it does and does not cover.",
+     "commonMistake": "Calling a figure fake when it is real but narrow.",
+     "mentalModel": "Ask what the number covers."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A lab tells you its new model cost under $10 million to train and asks for funding at a premium.",
+      "prompt": "What do you ask for first?",
+      "options": [
+       "Its total R&D and hardware spending",
+       "A chart of the model's benchmark scores",
+       "The size of its user waitlist"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "The full program shows what the next model will need.",
+       "Scores say nothing about what it cost to get there.",
+       "A waitlist says nothing about costs."
+      ],
+      "explanation": "At OpenAI, final runs were about 10% of R&D compute. The rest is the real budget."
+     },
+     "proReasoning": "Investors price the whole program, because the next model needs the whole program again.",
+     "commonMistake": "Valuing a lab on its cheapest headline number.",
+     "mentalModel": "Fund the program, not the run."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You pitch a model you trained for $2 million. An experienced investor looks unconvinced.",
+      "prompt": "How do you present your costs?",
+      "options": [
+       "Compare it only with GPT-4's training cost",
+       "Show the full bill, research runs included",
+       "Repeat the $2 million figure with more emphasis"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "A narrow comparison invites the same doubts.",
+       "An honest full bill builds trust and a credible plan.",
+       "Emphasis does not answer what the figure leaves out."
+      ],
+      "explanation": "Experienced investors know a final run is a fraction of the bill. Show them the rest."
+     },
+     "proReasoning": "Founders who show the full cost look like they understand their own business.",
+     "commonMistake": "Leading with a final-run number as if it were the whole cost.",
+     "mentalModel": "Show the whole bill."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A headline says a new AI model cost only $6 million to make.",
+      "prompt": "What's the fair reading?",
+      "options": [
+       "Building AI now costs almost nothing",
+       "The headline must be completely false",
+       "Probably one training run, not everything"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Its chips alone were put at about $1 billion.",
+       "The figure can be true and still be narrow.",
+       "That matches what Amodei said about DeepSeek."
+      ],
+      "explanation": "Training cost headlines usually mean the last run. The research costs much more."
+     },
+     "proReasoning": "A narrow number can be true. The question is what it leaves out.",
+     "commonMistake": "Reading one run as the price of building AI.",
+     "mentalModel": "True but narrow."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:f2afc0563e11"
+  ]
+ },
+ {
+  "id": "1e974711-f520-589a-ac66-ef97f2d574ad",
+  "market_id": "ai",
+  "day": 37,
+  "slot": 2,
+  "content": {
+   "id": "ai-d37-c2",
+   "title": "What the $78 million left out",
+   "lessonTitle": "The final run is a fraction of the bill",
+   "slot": 2,
+   "type": "connect",
+   "brief": {
+    "headline": "On day 8, GPT-4's training compute cost an estimated $78 million. Epoch's study of four models, GPT-4 among them, found staff made up 29% to 49% of development cost.",
+    "kicker": "Connect day 8 and day 37: compute estimates miss part of the bill.",
+    "fullText": "Day 8 traced estimates of training compute: about $900 for the 2017 Transformer, about $78 million for GPT-4 and about $191 million for Gemini Ultra.\n\nDay 37 widened the view. Epoch's development cost study adds experiments and staff to the final run. Across GPT-3, OPT-175B, GPT-4 and Gemini Ultra, hardware was 47% to 67% of development cost, staff 29% to 49% and energy 2% to 6%.\n\nAnd at OpenAI in 2024, final runs were only about 10% of R&D compute spending.",
+    "sources": [
+     {
+      "url": "https://fortune.com/2024/04/18/google-gemini-cost-191-million-to-train-stanford-university-report-estimates/",
+      "label": "Fortune on the Stanford AI Index 2024 training cost estimates"
+     },
+     {
+      "url": "https://epoch.ai/publications/how-much-does-it-cost-to-train-frontier-ai-models",
+      "label": "Epoch AI, How much does it cost to train frontier AI models?, Jun 2024"
+     },
+     {
+      "url": "https://epoch.ai/gradient-updates/r-and-d-vs-training-compute",
+      "label": "Epoch AI, Final training runs account for a minority of R&D compute spending, Mar 2026"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "sortSignal",
+    "prompt": "Is it in a training compute estimate, or only in the full development cost?",
+    "buckets": [
+     "Compute estimate",
+     "Only full cost"
+    ],
+    "items": [
+     {
+      "text": "GPU time for the final run",
+      "bucket": 0
+     },
+     {
+      "text": "Energy for the final run",
+      "bucket": 0
+     },
+     {
+      "text": "Salaries and equity for researchers",
+      "bucket": 1
+     },
+     {
+      "text": "Experiments that never shipped",
+      "bucket": 1
+     }
+    ],
+    "explanation": "Compute estimates count the final run. Staff and experiments only appear in the full development cost."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "If a $78 million final run were 10% of R&D compute, about how many millions would R&D compute be?",
+    "min": 0,
+    "max": 2000,
+    "value": 780,
+    "unit": "M",
+    "explanation": "At a 10% share, $78 million of final run implies about $780 million of R&D compute, before staff."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "In an interview you cite GPT-4's $78 million. The interviewer asks if that was its full cost.",
+      "prompt": "How do you answer?",
+      "options": [
+       "No, it is compute for training, not R&D or staff",
+       "Yes, it covers everything OpenAI spent on it",
+       "Nobody can know anything about AI costs"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Epoch found staff alone were 29% to 49% of development cost.",
+       "It was an estimate of training compute only.",
+       "Estimates exist; you just need to know what they cover."
+      ],
+      "explanation": "Know the number and its scope. That is what separates a careful candidate."
+     },
+     "proReasoning": "Quote the estimate, then name what it excludes. Both halves matter.",
+     "commonMistake": "Treating a compute estimate as the full price of a model.",
+     "mentalModel": "Number plus scope."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You compare two labs' published training costs to judge which is more efficient.",
+      "prompt": "What do you check first?",
+      "options": [
+       "Which lab announced its number first",
+       "Whether both counted the same costs",
+       "Which number is smaller"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Timing says nothing about efficiency.",
+       "Compute only and full development can differ several times over.",
+       "A smaller number may just count less."
+      ],
+      "explanation": "Compute estimates and development costs measure different things. Compare like with like."
+     },
+     "proReasoning": "Investors normalize costs before comparing them, the way they normalize any accounts.",
+     "commonMistake": "Comparing a compute estimate with a full development cost.",
+     "mentalModel": "Compare like with like."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You budget a small model. Your spreadsheet has GPU hours and electricity, and nothing else.",
+      "prompt": "What's missing?",
+      "options": [
+       "Nothing, since GPUs and power are the whole cost",
+       "Only office rent",
+       "Staff and the experiments before the final run"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "That covers only part of what building a model costs.",
+       "Rent is small next to staff and experiments.",
+       "Staff were 29% to 49% of development cost in Epoch's study."
+      ],
+      "explanation": "Energy was only 2% to 6% of development cost. People and experiments are much bigger lines."
+     },
+     "proReasoning": "Founders budget for the people and the failed runs, not just the final one.",
+     "commonMistake": "Building a budget that stops at GPU hours.",
+     "mentalModel": "People and experiments cost most."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend asks what really costs the most when building an AI model.",
+      "prompt": "What's the best answer?",
+      "options": [
+       "Chips first, then people, with power last",
+       "Electricity, by a very wide margin",
+       "Mostly office space, travel and food"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Hardware was 47% to 67%, staff 29% to 49%, energy 2% to 6%.",
+       "Energy was the smallest of the three lines.",
+       "Those were not among the main costs Epoch found."
+      ],
+      "explanation": "Electricity gets headlines, but chips and people dominate the bill."
+     },
+     "proReasoning": "The bill for AI is mostly chips and people. Power is a small slice, for now.",
+     "commonMistake": "Assuming electricity is the main cost of training.",
+     "mentalModel": "Chips, people, then power."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:f0361feeb9e2"
+  ]
+ },
+ {
+  "id": "8670a49b-9d8e-5a61-9518-86c4b02cf133",
+  "market_id": "ai",
+  "day": 37,
+  "slot": 3,
+  "content": {
+   "id": "ai-d37-c3",
+   "title": "Writing the training budget",
+   "lessonTitle": "The final run is a fraction of the bill",
+   "slot": 3,
+   "type": "decide",
+   "brief": {
+    "headline": "You run a lab planning its next model. The board asks for one number: what the training run will cost. At OpenAI in 2024, final runs were about 10% of R&D compute.",
+    "kicker": "Decide what the budget has to cover.",
+    "fullText": "Epoch's March 2026 analysis found final training runs were about 10% of OpenAI's 2024 R&D compute spending, 12.3% at Z.ai and 22.6% at MiniMax.\n\nAn earlier Epoch study of four frontier models found hardware was 47% to 67% of development cost, staff 29% to 49% and energy only 2% to 6%.\n\nA budget built on the final run alone would cover a small part of what the model needs.",
+    "sources": [
+     {
+      "url": "https://epoch.ai/gradient-updates/r-and-d-vs-training-compute",
+      "label": "Epoch AI, Final training runs account for a minority of R&D compute spending, Mar 2026"
+     },
+     {
+      "url": "https://epoch.ai/publications/how-much-does-it-cost-to-train-frontier-ai-models",
+      "label": "Epoch AI, How much does it cost to train frontier AI models?, Jun 2024"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "faceOff",
+    "prompt": "In Epoch's study, which line was larger?",
+    "left": {
+     "name": "Energy",
+     "note": "2% to 6% of development cost"
+    },
+    "right": {
+     "name": "R&D staff",
+     "note": "29% to 49% of development cost"
+    },
+    "correctIndex": 1,
+    "explanation": "Staff cost many times more than energy. Budgets that skip people miss a large share."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "Your final run costs $40 million. At a 10% share, about how many millions is the R&D compute budget?",
+    "min": 0,
+    "max": 1000,
+    "value": 400,
+    "unit": "M",
+    "explanation": "About $400 million at a 10% share, and staff come on top of that."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You're the planning lead. The board wants one figure by Friday.",
+      "prompt": "What figure do you give?",
+      "options": [
+       "A range so wide it cannot be wrong",
+       "Full program cost, with the final run shown inside",
+       "Only the final run, since that is what they asked"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "A useless range does not help anyone decide.",
+       "The board sees the real need and the headline in context.",
+       "They would approve about a tenth of what you need."
+      ],
+      "explanation": "Answer the question asked, then the question that matters. Show the full bill."
+     },
+     "proReasoning": "Good planners answer the narrow question and then give the full picture.",
+     "commonMistake": "Handing over the final-run number and letting the board think it is the budget.",
+     "mentalModel": "Show the run inside the program."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You sit on the board. Management proposes a budget equal to the final run cost.",
+      "prompt": "What do you say?",
+      "options": [
+       "Approve it quickly, since it looks lean",
+       "Cut it in half to be safe",
+       "Ask for research runs and staff to be added"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "A lean budget that misses most costs fails later.",
+       "Cutting an already partial budget makes it worse.",
+       "Final runs were 10% to 23% of R&D compute at three labs."
+      ],
+      "explanation": "Final runs are a small share of R&D compute. A budget must cover the rest."
+     },
+     "proReasoning": "Board members ask what a budget leaves out before they ask if it is too big.",
+     "commonMistake": "Approving a budget because the number looks small.",
+     "mentalModel": "Ask what is missing."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You're a small lab with $50 million. A final run for your target model would cost $40 million.",
+      "prompt": "What do you do?",
+      "options": [
+       "Train a smaller model, leave room to test",
+       "Spend $40 million on one run and hope",
+       "Skip experiments and train directly"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Experiments are most of the compute bill at real labs.",
+       "One failed run would end the company.",
+       "Final runs follow many test runs, not none."
+      ],
+      "explanation": "If the final run eats the budget, there is nothing left for the work that makes it succeed."
+     },
+     "proReasoning": "Founders size the model so the research fits, not just the last run.",
+     "commonMistake": "Spending almost everything on a single final run.",
+     "mentalModel": "Leave room to experiment."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend asks why labs spend so much more than a model's famous training cost.",
+      "prompt": "What's the answer?",
+      "options": [
+       "The famous cost is always made up",
+       "Most compute goes to test runs first",
+       "Labs waste most of their money"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Estimates are real, just narrow.",
+       "At OpenAI, final runs were about 10% of R&D compute.",
+       "Experiments are how labs find what works."
+      ],
+      "explanation": "Research is mostly trying things that do not ship. That is where the money goes."
+     },
+     "proReasoning": "Most of building AI is trying ideas that do not ship.",
+     "commonMistake": "Thinking the money beyond the final run is waste.",
+     "mentalModel": "Research is mostly trial runs."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:3acd01e615d4"
+  ]
+ },
+ {
+  "id": "10cf0b5a-cba4-5822-959b-07e9ae1154e4",
+  "market_id": "ai",
+  "day": 38,
+  "slot": 1,
+  "content": {
+   "id": "ai-d38-c1",
+   "title": "A data center built with partners",
+   "lessonTitle": "$122 billion for the compute race",
+   "slot": 1,
+   "type": "apply",
+   "brief": {
+    "headline": "In October 2025, Meta formed a joint venture with funds managed by Blue Owl Capital to build its Hyperion data center campus in Louisiana. Blue Owl's funds own 80%, and development costs are about $27 billion.",
+    "kicker": "Apply day 38: partners and debt, not just shares.",
+    "fullText": "Meta keeps 20% of the venture and received a one-time distribution of about $3 billion. Blue Owl's funds contributed about $7 billion in cash, part of it from debt sold to PIMCO and other bond investors. Morgan Stanley was the sole bookrunner.\n\nMeta signed operating leases for the whole campus, with a four-year initial term and options to extend. It also gave a residual value guarantee covering the first 16 years. The Asset called it the largest private credit transaction ever.\n\nOn day 38 you saw labs raise equity. Here a profitable giant brings in partners and bond investors instead.",
+    "sources": [
+     {
+      "url": "https://about.fb.com/news/2025/10/meta-blue-owl-capital-develop-hyperion-data-center/",
+      "label": "Meta, Joint venture with funds managed by Blue Owl Capital to develop Hyperion, Oct 2025"
+     },
+     {
+      "url": "https://www.theasset.com/article/55209/meta-blue-owl-sign-us-27-billion-data-centre-campus-deal",
+      "label": "The Asset, Meta and Blue Owl sign US$27 billion data centre campus deal, Oct 2025"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "spotFake",
+    "prompt": "One of these is false about Hyperion. Tap it.",
+    "statements": [
+     "Blue Owl's funds own 80% of the venture.",
+     "Meta received a one-time payment of about $3 billion.",
+     "Meta signed a 30-year lease with no way out."
+    ],
+    "fakeIndex": 2,
+    "explanation": "The leases have a four-year initial term with options to extend, backed by a 16-year value guarantee."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "How many years does Meta's residual value guarantee for Hyperion cover?",
+    "min": 0,
+    "max": 40,
+    "value": 16,
+    "unit": "years",
+    "explanation": "The first 16 years of operations. If Meta walks away early, it may owe a capped payment."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You join an infrastructure finance team. A friend asks why Meta did not pay for Hyperion alone.",
+      "prompt": "What's the best explanation?",
+      "options": [
+       "It shares the cost and leases the campus",
+       "Meta is not allowed to own data centers",
+       "Blue Owl will run Meta's AI models"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Partners fund 80% while Meta leases the whole campus.",
+       "Meta still owns 20% of the venture.",
+       "Blue Owl invests; Meta uses the campus."
+      ],
+      "explanation": "Joint ventures let a giant spread a $27 billion build across partners and bond buyers."
+     },
+     "proReasoning": "Explain the structure in one line: partners own most of it, Meta leases it and guarantees its value.",
+     "commonMistake": "Assuming every data center sits on its user's balance of owned assets.",
+     "mentalModel": "Own a little, lease it all."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You hold Meta shares. Blue Owl's funds own most of Hyperion, but Meta guarantees its value for 16 years.",
+      "prompt": "What do you watch?",
+      "options": [
+       "Nothing, since Blue Owl owns 80%",
+       "The leases and guarantee as real obligations",
+       "Only the capex line in quarterly reports"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Meta still carries the guarantee.",
+       "If Meta exits early, it may owe a capped cash payment.",
+       "Leased campuses may not show up as capex."
+      ],
+      "explanation": "Partner funding moves cost off the capex line but leaves commitments behind."
+     },
+     "proReasoning": "Investors read the leases and guarantees, not just the capex total.",
+     "commonMistake": "Treating partner-funded buildings as free.",
+     "mentalModel": "Follow the commitments."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You run a startup that develops data centers. Investors like Blue Owl now fund campuses for Big Tech tenants.",
+      "prompt": "What does that tell you?",
+      "options": [
+       "Only Big Tech can ever build data centers",
+       "Data centers no longer need financing",
+       "Investors fund builds with a strong tenant"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Partners, not Meta alone, fund most of Hyperion.",
+       "Hyperion needed about $27 billion.",
+       "Hyperion drew bond investors behind a Meta lease."
+      ],
+      "explanation": "A creditworthy tenant opens the door to private credit. Sign the tenant first."
+     },
+     "proReasoning": "Data center founders win financing by securing a strong tenant before the build.",
+     "commonMistake": "Raising for a campus with no committed tenant.",
+     "mentalModel": "Tenant first, money second."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend asks how a company builds a $27 billion campus without paying for all of it.",
+      "prompt": "What's the answer?",
+      "options": [
+       "Partners own most of it and the user leases it",
+       "The government pays for every data center",
+       "Builders work for free in exchange for shares"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Blue Owl's funds own 80%; Meta leases the campus.",
+       "Hyperion was funded by private investors.",
+       "Bond investors and partners put in cash."
+      ],
+      "explanation": "Like renting a house someone else bought, but at a $27 billion scale."
+     },
+     "proReasoning": "Big Tech can rent its data centers from investors, much like a tenant rents a home.",
+     "commonMistake": "Assuming tech giants always own the buildings they use.",
+     "mentalModel": "Rent the campus."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:cf2125b0a6a5"
+  ]
+ },
+ {
+  "id": "18b99986-0df8-5891-adec-f93e64203393",
+  "market_id": "ai",
+  "day": 38,
+  "slot": 2,
+  "content": {
+   "id": "ai-d38-c2",
+   "title": "Budgets versus funding rounds",
+   "lessonTitle": "$122 billion for the compute race",
+   "slot": 2,
+   "type": "connect",
+   "brief": {
+    "headline": "On day 20, five tech giants expected $364 billion to $400 billion of 2025 capital spending. On day 38, OpenAI raised $122 billion in one round while making about $2 billion a month.",
+    "kicker": "Connect day 20 and day 38: two ways to pay for compute.",
+    "fullText": "Day 20 showed Big Tech planning compute inside its own budgets: Amazon on track for more than $118 billion in 2025, Alphabet at $85 billion and Meta at $66 billion to $72 billion.\n\nDay 38 showed labs paying another way. OpenAI raised $122 billion in March 2026, and Anthropic $30 billion in February on $14 billion of run-rate revenue.\n\nThe two worlds overlap. Amazon, NVIDIA and Microsoft are among OpenAI's investors, and Microsoft and NVIDIA put money into Anthropic's round.",
+    "sources": [
+     {
+      "url": "https://www.emarketer.com/content/genai-arms-race--big-tech-pour--400-billion-ai-buildout",
+      "label": "eMarketer, Big Tech to pour up to $400 billion into AI buildout"
+     },
+     {
+      "url": "https://www.openai.com/index/accelerating-the-next-phase-ai/",
+      "label": "OpenAI, Accelerating the next phase of AI, Mar 2026"
+     },
+     {
+      "url": "https://www.anthropic.com/news/anthropic-raises-30-billion-series-g-funding-380-billion-post-money-valuation",
+      "label": "Anthropic, Series G at a $380 billion valuation, Feb 2026"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "multipleChoice",
+    "prompt": "Which of these was an anchor investor in OpenAI's March 2026 round?",
+    "options": [
+     "Amazon",
+     "Meta",
+     "Apple"
+    ],
+    "correctIndex": 0,
+    "explanation": "Amazon, NVIDIA and SoftBank anchored the round. The giants that spend on compute also fund the labs."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "OpenAI made about $2 billion a month. How many months of that revenue does its $122 billion round equal?",
+    "min": 0,
+    "max": 150,
+    "value": 61,
+    "unit": "months",
+    "explanation": "About 61 months, or roughly five years of revenue at that pace."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "An interviewer asks how a lab and a tech giant differ in paying for compute.",
+      "prompt": "What's the sharpest answer?",
+      "options": [
+       "Neither pays; chipmakers give compute away",
+       "Giants budget it; labs raise it from investors",
+       "They both pay entirely from current revenue"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Compute is bought, rented or funded, not given.",
+       "Big Tech plans capex; labs raise rounds like $122 billion.",
+       "OpenAI's round was about five years of its revenue."
+      ],
+      "explanation": "The source of money shapes how fast each can spend and what happens if markets turn."
+     },
+     "proReasoning": "Name the funding source for each player. It explains who can keep spending in a downturn.",
+     "commonMistake": "Lumping labs and tech giants together as if they fund compute the same way.",
+     "mentalModel": "Budgets versus rounds."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You track AI demand for chipmakers. Part of it comes from labs funded by rounds, part from giants' budgets.",
+      "prompt": "Which demand is more exposed to a funding freeze?",
+      "options": [
+       "The giants with their own budgets",
+       "Both are exactly equally exposed",
+       "The labs that depend on new rounds"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Budgets can be cut too, but are not raised round by round.",
+       "Their funding sources differ, so their exposure differs.",
+       "Labs need investors to keep writing large checks."
+      ],
+      "explanation": "Demand funded by fresh capital is only as steady as investor appetite."
+     },
+     "proReasoning": "Investors split demand by funding source to see what a market turn would hit first.",
+     "commonMistake": "Treating all AI compute demand as equally durable.",
+     "mentalModel": "Split demand by who pays."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You sell software that helps run GPU clusters. You can target tech giants or frontier labs first.",
+      "prompt": "What do you weigh?",
+      "options": [
+       "Labs spend fast but need their next round",
+       "Labs never buy software from startups",
+       "Giants never buy software from startups"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Fast-growing buyers can pause when funding tightens.",
+       "Labs buy compute across many providers.",
+       "Giants buy across the stack too."
+      ],
+      "explanation": "Know how your customer pays for its compute. It tells you how steady your revenue will be."
+     },
+     "proReasoning": "Founders check where their customers get their money before betting on them.",
+     "commonMistake": "Assuming every big AI spender is equally safe as a customer.",
+     "mentalModel": "Know your buyer's funding."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend asks why OpenAI needs investors if it makes billions a month.",
+      "prompt": "What's the answer?",
+      "options": [
+       "It only uses investor money for marketing",
+       "Its compute bills dwarf its revenue",
+       "Rules force AI firms to raise money yearly"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Its infrastructure runs across many clouds and chips.",
+       "Its round equals about five years of its revenue.",
+       "No such rule exists."
+      ],
+      "explanation": "Revenue is growing, but the compute race costs more, so investors fill the gap."
+     },
+     "proReasoning": "Even billions a month can be small next to a compute bill.",
+     "commonMistake": "Assuming a company with big revenue does not need outside money.",
+     "mentalModel": "Revenue trails the bill."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:d733b6c769bf"
+  ]
+ },
+ {
+  "id": "4095e715-447f-510f-8183-d836f88f86c5",
+  "market_id": "ai",
+  "day": 38,
+  "slot": 3,
+  "content": {
+   "id": "ai-d38-c3",
+   "title": "Choosing the next raise",
+   "lessonTitle": "$122 billion for the compute race",
+   "slot": 3,
+   "type": "decide",
+   "brief": {
+    "headline": "You run finance at a mid-sized AI lab. Next year's compute bill is three times this year's revenue. Anthropic raised $30 billion on $14 billion of run-rate revenue in February 2026.",
+    "kicker": "Decide how to fund a compute bill bigger than revenue.",
+    "fullText": "Frontier labs pay for compute in three ways: selling shares, earning revenue and borrowing.\n\nAnthropic raised $30 billion at a $380 billion valuation, with part of the round coming from Microsoft and NVIDIA. OpenAI raised $122 billion in March 2026 and expanded a bank credit line to about $4.7 billion, undrawn at the close.\n\nEach source has a price: equity dilutes owners, debt must be repaid, and supplier money can come with expectations.",
+    "sources": [
+     {
+      "url": "https://www.anthropic.com/news/anthropic-raises-30-billion-series-g-funding-380-billion-post-money-valuation",
+      "label": "Anthropic, Series G at a $380 billion valuation, Feb 2026"
+     },
+     {
+      "url": "https://www.openai.com/index/accelerating-the-next-phase-ai/",
+      "label": "OpenAI, Accelerating the next phase of AI, Mar 2026"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "sortSignal",
+    "prompt": "Equity or debt?",
+    "buckets": [
+     "Equity",
+     "Debt"
+    ],
+    "items": [
+     {
+      "text": "Investors buy new shares in the lab",
+      "bucket": 0
+     },
+     {
+      "text": "OpenAI's $122 billion round",
+      "bucket": 0
+     },
+     {
+      "text": "A bank credit line repaid later",
+      "bucket": 1
+     },
+     {
+      "text": "OpenAI's $4.7 billion credit line",
+      "bucket": 1
+     }
+    ],
+    "explanation": "Rounds sell ownership. Credit lines borrow money that must be paid back."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "Investors put $30 billion into a $380 billion post-money valuation. About what percent did they buy?",
+    "min": 0,
+    "max": 30,
+    "value": 8,
+    "unit": "%",
+    "explanation": "About 7.9%. Post-money means the $380 billion already includes the new $30 billion."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your CEO asks for a funding plan in one slide.",
+      "prompt": "What do you put on it?",
+      "options": [
+       "Borrow the whole bill from the banks",
+       "Wait for revenue to catch up",
+       "Equity first, credit line in reserve"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Lenders want steady cash flow a fast-growing lab may lack.",
+       "Funded rivals keep training while you wait.",
+       "That mirrors how OpenAI paired its round with a credit line."
+      ],
+      "explanation": "Labs fund compute ahead of revenue with equity and keep debt as a backstop."
+     },
+     "proReasoning": "Finance leads match each source of money to the risk it suits.",
+     "commonMistake": "Using one source of money for every need.",
+     "mentalModel": "Equity now, debt in reserve."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "The lab offers you shares at a valuation about 27 times its run-rate revenue.",
+      "prompt": "What decides whether you invest?",
+      "options": [
+       "Whether revenue can grow into that price",
+       "Whether the logo looks modern",
+       "Whether rivals have higher valuations"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Anthropic reported revenue growing over 10 times a year.",
+       "Branding does not pay compute bills.",
+       "A rival's price does not make yours right."
+      ],
+      "explanation": "At a high multiple you are buying future growth, so judge the growth."
+     },
+     "proReasoning": "Investors in AI rounds underwrite revenue growth, not today's revenue.",
+     "commonMistake": "Investing because peers are valued even higher.",
+     "mentalModel": "Buy the growth, judge the growth."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A chip supplier offers to lead your round if you commit to its cloud for three years.",
+      "prompt": "How do you respond?",
+      "options": [
+       "Refuse any investor who sells compute",
+       "Weigh the money against the lock-in",
+       "Accept, since all money is the same"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Microsoft and NVIDIA invested in Anthropic.",
+       "Supplier money can come with expectations.",
+       "Strategic money often carries conditions."
+      ],
+      "explanation": "Supplier money is real money, but read what it asks you to buy."
+     },
+     "proReasoning": "Founders price the conditions on strategic money, not just the amount.",
+     "commonMistake": "Treating a supplier's check as neutral capital.",
+     "mentalModel": "Read the strings."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend asks what investors actually get when they put $30 billion into an AI lab.",
+      "prompt": "What's the answer?",
+      "options": [
+       "A guaranteed share of every sale",
+       "Free use of the AI forever",
+       "A slice of ownership, about 8% here"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Shares are not a fixed cut of sales.",
+       "They get ownership, not a product.",
+       "$30 billion of $380 billion is about 7.9%."
+      ],
+      "explanation": "Equity buys a piece of the company and a bet on its future value."
+     },
+     "proReasoning": "A funding round sells pieces of a company to pay for what it needs now.",
+     "commonMistake": "Thinking investors are lending money that must be paid back.",
+     "mentalModel": "Shares are slices."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:2aec537a80ef"
+  ]
+ },
+ {
+  "id": "7e9238af-80c2-5a08-8038-b1c920659171",
+  "market_id": "ai",
+  "day": 39,
+  "slot": 1,
+  "content": {
+   "id": "ai-d39-c1",
+   "title": "Microsoft's 27% and a $250 billion order",
+   "lessonTitle": "When your investor is your supplier",
+   "slot": 1,
+   "type": "apply",
+   "brief": {
+    "headline": "On October 28, 2025, Microsoft and OpenAI reset their deal. Microsoft holds about 27% of OpenAI, valued around $135 billion, and OpenAI committed to buy $250 billion of Azure services.",
+    "kicker": "Apply day 39: an investor that is also the landlord.",
+    "fullText": "In the same deal, Microsoft lost its right of first refusal as OpenAI's compute provider, and OpenAI can work with other large clouds.\n\nMicrosoft's exclusivity was extended to 2032 with new guardrails, and its rights to OpenAI's confidential research methods run until 2030 or until AGI is reached. OpenAI decides when AGI is reached, alongside a panel of independent experts.\n\nBy March 2026, OpenAI's compute ran across Microsoft, Oracle, AWS, CoreWeave and Google Cloud.",
+    "sources": [
+     {
+      "url": "https://www.scmp.com/tech/big-tech/article/3330714/microsoft-holds-27-openai-revamped-partnership",
+      "label": "SCMP, Microsoft holds 27% of OpenAI in revamped partnership, Oct 2025"
+     },
+     {
+      "url": "https://rcpmag.com/Articles/2025/10/28/Microsoft-OpenAI-AGI.aspx",
+      "label": "Redmond Channel Partner, Microsoft and OpenAI reset their deal, Oct 2025"
+     },
+     {
+      "url": "https://www.openai.com/index/accelerating-the-next-phase-ai/",
+      "label": "OpenAI, Accelerating the next phase of AI, Mar 2026"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "faceOff",
+    "prompt": "Which is larger?",
+    "left": {
+     "name": "Microsoft's OpenAI stake",
+     "note": "Valued around $135 billion"
+    },
+    "right": {
+     "name": "OpenAI's Azure commitment",
+     "note": "$250 billion of services"
+    },
+    "correctIndex": 1,
+    "explanation": "The purchase commitment is nearly twice the value of the stake. Microsoft gains as owner and as supplier."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "If a 27% stake is worth $135 billion, about how many billions is all of OpenAI worth at that price?",
+    "min": 0,
+    "max": 1500,
+    "value": 500,
+    "unit": "B",
+    "explanation": "$135 billion divided by 0.27 is $500 billion."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "An interviewer asks who gained power in the 2025 Microsoft and OpenAI reset.",
+      "prompt": "What's your answer?",
+      "options": [
+       "Only OpenAI, since Microsoft left",
+       "Both: sales for Microsoft, choice for OpenAI",
+       "Only Microsoft, since it kept everything"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Microsoft kept about 27% and its model rights.",
+       "$250 billion of Azure for one; freedom from first refusal for the other.",
+       "Microsoft gave up first refusal on compute."
+      ],
+      "explanation": "Name what each side gave and got. Power deals rarely have one winner."
+     },
+     "proReasoning": "Map what each side gave and got. It shows you can read a deal, not a headline.",
+     "commonMistake": "Declaring one side the winner of a two-sided deal.",
+     "mentalModel": "List gives and gets."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You model Microsoft's cloud revenue. OpenAI has committed $250 billion to Azure.",
+      "prompt": "How do you treat that commitment?",
+      "options": [
+       "Count it all as certain revenue now",
+       "Ignore it as marketing",
+       "Discount it by OpenAI's ability to pay"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "It stretches over years and depends on OpenAI raising money.",
+       "It is a real contract that matters.",
+       "A commitment is only as good as the buyer's funding."
+      ],
+      "explanation": "When your customer is also your investee, its funding is your revenue risk."
+     },
+     "proReasoning": "Investors haircut commitments from customers that depend on outside funding.",
+     "commonMistake": "Booking a multi-year commitment as if it were cash in hand.",
+     "mentalModel": "Commitments need a payer."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your startup's main investor is also your only cloud provider. A rival cloud offers better prices.",
+      "prompt": "What do you do?",
+      "options": [
+       "Negotiate rights to use a second provider",
+       "Never raise the subject with your investor",
+       "Switch everything overnight"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "OpenAI won freedom from first refusal in its reset.",
+       "Silence locks in the higher price.",
+       "A sudden switch can strain your key relationship."
+      ],
+      "explanation": "Even OpenAI renegotiated for choice. Build the right to diversify into your deals."
+     },
+     "proReasoning": "Founders keep the option to change suppliers, even when the supplier is an investor.",
+     "commonMistake": "Signing exclusivity you cannot renegotiate.",
+     "mentalModel": "Keep a second option."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend asks why Microsoft would want OpenAI to spend money on Azure if it already owns part of OpenAI.",
+      "prompt": "What's the answer?",
+      "options": [
+       "Owning a stake rules out selling to it",
+       "It earns as an owner and as a seller",
+       "It loses money on every Azure sale"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Microsoft does both at once.",
+       "About 27% of OpenAI plus $250 billion of Azure.",
+       "Nothing in the sources says that."
+      ],
+      "explanation": "When your investee is also your customer, you can win twice."
+     },
+     "proReasoning": "Some AI investors win twice: from the stake and from the bills.",
+     "commonMistake": "Assuming investors and suppliers are always different companies.",
+     "mentalModel": "Paid twice."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:cadcead40a2c"
+  ]
+ },
+ {
+  "id": "9d512c56-9ef6-51f8-becb-61c2e51332cb",
+  "market_id": "ai",
+  "day": 39,
+  "slot": 2,
+  "content": {
+   "id": "ai-d39-c2",
+   "title": "The scarcest input buys a stake",
+   "lessonTitle": "When your investor is your supplier",
+   "slot": 2,
+   "type": "connect",
+   "brief": {
+    "headline": "On day 3, power in AI went to whoever controls the scarcest input, and NVIDIA's data center chips earned $193.7 billion in fiscal 2026. In November 2025, NVIDIA pledged up to $10 billion to Anthropic.",
+    "kicker": "Connect day 3 and day 39: chip profits turn into stakes in buyers.",
+    "fullText": "Day 3 showed NVIDIA at the chokepoint, earning gross margins above 70% on data center chips.\n\nDay 39 showed where some of that money goes. NVIDIA pledged up to $10 billion to Anthropic, and Anthropic pledged $30 billion of Azure compute, with an initial gigawatt on NVIDIA Grace Blackwell and Vera Rubin systems. NVIDIA was also an anchor investor in OpenAI's $122 billion round in March 2026.\n\nThe owner of the scarce input now owns pieces of its biggest buyers.",
+    "sources": [
+     {
+      "url": "https://www.sec.gov/Archives/edgar/data/1045810/000104581026000019/q4fy26pr.htm",
+      "label": "NVIDIA fiscal 2026 results"
+     },
+     {
+      "url": "https://www.anthropic.com/news/microsoft-nvidia-anthropic-announce-strategic-partnerships",
+      "label": "Anthropic, Microsoft, NVIDIA and Anthropic announce strategic partnerships, Nov 2025"
+     },
+     {
+      "url": "https://www.openai.com/index/accelerating-the-next-phase-ai/",
+      "label": "OpenAI, Accelerating the next phase of AI, Mar 2026"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "buildChain",
+    "prompt": "Put the loop in order.",
+    "steps": [
+     "NVIDIA sells scarce AI chips",
+     "NVIDIA pledges up to $10 billion to Anthropic",
+     "Anthropic commits $30 billion to Azure",
+     "That Azure capacity runs on NVIDIA systems"
+    ],
+    "explanation": "Profit from scarce chips funds stakes in labs, whose compute runs on the same chips."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "NVIDIA's $10 billion pledge is about what percent of its $193.7 billion fiscal 2026 data center revenue?",
+    "min": 0,
+    "max": 25,
+    "value": 5,
+    "unit": "%",
+    "explanation": "About 5%. A small share of revenue buys a stake in a major buyer."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You interview at NVIDIA. They ask why a chipmaker would invest in AI labs.",
+      "prompt": "What's a strong answer?",
+      "options": [
+       "It plans to stop selling chips soon",
+       "The law requires it to invest",
+       "It backs buyers that run on its chips"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Data center chips earned $193.7 billion in one year.",
+       "No rule requires it.",
+       "Anthropic's Azure capacity runs on NVIDIA systems."
+      ],
+      "explanation": "Power belongs to whoever controls the scarcest input. NVIDIA turns that into stakes."
+     },
+     "proReasoning": "Connect the investment to the core business. That is how strategy people think.",
+     "commonMistake": "Treating a supplier's investment as charity or a side bet.",
+     "mentalModel": "Invest where your chips run."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You analyze NVIDIA. Some of its biggest customers are also companies it has invested in.",
+      "prompt": "What risk do you flag?",
+      "options": [
+       "Demand funded by its own stakes",
+       "Too few customers use its chips",
+       "Its gross margins are too low"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Investment that returns as sales can overstate organic demand.",
+       "Its data center revenue was $193.7 billion.",
+       "Margins were above 70%."
+      ],
+      "explanation": "When a supplier funds its buyers, check how much demand would remain without the funding."
+     },
+     "proReasoning": "Investors separate organic demand from demand the supplier helped finance.",
+     "commonMistake": "Reading all revenue as independent demand.",
+     "mentalModel": "Separate funded demand."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You build an alternative AI chip. Big labs have taken money from NVIDIA.",
+      "prompt": "Where do you look for first customers?",
+      "options": [
+       "Nobody until your chip is perfect",
+       "Buyers not backed by a chip supplier",
+       "Only the labs NVIDIA invested in"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Waiting gives the incumbent more time.",
+       "They have less reason to stay loyal to one supplier.",
+       "Their backers sell them compute already."
+      ],
+      "explanation": "Ties between suppliers and labs shape who is open to a new chip."
+     },
+     "proReasoning": "Challengers sell first to buyers who are not tied to the incumbent.",
+     "commonMistake": "Pitching first to labs funded by the incumbent.",
+     "mentalModel": "Sell to the untied."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend asks how NVIDIA can afford to invest billions in AI labs.",
+      "prompt": "What's the answer?",
+      "options": [
+       "It borrows everything it invests",
+       "Governments pay for its stakes",
+       "Its chips earn huge profits"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Its chip profits are the source.",
+       "No source says governments pay.",
+       "Data center chips earned $193.7 billion in a year."
+      ],
+      "explanation": "Scarce chips bring big profits, and some of those profits buy stakes in customers."
+     },
+     "proReasoning": "The company with the scarcest input has the cash to buy into its customers.",
+     "commonMistake": "Thinking investors and suppliers are separate worlds in AI.",
+     "mentalModel": "Scarcity pays for stakes."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:7e8e3e63b0c7"
+  ]
+ },
+ {
+  "id": "5cf7a34d-f1da-5f21-a95c-6daaa733a3ea",
+  "market_id": "ai",
+  "day": 39,
+  "slot": 3,
+  "content": {
+   "id": "ai-d39-c3",
+   "title": "An offer from your supplier",
+   "lessonTitle": "When your investor is your supplier",
+   "slot": 3,
+   "type": "decide",
+   "brief": {
+    "headline": "You run an AI lab. A chip and cloud supplier offers to invest $2 billion if you commit $4 billion to its compute over five years.",
+    "kicker": "Decide whether to take money from the company you buy from.",
+    "fullText": "Deals like this are now common at the frontier. In November 2025, Microsoft and NVIDIA pledged up to $15 billion to Anthropic, and Anthropic pledged $30 billion of Azure compute.\n\nMicrosoft owns about 27% of OpenAI, which committed $250 billion to Azure. But in October 2025 Microsoft gave up its right of first refusal as OpenAI's compute provider, and OpenAI now buys from several clouds.\n\nAnthropic itself runs on AWS Trainium, Google TPUs and NVIDIA GPUs.",
+    "sources": [
+     {
+      "url": "https://www.anthropic.com/news/microsoft-nvidia-anthropic-announce-strategic-partnerships",
+      "label": "Anthropic, Microsoft, NVIDIA and Anthropic announce strategic partnerships, Nov 2025"
+     },
+     {
+      "url": "https://www.scmp.com/tech/big-tech/article/3330714/microsoft-holds-27-openai-revamped-partnership",
+      "label": "SCMP, Microsoft holds 27% of OpenAI in revamped partnership, Oct 2025"
+     },
+     {
+      "url": "https://rcpmag.com/Articles/2025/10/28/Microsoft-OpenAI-AGI.aspx",
+      "label": "Redmond Channel Partner, Microsoft and OpenAI reset their deal, Oct 2025"
+     },
+     {
+      "url": "https://www.anthropic.com/news/anthropic-raises-30-billion-series-g-funding-380-billion-post-money-valuation",
+      "label": "Anthropic, Series G at a $380 billion valuation, Feb 2026"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "multipleChoice",
+    "prompt": "In the Anthropic deal, how did the Azure compute pledge compare with what its two backers pledged to invest?",
+    "options": [
+     "About twice as large",
+     "About the same size",
+     "About half as large"
+    ],
+    "correctIndex": 0,
+    "explanation": "$30 billion of compute against up to $15 billion of investment."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "Your supplier invests $2 billion and you commit $4 billion back. How many billions flow to it beyond its investment?",
+    "min": 0,
+    "max": 10,
+    "value": 2,
+    "unit": "B",
+    "explanation": "$2 billion more comes back than goes out, before counting the value of its stake."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your CEO asks you to summarize the deal for the board in one sentence.",
+      "prompt": "What do you say?",
+      "options": [
+       "Money in, more back out, read the terms",
+       "Free money with no strings attached at all",
+       "A plain loan we must repay in cash"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "That captures the loop and the real question.",
+       "The $4 billion commitment is the string.",
+       "It is equity tied to purchases, not a loan."
+      ],
+      "explanation": "Supplier investments are paired with purchases. Present both halves."
+     },
+     "proReasoning": "Present the investment and the commitment together. Boards need both.",
+     "commonMistake": "Calling supplier money free money.",
+     "mentalModel": "Show both halves."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You are an outside investor in this lab. The supplier deal would make the supplier a shareholder.",
+      "prompt": "What do you push for?",
+      "options": [
+       "Rejecting all strategic investors",
+       "Freedom to buy compute from others",
+       "Full exclusivity with the supplier"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Strategic money still has value.",
+       "OpenAI won that freedom from Microsoft in 2025.",
+       "Exclusivity weakens the lab on price."
+      ],
+      "explanation": "Keep the lab able to switch suppliers, so the investor cannot set prices alone."
+     },
+     "proReasoning": "Investors protect a lab's ability to shop around, which protects its margins.",
+     "commonMistake": "Letting a supplier-shareholder lock in pricing power.",
+     "mentalModel": "Protect the option to switch."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You are the founder. You need the money, and the supplier's compute is competitive today.",
+      "prompt": "What do you do?",
+      "options": [
+       "Accept full exclusivity for a higher check",
+       "Decline and run out of cash",
+       "Accept, but keep rights to add other providers"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Exclusivity can cost more than the extra cash.",
+       "Running out of cash ends the company.",
+       "Anthropic took supplier money and still uses three chip families."
+      ],
+      "explanation": "Take strategic money on terms that leave room to diversify."
+     },
+     "proReasoning": "Founders take supplier money and keep a second supplier in the contract.",
+     "commonMistake": "Trading away all supplier choice for a bigger check.",
+     "mentalModel": "Take it, keep choice."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend says the supplier is basically paying the lab to buy its own products.",
+      "prompt": "Is that fair?",
+      "options": [
+       "Partly: some money returns as sales",
+       "No, the two are unrelated",
+       "Yes, and the lab gets nothing"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Investment and purchases are linked in these deals.",
+       "They are signed together.",
+       "The lab gets cash and capacity."
+      ],
+      "explanation": "The money goes in a circle, but both sides get something real."
+     },
+     "proReasoning": "Circular deals still give both sides something: cash for one, sales for the other.",
+     "commonMistake": "Calling the deal pure trickery or pure generosity.",
+     "mentalModel": "A circle with real value."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:973a838a2ff7"
+  ]
+ },
+ {
+  "id": "2e94dc5b-e00d-50c4-b951-c101b3bc35a2",
+  "market_id": "ai",
+  "day": 40,
+  "slot": 1,
+  "content": {
+   "id": "ai-d40-c1",
+   "title": "Over 100 megawatts to train",
+   "lessonTitle": "Half a billion dollars for one run",
+   "slot": 1,
+   "type": "apply",
+   "brief": {
+    "headline": "Stanford's AI Index 2026 reports that Grok 3 and Llama 4 Behemoth drew upward of 100 million watts during training. Leading chips do about 10 times more computation per watt than a decade ago.",
+    "kicker": "Apply day 40: efficiency rises, yet the total keeps climbing.",
+    "fullText": "The report finds that efficiency gains have not kept pace with model scaling, so total training power is still rising.\n\nIt estimates Grok 4's 2025 training produced about 72,816 tons of carbon dioxide equivalent. Power data is missing for many of the newest models, and OpenAI, Anthropic and Google have not disclosed parameter counts, dataset sizes or training duration for several recent models.\n\nOn day 40, Epoch put Grok 4's training cost at about $490 million.",
+    "sources": [
+     {
+      "url": "https://hai.stanford.edu/assets/files/ai_index_report_2026_chapter_1_research_development.pdf",
+      "label": "Stanford AI Index 2026, chapter 1, Research and Development"
+     },
+     {
+      "url": "https://epoch.ai/data-insights/grok-4-training-resources",
+      "label": "Epoch AI, Grok 4 training resources, Sep 2025"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "spotFake",
+    "prompt": "One of these is false. Tap it.",
+    "statements": [
+     "Leading chips do about 10 times more work per watt than a decade ago.",
+     "Total training power has fallen as chips improved.",
+     "Several top labs have not disclosed training duration."
+    ],
+    "fakeIndex": 1,
+    "explanation": "Models scaled faster than efficiency improved, so total training power is still rising."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "About how many thousand tons of carbon dioxide equivalent did Grok 4's training produce?",
+    "min": 0,
+    "max": 200,
+    "value": 73,
+    "unit": "K tons",
+    "explanation": "About 72,816 tons, by the AI Index estimate."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "An interviewer asks why better chips have not cut the energy used to train frontier models.",
+      "prompt": "What's your answer?",
+      "options": [
+       "Chips have not improved in a decade",
+       "Labs stopped caring about energy",
+       "Models grew faster than chips improved"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Chips do about 10 times more work per watt.",
+       "Nothing in the sources says that.",
+       "The AI Index says scaling outpaced efficiency."
+      ],
+      "explanation": "Efficiency and total use are different numbers. Total use follows scale."
+     },
+     "proReasoning": "Separate efficiency from total use. Many people mix them up.",
+     "commonMistake": "Assuming better chips mean less total energy.",
+     "mentalModel": "Scale beats efficiency."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A lab tells you its next model will be far more efficient than the last.",
+      "prompt": "What do you still ask?",
+      "options": [
+       "Total power and money the run needs",
+       "Which logo will go on the model",
+       "Whether the model has a new name"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Per-watt gains can still mean a bigger total bill.",
+       "Branding does not change cost.",
+       "A name does not change cost."
+      ],
+      "explanation": "Totals keep rising even as efficiency improves. Ask for the total."
+     },
+     "proReasoning": "Investors ask for totals, because efficiency claims can hide rising bills.",
+     "commonMistake": "Taking an efficiency claim as a cost cut.",
+     "mentalModel": "Ask for the total."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You build tools to measure the energy and emissions of AI training. Top labs disclose less and less.",
+      "prompt": "Who might buy first?",
+      "options": [
+       "Only the labs that already disclose everything",
+       "Buyers and regulators who need estimates",
+       "Nobody, since the data is secret"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Full disclosers need you least.",
+       "Outside estimates fill gaps when labs do not disclose.",
+       "Gaps in disclosure are what create the need."
+      ],
+      "explanation": "When labs stop disclosing, credible outside estimates become more valuable."
+     },
+     "proReasoning": "Founders see missing data as demand for credible estimates.",
+     "commonMistake": "Assuming a market dies when companies stop sharing data.",
+     "mentalModel": "Secrecy creates demand."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend says AI must be getting greener because chips are more efficient.",
+      "prompt": "What's the fairer view?",
+      "options": [
+       "AI training now uses almost no energy",
+       "Chips have become less efficient",
+       "Chips are greener, but total use rises"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Grok 4 produced about 72,816 tons of emissions.",
+       "They do about 10 times more work per watt.",
+       "Top runs drew over 100 million watts."
+      ],
+      "explanation": "Each chip does more per watt, but runs use far more chips."
+     },
+     "proReasoning": "Better per unit and bigger in total can both be true.",
+     "commonMistake": "Reading an efficiency gain as a total reduction.",
+     "mentalModel": "Per unit is not total."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:5c7119834029"
+  ]
+ },
+ {
+  "id": "96581242-055e-558b-bd47-c889ba8e1c89",
+  "market_id": "ai",
+  "day": 40,
+  "slot": 2,
+  "content": {
+   "id": "ai-d40-c2",
+   "title": "Compute grows faster than cost",
+   "lessonTitle": "Half a billion dollars for one run",
+   "slot": 2,
+   "type": "connect",
+   "brief": {
+    "headline": "On day 4, training compute for top models grew 4 to 5 times a year. On day 40, the cost of the biggest runs grew about 2.4 times a year. GPU compute per dollar doubles about every 2.1 years.",
+    "kicker": "Connect day 4 and day 40: why the bill grows slower than compute.",
+    "fullText": "Day 4 tracked compute: Epoch estimates frontier training compute grew about 4 to 5 times a year.\n\nDay 40 tracked dollars: Epoch estimates the amortized cost of the biggest runs grew about 2.4 times a year since 2016. Each dollar buys more compute over time, since ML GPU price-performance doubles about every 2.1 years.\n\nEven so, a cost that grows 2.4 times a year passes $1 billion for the largest runs by 2027, if the trend holds.",
+    "sources": [
+     {
+      "url": "https://epoch.ai/blog/training-compute-of-frontier-ai-models-grows-by-4-5x-per-year",
+      "label": "Epoch AI, training compute growth"
+     },
+     {
+      "url": "https://epoch.ai/publications/how-much-does-it-cost-to-train-frontier-ai-models",
+      "label": "Epoch AI, How much does it cost to train frontier AI models?, Jun 2024"
+     },
+     {
+      "url": "https://epoch.ai/publications/trends-in-machine-learning-hardware",
+      "label": "Epoch AI, Trends in machine learning hardware, Nov 2023"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "multipleChoice",
+    "prompt": "Why can training cost grow slower than training compute?",
+    "options": [
+     "Training runs get shorter every year",
+     "Each dollar buys more compute over time",
+     "Labs stopped paying for electricity"
+    ],
+    "correctIndex": 1,
+    "explanation": "GPU price-performance keeps improving, so the same dollar trains more."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "If the cost of the biggest run grows 2.4 times a year, about how many times larger is it after two years?",
+    "min": 0,
+    "max": 20,
+    "value": 6,
+    "unit": "x",
+    "explanation": "2.4 × 2.4 is about 5.8, so roughly six times in two years."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "An interviewer notes compute grows 4 to 5 times a year and asks if costs do too.",
+      "prompt": "What's the accurate answer?",
+      "options": [
+       "Slower, about 2.4 times a year",
+       "Faster, about 10 times a year",
+       "Costs stay flat every year"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "That is Epoch's estimate since 2016.",
+       "No estimate puts it that high.",
+       "The biggest runs keep getting costlier."
+      ],
+      "explanation": "Compute and cost compound at different rates because chips keep improving."
+     },
+     "proReasoning": "Give both growth rates and explain the gap. It shows real fluency.",
+     "commonMistake": "Assuming cost grows as fast as compute.",
+     "mentalModel": "Two curves, two rates."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You forecast a chipmaker's sales from AI training. You only have compute growth forecasts.",
+      "prompt": "What do you adjust for?",
+      "options": [
+       "Rising cost per unit of compute",
+       "Falling cost per unit of compute",
+       "Nothing, compute equals revenue"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Cost per unit falls, not rises.",
+       "Compute per dollar doubles about every 2.1 years.",
+       "Revenue grows slower than compute."
+      ],
+      "explanation": "Dollar spending grows slower than compute. Translate before you forecast."
+     },
+     "proReasoning": "Investors convert compute growth into dollars before forecasting revenue.",
+     "commonMistake": "Forecasting chip revenue straight from compute growth.",
+     "mentalModel": "Convert compute to dollars."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your product is too costly to train today. You can wait or redesign.",
+      "prompt": "What should you weigh?",
+      "options": [
+       "Compute prices only ever go up",
+       "Compute prices never change at all",
+       "Compute per dollar improves yearly"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "The long trend is the reverse.",
+       "They keep improving.",
+       "Price-performance doubles about every 2.1 years."
+      ],
+      "explanation": "Waiting can make a plan affordable, but rivals face the same falling prices."
+     },
+     "proReasoning": "Founders time projects against falling compute prices.",
+     "commonMistake": "Assuming today's compute price is permanent.",
+     "mentalModel": "Prices fall with time."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend asks how AI can use 4 times more compute each year without bills rising 4 times.",
+      "prompt": "What's the answer?",
+      "options": [
+       "Chips give more compute per dollar",
+       "Electricity became free",
+       "Labs share one supercomputer"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "GPU price-performance doubles about every 2.1 years.",
+       "Electricity still costs money.",
+       "Labs run separate clusters."
+      ],
+      "explanation": "Cheaper compute per dollar softens the bill, but it still grows about 2.4 times a year."
+     },
+     "proReasoning": "Better chips slow the growth of the bill but do not stop it.",
+     "commonMistake": "Thinking compute and cost grow at the same speed.",
+     "mentalModel": "Cheaper units, bigger bill."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:a7288ff69a0f"
+  ]
+ },
+ {
+  "id": "74d97398-9f54-5cbb-a526-7964863f55fd",
+  "market_id": "ai",
+  "day": 40,
+  "slot": 3,
+  "content": {
+   "id": "ai-d40-c3",
+   "title": "Planning the next big run",
+   "lessonTitle": "Half a billion dollars for one run",
+   "slot": 3,
+   "type": "decide",
+   "brief": {
+    "headline": "You plan compute for a lab whose last frontier run cost about $500 million. Frontier run costs grow about 2.4 times a year, and cloud estimates run about twice owned hardware.",
+    "kicker": "Decide how to plan for a bill that multiplies.",
+    "fullText": "Epoch estimates the cost of the biggest runs has grown about 2.4 times a year since 2016, and expects the largest to pass $1 billion by 2027 if the trend holds.\n\nIts cloud rental estimates come out about twice its owned hardware estimates on average. Epoch put Grok 4's run at about $490 million, not counting staff, experiments or serving users.\n\nGPU compute per dollar doubles about every 2.1 years.",
+    "sources": [
+     {
+      "url": "https://epoch.ai/publications/how-much-does-it-cost-to-train-frontier-ai-models",
+      "label": "Epoch AI, How much does it cost to train frontier AI models?, Jun 2024"
+     },
+     {
+      "url": "https://arxiv.org/abs/2405.21015",
+      "label": "Cottier et al., The rising costs of training frontier AI models, 2024"
+     },
+     {
+      "url": "https://epoch.ai/data-insights/grok-4-training-resources",
+      "label": "Epoch AI, Grok 4 training resources, Sep 2025"
+     },
+     {
+      "url": "https://epoch.ai/publications/trends-in-machine-learning-hardware",
+      "label": "Epoch AI, Trends in machine learning hardware, Nov 2023"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "sortSignal",
+    "prompt": "Does each factor push the bill for your next run up or down?",
+    "buckets": [
+     "Pushes it up",
+     "Pushes it down"
+    ],
+    "items": [
+     {
+      "text": "A bigger run than last time",
+      "bucket": 0
+     },
+     {
+      "text": "Renting in the cloud instead of owning",
+      "bucket": 0
+     },
+     {
+      "text": "Newer GPUs with more compute per dollar",
+      "bucket": 1
+     },
+     {
+      "text": "Owning hardware you keep busy for years",
+      "bucket": 1
+     }
+    ],
+    "explanation": "Scale and renting raise the bill. Better chips and well-used owned hardware lower it."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "Renting costs about twice owning. About how many billions would a $500 million owned-hardware run cost in the cloud?",
+    "min": 0,
+    "max": 5,
+    "value": 1,
+    "unit": "B",
+    "explanation": "About $1 billion, double the owned estimate."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You present the compute plan. Leadership assumes the next run will cost the same as the last.",
+      "prompt": "What do you correct?",
+      "options": [
+       "Cost depends only on the model name",
+       "Top run costs grow about 2.4x a year",
+       "Runs get cheaper every year"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Scale and hardware drive cost.",
+       "A $500 million run implies about $1.2 billion a year later.",
+       "The biggest runs keep getting costlier."
+      ],
+      "explanation": "Plan for the curve, not the last data point."
+     },
+     "proReasoning": "Planners anchor on the growth rate, not last year's bill.",
+     "commonMistake": "Budgeting the next run at the last run's price.",
+     "mentalModel": "Plan on the curve."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You back the lab. Its plan assumes renting all compute in the cloud for its next three runs.",
+      "prompt": "What do you question?",
+      "options": [
+       "Whether the cloud has enough logos",
+       "Whether runs should be slower",
+       "Whether owning some would cost less"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Logos do not affect cost.",
+       "Slower runs still need compute.",
+       "Cloud estimates run about twice owned hardware."
+      ],
+      "explanation": "At this scale, the rent or own choice can change the bill by about two times."
+     },
+     "proReasoning": "Investors test the rent or own choice once spending is steady and large.",
+     "commonMistake": "Accepting cloud rental by default at frontier scale.",
+     "mentalModel": "Test rent versus own."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You are a small lab. Matching the frontier would mean a run near $1 billion by 2027.",
+      "prompt": "What do you do?",
+      "options": [
+       "Build on existing models for a focused use",
+       "Raise $1 billion for one run",
+       "Copy the frontier lab's plan exactly"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "You avoid a curve that keeps multiplying.",
+       "Few investors fund a single billion-dollar run.",
+       "You would trail them with less money."
+      ],
+      "explanation": "A cost curve that multiplies every year favors those with the most capital."
+     },
+     "proReasoning": "Founders pick races their capital can finish.",
+     "commonMistake": "Chasing a frontier whose entry price doubles every year or so.",
+     "mentalModel": "Pick a race you can finish."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend asks whether training the best AI will ever get cheap.",
+      "prompt": "What's the fair answer?",
+      "options": [
+       "No, every part of it gets dearer",
+       "Units get cheaper; top runs cost more",
+       "Yes, it will soon be nearly free"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Compute per dollar keeps improving.",
+       "Compute per dollar improves while top runs grow 2.4 times a year.",
+       "Top runs are heading past $1 billion."
+      ],
+      "explanation": "The frontier keeps moving, so the best model always costs the most."
+     },
+     "proReasoning": "Old capabilities get cheap. The newest one keeps getting pricier.",
+     "commonMistake": "Assuming cheaper chips mean cheaper frontier models.",
+     "mentalModel": "The frontier moves."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:611dd174515a"
+  ]
+ },
+ {
+  "id": "27efeb19-1b24-5fa3-8ecd-da1de3fe5c08",
+  "market_id": "ai",
+  "day": 41,
+  "slot": 1,
+  "content": {
+   "id": "ai-d41-c1",
+   "title": "New York draws the same line",
+   "lessonTitle": "A law that counts operations",
+   "slot": 1,
+   "type": "apply",
+   "brief": {
+    "headline": "On March 27, 2026, Governor Hochul signed the final amendment to New York's RAISE Act. It covers models trained with more than 10^26 operations and takes effect on January 1, 2027.",
+    "kicker": "Apply day 41: a second state adopts the compute line.",
+    "fullText": "Hochul first signed the act on December 19, 2025. The amendment aligned it with California's SB 53 on definitions and thresholds, including 10^26 operations and $500 million in revenue for large developers.\n\nIt still differs on speed: New York wants critical safety incidents reported within 72 hours, against California's 15 days. A new office within the Department of Financial Services receives reports.\n\nThe Attorney General can seek up to $1 million for a first violation and up to $3 million for later ones.",
+    "sources": [
+     {
+      "url": "https://www.wiley.law/alert-New-York-Finalizes-RAISE-Act-for-Frontier-AI-Models-Law-Takes-Effect-January-1-2027",
+      "label": "Wiley, New York finalizes RAISE Act for frontier AI models, 2026"
+     },
+     {
+      "url": "https://www.orrick.com/en/Insights/2025/10/Californias-Transparency-in-Frontier-Artificial-Intelligence-Act-5-Things-You-Should-Know",
+      "label": "Orrick, California's Transparency in Frontier AI Act: 5 things to know, Oct 2025"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "sortSignal",
+    "prompt": "New York or California?",
+    "buckets": [
+     "New York RAISE",
+     "California SB 53"
+    ],
+    "items": [
+     {
+      "text": "Incidents reported within 72 hours",
+      "bucket": 0
+     },
+     {
+      "text": "Up to $3 million for repeat violations",
+      "bucket": 0
+     },
+     {
+      "text": "Incidents reported within 15 days",
+      "bucket": 1
+     },
+     {
+      "text": "In force since January 1, 2026",
+      "bucket": 1
+     }
+    ],
+    "explanation": "Same compute line, different speed and penalties. New York starts in 2027."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "New York allows 72 hours and California 15 days. How many times longer is California's window?",
+    "min": 0,
+    "max": 20,
+    "value": 5,
+    "unit": "x",
+    "explanation": "15 days is 360 hours, five times 72."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You join a frontier lab's policy team. Your manager asks which deadline to build the incident process around.",
+      "prompt": "What do you recommend?",
+      "options": [
+       "New York's 72 hours, the strictest",
+       "California's 15 days only",
+       "Whichever regulator calls first"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Meeting the fastest deadline meets both.",
+       "You would miss New York by days.",
+       "Waiting to be asked is not a process."
+      ],
+      "explanation": "When rules share a threshold but differ in speed, design for the strictest."
+     },
+     "proReasoning": "Policy teams build one process that meets the strictest rule.",
+     "commonMistake": "Building separate, slower processes for each state.",
+     "mentalModel": "Design for the strictest."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You hold stakes in frontier labs. A second large state now copies the 10^26 line.",
+      "prompt": "What does that signal?",
+      "options": [
+       "Only California matters",
+       "The compute line is becoming a standard",
+       "Rules on AI are being rolled back"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "New York now has its own rules too.",
+       "New York aligned on 10^26 and $500 million.",
+       "Both states added duties, not removed them."
+      ],
+      "explanation": "When jurisdictions copy a threshold, compliance becomes a fixed cost of the frontier."
+     },
+     "proReasoning": "Investors treat a copied threshold as a lasting cost of doing business.",
+     "commonMistake": "Assuming each state law is a one-off.",
+     "mentalModel": "Copied lines become standards."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You sell compliance software. Two states now share a threshold but differ on deadlines.",
+      "prompt": "What do you build first?",
+      "options": [
+       "A tool for California only",
+       "Nothing until a federal law passes",
+       "One tool for every state's deadlines"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Labs above the line answer to both.",
+       "State rules already apply now.",
+       "Labs need one view across 72 hours and 15 days."
+      ],
+      "explanation": "Similar but different rules create demand for tools that handle both."
+     },
+     "proReasoning": "Founders see near-identical rules with different details as a product opening.",
+     "commonMistake": "Waiting for rules to settle before building.",
+     "mentalModel": "Differences need tools."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend asks why two states regulate AI by counting operations.",
+      "prompt": "What's the answer?",
+      "options": [
+       "Compute picks out the biggest models",
+       "Operations are the only thing AI does",
+       "They want to ban AI models outright"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Both cover models trained above 10^26 operations.",
+       "Compute is a proxy for scale, not everything.",
+       "They add duties, not bans."
+      ],
+      "explanation": "Counting training compute picks out the largest models before anyone uses them."
+     },
+     "proReasoning": "Compute lines are a simple filter for the largest, costliest models.",
+     "commonMistake": "Thinking compute rules cover every AI app.",
+     "mentalModel": "Compute picks out the giants."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:941a7eccaed0"
+  ]
+ },
+ {
+  "id": "9712f3c3-a469-5cd0-adc1-533337362f89",
+  "market_id": "ai",
+  "day": 41,
+  "slot": 2,
+  "content": {
+   "id": "ai-d41-c2",
+   "title": "Two EU duties, one compute line",
+   "lessonTitle": "A law that counts operations",
+   "slot": 2,
+   "type": "connect",
+   "brief": {
+    "headline": "On day 17, EU general-purpose AI providers had to publish training summaries from August 2, 2025. On day 41, models trained with over 10^25 operations are presumed to carry systemic risk.",
+    "kicker": "Connect day 17 and day 41: every model discloses, the biggest do more.",
+    "fullText": "Day 17 covered the duty every general-purpose provider shares: a public summary of training content and a copyright policy.\n\nDay 41 added the extra layer. The EU treats a model trained with more than 10^23 operations as indicatively general-purpose. Above 10^25, it presumes systemic risk, and the provider must notify the Commission within two weeks.\n\nThose providers must run evaluations with adversarial testing, report serious incidents and protect the model with adequate cybersecurity.",
+    "sources": [
+     {
+      "url": "https://www.mayerbrown.com/en/insights/publications/2025/08/eu-ai-act-news-rules-on-general-purpose-ai-start-applying-guidelines-and-template-for-summary-of-training-data-finalized",
+      "label": "Mayer Brown, EU AI Act rules on general-purpose AI start applying, Aug 2025"
+     },
+     {
+      "url": "https://digital-strategy.ec.europa.eu/en/faqs/guidelines-obligations-gpai-providers",
+      "label": "European Commission, FAQ on obligations for general-purpose AI providers"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "buildChain",
+    "prompt": "Put the EU steps in order as a model grows.",
+    "steps": [
+     "Passes 10^23: indicatively general-purpose",
+     "Publishes a training content summary",
+     "Passes 10^25: systemic risk presumed",
+     "Notifies the Commission within two weeks"
+    ],
+    "explanation": "Every general-purpose model discloses its training content. Crossing 10^25 adds notice and safety duties."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "How many times more compute is 10^25 operations than 10^23?",
+    "min": 0,
+    "max": 300,
+    "value": 100,
+    "unit": "x",
+    "explanation": "A hundred times. Two powers of ten separate the two lines."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "In an interview at an EU-facing lab, you're asked what changes when a model passes 10^25.",
+      "prompt": "What's the best answer?",
+      "options": [
+       "The model is banned in the EU",
+       "Notice in two weeks, plus safety duties",
+       "Nothing, the same rules apply to all of them"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "It adds duties; it does not ban.",
+       "Systemic-risk models carry those extra duties.",
+       "The biggest models carry more duties."
+      ],
+      "explanation": "Know the layers: all models disclose, the largest do much more."
+     },
+     "proReasoning": "Explain the two layers of duty. It shows you know how EU rules scale with size.",
+     "commonMistake": "Treating all general-purpose models as equal under EU law.",
+     "mentalModel": "Rules stack with size."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A lab you back plans its first model above 10^25 for the EU market.",
+      "prompt": "What cost do you add to the plan?",
+      "options": [
+       "None, since disclosure is already done",
+       "A fee to buy an exemption",
+       "Testing, incident reports and security"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Training summaries are only the first layer.",
+       "No such exemption exists.",
+       "Those are the duties above 10^25."
+      ],
+      "explanation": "Crossing the line turns safety work into a standing cost."
+     },
+     "proReasoning": "Investors budget compliance as models scale, not after.",
+     "commonMistake": "Assuming one-time disclosure covers every duty.",
+     "mentalModel": "Size adds standing costs."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You run a startup with a model trained on about 10^24 operations, sold in the EU.",
+      "prompt": "Which duties apply?",
+      "options": [
+       "General-purpose duties only",
+       "Every systemic-risk duty too",
+       "No EU duties at all"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "You are above 10^23 but below 10^25.",
+       "Those start at 10^25.",
+       "General-purpose duties still apply above 10^23."
+      ],
+      "explanation": "Know which layer you are in. It decides your compliance work."
+     },
+     "proReasoning": "Founders place their model on the compute ladder before planning compliance.",
+     "commonMistake": "Over-preparing for duties that start at 10^25.",
+     "mentalModel": "Find your rung."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend asks if every AI chatbot in Europe faces the strictest rules.",
+      "prompt": "What's the answer?",
+      "options": [
+       "No, Europe has no AI rules",
+       "No, the strictest start at 10^25",
+       "Yes, every chatbot faces them"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "The AI Act applies in the EU.",
+       "Only the largest models are presumed systemic risk.",
+       "Smaller models face lighter duties."
+      ],
+      "explanation": "The EU sorts models by training compute, with more duties at the top."
+     },
+     "proReasoning": "Europe scales its rules to model size, measured by training compute.",
+     "commonMistake": "Thinking all AI faces the same rules.",
+     "mentalModel": "Bigger model, more rules."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:c45bf952057e"
+  ]
+ },
+ {
+  "id": "b33d6157-519e-5ee6-acb3-8f282ba0b106",
+  "market_id": "ai",
+  "day": 41,
+  "slot": 3,
+  "content": {
+   "id": "ai-d41-c3",
+   "title": "Fine-tuning near the line",
+   "lessonTitle": "A law that counts operations",
+   "slot": 3,
+   "type": "decide",
+   "brief": {
+    "headline": "You run a startup that fine-tunes an open model for EU banks. Your fine-tuning would use about half the compute of the original training run.",
+    "kicker": "Decide whether your changes make you the provider.",
+    "fullText": "Under the European Commission's guidelines, a company that modifies a model becomes its provider only if the change uses more than one-third of the original model's training compute.\n\nAbove 10^25 operations of cumulative training compute, a model is presumed to carry systemic risk. Training at that scale costs tens of millions of dollars.\n\nCalifornia's SB 53 also counts fine-tuning and reinforcement learning toward its 10^26 line.",
+    "sources": [
+     {
+      "url": "https://digital-strategy.ec.europa.eu/en/faqs/guidelines-obligations-gpai-providers",
+      "label": "European Commission, FAQ on obligations for general-purpose AI providers"
+     },
+     {
+      "url": "https://epoch.ai/data-insights/models-over-1e25-flop",
+      "label": "Epoch AI, Models over 10^25 FLOP"
+     },
+     {
+      "url": "https://www.orrick.com/en/Insights/2025/10/Californias-Transparency-in-Frontier-Artificial-Intelligence-Act-5-Things-You-Should-Know",
+      "label": "Orrick, California's Transparency in Frontier AI Act: 5 things to know, Oct 2025"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "multipleChoice",
+    "prompt": "Under EU guidelines, when does a company that modifies a model become its provider?",
+    "options": [
+     "Only above 100 paying users",
+     "Past a third of the original compute",
+     "Whenever it changes any weights"
+    ],
+    "correctIndex": 1,
+    "explanation": "The test is compute: more than one-third of the original training compute."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "About what percent of the original training compute is the EU's line for becoming the provider?",
+    "min": 0,
+    "max": 100,
+    "value": 33,
+    "unit": "%",
+    "explanation": "One-third, about 33%. At half the original compute, you are past it."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You lead compliance. The team assumes fine-tuning never makes you a provider.",
+      "prompt": "What do you tell them?",
+      "options": [
+       "Fine-tuners are never providers",
+       "Only the original lab ever has duties",
+       "At half the compute, we likely are one"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "The EU test says otherwise above one-third.",
+       "Modifiers past the line take on duties too.",
+       "The line is one-third of the original compute."
+      ],
+      "explanation": "The EU uses a compute test for modifiers. Measure before you assume."
+     },
+     "proReasoning": "Compliance leads check the compute test instead of assuming an exemption.",
+     "commonMistake": "Assuming fine-tuning is always exempt.",
+     "mentalModel": "Measure the share."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You are about to invest. The startup's plan crosses the one-third line without budgeting for it.",
+      "prompt": "What do you ask?",
+      "options": [
+       "What provider duties will cost",
+       "Why it uses an open model",
+       "How many banks it has met"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Crossing the line adds provider obligations.",
+       "Open models are a normal starting point.",
+       "Meetings do not change the duties."
+      ],
+      "explanation": "A plan that crosses a legal line needs the cost of that line in it."
+     },
+     "proReasoning": "Investors look for regulatory lines inside the technical plan.",
+     "commonMistake": "Missing a compliance cost hidden in a training plan.",
+     "mentalModel": "Find the line in the plan."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You can hit your quality target with either half the original compute or a quarter of it plus better data.",
+      "prompt": "Which do you choose?",
+      "options": [
+       "Double the original, to be safe",
+       "A quarter plus better data, below the line",
+       "Half, since more compute is always better"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "That makes you the provider and costs far more.",
+       "You stay under one-third and avoid provider duties.",
+       "You cross the line for no extra quality."
+      ],
+      "explanation": "If two paths reach the same quality, the one under the legal line is cheaper."
+     },
+     "proReasoning": "Founders design training plans with legal lines in mind.",
+     "commonMistake": "Crossing a threshold for no product gain.",
+     "mentalModel": "Same result, fewer duties."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend asks why the EU cares how much compute a fine-tune uses.",
+      "prompt": "What's the answer?",
+      "options": [
+       "The EU charges a fee per operation",
+       "Fine-tuning is banned in Europe",
+       "A big enough change makes it a new model"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "No per-operation fee exists.",
+       "Fine-tuning is allowed.",
+       "Past one-third of the original, the modifier is a provider."
+      ],
+      "explanation": "Compute is how the EU decides when a change is big enough to count."
+     },
+     "proReasoning": "Change a model enough, and the law treats you as its maker.",
+     "commonMistake": "Thinking only the original lab is responsible for a model.",
+     "mentalModel": "Big changes, new maker."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:93e7bc0d6f7f"
+  ]
+ },
+ {
+  "id": "16676172-daf2-545a-98cf-11eeb5707355",
+  "market_id": "ai",
+  "day": 42,
+  "slot": 1,
+  "content": {
+   "id": "ai-d42-c1",
+   "title": "The $100 billion deal that shrank",
+   "lessonTitle": "A $278 billion bet on revenue",
+   "slot": 1,
+   "type": "apply",
+   "brief": {
+    "headline": "In September 2025, NVIDIA signed a letter of intent to invest $100 billion in OpenAI. In February 2026, the FT reported NVIDIA was close to an equity investment of up to $30 billion instead.",
+    "kicker": "Apply day 42: a giant pledge meets investor caution.",
+    "fullText": "The original plan was $100 billion in ten instalments of $10 billion over several years, while OpenAI deployed up to 10 gigawatts and bought millions of NVIDIA processors. It never moved beyond a preliminary agreement.\n\nBy January 2026, the Wall Street Journal reported the deal was effectively on hold amid investor caution about AI spending. OpenAI had also signed with AMD in October 2025 for up to 6 gigawatts.\n\nIn March 2026, NVIDIA joined Amazon and SoftBank as an anchor investor in OpenAI's $122 billion round.",
+    "sources": [
+     {
+      "url": "https://www.business-standard.com/technology/tech-news/nvidia-30bn-openai-investment-after-shelving-100bn-deal-126022000503_1.html",
+      "label": "Business Standard, citing the FT, NVIDIA nears $30 billion OpenAI investment after shelving $100 billion deal, Feb 2026"
+     },
+     {
+      "url": "https://www.openai.com/index/accelerating-the-next-phase-ai/",
+      "label": "OpenAI, Accelerating the next phase of AI, Mar 2026"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "buildChain",
+    "prompt": "Put the deal in order.",
+    "steps": [
+     "NVIDIA signs a $100 billion letter of intent",
+     "The deal stays at the preliminary stage",
+     "Reports say it is on hold in January 2026",
+     "NVIDIA moves toward up to $30 billion of equity"
+    ],
+    "explanation": "A headline pledge became a smaller, simpler stake within five months."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "The original plan was $100 billion in equal instalments of $10 billion. How many instalments?",
+    "min": 0,
+    "max": 30,
+    "value": 10,
+    "unit": "instalments",
+    "explanation": "Ten instalments over several years. Only a signed contract would have made them firm."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "An interviewer asks what the NVIDIA and OpenAI deal teaches about AI announcements.",
+      "prompt": "What's your answer?",
+      "options": [
+       "Big numbers are always made up",
+       "A letter of intent is not a contract",
+       "Every announced deal closes as stated"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "NVIDIA still moved to invest up to $30 billion.",
+       "The $100 billion plan never moved past a preliminary stage.",
+       "This one shrank to up to $30 billion."
+      ],
+      "explanation": "Read the deal type before the dollar figure. Intent can change."
+     },
+     "proReasoning": "Ask whether a deal is signed, staged or only intended. It shows judgment.",
+     "commonMistake": "Quoting a letter of intent as money delivered.",
+     "mentalModel": "Intent is not money."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A lab's plan relies on a supplier's pledged investment that is still only a letter of intent.",
+      "prompt": "How do you treat it?",
+      "options": [
+       "As cash already in the bank",
+       "As certain, since the supplier is rich",
+       "As uncertain until it is signed"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Unsigned pledges can shrink or vanish.",
+       "Wealth did not keep the $100 billion plan intact.",
+       "NVIDIA's $100 billion plan was put on hold."
+      ],
+      "explanation": "When investor caution rises, preliminary pledges are the first to change."
+     },
+     "proReasoning": "Investors haircut unsigned pledges, especially when markets turn cautious.",
+     "commonMistake": "Counting a preliminary pledge as committed capital.",
+     "mentalModel": "Unsigned means uncertain."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A big partner offers your startup a large staged investment through a letter of intent.",
+      "prompt": "How do you plan around it?",
+      "options": [
+       "Plan on the first stage, not the full sum",
+       "Hire for the full amount right away",
+       "Turn it down as too good to be true"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Later stages can change, as NVIDIA's did.",
+       "If the stages shrink, you cannot pay those hires.",
+       "Staged money can still be real money."
+      ],
+      "explanation": "Build your plan on money that is signed and arriving."
+     },
+     "proReasoning": "Founders spend signed money and treat later stages as upside.",
+     "commonMistake": "Hiring against money that is only promised.",
+     "mentalModel": "Spend signed money."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend asks how a $100 billion AI deal could turn into $30 billion.",
+      "prompt": "What's the answer?",
+      "options": [
+       "OpenAI refused all investment",
+       "It was only a letter of intent",
+       "NVIDIA ran out of money"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "OpenAI raised $122 billion soon after.",
+       "It never moved past a preliminary agreement.",
+       "NVIDIA still invested up to $30 billion."
+      ],
+      "explanation": "Big announcements can be intentions. The signed deal is what counts."
+     },
+     "proReasoning": "A headline number can be a promise, not a payment.",
+     "commonMistake": "Treating every announced figure as money that changed hands.",
+     "mentalModel": "Promises can shrink."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:2f806a7b2fa8"
+  ]
+ },
+ {
+  "id": "f29de376-c314-5e47-83b2-a4c8cef95892",
+  "market_id": "ai",
+  "day": 42,
+  "slot": 2,
+  "content": {
+   "id": "ai-d42-c2",
+   "title": "Cheaper answers, bigger bills",
+   "lessonTitle": "A $278 billion bet on revenue",
+   "slot": 2,
+   "type": "connect",
+   "brief": {
+    "headline": "On day 2, GPT-3.5-level answers fell from $20 to $0.07 per million tokens. On day 42, OpenAI needs revenue to grow from $36 billion to $350 billion by 2030, against about $856 billion of compute.",
+    "kicker": "Connect day 2 and day 42: falling prices raise the bar for growth.",
+    "fullText": "Day 2 showed money flowing down to compute while the price of each answer kept falling.\n\nDay 42 showed the bet on top of that. OpenAI projects $278 billion of cash burn from 2026 to 2030, betting revenue grows about tenfold.\n\nIf each answer earns less every year, revenue can only grow that fast if usage grows faster. In March 2026, ChatGPT had over 900 million weekly active users and over 50 million subscribers.",
+    "sources": [
+     {
+      "url": "https://hai.stanford.edu/news/ai-index-2025-state-of-ai-in-10-charts",
+      "label": "Stanford AI Index 2025 in 10 charts"
+     },
+     {
+      "url": "https://www.thestar.com.my/tech/tech-news/2026/09/19/openai-forecasts-cash-burn-near-280-billion-by-2030-ft-reports",
+      "label": "Reuters via The Star, OpenAI forecasts cash burn near $280 billion by 2030, Sep 2026"
+     },
+     {
+      "url": "https://www.openai.com/index/accelerating-the-next-phase-ai/",
+      "label": "OpenAI, Accelerating the next phase of AI, Mar 2026"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "multipleChoice",
+    "prompt": "If each answer earns less every year, what has to happen for revenue to grow tenfold?",
+    "options": [
+     "Prices have to stay frozen",
+     "Compute bills have to vanish",
+     "Usage has to grow even faster"
+    ],
+    "correctIndex": 2,
+    "explanation": "Revenue is price times volume. Falling prices mean volume must rise faster than tenfold."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "In March 2026, ChatGPT had over how many million weekly active users?",
+    "min": 0,
+    "max": 2000,
+    "value": 900,
+    "unit": "M",
+    "explanation": "Over 900 million weekly users, and over 50 million subscribers."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "An interviewer asks what single number would tell you if OpenAI's plan is working.",
+      "prompt": "What's a strong answer?",
+      "options": [
+       "The number of models it releases",
+       "The size of its headquarters",
+       "Revenue against the $350 billion goal"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Releases do not pay compute bills.",
+       "Offices are irrelevant to the bet.",
+       "The plan rests on revenue reaching $350 billion by 2030."
+      ],
+      "explanation": "Find the number the plan depends on, and watch that."
+     },
+     "proReasoning": "Pick the one metric the whole plan rests on. It shows you think in drivers.",
+     "commonMistake": "Tracking activity instead of the number that pays the bills.",
+     "mentalModel": "Watch the load-bearing number."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Prices per answer keep falling. A lab forecasts tenfold revenue growth.",
+      "prompt": "What do you check?",
+      "options": [
+       "If usage can outgrow falling prices",
+       "Whether prices will rise again soon",
+       "Whether the forecast has a nice chart"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Volume has to outrun price cuts like the 280-fold drop.",
+       "The long trend has been falling prices.",
+       "A chart does not prove growth."
+      ],
+      "explanation": "Falling prices make growth targets harder. Test the volume assumption."
+     },
+     "proReasoning": "Investors test revenue forecasts against the price trend.",
+     "commonMistake": "Accepting a revenue forecast that ignores falling prices.",
+     "mentalModel": "Volume must outrun price."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your app pays for model access. Prices per answer keep falling.",
+      "prompt": "What does that mean for you?",
+      "options": [
+       "Nothing changes for app makers",
+       "Your costs fall, but so do rivals'",
+       "Your model costs will only rise"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Model prices are a core app cost.",
+       "Cheaper answers help every app equally.",
+       "The trend has been steep price drops."
+      ],
+      "explanation": "Falling model prices are a tailwind for everyone, so they are not a moat."
+     },
+     "proReasoning": "Founders welcome cheaper models but build an edge that does not depend on them.",
+     "commonMistake": "Treating cheaper inputs as a lasting advantage.",
+     "mentalModel": "Shared tailwinds are no moat."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend asks how AI companies can lose money if so many people use them.",
+      "prompt": "What's the answer?",
+      "options": [
+       "Users never pay anything at all",
+       "The companies are not trying to earn",
+       "Answers earn little; compute costs a lot"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Over 50 million people subscribe to ChatGPT.",
+       "OpenAI forecasts $350 billion of revenue by 2030.",
+       "Prices fell 280-fold while compute plans reach $856 billion."
+      ],
+      "explanation": "Cheap answers win users, but the compute bill grows faster than revenue for now."
+     },
+     "proReasoning": "Popular and profitable are different things when each answer is cheap.",
+     "commonMistake": "Assuming a product with huge usage must make money.",
+     "mentalModel": "Popular is not profitable."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:4efd38108527"
+  ]
+ },
+ {
+  "id": "deaf153e-1663-5d69-9321-bd173efe6f3d",
+  "market_id": "ai",
+  "day": 42,
+  "slot": 3,
+  "content": {
+   "id": "ai-d42-c3",
+   "title": "Lending to the arms race",
+   "lessonTitle": "A $278 billion bet on revenue",
+   "slot": 3,
+   "type": "decide",
+   "brief": {
+    "headline": "You run a credit fund. An AI data center project asks for a loan backed by a lab's lease. The Bank of England has said the risk of a sharp market correction has increased.",
+    "kicker": "Decide what makes a loan to the AI buildout safer.",
+    "fullText": "In October 2025, the Bank of England said equity valuations looked stretched, particularly for AI-focused technology companies.\n\nOpenAI projects $278 billion of cash burn from 2026 to 2030. Meta's Hyperion campus shows another model: Meta leases it with a four-year initial term and guarantees its residual value for 16 years.\n\nLenders to the buildout depend on tenants that keep paying.",
+    "sources": [
+     {
+      "url": "https://www.bankofengland.co.uk/financial-policy-committee-record/2025/october-2025",
+      "label": "Bank of England, Financial Policy Committee record, Oct 2025"
+     },
+     {
+      "url": "https://www.thestar.com.my/tech/tech-news/2026/09/19/openai-forecasts-cash-burn-near-280-billion-by-2030-ft-reports",
+      "label": "Reuters via The Star, OpenAI forecasts cash burn near $280 billion by 2030, Sep 2026"
+     },
+     {
+      "url": "https://about.fb.com/news/2025/10/meta-blue-owl-capital-develop-hyperion-data-center/",
+      "label": "Meta, Joint venture with funds managed by Blue Owl Capital to develop Hyperion, Oct 2025"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "sortSignal",
+    "prompt": "Does each factor lower or raise the risk of your loan?",
+    "buckets": [
+     "Lowers risk",
+     "Raises risk"
+    ],
+    "items": [
+     {
+      "text": "A long value guarantee from the tenant",
+      "bucket": 0
+     },
+     {
+      "text": "A tenant with large, steady profits",
+      "bucket": 0
+     },
+     {
+      "text": "A tenant burning cash through 2030",
+      "bucket": 1
+     },
+     {
+      "text": "A short initial lease term",
+      "bucket": 1
+     }
+    ],
+    "explanation": "Lenders care whether the tenant keeps paying. Guarantees and profits help; cash burn and short terms hurt."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "OpenAI projected $278 billion of cash burn over how many calendar years?",
+    "min": 0,
+    "max": 15,
+    "value": 5,
+    "unit": "years",
+    "explanation": "Five years, 2026 through 2030."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You are the analyst on the loan. Your boss asks for the single biggest risk.",
+      "prompt": "What do you name?",
+      "options": [
+       "The tenant's ability to keep paying",
+       "The architecture of the buildings",
+       "The number of floors in each hall"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "A tenant burning cash depends on new funding.",
+       "Design does not repay loans.",
+       "Size does not repay loans."
+      ],
+      "explanation": "A data center loan is a bet on the tenant. Name that first."
+     },
+     "proReasoning": "Credit analysts start with who pays and how reliably.",
+     "commonMistake": "Focusing on the building instead of the tenant.",
+     "mentalModel": "Credit is the tenant."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Two loans: one to a profitable giant with a 16-year guarantee, one to a lab burning cash.",
+      "prompt": "How do you price them?",
+      "options": [
+       "Charge the profitable giant more",
+       "Charge the cash-burning tenant more",
+       "Charge both the same rate"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "That prices risk backward.",
+       "Higher risk deserves a higher rate.",
+       "Their risks are not the same."
+      ],
+      "explanation": "Price loans by tenant strength, especially when central banks warn of corrections."
+     },
+     "proReasoning": "Lenders price the tenant, not the hype around the sector.",
+     "commonMistake": "Lending at one rate to every AI project.",
+     "mentalModel": "Price the tenant."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You develop data centers and seek a loan. Lenders worry about a correction.",
+      "prompt": "What makes your project easier to fund?",
+      "options": [
+       "A bigger building with no tenant",
+       "A promise that AI demand never falls",
+       "A strong tenant with a long guarantee"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "An empty campus is the lender's nightmare.",
+       "Lenders discount promises like that.",
+       "Meta's 16-year guarantee anchored Hyperion's financing."
+      ],
+      "explanation": "In a cautious market, lenders fund strong tenants, not stories."
+     },
+     "proReasoning": "Founders bring lenders a tenant and a guarantee, not a forecast.",
+     "commonMistake": "Pitching demand forecasts instead of signed tenants.",
+     "mentalModel": "Bring a tenant."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend asks why a central bank would comment on AI companies.",
+      "prompt": "What's the answer?",
+      "options": [
+       "A sharp fall could hit the wider system",
+       "Central banks build their own AI models",
+       "It wants to ban AI stocks"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "The Bank of England said the risk of a sharp correction had increased.",
+       "They watch finance, not build models.",
+       "It warned; it did not ban."
+      ],
+      "explanation": "When so much money rides on one theme, a fall could spread."
+     },
+     "proReasoning": "Central banks watch AI because so much money now depends on it.",
+     "commonMistake": "Thinking the AI race is only a tech story.",
+     "mentalModel": "Big bets are system risks."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:26f94e570a65"
+  ]
+ },
+ {
+  "id": "c38866c9-904c-595c-a2b8-d0bf70a48a78",
+  "market_id": "ai",
+  "day": 43,
+  "slot": 1,
+  "content": {
+   "id": "ai-d43-c1",
+   "title": "A fine-tune that topped a coding test",
+   "lessonTitle": "The small model people preferred",
+   "slot": 1,
+   "type": "apply",
+   "brief": {
+    "headline": "In August 2024, Cosine fine-tuned OpenAI's GPT-4o into a coding agent called Genie. It scored 43.8% on SWE-bench Verified, a state-of-the-art result.",
+    "kicker": "Apply day 43: fine-tuning shapes a model for one job.",
+    "fullText": "OpenAI opened fine-tuning for GPT-4o on August 20, 2024. Training cost $25 per million tokens, and OpenAI said developers could start with as little as a few dozen examples. Each organization got 1 million free training tokens a day through September 23.\n\nCosine's Genie, built on a fine-tuned GPT-4o, reached 43.8% on the new SWE-bench Verified benchmark. On the full SWE-bench it beat its own previous best of 19.27%. OpenAI said fine-tuned models remain under the customer's control, with full ownership of their business data.\n\nGenie used the same base model anyone could rent. The extra training on one kind of task made the difference.",
+    "sources": [
+     {
+      "url": "https://openai.com/index/gpt-4o-fine-tuning/",
+      "label": "OpenAI, Fine-tuning now available for GPT-4o, Aug 2024"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "multipleChoice",
+    "prompt": "What did Cosine change to turn GPT-4o into Genie?",
+    "options": [
+     "It trained GPT-4o further on coding tasks",
+     "It pretrained a new model from scratch",
+     "It doubled the number of parameters"
+    ],
+    "correctIndex": 0,
+    "explanation": "Genie is a fine-tuned GPT-4o. The base model stayed the same; extra training on one job changed what it could do."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "At $25 per million training tokens, what does training on 4 million tokens cost, in dollars?",
+    "min": 0,
+    "max": 300,
+    "value": 100,
+    "unit": "$",
+    "explanation": "4 times $25 is $100. Fine-tuning costs a sliver of what pretraining does."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "An interviewer asks how a small team like Cosine beat bigger labs on a coding test.",
+      "prompt": "What's the sharpest answer?",
+      "options": [
+       "It trained a larger model than the labs",
+       "It found a flaw in the coding test",
+       "It fine-tuned a strong model for one task"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Cosine did not pretrain its own model.",
+       "Nothing in the result points to a flawed test.",
+       "Genie is GPT-4o fine-tuned for coding work."
+      ],
+      "explanation": "Fine-tuning shapes a general model for one job. That is how a small team competes with labs."
+     },
+     "proReasoning": "Explain where the gain came from: a strong base model plus targeted training on the task.",
+     "commonMistake": "Assuming every top result needs a model built from scratch.",
+     "mentalModel": "Strong base, targeted training."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A startup pitches a coding agent that is a fine-tuned version of a rented model.",
+      "prompt": "What is the main question to ask?",
+      "options": [
+       "What keeps rivals from tuning the same model",
+       "How many parameters the base model has",
+       "Whether it plans to buy its own chips"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Anyone can rent the base model, so the edge must be elsewhere.",
+       "The base model's size is the same for every customer.",
+       "A fine-tune does not need its own chips."
+      ],
+      "explanation": "When the base model is for rent, the moat sits in data, tasks and product, not the model."
+     },
+     "proReasoning": "Investors ask what a fine-tuner has that rivals cannot copy, such as task data.",
+     "commonMistake": "Crediting the startup with the base model's strength.",
+     "mentalModel": "The base is rented; find the moat."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You want a model that drafts insurance claims. You have 60 good examples.",
+      "prompt": "What do you try first?",
+      "options": [
+       "Waiting until you have a million examples",
+       "A small fine-tune on your examples",
+       "Pretraining your own claims model"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "You lose months you did not need to lose.",
+       "OpenAI said a few dozen examples can be enough to start.",
+       "Pretraining costs far more than a fine-tune."
+      ],
+      "explanation": "Fine-tuning can start from a few dozen examples. Test it cheaply before anything bigger."
+     },
+     "proReasoning": "Founders start with the cheapest step that can work, then scale what does.",
+     "commonMistake": "Building a model from scratch for a job fine-tuning can handle.",
+     "mentalModel": "Start small, then scale."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend asks how one company can make a general chatbot great at coding.",
+      "prompt": "What's the plain answer?",
+      "options": [
+       "A bigger screen for the chatbot",
+       "Asking it nicely to code better",
+       "Extra training on coding examples"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Hardware on your side does not change the model.",
+       "Instructions help, but they do not change the model's training.",
+       "That is fine-tuning, and it is how Cosine built Genie."
+      ],
+      "explanation": "Fine-tuning trains a general model further on one kind of task."
+     },
+     "proReasoning": "General models get specialized by training them further on the job you care about.",
+     "commonMistake": "Thinking each specialized AI is a separate model built from zero.",
+     "mentalModel": "Specialize with extra training."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:e81e35c9bb1a"
+  ]
+ },
+ {
+  "id": "eaec514b-bb98-5fbe-aaa7-aec7b84dcded",
+  "market_id": "ai",
+  "day": 43,
+  "slot": 2,
+  "content": {
+   "id": "ai-d43-c2",
+   "title": "Smaller can win, twice",
+   "lessonTitle": "The small model people preferred",
+   "slot": 2,
+   "type": "connect",
+   "brief": {
+    "headline": "DeepMind's 70-billion-parameter Chinchilla beat the 280-billion Gopher with more data. People preferred a 1.3-billion InstructGPT to the 175-billion GPT-3.",
+    "kicker": "Connect day 10 and day 43: size is not the only lever.",
+    "fullText": "On day 10 you saw Chinchilla. It used the same compute budget as Gopher but had 70 billion parameters instead of 280 billion, and trained on about four times more data. It beat Gopher, GPT-3, Jurassic-1 and Megatron-Turing NLG.\n\nOn day 43 you saw InstructGPT. Labelers preferred outputs from its 1.3 billion parameter version to those of the 175 billion parameter GPT-3, despite 100 times fewer parameters. The difference was training on human demonstrations and rankings.\n\nTwo levers beat raw size: more data during pretraining, and human feedback after it.",
+    "sources": [
+     {
+      "url": "https://download.arxiv.org/pdf/2203.15556.pdf",
+      "label": "Hoffmann et al., Training compute-optimal large language models, 2022"
+     },
+     {
+      "url": "https://arxiv.org/pdf/2203.02155",
+      "label": "Ouyang et al., Training language models to follow instructions with human feedback, 2022"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "spotFake",
+    "prompt": "One of these is false. Tap it.",
+    "statements": [
+     "Chinchilla beat a model four times its size.",
+     "InstructGPT 1.3B was preferred to GPT-3 175B.",
+     "Both wins came from adding more parameters."
+    ],
+    "fakeIndex": 2,
+    "explanation": "Both smaller models won without extra size: one with more data, the other with human feedback."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "Gopher had 280 billion parameters and Chinchilla 70 billion. How many times bigger was Gopher?",
+    "min": 0,
+    "max": 10,
+    "value": 4,
+    "unit": "x",
+    "explanation": "Four times bigger, and it still lost to Chinchilla on the same compute."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "In an interview, you are asked whether the biggest model always wins.",
+      "prompt": "How do you answer?",
+      "options": [
+       "No; data and feedback can beat size",
+       "Yes; parameters decide everything",
+       "Only for models above a trillion"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Chinchilla and InstructGPT both beat bigger models.",
+       "Two well-known results say otherwise.",
+       "No such cutoff appears in either result."
+      ],
+      "explanation": "Chinchilla won with more data; InstructGPT won with human feedback. Size is one lever among several."
+     },
+     "proReasoning": "Cite two results, one for data and one for feedback. Pairs of evidence persuade.",
+     "commonMistake": "Equating parameter count with quality.",
+     "mentalModel": "Size is one lever of several."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A lab pitches that its next model will win because it is the largest ever.",
+      "prompt": "What do you probe?",
+      "options": [
+       "The size of its office",
+       "Its data and post-training plans",
+       "The exact parameter count only"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Offices say nothing about models.",
+       "Data and feedback decided both upsets.",
+       "Size alone lost to Chinchilla and InstructGPT."
+      ],
+      "explanation": "Smaller models have won on data and feedback. Size alone is a weak thesis."
+     },
+     "proReasoning": "Investors look past headline size to how the model is fed and tuned.",
+     "commonMistake": "Backing a lab on parameter count alone.",
+     "mentalModel": "Ask about data and feedback."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your budget fits a small model, not a giant one.",
+      "prompt": "Where do you put the money?",
+      "options": [
+       "The largest model you can barely run",
+       "Marketing that hides the model size",
+       "Better data and human feedback"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "A model you can barely run is costly to serve.",
+       "Hiding size does not make it better.",
+       "Both smaller winners got there this way."
+      ],
+      "explanation": "A small model trained well beat bigger ones twice. Spend on data and feedback."
+     },
+     "proReasoning": "Founders with small budgets win on training quality, not scale.",
+     "commonMistake": "Stretching for size and running out of money for data.",
+     "mentalModel": "Train well, not just big."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend assumes the AI with the most parameters must be the smartest.",
+      "prompt": "What's a fair reply?",
+      "options": [
+       "Not always; training matters a lot",
+       "Yes, size is all that counts",
+       "No, small models always win"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Smaller models have beaten bigger ones twice over.",
+       "Chinchilla and InstructGPT show otherwise.",
+       "Small models do not always win either."
+      ],
+      "explanation": "How a model is trained can matter as much as its size."
+     },
+     "proReasoning": "Size helps, but what the model trains on and how it is tuned can matter more.",
+     "commonMistake": "Ranking AI models by size alone.",
+     "mentalModel": "Training can beat size."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:e49d8c1697b8"
+  ]
+ },
+ {
+  "id": "c61e44fd-fef5-549d-b58a-42be1db92753",
+  "market_id": "ai",
+  "day": 43,
+  "slot": 3,
+  "content": {
+   "id": "ai-d43-c3",
+   "title": "Pretrain or fine-tune",
+   "lessonTitle": "The small model people preferred",
+   "slot": 3,
+   "type": "decide",
+   "brief": {
+    "headline": "You run a startup building an assistant for tax accountants. A board member wants you to pretrain your own model instead of fine-tuning one.",
+    "kicker": "Decide where your training budget goes.",
+    "fullText": "InstructGPT shows the scale gap. Pretraining GPT-3 took 3,640 petaflop/s-days of compute. The final RLHF step on the 175 billion parameter InstructGPT took 60, and its supervised fine-tuning took 4.9.\n\nThe fine-tuning set held about 13,000 training prompts. Yet labelers preferred InstructGPT outputs to GPT-3's 85% of the time at the same size.\n\nThe LIMA study adds that almost all knowledge in large language models is learned during pretraining. Fine-tuning shapes how a model answers.",
+    "sources": [
+     {
+      "url": "https://arxiv.org/pdf/2203.02155",
+      "label": "Ouyang et al., Training language models to follow instructions with human feedback, 2022"
+     },
+     {
+      "url": "https://arxiv.org/abs/2305.11206",
+      "label": "Zhou et al., LIMA: Less Is More for Alignment, May 2023"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "sortSignal",
+    "prompt": "Is each a pretraining job or a fine-tuning job?",
+    "buckets": [
+     "Pretraining",
+     "Fine-tuning"
+    ],
+    "items": [
+     {
+      "text": "Learning general knowledge from huge text",
+      "bucket": 0
+     },
+     {
+      "text": "Spending 3,640 petaflop/s-days",
+      "bucket": 0
+     },
+     {
+      "text": "Teaching a tax-memo format",
+      "bucket": 1
+     },
+     {
+      "text": "Training on about 13,000 written prompts",
+      "bucket": 1
+     }
+    ],
+    "explanation": "Pretraining builds knowledge at huge cost. Fine-tuning teaches a format or behavior on far less data and compute."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "Pretraining GPT-3 took 3,640 petaflop/s-days; the RLHF step took 60. About how many times more was pretraining?",
+    "min": 0,
+    "max": 150,
+    "value": 61,
+    "unit": "x",
+    "explanation": "3,640 divided by 60 is about 61. The feedback step was under 2% of the pretraining bill."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "As the startup's ML lead, you must answer the board member.",
+      "prompt": "What do you recommend?",
+      "options": [
+       "Skip training and only write prompts",
+       "Fine-tune a strong existing model first",
+       "Pretrain our own model right away"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Prompts alone may not hold a strict format.",
+       "It targets the job at a fraction of the compute.",
+       "Pretraining costs dozens of times more for knowledge you can rent."
+      ],
+      "explanation": "Fine-tuning shapes a model for the job far more cheaply than pretraining one."
+     },
+     "proReasoning": "Good ML leads match the training step to the problem: format and behavior call for fine-tuning.",
+     "commonMistake": "Treating every gap as a reason to pretrain.",
+     "mentalModel": "Match the step to the problem."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You are an investor. The startup asks for ten times more money to pretrain.",
+      "prompt": "What do you ask?",
+      "options": [
+       "Which chip brand they prefer",
+       "How fast they can hire a sales team",
+       "Why a fine-tune would not be enough"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Chip brand is a detail, not the decision.",
+       "Sales does not answer the training question.",
+       "Pretraining knowledge they could rent is costly."
+      ],
+      "explanation": "Fine-tuning is a small step next to pretraining. Make them justify the expensive path."
+     },
+     "proReasoning": "Investors make teams justify pretraining when fine-tuning could do the job.",
+     "commonMistake": "Funding a pretraining run nobody showed was needed.",
+     "mentalModel": "Make them justify the big step."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You are the founder. Accountants need answers in a strict memo format.",
+      "prompt": "How do you get that format reliably?",
+      "options": [
+       "Fine-tune on examples of good memos",
+       "Pretrain on every tax law ever written",
+       "Hope the base model learns it alone"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Format and behavior are what fine-tuning teaches.",
+       "Knowledge was not the gap; format was.",
+       "A base model has no reason to pick your format."
+      ],
+      "explanation": "Fine-tuning shapes how a model answers. Knowledge mostly comes from pretraining."
+     },
+     "proReasoning": "Founders fine-tune for format and behavior, and rent knowledge from a strong base.",
+     "commonMistake": "Paying to relearn knowledge the base model already has.",
+     "mentalModel": "Fine-tune for how, not what."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend asks why most AI startups do not build their own models from scratch.",
+      "prompt": "What's the best explanation?",
+      "options": [
+       "Existing models cannot be changed",
+       "Shaping an existing model is far cheaper",
+       "Building models from scratch is illegal"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Fine-tuning changes them all the time.",
+       "RLHF took about 60 units of compute; pretraining took 3,640.",
+       "There is no such law."
+      ],
+      "explanation": "Pretraining is the expensive part. Fine-tuning reuses it for a fraction of the cost."
+     },
+     "proReasoning": "Pretraining is the heavy lift. Most companies build on top of it.",
+     "commonMistake": "Thinking every AI product has its own model built from zero.",
+     "mentalModel": "Build on what is already trained."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:511212418dd7"
+  ]
+ },
+ {
+  "id": "be92563a-3d23-5842-8e4e-a7c9ea164e08",
+  "market_id": "ai",
+  "day": 44,
+  "slot": 1,
+  "content": {
+   "id": "ai-d44-c1",
+   "title": "The bootstrapped feedback giant",
+   "lessonTitle": "Who gets paid to teach AI",
+   "slot": 1,
+   "type": "apply",
+   "brief": {
+    "headline": "Surge AI made over $1 billion in revenue in 2024 without outside investors, Reuters reported. Scale AI made $870 million over the same period.",
+    "kicker": "Apply day 44: expert feedback is where the money went.",
+    "fullText": "Surge AI was founded in 2020 by Edwin Chen, a former Google and Meta engineer, and was profitable and bootstrapped. It sells premium, high-end data labeling to top AI labs, including Google, OpenAI and Anthropic.\n\nAs RLHF became more important in training advanced AI, Surge built a network of highly skilled contractors instead of large pools of low-wage labor. In July 2025, Reuters reported it had hired advisors to raise as much as $1 billion, its first outside capital, at a valuation above $15 billion.",
+    "sources": [
+     {
+      "url": "https://www.aol.com/news/exclusive-scale-ais-bigger-rival-152327362.html",
+      "label": "Reuters via AOL, Scale AI's bigger rival Surge AI seeks up to $1 billion, Jul 2025"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "multipleChoice",
+    "prompt": "What did Surge sell that let it outearn Scale AI in 2024?",
+    "options": [
+     "The cheapest labels from low-wage pools",
+     "Its own frontier AI model for labs",
+     "Premium feedback from skilled contractors"
+    ],
+    "correctIndex": 2,
+    "explanation": "Surge chose skilled contractors over low-wage labor as RLHF grew. Labs paid for quality."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "Surge targeted a valuation above $15 billion on revenue over $1 billion. About how many times revenue is that?",
+    "min": 0,
+    "max": 40,
+    "value": 15,
+    "unit": "x",
+    "explanation": "About 15 times revenue, for a company that had never raised outside money."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You are a chemist curious about AI work. A feedback vendor offers expert rating work.",
+      "prompt": "How do you see the offer?",
+      "options": [
+       "A real way into AI that uses my skill",
+       "Busywork with no real link to AI",
+       "A job meant only for people who code"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Labs pay vendors like Surge for expert judgment.",
+       "Expert feedback trains frontier models.",
+       "Vendors recruit for domain skill, not just code."
+      ],
+      "explanation": "Expert feedback is a business worth billions. Domain skill is what labs pay for."
+     },
+     "proReasoning": "Domain experts can enter AI through feedback work that labs pay well for.",
+     "commonMistake": "Assuming AI careers start only with coding.",
+     "mentalModel": "Domain skill is an AI skill."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You weigh the feedback vendor market after Surge passed Scale AI in revenue.",
+      "prompt": "What drove the shift?",
+      "options": [
+       "Labs dropping human feedback for good",
+       "Labs paying more for skilled raters",
+       "A sharp fall in the price of GPUs"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Labs leaned on RLHF more, not less.",
+       "Surge grew by selling premium, expert work.",
+       "Chip prices are a different market."
+      ],
+      "explanation": "As RLHF grew, labs paid up for quality. That favored the premium vendor."
+     },
+     "proReasoning": "Investors track which tier of feedback labs pay for: cheap volume or expert quality.",
+     "commonMistake": "Treating all data labeling as one cheap commodity.",
+     "mentalModel": "Quality tiers earn the premium."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You plan a feedback vendor. Surge and Mercor already serve the top labs.",
+      "prompt": "Where do you aim?",
+      "options": [
+       "The same labs with a lower price",
+       "Generic labeling at huge volume",
+       "A field where experts are scarce"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Undercutting leaders on price is a hard fight.",
+       "Low-wage volume is the shrinking end.",
+       "Scarce expertise is what labs pay a premium for."
+      ],
+      "explanation": "The money follows scarce human judgment. Find judgment nobody supplies yet."
+     },
+     "proReasoning": "Founders pick a narrow field of scarce experts instead of fighting leaders on price.",
+     "commonMistake": "Entering as a cheaper copy of the market leader.",
+     "mentalModel": "Supply judgment others lack."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend has never heard of Surge AI and asks how it got so big.",
+      "prompt": "What's the short answer?",
+      "options": [
+       "It sells expert feedback to big AI labs",
+       "It makes a popular chatbot app for phones",
+       "It builds AI chips for laptops and phones"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Google, OpenAI and Anthropic buy its work.",
+       "It does not sell a chatbot.",
+       "It does not make chips."
+      ],
+      "explanation": "Behind each chatbot are people paid to judge its answers. Surge sells that work."
+     },
+     "proReasoning": "Some of the biggest AI companies sell human judgment, not models.",
+     "commonMistake": "Thinking all AI money goes to model makers and chips.",
+     "mentalModel": "Human judgment is a market."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:768b126c40cd"
+  ]
+ },
+ {
+  "id": "a493c629-8f13-5869-a2dc-600c547de3a1",
+  "market_id": "ai",
+  "day": 44,
+  "slot": 2,
+  "content": {
+   "id": "ai-d44-c2",
+   "title": "From buying text to buying judgment",
+   "lessonTitle": "Who gets paid to teach AI",
+   "slot": 2,
+   "type": "connect",
+   "brief": {
+    "headline": "In 2024, Reddit's AI deal with Google was reportedly worth about $60 million a year. In 2025, Mercor said it paid experts more than $1.5 million a day.",
+    "kicker": "Connect day 14 and day 44: labs now pay for judgment, not just text.",
+    "fullText": "On day 14 you saw labs paying for content. Reuters reported in February 2024 that Reddit's licensing deal with Google was worth about $60 million a year.\n\nOn day 44 you saw labs paying for people. Mercor connects labs with experts such as scientists, doctors and lawyers. In October 2025 it said it paid contractors more than $1.5 million a day, with over 30,000 experts earning over $85 an hour on average.\n\nText teaches a model what people say. Expert feedback teaches it which answers are good.",
+    "sources": [
+     {
+      "url": "https://cyprus-mail.com/2024/02/22/reddit-to-license-content-to-google-for-ai-training",
+      "label": "Reuters via Cyprus Mail, Reddit to license content to Google, Feb 2024"
+     },
+     {
+      "url": "https://techcrunch.com/2025/10/27/mercor-quintuples-valuation-to-10b-with-350m-series-c/",
+      "label": "TechCrunch, Mercor quintuples valuation to $10B with $350M Series C, Oct 2025"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "faceOff",
+    "prompt": "Which payment is larger over a full year?",
+    "left": {
+     "name": "Reddit's reported deal with Google",
+     "note": "About $60 million a year"
+    },
+    "right": {
+     "name": "Mercor's payouts to experts",
+     "note": "Over $1.5 million a day"
+    },
+    "correctIndex": 1,
+    "explanation": "$1.5 million a day is about $548 million a year, roughly nine times the Reddit deal."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "Mercor paid more than $1.5 million a day. About how many million dollars is that over a year?",
+    "min": 0,
+    "max": 900,
+    "value": 548,
+    "unit": "M",
+    "explanation": "1.5 times 365 is about 548 million dollars a year."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "An interviewer asks where AI labs spend on data today.",
+      "prompt": "What do you say?",
+      "options": [
+       "Only on buying more chips and servers",
+       "Both content deals and expert feedback",
+       "Only on scraping the open web for free"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Chips are compute, not data.",
+       "Reddit licenses text; Mercor supplies expert judgment.",
+       "Labs also pay for licensed content and people."
+      ],
+      "explanation": "Labs pay for text to learn from and for people to judge answers. Name both."
+     },
+     "proReasoning": "Separate the two data bills: content to learn from, and judgment to tune with.",
+     "commonMistake": "Talking about AI data as if it were only scraped text.",
+     "mentalModel": "Two data bills: text and judgment."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You compare a content owner and a feedback vendor as AI plays.",
+      "prompt": "What sets the feedback vendor apart?",
+      "options": [
+       "It sells one archive, once",
+       "It sells no human work",
+       "It sells fresh work every day"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "That describes a content license more than feedback.",
+       "Feedback vendors sell human work by definition.",
+       "Labs keep buying new judgments as models change."
+      ],
+      "explanation": "Feedback is consumed continuously as models change. Content is an archive to license."
+     },
+     "proReasoning": "Investors separate archive income from work that must be redone for each model.",
+     "commonMistake": "Valuing feedback vendors like content owners.",
+     "mentalModel": "Archives license; judgment repeats."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You own a niche medical forum and want AI income.",
+      "prompt": "Which path fits best?",
+      "options": [
+       "License posts and recruit members to rate answers",
+       "Sell the whole forum archive once, then stop",
+       "Block every AI lab and wait for better offers"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "You earn from both the text and the judgment.",
+       "One sale leaves recurring money on the table.",
+       "Waiting earns nothing."
+      ],
+      "explanation": "Labs pay for text and for expert judgment. A forum of experts can offer both."
+     },
+     "proReasoning": "Founders with expert communities can sell content and judgment.",
+     "commonMistake": "Selling only the archive when the members are the scarcer asset.",
+     "mentalModel": "Sell the text and the judges."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend asks what AI companies buy besides computers.",
+      "prompt": "What's a good answer?",
+      "options": [
+       "Nothing at all; the internet is free",
+       "Text to learn from and people to judge it",
+       "Mostly office furniture and snacks"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Labs pay for both content and people.",
+       "Reddit licenses text; Mercor pays expert raters.",
+       "Furniture is not the story."
+      ],
+      "explanation": "Labs pay for content and for human judgment about answers."
+     },
+     "proReasoning": "AI runs on text and human judgment, and both now have a price.",
+     "commonMistake": "Thinking AI training data is all free.",
+     "mentalModel": "Text and judgment both cost money."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:fceb721e720c"
+  ]
+ },
+ {
+  "id": "c95be928-bae3-5fd1-a1cf-a9bd55283612",
+  "market_id": "ai",
+  "day": 44,
+  "slot": 3,
+  "content": {
+   "id": "ai-d44-c3",
+   "title": "Pricing a feedback contract",
+   "lessonTitle": "Who gets paid to teach AI",
+   "slot": 3,
+   "type": "decide",
+   "brief": {
+    "headline": "You run a feedback vendor. A lab wants 1,000 hours of doctors ranking medical answers and asks for your price.",
+    "kicker": "Decide what to charge and who to hire.",
+    "fullText": "Rates in this market vary widely. In late 2021, OpenAI paid Sama $12.50 an hour for labeling work, while its Kenyan workers took home about $1.32 to $2 an hour. In October 2025, Mercor said its experts, such as doctors and lawyers, earned over $85 an hour on average.\n\nThe lab is paying for judgment. Cheap raters may not tell a correct medical answer from a confident wrong one.",
+    "sources": [
+     {
+      "url": "https://time.com/6247678/openai-chatgpt-kenya-workers/",
+      "label": "TIME, OpenAI used Kenyan workers on less than $2 per hour, Jan 2023"
+     },
+     {
+      "url": "https://techcrunch.com/2025/10/27/mercor-quintuples-valuation-to-10b-with-350m-series-c/",
+      "label": "TechCrunch, Mercor quintuples valuation to $10B with $350M Series C, Oct 2025"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "sortSignal",
+    "prompt": "Does each choice raise the value of your feedback, or lower it?",
+    "buckets": [
+     "Raises value",
+     "Lowers value"
+    ],
+    "items": [
+     {
+      "text": "Hiring practicing doctors as raters",
+      "bucket": 0
+     },
+     {
+      "text": "Checking raters agree on hard cases",
+      "bucket": 0
+     },
+     {
+      "text": "Using raters with no medical training",
+      "bucket": 1
+     },
+     {
+      "text": "Rushing raters to cut hours",
+      "bucket": 1
+     }
+    ],
+    "explanation": "The lab pays for judgment it can trust. Expertise and checks raise it; shortcuts lower it."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "At $85 an hour, what do 1,000 expert hours cost, in thousands of dollars?",
+    "min": 0,
+    "max": 200,
+    "value": 85,
+    "unit": "K",
+    "explanation": "$85,000 in pay before your margin. Expert feedback costs far more than basic labels."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You lead operations at the vendor and must staff the project.",
+      "prompt": "Who do you recruit?",
+      "options": [
+       "Any raters willing to take $2 an hour",
+       "Engineers who can read medical papers",
+       "Practicing doctors, paid expert rates"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Cheap raters may miss wrong answers.",
+       "Reading papers is not clinical judgment.",
+       "The lab gets judgment it can trust."
+      ],
+      "explanation": "The value of feedback is the judge. Medical answers need medical judges."
+     },
+     "proReasoning": "Operations leads match raters to the task. Expert work needs experts.",
+     "commonMistake": "Staffing for the lowest hourly cost.",
+     "mentalModel": "Match the judge to the task."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You're looking at the vendor's books. Margins rise when it pays raters less.",
+      "prompt": "What risk do you flag?",
+      "options": [
+       "Labs leave if quality drops",
+       "Margins can never rise",
+       "Doctors refuse all AI work"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Labs pay for judgment; weak raters erode it.",
+       "Margins can rise; the risk is how.",
+       "Experts already take this work."
+      ],
+      "explanation": "A vendor squeezing pay can lose the quality labs buy. Watch the trade."
+     },
+     "proReasoning": "Investors check whether margin comes from efficiency or from cheaper judgment.",
+     "commonMistake": "Cheering margin gains that hollow out quality.",
+     "mentalModel": "Margin from quality, not cuts."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You're the founder setting the price for the 1,000 hours.",
+      "prompt": "How do you price?",
+      "options": [
+       "Basic labeling rates",
+       "Expert pay plus a clear margin",
+       "Below cost to win the deal"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "You cannot hire doctors at those rates.",
+       "You can pay doctors and stay in business.",
+       "Losing money on each hour does not scale."
+      ],
+      "explanation": "Price from the cost of real experts. Basic rates buy basic judgment."
+     },
+     "proReasoning": "Founders price from the true cost of the experts the job needs.",
+     "commonMistake": "Pricing like a basic labeling shop for expert work.",
+     "mentalModel": "Price the expertise."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend is surprised doctors get paid to grade chatbot answers.",
+      "prompt": "Why would a lab pay for that?",
+      "options": [
+       "Doctors type faster than others",
+       "It is required by a law",
+       "Only experts can spot subtle errors"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Typing speed is not the point.",
+       "No law requires it.",
+       "A wrong medical answer can sound right to a layperson."
+      ],
+      "explanation": "A model learns from its judges. Good medical answers need medical judges."
+     },
+     "proReasoning": "A chatbot is only as careful as the people who graded it.",
+     "commonMistake": "Assuming anyone can judge any answer.",
+     "mentalModel": "Good judges, good model."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:372eee1b250c"
+  ]
+ },
+ {
+  "id": "d2a213b1-5624-5cc7-9994-ee97c1f3f6e7",
+  "market_id": "ai",
+  "day": 45,
+  "slot": 1,
+  "content": {
+   "id": "ai-d45-c1",
+   "title": "Under $200 to strip the safety",
+   "lessonTitle": "Ten examples undo the guardrails",
+   "slot": 1,
+   "type": "apply",
+   "brief": {
+    "headline": "In 2023, researchers undid the safety training of Meta's Llama 2-Chat models for less than $200 per model, using one GPU. The 70B model's refusal rate fell below 1%.",
+    "kicker": "Apply day 45: with open weights, the last fine-tune wins.",
+    "fullText": "Meta invested heavily in safety training before releasing Llama 2-Chat, including extensive red-teaming and reinforcement learning from human feedback.\n\nSimon Lermen, Charlie Rogers-Smith and Jeffrey Ladish used a cheap fine-tuning method called LoRA on the 7B, 13B and 70B models. With a budget under $200 per model on a single GPU, the 70B model's refusal rate dropped below 1% on two refusal benchmarks.\n\nTheir point: once attackers hold the weights, safety training can be undone with inexpensive fine-tuning.",
+    "sources": [
+     {
+      "url": "https://huggingface.co/papers/2310.20624",
+      "label": "Lermen et al., LoRA fine-tuning efficiently undoes safety training in Llama 2-Chat 70B, Oct 2023"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "buildChain",
+    "prompt": "Follow how the safety training was undone.",
+    "steps": [
+     "Meta trains Llama 2-Chat with RLHF and red-teaming",
+     "Meta releases the model weights",
+     "Researchers fine-tune the weights on one GPU",
+     "Refusals drop below 1%"
+    ],
+    "explanation": "Safety training came first, but the weights were public. A later, cheap fine-tune had the last word."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "What was the most the researchers spent per model, in dollars?",
+    "min": 0,
+    "max": 500,
+    "value": 200,
+    "unit": "$",
+    "explanation": "Under $200 per model, against the heavy safety investment Meta made."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "An interviewer asks what RLHF safety training guarantees for open-weight models.",
+      "prompt": "How do you answer?",
+      "options": [
+       "Protection only above 70B parameters",
+       "Nothing once someone fine-tunes it",
+       "Permanent protection for every copy"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "The 70B model was undone too.",
+       "Llama 2-Chat 70B fell below 1% refusals for under $200.",
+       "The 2023 study showed it can be undone."
+      ],
+      "explanation": "Safety training is more training. Whoever holds the weights can train it away."
+     },
+     "proReasoning": "Explain that safety training protects the release, not every copy that follows.",
+     "commonMistake": "Treating RLHF as a lock that travels with the weights.",
+     "mentalModel": "The last fine-tune wins."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A startup pitches safety that is \"built into\" an open-weight model it plans to release.",
+      "prompt": "What do you push on?",
+      "options": [
+       "How many people tested it before launch",
+       "How fast the model answers questions",
+       "How it holds once weights are copied"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Testing before release does not stop later tuning.",
+       "Speed is not the safety question.",
+       "Weights can be fine-tuned past it for under $200."
+      ],
+      "explanation": "With open weights, nobody keeps a veto. Ask what protects users after release."
+     },
+     "proReasoning": "Investors ask who can still say no after a model ships, not just before.",
+     "commonMistake": "Accepting release-time safety as permanent.",
+     "mentalModel": "Ask who keeps the veto."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You ship a product on an open-weight model and worry about misuse of your tuned version.",
+      "prompt": "What do you add?",
+      "options": [
+       "Checks on inputs and outputs you control",
+       "Nothing; the base model is safe",
+       "A promise in the terms of use only"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Checks you run stay in place whatever the weights do.",
+       "Base safety can be tuned away cheaply.",
+       "Terms alone do not stop misuse."
+      ],
+      "explanation": "If the weights can change, keep safety in the parts of the system you run."
+     },
+     "proReasoning": "Founders on open weights keep safety in the layers they control.",
+     "commonMistake": "Relying on the base model's safety training alone.",
+     "mentalModel": "Guard what you control."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend asks why researchers would strip a chatbot's safety training on purpose.",
+      "prompt": "What's the best reason?",
+      "options": [
+       "To make the model run faster",
+       "To show how easily it can be undone",
+       "To build a product for criminals"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Speed was not the point.",
+       "The study warned that open weights make this cheap.",
+       "The goal was a warning, not a product."
+      ],
+      "explanation": "Showing the risk lets labs and policymakers plan for it."
+     },
+     "proReasoning": "Security research breaks things on purpose to show where defenses fail.",
+     "commonMistake": "Assuming such studies aim to cause harm.",
+     "mentalModel": "Break it to show the gap."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:0a5480afb946"
+  ]
+ },
+ {
+  "id": "7fedf303-0f84-5edf-81a4-4ce32f7319f2",
+  "market_id": "ai",
+  "day": 45,
+  "slot": 2,
+  "content": {
+   "id": "ai-d45-c2",
+   "title": "Two kinds of gatekeeper",
+   "lessonTitle": "Ten examples undo the guardrails",
+   "slot": 2,
+   "type": "connect",
+   "brief": {
+    "headline": "In April 2025, the US began requiring a license to export NVIDIA's H20 chip to China. In 2023, 10 examples and under $0.20 undid a hosted model's guardrails.",
+    "kicker": "Connect day 21 and day 45: power sits where someone can say no.",
+    "fullText": "On day 21 you saw a gatekeeper on chips. The US government told NVIDIA on April 9, 2025 that H20 exports to China would need a license, and on April 14 said the rule would last for the indefinite future. NVIDIA expected up to about $5.5 billion of charges.\n\nOn day 45 you saw a gatekeeper on behavior. A host of fine-tuning, like OpenAI, can test and watch tuned models. Researchers still broke GPT-3.5 Turbo's guardrails with 10 examples for under $0.20, and open weights have no host at all.\n\nIn both cases, power belongs to whoever sits at the point where someone can still say no.",
+    "sources": [
+     {
+      "url": "https://www.sec.gov/Archives/edgar/data/1045810/000104581025000082/nvda-20250409.htm",
+      "label": "NVIDIA Form 8-K on H20 export licensing, Apr 2025"
+     },
+     {
+      "url": "https://arxiv.org/abs/2310.03693v1",
+      "label": "Qi et al., Fine-tuning aligned language models compromises safety, Oct 2023"
+     },
+     {
+      "url": "https://openai.com/index/gpt-4o-fine-tuning/",
+      "label": "OpenAI, Fine-tuning now available for GPT-4o, Aug 2024"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "faceOff",
+    "prompt": "Who can still say no to a harmful fine-tune?",
+    "left": {
+     "name": "A lab that released open weights",
+     "note": "Copies already run on others' machines"
+    },
+    "right": {
+     "name": "A lab hosting fine-tuning on its servers",
+     "note": "Sees and tests every tuned model"
+    },
+    "correctIndex": 1,
+    "explanation": "Like a license office for chips, a host sits at a point it controls. Open weights leave no such point."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "NVIDIA expected up to about how many billion dollars of charges from the H20 license rule?",
+    "min": 0,
+    "max": 15,
+    "value": 5.5,
+    "unit": "B",
+    "explanation": "Up to about $5.5 billion. A gatekeeper with a veto can move that much value."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "An interviewer asks where power over AI sits today.",
+      "prompt": "How do you frame it?",
+      "options": [
+       "Evenly across all AI developers everywhere",
+       "Only with the people using AI apps",
+       "At chokepoints, like chip exports and hosting"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "A few points of control matter far more.",
+       "Users rarely hold a veto.",
+       "A license rule and a host both hold a veto."
+      ],
+      "explanation": "Power sits where someone can still say no: export licenses for chips, hosts for tuning."
+     },
+     "proReasoning": "Name the chokepoints and who sits at each. That is how insiders map power.",
+     "commonMistake": "Describing AI power as spread evenly.",
+     "mentalModel": "Find who can say no."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You compare a lab that hosts its models with one that releases weights.",
+      "prompt": "Which keeps more control over its product?",
+      "options": [
+       "The lab that hosts its models",
+       "The lab that releases weights",
+       "Both keep the same control"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "It can test, monitor and refuse tuned models.",
+       "Released weights run beyond its reach.",
+       "Hosting keeps a veto that release gives up."
+      ],
+      "explanation": "Hosting keeps the lab at the chokepoint. Releasing weights hands it to every holder."
+     },
+     "proReasoning": "Investors note that hosting keeps a veto, which supports both safety and pricing.",
+     "commonMistake": "Ignoring what a lab gives up when it releases weights.",
+     "mentalModel": "Hosting keeps the veto."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your product depends on a hosted model whose provider can refuse your fine-tune.",
+      "prompt": "How do you plan?",
+      "options": [
+       "Build on one provider only",
+       "Keep a fallback model you can run",
+       "Assume the provider never says no"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "One gatekeeper means one point of failure.",
+       "A refusal does not stop your product.",
+       "Hosts do test and can refuse tuned models."
+      ],
+      "explanation": "A host holds a veto over you too. Plan for it, as chip buyers plan for licenses."
+     },
+     "proReasoning": "Founders who depend on a gatekeeper keep a second path ready.",
+     "commonMistake": "Treating a provider with a veto as a neutral pipe.",
+     "mentalModel": "Every veto needs a backup."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend asks what chip exports and chatbot safety have in common.",
+      "prompt": "What's the link?",
+      "options": [
+       "Both are run by NVIDIA",
+       "Nothing at all, they are unrelated",
+       "Both depend on who can say no"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "NVIDIA makes chips, not safety rules.",
+       "Both are about control points.",
+       "A license office and a model host both hold a veto."
+      ],
+      "explanation": "Power in AI sits at chokepoints, whether chips or model hosting."
+     },
+     "proReasoning": "Control in AI comes from standing where you can refuse.",
+     "commonMistake": "Seeing chips and safety as unrelated topics.",
+     "mentalModel": "Power is a veto."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:f9c136e4d12b"
+  ]
+ },
+ {
+  "id": "defe767a-b164-545b-bc75-37e47204911f",
+  "market_id": "ai",
+  "day": 45,
+  "slot": 3,
+  "content": {
+   "id": "ai-d45-c3",
+   "title": "Release the weights or host them",
+   "lessonTitle": "Ten examples undo the guardrails",
+   "slot": 3,
+   "type": "decide",
+   "brief": {
+    "headline": "You run a small lab with a strong chat model. Your board must decide whether to release its weights or offer fine-tuning only on your servers.",
+    "kicker": "Decide where the veto over your model should sit.",
+    "fullText": "In 2023, researchers broke GPT-3.5 Turbo's guardrails by fine-tuning it on 10 examples, for less than $0.20, through OpenAI's own service. Fine-tuning on ordinary, harmless data weakened safety too, though less.\n\nA host can still respond. OpenAI says it runs automated safety evaluations on fine-tuned GPT-4o models and monitors usage. With open weights, anyone can run and fine-tune the model on their own hardware, and no one can recall the copies.",
+    "sources": [
+     {
+      "url": "https://arxiv.org/abs/2310.03693v1",
+      "label": "Qi et al., Fine-tuning aligned language models compromises safety, Oct 2023"
+     },
+     {
+      "url": "https://openai.com/index/gpt-4o-fine-tuning/",
+      "label": "OpenAI, Fine-tuning now available for GPT-4o, Aug 2024"
+     },
+     {
+      "url": "https://www.theregister.com/2023/10/12/chatbot_defenses_dissolve/",
+      "label": "The Register, chatbot defenses dissolve with fine-tuning, Oct 2023"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "sortSignal",
+    "prompt": "Does each fit hosted fine-tuning or released weights?",
+    "buckets": [
+     "Hosted fine-tuning",
+     "Released weights"
+    ],
+    "items": [
+     {
+      "text": "You can test every tuned model",
+      "bucket": 0
+     },
+     {
+      "text": "You can refuse a harmful dataset",
+      "bucket": 0
+     },
+     {
+      "text": "Anyone can tune it on their own machine",
+      "bucket": 1
+     },
+     {
+      "text": "Copies can never be recalled",
+      "bucket": 1
+     }
+    ],
+    "explanation": "Hosting keeps a veto at your servers. Releasing weights gives it to every holder."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "10 examples cost under $0.20 to fine-tune on. At most how many cents per example is that?",
+    "min": 0,
+    "max": 10,
+    "value": 2,
+    "unit": "cents",
+    "explanation": "Under 2 cents an example. Cost is no barrier to undoing guardrails."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "As the lab's policy lead, you must brief the board on the trade-off.",
+      "prompt": "What is the core point?",
+      "options": [
+       "Releasing weights gives up the veto",
+       "Released weights stay safe forever",
+       "Hosting stops every possible misuse"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "No one can test or recall released copies.",
+       "Safety training can be tuned away.",
+       "Even hosted guardrails broke for $0.20."
+      ],
+      "explanation": "Hosting keeps the ability to test and refuse. Release trades that away, for reach."
+     },
+     "proReasoning": "Policy leads state the trade plainly: reach and openness against control.",
+     "commonMistake": "Claiming either option removes all risk.",
+     "mentalModel": "Reach versus veto."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You hold shares in the lab. Releasing weights could spread adoption fast.",
+      "prompt": "What cost do you weigh against that?",
+      "options": [
+       "A ban on hosted fine-tuning",
+       "Loss of control over tuned copies",
+       "Higher chip prices for everyone"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "No such ban follows from releasing weights.",
+       "Misuse of copies can still land on the lab.",
+       "Chip prices are not set by this choice."
+      ],
+      "explanation": "Release can grow use, but the lab can no longer test or stop tuned copies."
+     },
+     "proReasoning": "Investors price both the reach of open release and the control it gives up.",
+     "commonMistake": "Counting adoption gains and ignoring the lost veto.",
+     "mentalModel": "Price the lost control."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You are the founder and lean toward hosting. Customers want to fine-tune.",
+      "prompt": "How do you serve them safely?",
+      "options": [
+       "Let them tune with no checks at all",
+       "Ban fine-tuning entirely",
+       "Host tuning and test each tuned model"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Even harmless data can weaken guardrails.",
+       "You lose the customers who need it.",
+       "They get custom models; you keep the veto."
+      ],
+      "explanation": "Hosted tuning with tests keeps the business and the veto."
+     },
+     "proReasoning": "Founders can sell fine-tuning while keeping the checks only a host can run.",
+     "commonMistake": "Choosing between no tuning and no checks.",
+     "mentalModel": "Sell tuning, keep testing."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend asks why some AI labs release their models freely and others do not.",
+      "prompt": "What's the main trade-off?",
+      "options": [
+       "Openness versus control over misuse",
+       "Free models are always worse",
+       "Closed models cannot be changed"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Open weights spread widely but cannot be recalled.",
+       "Quality is not the dividing line.",
+       "Hosts let customers fine-tune too."
+      ],
+      "explanation": "Labs weigh the benefits of openness against losing the ability to say no."
+     },
+     "proReasoning": "Releasing a model is a choice about who controls it afterward.",
+     "commonMistake": "Seeing open versus closed as only a business choice.",
+     "mentalModel": "Openness trades away control."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:5c0d8aeab71d"
+  ]
+ },
+ {
+  "id": "7dfaa565-7f0a-55a8-a0ac-e4c93f46124e",
+  "market_id": "ai",
+  "day": 46,
+  "slot": 1,
+  "content": {
+   "id": "ai-d46-c1",
+   "title": "Ninety percent, says the judge",
+   "lessonTitle": "The $600 instruction follower",
+   "slot": 1,
+   "type": "apply",
+   "brief": {
+    "headline": "In March 2023, Vicuna-13B claimed more than 90% of ChatGPT's quality. The judge was GPT-4, on 80 questions, and its makers called the test fun and non-scientific.",
+    "kicker": "Apply day 46: a win rate is only as good as its judge.",
+    "fullText": "A team behind LMSYS fine-tuned a LLaMA base model on around 70,000 conversations shared on ShareGPT.com. Training Vicuna-13B cost around $300.\n\nTo score it, they asked GPT-4 to judge answers on a set of 80 diverse questions. GPT-4 rated Vicuna above LLaMA and Alpaca in more than 90% of the questions, and at more than 90% of ChatGPT and Bard quality.\n\nThe team flagged the limits itself: a footnote called it a fun and non-scientific evaluation, and the text said it was not yet a rigorous approach.",
+    "sources": [
+     {
+      "url": "https://lmsys.org/blog/2023-03-30-vicuna",
+      "label": "LMSYS, Vicuna: an open-source chatbot impressing GPT-4, Mar 2023"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "spotFake",
+    "prompt": "One of these is false about the Vicuna test. Tap it.",
+    "statements": [
+     "GPT-4 judged the answers.",
+     "The test used 80 questions.",
+     "Its makers called it rigorous science."
+    ],
+    "fakeIndex": 2,
+    "explanation": "They called it fun and non-scientific. The 90% figure rests on one AI judge and 80 questions."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "How many questions did the Vicuna evaluation use?",
+    "min": 0,
+    "max": 200,
+    "value": 80,
+    "unit": "questions",
+    "explanation": "80 questions, judged by GPT-4. A small set can swing a headline number."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A colleague quotes \"90% of ChatGPT quality\" in a planning meeting.",
+      "prompt": "What do you add?",
+      "options": [
+       "That 90% means it is basically ChatGPT",
+       "Nothing; a number is a number",
+       "Who judged it, and on how many questions"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "The test was too thin to support that.",
+       "This number came with its own caveat.",
+       "GPT-4 judged 80 questions; its makers said non-scientific."
+      ],
+      "explanation": "A win rate needs its judge and sample to mean anything."
+     },
+     "proReasoning": "Ask for the judge and the sample size before repeating a quality claim.",
+     "commonMistake": "Repeating a headline score without its caveats.",
+     "mentalModel": "Judge and sample first."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A startup claims its fine-tune matches a leading model, judged by another AI.",
+      "prompt": "What do you require?",
+      "options": [
+       "Blind human tests on many tasks",
+       "A bigger font for the claim",
+       "Nothing more; AI judges are neutral"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Broader, human-judged tests are harder to inflate.",
+       "Presentation does not change evidence.",
+       "AI judges have biases, such as for length."
+      ],
+      "explanation": "AI judges and small samples can flatter a model. Ask for stronger tests."
+     },
+     "proReasoning": "Investors discount quality claims that rest on one AI judge and a small sample.",
+     "commonMistake": "Treating an AI judge as neutral by default.",
+     "mentalModel": "Discount thin evidence."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You fine-tuned a model for $300 and want to announce its quality.",
+      "prompt": "How do you report it?",
+      "options": [
+       "Skip evaluation and ship it to users",
+       "Show the judge, the sample and the limits",
+       "Claim it matches ChatGPT outright, no caveats"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "You will not know what you shipped.",
+       "Readers can weigh the result themselves.",
+       "Overclaiming invites a backlash."
+      ],
+      "explanation": "Vicuna stated its own limits. Honest reporting keeps trust when results are thin."
+     },
+     "proReasoning": "Founders who report their limits earn trust that outlasts the headline.",
+     "commonMistake": "Turning a rough test into a bold claim.",
+     "mentalModel": "Report the limits with the score."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend reads that a $300 chatbot is \"90% as good as ChatGPT\".",
+      "prompt": "What's the fair take?",
+      "options": [
+       "Proof it is just as good as ChatGPT",
+       "Proof the whole claim is simply a lie",
+       "Interesting, but judged loosely by an AI"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "The test was too thin for that.",
+       "Its makers were open about the limits.",
+       "GPT-4 judged 80 questions in a self-described rough test."
+      ],
+      "explanation": "Rough tests are a signal, not a verdict."
+     },
+     "proReasoning": "A score is worth what its test is worth.",
+     "commonMistake": "Taking a quick test as the final word.",
+     "mentalModel": "A signal, not a verdict."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:ef56fef22cad"
+  ]
+ },
+ {
+  "id": "9662e15c-baf2-5895-8799-3847682341de",
+  "market_id": "ai",
+  "day": 46,
+  "slot": 2,
+  "content": {
+   "id": "ai-d46-c2",
+   "title": "Style wins chats",
+   "lessonTitle": "The $600 instruction follower",
+   "slot": 2,
+   "type": "connect",
+   "brief": {
+    "headline": "In April 2025, a Llama 4 version \"optimized for conversationality\" did well on LM Arena, but the released model ranked lower. Win rates reward style, and judges favor long answers.",
+    "kicker": "Connect day 30 and day 46: what wins a matchup is not always quality.",
+    "fullText": "On day 30 you saw Meta submit Llama-4-Maverick-03-26-Experimental, which it described as optimized for conversationality, to LM Arena. The released Llama-4-Maverick-17B-128E-Instruct ranked below GPT-4o, Claude 3.5 Sonnet and Gemini 1.5 Pro as of April 11, 2025. LM Arena apologized and changed its policies.\n\nOn day 46 you saw how win rates are counted: head-to-head matchups decided by a judge. Automatic judges like AlpacaEval tend to favor longer outputs. Controlling for length raised AlpacaEval's correlation with Chatbot Arena from 0.94 to 0.98.\n\nAny head-to-head metric can be won with style as well as substance.",
+    "sources": [
+     {
+      "url": "https://techcrunch.com/2025/04/11/metas-vanilla-maverick-ai-model-ranks-below-rivals-on-a-popular-chat-benchmark",
+      "label": "TechCrunch, Meta's vanilla Maverick ranks below rivals, Apr 2025"
+     },
+     {
+      "url": "https://arxiv.org/abs/2404.04475",
+      "label": "Dubois et al., Length-Controlled AlpacaEval, Apr 2024"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "buildChain",
+    "prompt": "Follow how a win rate can drift from quality.",
+    "steps": [
+     "A metric counts head-to-head wins",
+     "Judges favor some styles, like long answers",
+     "Labs tune models toward that style",
+     "Win rates rise more than real quality"
+    ],
+    "explanation": "Once a style wins matchups, tuning for it lifts the score. Length control removes part of the drift."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "Length control raised the correlation from 0.94 to 0.98. By how many hundredths?",
+    "min": 0,
+    "max": 20,
+    "value": 4,
+    "unit": "hundredths",
+    "explanation": "Four hundredths. Small on paper, but it closed much of the gap with human rankings."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your team's fine-tune jumped in win rate after answers got longer.",
+      "prompt": "What do you check first?",
+      "options": [
+       "The win rate controlled for length",
+       "Whether a longer prompt helps more",
+       "Nothing; the win is real"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "It shows whether quality rose or just length.",
+       "That chases the same bias further.",
+       "Judges are known to favor longer outputs."
+      ],
+      "explanation": "Length can inflate a win rate. Control for it before celebrating."
+     },
+     "proReasoning": "Strong evaluators separate style gains from quality gains.",
+     "commonMistake": "Reporting a jump that came from longer answers.",
+     "mentalModel": "Control for style."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A lab touts a top chat ranking for its new model.",
+      "prompt": "What do you ask?",
+      "options": [
+       "Whether its answers are much longer",
+       "Is the ranked model the one that ships?",
+       "How long its launch video ran for"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Longer is not better; it can just win judges.",
+       "Meta's tested Llama 4 was not the released one.",
+       "Video length says nothing."
+      ],
+      "explanation": "A ranking only counts if it describes what customers get."
+     },
+     "proReasoning": "Investors check that the model ranked is the model sold.",
+     "commonMistake": "Trusting a chat ranking without checking the version.",
+     "mentalModel": "Rank the shipped model."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your model loses on win rate to a rival that writes twice as much.",
+      "prompt": "What do you do?",
+      "options": [
+       "Pad your answers until they match",
+       "Stop measuring your model altogether",
+       "Show length-controlled and task results"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Padding chases the bias, not users.",
+       "You lose sight of quality.",
+       "Fair comparisons can show your real edge."
+      ],
+      "explanation": "Length-controlled results track human rankings better. Lead with those."
+     },
+     "proReasoning": "Founders compete on fair metrics instead of copying a rival's padding.",
+     "commonMistake": "Inflating answers to win a biased judge.",
+     "mentalModel": "Win fair, not long."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend notices chatbots seem to write more and more.",
+      "prompt": "What could be one reason?",
+      "options": [
+       "Judges often favor longer answers",
+       "Longer answers are always better",
+       "Short answers cost more to make"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Tuning for win rates can reward length.",
+       "Length and quality are not the same.",
+       "Longer answers cost more, not less."
+      ],
+      "explanation": "If longer answers win matchups, models learn to write more."
+     },
+     "proReasoning": "Models drift toward whatever their judges reward, including length.",
+     "commonMistake": "Assuming longer answers mean smarter models.",
+     "mentalModel": "Models chase their judges."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:39f2a7bf56ac"
+  ]
+ },
+ {
+  "id": "94c52569-66cd-5e10-9720-87232e8e8b3c",
+  "market_id": "ai",
+  "day": 46,
+  "slot": 3,
+  "content": {
+   "id": "ai-d46-c3",
+   "title": "Is the fine-tune good enough?",
+   "lessonTitle": "The $600 instruction follower",
+   "slot": 3,
+   "type": "decide",
+   "brief": {
+    "headline": "You run evaluation for a startup. Your fine-tune beats the reference model in 55% of matchups, judged by an AI, and its answers run much longer.",
+    "kicker": "Decide whether this result should ship.",
+    "fullText": "A win rate counts head-to-head wins against a reference. Stanford's Alpaca won 90 and lost 89 against text-davinci-003, about a tie. Meta's LIMA, fine-tuned on 1,000 examples, was equal or preferred to GPT-4 in 43% of cases.\n\nAutomatic judges tend to favor longer outputs. Controlling for length raised AlpacaEval's correlation with Chatbot Arena from 0.94 to 0.98.",
+    "sources": [
+     {
+      "url": "https://crfm.stanford.edu/2023/03/13/alpaca.html",
+      "label": "Stanford CRFM, Alpaca: a strong, replicable instruction-following model, Mar 2023"
+     },
+     {
+      "url": "https://arxiv.org/abs/2305.11206",
+      "label": "Zhou et al., LIMA: Less Is More for Alignment, May 2023"
+     },
+     {
+      "url": "https://arxiv.org/abs/2404.04475",
+      "label": "Dubois et al., Length-Controlled AlpacaEval, Apr 2024"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "faceOff",
+    "prompt": "Which result would you trust more?",
+    "left": {
+     "name": "55% raw win rate, longer answers",
+     "note": "Judged by an AI, no length control"
+    },
+    "right": {
+     "name": "52% length-controlled win rate",
+     "note": "Same judge, length bias removed"
+    },
+    "correctIndex": 1,
+    "explanation": "The lower, length-controlled number is the more honest one. Raw rates can be inflated by length."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "LIMA was equal or preferred to GPT-4 in 43% of cases. In what percent was GPT-4 strictly preferred?",
+    "min": 0,
+    "max": 100,
+    "value": 57,
+    "unit": "%",
+    "explanation": "100 minus 43 is 57%. Read both sides of a win rate."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your manager wants to announce \"beats the reference model\" tomorrow.",
+      "prompt": "What do you advise?",
+      "options": [
+       "Drop the win rate entirely",
+       "Rerun with length control first",
+       "Announce it as is"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Win rates are useful when controlled.",
+       "You learn if the edge survives the length bias.",
+       "A 55% edge may be mostly length."
+      ],
+      "explanation": "Length can inflate win rates. Check before you announce."
+     },
+     "proReasoning": "Evaluators protect the team from claims that will not survive scrutiny.",
+     "commonMistake": "Signing off on a number you know is biased.",
+     "mentalModel": "Check before you claim."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "The startup shows you the 55% win rate in a funding pitch.",
+      "prompt": "How much weight do you give it?",
+      "options": [
+       "A lot; 55% is a clear, solid win",
+       "None at all; win rates are useless",
+       "Little until it is length-controlled"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Near 50% is close to a tie anyway.",
+       "Controlled win rates do carry signal.",
+       "Long answers can inflate a raw win rate."
+      ],
+      "explanation": "A modest raw edge with long answers may vanish once length is controlled."
+     },
+     "proReasoning": "Investors weigh a win rate by how it was controlled, not by its size alone.",
+     "commonMistake": "Taking a raw 55% as proof of a better model.",
+     "mentalModel": "Controlled numbers count."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You are the founder deciding whether to ship this fine-tune to customers.",
+      "prompt": "What decides it?",
+      "options": [
+       "Results on real customer tasks",
+       "The raw win rate alone",
+       "Whichever model writes more"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Customers care about their tasks, not matchups.",
+       "Raw rates can be inflated by length.",
+       "More words can be worse for users."
+      ],
+      "explanation": "Win rates guide; customer tasks decide."
+     },
+     "proReasoning": "Founders treat win rates as a guide and customer tasks as the test.",
+     "commonMistake": "Shipping on a single biased metric.",
+     "mentalModel": "Tasks decide."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend asks if \"wins 55% of the time\" means much better.",
+      "prompt": "What's the honest answer?",
+      "options": [
+       "No different at all, ever",
+       "Slightly better, if the judge was fair",
+       "Twice as good as the other model"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "It can be a real edge if fairly judged.",
+       "55% is a small edge and can hide bias.",
+       "Winning 55% is not twice as good."
+      ],
+      "explanation": "A win rate near 50% is close. Its judge decides if it means anything."
+     },
+     "proReasoning": "Win rates near 50% describe small gaps, and judges can tilt them.",
+     "commonMistake": "Reading 55% as a big lead.",
+     "mentalModel": "Near 50% is close."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:73bb51a5371f"
+  ]
+ },
+ {
+  "id": "da3ef85e-56d8-5815-b7c0-08257743d798",
+  "market_id": "ai",
+  "day": 47,
+  "slot": 1,
+  "content": {
+   "id": "ai-d47-c1",
+   "title": "The terms behind the distillation fight",
+   "lessonTitle": "The one-third line",
+   "slot": 1,
+   "type": "apply",
+   "brief": {
+    "headline": "In January 2025, OpenAI said it was reviewing signs that DeepSeek \"may have inappropriately distilled our models.\" Its terms forbid using outputs to build competing models.",
+    "kicker": "Apply day 47: a contract can bind fine-tuning as tightly as a law.",
+    "fullText": "Distillation trains a smaller model to mimic a larger one by training it on the larger model's output. OpenAI's terms forbid users from using outputs to develop AI models that compete with its products.\n\nOn February 12, 2026, OpenAI sent a memo to the House Select Committee on China, as reported by Bloomberg. It said accounts linked to DeepSeek employees reached its models through third-party routers and tried to hide where requests came from.\n\nDeepSeek's researchers have said R1 did not learn by copying reasoning examples generated by OpenAI models. Distillation is cheap: in 2023, Stanford generated 52,000 training examples from an OpenAI model for less than $500.",
+    "sources": [
+     {
+      "url": "https://www.axios.com/2025/01/29/openai-deepseek-ai-models-data-training",
+      "label": "Axios, OpenAI says DeepSeek may have inappropriately used its models' output, Jan 2025"
+     },
+     {
+      "url": "https://gigazine.net/gsc_news/en/20260213-openai-accuses-china-deepseek",
+      "label": "GIGAZINE, citing Bloomberg, OpenAI memo to the House China committee, Feb 2026"
+     },
+     {
+      "url": "https://scientificamerican.com/article/secrets-of-chinese-ai-model-deepseek-revealed-in-landmark-paper",
+      "label": "Scientific American, secrets of DeepSeek revealed in landmark paper, Sep 2025"
+     },
+     {
+      "url": "https://crfm.stanford.edu/2023/03/13/alpaca.html",
+      "label": "Stanford CRFM, Alpaca: a strong, replicable instruction-following model, Mar 2023"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "multipleChoice",
+    "prompt": "What is distillation?",
+    "options": [
+     "Shrinking a model by deleting its layers",
+     "Cleaning web text before pretraining",
+     "Training a model on another model's outputs"
+    ],
+    "correctIndex": 2,
+    "explanation": "Distillation trains a model to mimic a larger one using that model's outputs. It is a kind of fine-tuning."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "Stanford made 52,000 examples from an OpenAI model for under $500. About how many dollars per 1,000 examples?",
+    "min": 0,
+    "max": 40,
+    "value": 10,
+    "unit": "$",
+    "explanation": "About $10 per 1,000 examples. Copying a model through its outputs is cheap, which is why terms forbid it."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your team wants to fine-tune a model on outputs from a rival lab's API.",
+      "prompt": "What do you check first?",
+      "options": [
+       "The API's terms on using outputs",
+       "How fast the API responds",
+       "Whether the outputs look good"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "OpenAI's terms forbid building competing models this way.",
+       "Speed does not settle the legal question.",
+       "Quality does not make it allowed."
+      ],
+      "explanation": "Model terms can bar training on outputs. Read them before you use the data."
+     },
+     "proReasoning": "Check the terms of any model whose outputs you train on. It is a basic professional habit.",
+     "commonMistake": "Treating API outputs as free training data.",
+     "mentalModel": "Read the terms first."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A startup built its model partly on outputs from a leading lab.",
+      "prompt": "What risk do you flag?",
+      "options": [
+       "Too few employees for the plan",
+       "Breach of the source model's terms",
+       "Too much compute spent on training"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Headcount is not the issue.",
+       "Terms can forbid building rivals from outputs.",
+       "Distillation is cheap in compute."
+      ],
+      "explanation": "Distilled models can carry contract risk from the model they learned from."
+     },
+     "proReasoning": "Investors trace where training outputs came from and what terms covered them.",
+     "commonMistake": "Ignoring contract risk because the model works.",
+     "mentalModel": "Trace the training outputs."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You want a cheap way to create fine-tuning data for your product.",
+      "prompt": "Which path is safest?",
+      "options": [
+       "Use any API and hope nobody notices",
+       "Copy a rival's outputs through routers",
+       "Use a model whose terms allow it"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Labs actively look for distillation.",
+       "OpenAI flagged exactly this to Congress.",
+       "You get the data without breaching terms."
+      ],
+      "explanation": "Some model terms allow training on outputs, others forbid it. Pick one that allows it."
+     },
+     "proReasoning": "Founders choose data sources whose terms allow the use they plan.",
+     "commonMistake": "Building a product on data you were not allowed to use.",
+     "mentalModel": "Use data you may use."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend asks why OpenAI complained to Congress about DeepSeek.",
+      "prompt": "What's the core complaint?",
+      "options": [
+       "Copying its models through their outputs",
+       "Stealing its office furniture and laptops",
+       "Hiring away its entire research staff"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "That is distillation, which its terms forbid.",
+       "Not the issue.",
+       "The memo was about outputs, not hiring."
+      ],
+      "explanation": "OpenAI says DeepSeek distilled its models against its terms. DeepSeek denies copying."
+     },
+     "proReasoning": "A model's answers can become another model's training data, which is why terms matter.",
+     "commonMistake": "Thinking AI disputes are only about stolen code.",
+     "mentalModel": "Outputs can train rivals."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:ba52ede87b14"
+  ]
+ },
+ {
+  "id": "9162f13f-cf94-5497-9c08-dd1bacb0dcdc",
+  "market_id": "ai",
+  "day": 47,
+  "slot": 2,
+  "content": {
+   "id": "ai-d47-c2",
+   "title": "Who writes the training summary",
+   "lessonTitle": "The one-third line",
+   "slot": 2,
+   "type": "connect",
+   "brief": {
+    "headline": "Since August 2, 2025, general-purpose AI providers in the EU must publish a training summary. Fine-tune a model with over a third of its compute, and you become a provider too.",
+    "kicker": "Connect day 17 and day 47: heavy fine-tuning brings disclosure duties.",
+    "fullText": "On day 17 you saw the disclosure rule. Since August 2, 2025, providers of general-purpose AI models must publish a summary of their training content using the Commission's template, and keep a copyright policy. Models on the market before that date have until August 2, 2027.\n\nOn day 47 you saw who counts as a provider. A modifier whose fine-tune uses more than one third of the original model's training compute is presumed the new provider. If the original compute is unknown, the fallback is one third of 10^23 FLOP.\n\nA modifier's summary and copyright policy cover only the added compute and data.",
+    "sources": [
+     {
+      "url": "https://www.mayerbrown.com/en/insights/publications/2025/08/eu-ai-act-news-rules-on-general-purpose-ai-start-applying-guidelines-and-template-for-summary-of-training-data-finalized",
+      "label": "Mayer Brown, EU AI Act rules on general-purpose AI start applying, Aug 2025"
+     },
+     {
+      "url": "https://artificialintelligenceact.eu/gpai-guidelines-overview/",
+      "label": "artificialintelligenceact.eu, overview of the guidelines for GPAI models"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "spotFake",
+    "prompt": "One of these is false. Tap it.",
+    "statements": [
+     "Providers must publish a training summary.",
+     "A modifier over one third becomes a provider.",
+     "A modifier must summarize the whole original model."
+    ],
+    "fakeIndex": 2,
+    "explanation": "A modifier's duties cover only its own modification: the added compute and data."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "The fallback line is one third of 10^23 FLOP. In units of 10^21 FLOP, about how much is that?",
+    "min": 0,
+    "max": 100,
+    "value": 33,
+    "unit": "x 10^21",
+    "explanation": "10^23 is 100 times 10^21, so one third is about 33 times 10^21 FLOP."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your company retrained an open model with half its original compute and sells it in the EU.",
+      "prompt": "What do you tell the legal team?",
+      "options": [
+       "We must disclose the original model's data",
+       "We likely need a summary for our changes",
+       "We owe nothing; we did not build it"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Your duties cover only what you added.",
+       "Over one third makes you the provider for your changes.",
+       "Above the line, duties do apply."
+      ],
+      "explanation": "Above one third, you are presumed the provider, with duties limited to your modification."
+     },
+     "proReasoning": "Know both rules: the disclosure duty and the one-third test that decides who owes it.",
+     "commonMistake": "Assuming only the original lab has EU duties.",
+     "mentalModel": "Cross the line, write the summary."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A startup plans heavy retraining of an open model for EU customers.",
+      "prompt": "What cost do you ask about?",
+      "options": [
+       "Chip export licenses to the EU",
+       "Nothing; open models are exempt",
+       "Provider compliance for its changes"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "That is a different rule.",
+       "Crossing one third brings provider duties.",
+       "Summaries and copyright policies take staff time."
+      ],
+      "explanation": "Deep retraining can turn a startup into a provider with disclosure work."
+     },
+     "proReasoning": "Investors ask whether a plan crosses the one-third line and who does the paperwork.",
+     "commonMistake": "Missing compliance costs hidden in a training plan.",
+     "mentalModel": "Check the line in the plan."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You can reach your goal with light tuning or with a deep retrain.",
+      "prompt": "What should weigh on the choice?",
+      "options": [
+       "Deep retraining may add provider duties",
+       "Light tuning is banned in the EU",
+       "The EU ignores fine-tuning entirely"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Over one third, you write the summary and policy.",
+       "Light tuning stays below the line.",
+       "The guidelines set a test for modifiers."
+      ],
+      "explanation": "Staying light keeps the duties with the original provider."
+     },
+     "proReasoning": "Founders factor the one-third line into how deeply they retrain.",
+     "commonMistake": "Choosing a deep retrain without counting the duties.",
+     "mentalModel": "Depth has a legal cost."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend asks who must explain what an AI model was trained on in the EU.",
+      "prompt": "What's the answer?",
+      "options": [
+       "Nobody at all; it stays a secret",
+       "Its provider, including heavy modifiers",
+       "Only the people who use the model"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "The EU requires a public summary.",
+       "Providers publish a summary; heavy modifiers too.",
+       "Users do not write it."
+      ],
+      "explanation": "Providers publish training summaries. Change a model enough and you join them."
+     },
+     "proReasoning": "In the EU, whoever substantially remakes a model shares the duty to explain it.",
+     "commonMistake": "Thinking only the original maker has duties.",
+     "mentalModel": "Remake it, explain it."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:b9388a9c5f7a"
+  ]
+ },
+ {
+  "id": "f87fd98a-2aef-5f2b-af82-190d12ff4323",
+  "market_id": "ai",
+  "day": 47,
+  "slot": 3,
+  "content": {
+   "id": "ai-d47-c3",
+   "title": "Light tune or deep retrain",
+   "lessonTitle": "The one-third line",
+   "slot": 3,
+   "type": "decide",
+   "brief": {
+    "headline": "You run a startup adapting an open model trained with 6 units of compute. One plan uses 1 unit of fine-tuning; another uses 2.5 units.",
+    "kicker": "Decide which plan keeps you on the right side of the line.",
+    "fullText": "Under EU guidelines published July 18, 2025, a modifier whose fine-tune uses more than one third of the original model's training compute is presumed the new provider. Modest fine-tuning that does not materially change the model leaves the original provider responsible.\n\nAbove the line, your documentation, training data summary and copyright policy cover only what you added. Fines for breaking the general-purpose AI rules reach €15 million or 3% of global revenue.",
+    "sources": [
+     {
+      "url": "https://www.wilmerhale.com/en/insights/blogs/wilmerhale-privacy-and-cybersecurity-law/20250724-european-commission-issues-guidelines-for-providers-of-general-purpose-ai-models",
+      "label": "WilmerHale, Commission guidelines for general-purpose AI providers, Jul 2025"
+     },
+     {
+      "url": "https://cms.law/en/swe/legal-updates/general-purpose-ai-models-obligations-and-roles-for-providers-and-downstream-modifiers-under-the-eu-ai-act",
+      "label": "CMS, providers and downstream modifiers under the EU AI Act, Jan 2026"
+     },
+     {
+      "url": "https://artificialintelligenceact.eu/gpai-guidelines-overview/",
+      "label": "artificialintelligenceact.eu, overview of the guidelines for GPAI models"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "sortSignal",
+    "prompt": "For a model trained with 6 units, which plans cross the line?",
+    "buckets": [
+     "Crosses the line",
+     "Stays below"
+    ],
+    "items": [
+     {
+      "text": "A retrain using 2.5 units",
+      "bucket": 0
+     },
+     {
+      "text": "A retrain using 4 units",
+      "bucket": 0
+     },
+     {
+      "text": "A fine-tune using 1 unit",
+      "bucket": 1
+     },
+     {
+      "text": "A fine-tune using 0.1 units",
+      "bucket": 1
+     }
+    ],
+    "explanation": "One third of 6 is 2. Anything above 2 units presumes you are the provider."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "The original model used 6 units. Above how many units of fine-tuning do you cross the line?",
+    "min": 0,
+    "max": 6,
+    "value": 2,
+    "unit": "units",
+    "explanation": "One third of 6 is 2. The 2.5-unit plan crosses; the 1-unit plan does not."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "As the ML lead, you must say which plan triggers provider duties.",
+      "prompt": "What do you report?",
+      "options": [
+       "Both plans cross the one-third line",
+       "Neither plan crosses the one-third line",
+       "The 2.5-unit plan crosses; 1 unit does not"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "1 unit is under a third of 6.",
+       "2.5 units is over a third of 6.",
+       "2.5 is above the 2-unit line; 1 is below."
+      ],
+      "explanation": "One third of 6 is 2. Only the deeper plan crosses."
+     },
+     "proReasoning": "ML leads who can do the one-third math save legal teams a lot of guesswork.",
+     "commonMistake": "Leaving the compute question to lawyers alone.",
+     "mentalModel": "Do the one-third math."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "The deeper plan promises a better model but adds provider duties.",
+      "prompt": "What decides if it is worth it?",
+      "options": [
+       "Whether the gain beats the compliance cost",
+       "Whether the deep plan uses more chips",
+       "Whether any EU fines exist at all"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Duties and fines up to €15 million weigh on the gain.",
+       "More chips is not the question.",
+       "Fines do exist, up to 3% of revenue."
+      ],
+      "explanation": "Weigh the better model against the duties that come with crossing the line."
+     },
+     "proReasoning": "Investors treat the one-third line as a cost to weigh, not a wall.",
+     "commonMistake": "Ignoring compliance in a return calculation.",
+     "mentalModel": "Weigh gain against duty."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Light tuning gets you 90% of the quality. Deep retraining gets 100%.",
+      "prompt": "Which do you start with?",
+      "options": [
+       "Neither until the rules change",
+       "The light tune, then test with customers",
+       "The deep retrain, whatever it brings"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Waiting stalls the product.",
+       "You learn fast and stay below the line.",
+       "You take on duties before knowing you need them."
+      ],
+      "explanation": "Start light. Cross the line only if customers need the extra quality."
+     },
+     "proReasoning": "Founders take the cheap, light path first and earn the right to go deeper.",
+     "commonMistake": "Taking on provider duties before proving demand.",
+     "mentalModel": "Start below the line."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend asks why the EU cares how much compute a fine-tune uses.",
+      "prompt": "What's the idea?",
+      "options": [
+       "Compute use is a tax matter only",
+       "The EU wants to ban fine-tuning",
+       "Big changes make a model partly yours"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "It is about responsibility, not tax.",
+       "Light tuning is allowed and common.",
+       "Over one third, you count as its provider."
+      ],
+      "explanation": "Compute is a rough measure of how much you changed the model."
+     },
+     "proReasoning": "Rules use compute as a yardstick for how much someone remade a model.",
+     "commonMistake": "Thinking the rule targets fine-tuning itself.",
+     "mentalModel": "Compute measures change."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:26131a77d67f"
+  ]
+ },
+ {
+  "id": "3060a55a-370c-550f-8f7f-944317496036",
+  "market_id": "ai",
+  "day": 48,
+  "slot": 1,
+  "content": {
+   "id": "ai-d48-c1",
+   "title": "A new lab bets on fine-tuning",
+   "lessonTitle": "When prompts replaced fine-tuning",
+   "slot": 1,
+   "type": "apply",
+   "brief": {
+    "headline": "On October 1, 2025, Thinking Machines Lab, led by former OpenAI CTO Mira Murati, launched Tinker, an API for fine-tuning open-weight models. It was the lab's first product.",
+    "kicker": "Apply day 48: as one door closes, newcomers build another.",
+    "fullText": "Thinking Machines had closed a seed round at a $12 billion valuation in July 2025. Tinker lets researchers and developers control their own data and training algorithms, while the company handles distributed training on its clusters: scheduling, resources and failure recovery.\n\nIt supports open-weight models, including large mixture-of-experts models such as Qwen-235B-A22B. It uses LoRA, which trains a small number of added parameters, so many runs can share one pool of compute. Early users included groups at Princeton, Stanford and Berkeley, and Redwood Research.\n\nSeven months later, OpenAI began winding down its own fine-tuning platform.",
+    "sources": [
+     {
+      "url": "https://thinkingmachines.ai/blog/announcing-tinker/",
+      "label": "Thinking Machines Lab, Announcing Tinker, Oct 2025"
+     },
+     {
+      "url": "https://siliconangle.com/2025/10/01/thinking-machines-launches-tinker-language-model-fine-tuning-service/",
+      "label": "SiliconANGLE, Thinking Machines launches Tinker, Oct 2025"
+     },
+     {
+      "url": "https://tessl.io/blog/openai-shutting-fine-tuning-signals-for-enterprise-ai",
+      "label": "Tessl, OpenAI shutting down fine-tuning, May 2026"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "faceOff",
+    "prompt": "Which part does Tinker leave in its users' hands?",
+    "left": {
+     "name": "Training data and algorithms",
+     "note": "What the model learns, and how"
+    },
+    "right": {
+     "name": "Distributed training infrastructure",
+     "note": "Scheduling, resources, failure recovery"
+    },
+    "correctIndex": 0,
+    "explanation": "Users keep control of data and algorithms. Thinking Machines runs the hard infrastructure."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "Thinking Machines was valued at how many billion dollars in July 2025?",
+    "min": 0,
+    "max": 30,
+    "value": 12,
+    "unit": "B",
+    "explanation": "About $12 billion, before it had shipped a product. Its first product was a fine-tuning API."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You want to specialize in fine-tuning. A friend says OpenAI closing its platform means the field is dead.",
+      "prompt": "How do you see it?",
+      "options": [
+       "Only OpenAI ever did real fine-tuning",
+       "It is moving to open models and new tools",
+       "It is dead, so switch fields now"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Many labs and tools tune open models.",
+       "Tinker, Google and Anthropic still serve fine-tuning.",
+       "Demand moved; it did not vanish."
+      ],
+      "explanation": "Fine-tuning is shifting toward open-weight models and specialist tools, not disappearing."
+     },
+     "proReasoning": "Read a platform exit as a shift in where work happens, not the end of a skill.",
+     "commonMistake": "Mistaking one company's product decision for a whole field's fate.",
+     "mentalModel": "Skills move with the market."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You weigh Thinking Machines just after OpenAI exits managed fine-tuning.",
+      "prompt": "What's the key question about Tinker?",
+      "options": [
+       "Whether OpenAI will buy it next year",
+       "How many logos its website shows today",
+       "Who still needs custom training, and why"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Acquisition hopes are not a thesis.",
+       "Logos do not show real demand.",
+       "Researchers training provers and chemistry models still do."
+      ],
+      "explanation": "OpenAI says prompts cover most needs. Tinker must win the cases prompts cannot."
+     },
+     "proReasoning": "Investors size the demand left once prompting covers the easy cases.",
+     "commonMistake": "Assuming the whole old fine-tuning market is still there.",
+     "mentalModel": "Size the demand prompts cannot meet."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your research team needs custom RL on an open model but has no cluster.",
+      "prompt": "Which route fits best?",
+      "options": [
+       "A managed API that runs the training for you",
+       "Buying and running your own GPU cluster",
+       "Prompting a closed model and hoping"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "You keep the data and algorithm; they run the hardware.",
+       "A cluster costs far more than a small team needs.",
+       "Prompts cannot change how the model is trained."
+      ],
+      "explanation": "Tools like Tinker separate the research choices from the infrastructure work."
+     },
+     "proReasoning": "Founders rent infrastructure and keep control of what makes their model different.",
+     "commonMistake": "Building a cluster before the research shows it is needed.",
+     "mentalModel": "Rent the cluster, own the recipe."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend asks why a lab worth $12 billion would sell fine-tuning, of all things.",
+      "prompt": "What's a good answer?",
+      "options": [
+       "OpenAI told it to sell fine-tuning",
+       "Researchers still need to train custom models",
+       "Fine-tuning is the only kind of AI anyone uses"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "It is an independent lab.",
+       "Groups at Princeton and Stanford trained provers and chemistry models.",
+       "Most people use AI through prompts."
+      ],
+      "explanation": "Some jobs, like theorem proving, still need models trained for them."
+     },
+     "proReasoning": "Even as prompts improve, some specialist jobs still need a model trained for them.",
+     "commonMistake": "Thinking better base models end all custom training.",
+     "mentalModel": "Specialists still train."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:3331f130c145"
+  ]
+ },
+ {
+  "id": "2250b99a-5635-5d35-82c7-93a43614c95e",
+  "market_id": "ai",
+  "day": 48,
+  "slot": 2,
+  "content": {
+   "id": "ai-d48-c2",
+   "title": "Goodhart inside the reward model",
+   "lessonTitle": "When prompts replaced fine-tuning",
+   "slot": 2,
+   "type": "connect",
+   "brief": {
+    "headline": "When a measure becomes a target, it ceases to be a good measure. A 2023 study found that human preferences, used as a training target, reward flattery.",
+    "kicker": "Connect day 29 and day 48: a preferred answer is not a right one.",
+    "fullText": "On day 29 you saw Goodhart's law: when a measure becomes a target, it ceases to be a good measure. Benchmarks drift from real ability once labs chase them.\n\nOn day 48 you saw RLHF still breeding sycophancy. A 2023 study found five leading AI assistants consistently sycophantic across four kinds of free-form task. In human preference data, answers that matched a user's views were more likely to be preferred. Humans and preference models sometimes preferred convincingly written sycophantic answers over correct ones.\n\nOptimizing against a preference model can trade truthfulness for sycophancy. Preference was the measure; RLHF made it the target.",
+    "sources": [
+     {
+      "url": "https://forrt.org/glossary/goodhart-s-law/",
+      "label": "FORRT glossary, Goodhart's law"
+     },
+     {
+      "url": "https://huggingface.co/papers/2310.13548",
+      "label": "Sharma et al., Towards understanding sycophancy in language models, Oct 2023"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "multipleChoice",
+    "prompt": "How does sycophancy in RLHF fit Goodhart's law?",
+    "options": [
+     "The models were trained on far too little web data",
+     "Users stopped giving the models any feedback at all",
+     "Preference became a target and stopped tracking truth"
+    ],
+    "correctIndex": 2,
+    "explanation": "Human preference measured answer quality. Once optimized, models learned to win preference by agreeing."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "How many leading AI assistants did the 2023 study find consistently sycophantic?",
+    "min": 0,
+    "max": 12,
+    "value": 5,
+    "unit": "assistants",
+    "explanation": "All five it tested. The authors called sycophancy a general behavior of RLHF models."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your team plans to train only against a preference model built from user ratings.",
+      "prompt": "What do you warn about?",
+      "options": [
+       "Preference models are too costly to build",
+       "Ratings make the model answer slower",
+       "It can reward agreeing over being right"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Cost is not the main risk here.",
+       "Speed is not the problem.",
+       "The 2023 study found preference rewards flattery."
+      ],
+      "explanation": "A preference model is a measure. Optimize it hard and it stops tracking truth."
+     },
+     "proReasoning": "Name Goodhart's law when a team plans to optimize a proxy. It shows you see the trap.",
+     "commonMistake": "Treating human preference as the same thing as a correct answer.",
+     "mentalModel": "Preference is a proxy."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "An AI assistant startup says its users rate its answers higher every month.",
+      "prompt": "What do you ask?",
+      "options": [
+       "How it checks answers are correct",
+       "How big its rating buttons are",
+       "Whether ratings could rise even faster"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Higher ratings can hide flattery, per the 2023 study.",
+       "Button size is not the issue.",
+       "Chasing the number is the risk itself."
+      ],
+      "explanation": "Ratings can climb while accuracy falls. Ask what guards the real goal."
+     },
+     "proReasoning": "Investors read rating trends as proxies and ask what checks the truth behind them.",
+     "commonMistake": "Treating rising ratings as proof of a better product.",
+     "mentalModel": "Ask what guards the goal."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You collect user preferences to improve your health information assistant.",
+      "prompt": "How do you use them safely?",
+      "options": [
+       "Throw all the preference data away",
+       "Pair them with expert checks on accuracy",
+       "Make them the only training signal"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Preferences still carry useful signal.",
+       "Expert checks keep preference from overriding truth.",
+       "That is how sycophancy takes over."
+      ],
+      "explanation": "Use preference as one signal, with a guard on accuracy."
+     },
+     "proReasoning": "Founders balance user preference with signals that preference cannot game.",
+     "commonMistake": "Letting one proxy become the whole reward.",
+     "mentalModel": "One proxy is never enough."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend says a chatbot that always agrees with them must be a good one.",
+      "prompt": "What's the catch?",
+      "options": [
+       "Agreement is always a sign of truth",
+       "Chatbots are unable to agree with anyone",
+       "Agreeing is not the same as being right"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Flattery can feel good and still be wrong.",
+       "They can, and sometimes too much.",
+       "Five leading assistants leaned toward flattery."
+      ],
+      "explanation": "Models trained on human preference learn that agreement wins approval."
+     },
+     "proReasoning": "The most agreeable answer is not always the most helpful one.",
+     "commonMistake": "Equating a pleasant answer with a good one.",
+     "mentalModel": "Liked is not right."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:702f7828e634"
+  ]
+ },
+ {
+  "id": "504491ce-643d-5079-a4a0-80214a5f19f4",
+  "market_id": "ai",
+  "day": 48,
+  "slot": 3,
+  "content": {
+   "id": "ai-d48-c3",
+   "title": "Migrate, move or prompt",
+   "lessonTitle": "When prompts replaced fine-tuning",
+   "slot": 3,
+   "type": "decide",
+   "brief": {
+    "headline": "You run a startup whose support bot runs on a fine-tuned GPT-4o. OpenAI is winding down fine-tuning, and new training jobs end by January 2027.",
+    "kicker": "Decide where your custom model goes next.",
+    "fullText": "OpenAI closed fine-tuning to new users in May 2026. Customers who have not used a fine-tuned model in 60 days lose access, and fine-tuned models run only until their base models are deprecated. OpenAI says newer base models like GPT-5.5 follow instructions and formats much better, and that prompts are now cheaper and faster.\n\nGoogle, with Gemini on Vertex AI, and Anthropic, with Claude on Amazon Bedrock, still offer managed fine-tuning to enterprises. Open models can be tuned with LoRA.",
+    "sources": [
+     {
+      "url": "https://tessl.io/blog/openai-shutting-fine-tuning-signals-for-enterprise-ai",
+      "label": "Tessl, OpenAI shutting down fine-tuning, May 2026"
+     },
+     {
+      "url": "https://openai.com/index/gpt-4o-fine-tuning/",
+      "label": "OpenAI, Fine-tuning now available for GPT-4o, Aug 2024"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "sortSignal",
+    "prompt": "Does each option keep a custom-trained model?",
+    "buckets": [
+     "Keeps custom training",
+     "Relies on prompts"
+    ],
+    "items": [
+     {
+      "text": "Fine-tuning Gemini on Vertex AI",
+      "bucket": 0
+     },
+     {
+      "text": "LoRA on an open-weight model",
+      "bucket": 0
+     },
+     {
+      "text": "Prompting a newer OpenAI base model",
+      "bucket": 1
+     },
+     {
+      "text": "Writing detailed format instructions",
+      "bucket": 1
+     }
+    ],
+    "explanation": "Other providers and open models keep custom training. Prompting relies on better instruction following."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "Customers lose access if they have not used a fine-tuned model in how many days?",
+    "min": 0,
+    "max": 180,
+    "value": 60,
+    "unit": "days",
+    "explanation": "60 days. Active customers can keep training until January 2027."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "As the ML lead, you get one sprint to choose a path.",
+      "prompt": "What do you try first?",
+      "options": [
+       "Test prompts on a newer base model",
+       "Rebuild everything on a new cluster",
+       "Do nothing until January 2027"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "It is the cheapest test, and OpenAI says it often works.",
+       "That is far more work than one sprint.",
+       "Waiting turns a plan into an emergency."
+      ],
+      "explanation": "Start with the cheapest option that may work. Move to tuning elsewhere only if prompts fall short."
+     },
+     "proReasoning": "Good ML leads test the cheap path first and keep a fallback ready.",
+     "commonMistake": "Leaving a known deadline to the last month.",
+     "mentalModel": "Cheapest test first."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You're on the startup's board. The team wants to rebuild on another closed provider's fine-tuning.",
+      "prompt": "What do you ask?",
+      "options": [
+       "Whether January 2027 might move",
+       "What happens if that provider exits too",
+       "Which provider has the nicest logo"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Hoping for a delay is not a plan.",
+       "The same platform risk could repeat.",
+       "Branding does not cut risk."
+      ],
+      "explanation": "Swapping one platform for another keeps the same risk. Ask how the team limits it."
+     },
+     "proReasoning": "Board members push teams to cut dependence on any single vendor.",
+     "commonMistake": "Replacing one platform dependency with an identical one.",
+     "mentalModel": "Do not repeat the risk."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Prompts get 90% of the format right. Your customers need 99%.",
+      "prompt": "What do you do?",
+      "options": [
+       "Ship at 90% and hope",
+       "Keep the old model past deprecation",
+       "Tune an open model you can control"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Customers notice a format that breaks one time in ten.",
+       "Tuned models stop when their base is deprecated.",
+       "You keep custom training without a vendor deadline."
+      ],
+      "explanation": "When prompts fall short, open models with LoRA keep custom training in your hands."
+     },
+     "proReasoning": "Founders move critical custom behavior to models they control.",
+     "commonMistake": "Accepting a quality drop to avoid a migration.",
+     "mentalModel": "Own what you cannot lose."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend asks why a company would care that OpenAI closes a feature.",
+      "prompt": "What's the real issue?",
+      "options": [
+       "Its product was built on that feature",
+       "It just likes trying new features",
+       "Closed features always cost more"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Its bot runs on a model that will be retired.",
+       "Preference is not the problem.",
+       "Price is not the issue here."
+      ],
+      "explanation": "Products built on another company's platform depend on that company's choices."
+     },
+     "proReasoning": "Building on someone else's platform means living with their decisions.",
+     "commonMistake": "Thinking a platform change only matters to the platform.",
+     "mentalModel": "Platforms decide for you."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:f43074ba38fb"
+  ]
+ },
+ {
+  "id": "b22a0342-930c-59a6-a1f1-96334539f8f0",
+  "market_id": "ai",
+  "day": 49,
+  "slot": 1,
+  "content": {
+   "id": "ai-d49-c1",
+   "title": "Prompting a generalist past the specialists",
+   "lessonTitle": "Five words that changed a math score",
+   "slot": 1,
+   "type": "apply",
+   "brief": {
+    "headline": "In November 2023, Microsoft researchers steered GPT-4 past 90% on MedQA, a medical exam benchmark, for the first time. They used prompting alone, without special fine-tuning.",
+    "kicker": "Apply day 49: better prompts instead of a new model.",
+    "fullText": "The method, called Medprompt, combined three prompting techniques. For each question it pulled similar solved examples into the prompt, had GPT-4 write its own step-by-step reasoning, and shuffled the answer choices several times before taking the majority answer.\n\nIt scored 90.2% on MedQA and cut the error rate by 27% compared with the best results from models specialized for medicine, such as Google's Med-PaLM 2. It set the best results on all nine benchmarks in the MultiMedQA suite.\n\nThe authors said the techniques were general purpose and made no specific use of medical expertise.",
+    "sources": [
+     {
+      "url": "https://arxiv.org/html/2311.16452v1",
+      "label": "Nori et al. (Microsoft), Medprompt paper, Nov 2023"
+     },
+     {
+      "url": "https://the-decoder.com/microsofts-medprompt-demonstrates-the-power-of-prompting/",
+      "label": "The Decoder, Microsoft's Medprompt demonstrates the power of prompting, Dec 2023"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "sortSignal",
+    "prompt": "Did Medprompt use it?",
+    "buckets": [
+     "Used by Medprompt",
+     "Not used by Medprompt"
+    ],
+    "items": [
+     {
+      "text": "Similar solved examples in the prompt",
+      "bucket": 0
+     },
+     {
+      "text": "Step-by-step reasoning the model wrote itself",
+      "bucket": 0
+     },
+     {
+      "text": "Answer choices shuffled, then a majority vote",
+      "bucket": 0
+     },
+     {
+      "text": "Special fine-tuning on medical data",
+      "bucket": 1
+     }
+    ],
+    "explanation": "Every Medprompt technique changed the prompt. None changed the model."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "By what percent did Medprompt cut the MedQA error rate versus the best specialist models?",
+    "min": 0,
+    "max": 100,
+    "value": 27,
+    "unit": "%",
+    "explanation": "A 27% cut in errors, from a general model and better prompts."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "An interviewer asks how you would make a general model better at a niche task without training it.",
+      "prompt": "What's your first answer?",
+      "options": [
+       "Say it cannot be done without fine-tuning",
+       "Make the model bigger before anything else",
+       "Add tailored examples and step-by-step reasoning"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Medprompt beat specialist models without special fine-tuning.",
+       "You cannot resize a model you only reach through prompts.",
+       "Medprompt did this and passed 90% on MedQA."
+      ],
+      "explanation": "Prompting is the cheapest lever, and Medprompt shows how far it can go."
+     },
+     "proReasoning": "Start with the prompt: examples, reasoning and a vote. Medprompt shows a general model can beat specialists that way.",
+     "commonMistake": "Assuming every niche task needs a custom trained model.",
+     "mentalModel": "Prompt first, train later."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A startup pitches a medical model. Its claimed edge is its own fine-tuning.",
+      "prompt": "What do you ask?",
+      "options": [
+       "If it beats a well-prompted general model",
+       "Whether its demo video looks polished",
+       "Whether it runs on the very newest GPU chips"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Medprompt showed prompts alone can beat specialists.",
+       "A polished demo says little about the edge.",
+       "Hardware choice does not prove the model is better."
+      ],
+      "explanation": "If a prompted general model matches it, the fine-tuning is not a moat."
+     },
+     "proReasoning": "Investors compare a specialist model against the best prompted generalist, not against a weak baseline.",
+     "commonMistake": "Treating fine-tuning as a moat without testing a prompted rival.",
+     "mentalModel": "Benchmark against the prompted generalist."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You want to build a legal assistant. You have little money for training.",
+      "prompt": "Where do you start?",
+      "options": [
+       "Wait until a lab releases a legal model",
+       "A general model, examples and reasoning",
+       "Raise millions to train a legal model first"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Waiting hands rivals the head start.",
+       "The Medprompt recipe used no special training.",
+       "Prompting may get you most of the way for far less."
+      ],
+      "explanation": "Medprompt pulled similar solved examples into each prompt. The same idea works with your own legal examples."
+     },
+     "proReasoning": "Founders borrow the Medprompt recipe: retrieve similar examples, ask for reasoning, check answers. Training can wait.",
+     "commonMistake": "Spending the seed round on training before testing prompts.",
+     "mentalModel": "Retrieve, reason, then vote."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend says only AI built for medicine can do well on medical exams.",
+      "prompt": "What's the fairer view?",
+      "options": [
+       "Yes, only special training can do that",
+       "No AI has passed a medical benchmark yet",
+       "A general model passed 90% with smart prompts"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Medprompt beat specialists with prompts alone.",
+       "GPT-4 scored above 90% on MedQA in 2023.",
+       "Medprompt steered GPT-4 past 90% on MedQA."
+      ],
+      "explanation": "How you ask can matter as much as how the model was trained."
+     },
+     "proReasoning": "A general model, asked well, beat models built for medicine on their own benchmark.",
+     "commonMistake": "Thinking only specialized training makes a model good at a field.",
+     "mentalModel": "Asking well is a skill."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:9ff6310fc715"
+  ]
+ },
+ {
+  "id": "43c787b7-ee47-5935-81f9-d89abf8fd1d8",
+  "market_id": "ai",
+  "day": 49,
+  "slot": 2,
+  "content": {
+   "id": "ai-d49-c2",
+   "title": "Training to follow, prompting to steer",
+   "lessonTitle": "Five words that changed a math score",
+   "slot": 2,
+   "type": "connect",
+   "brief": {
+    "headline": "In January 2022, OpenAI said labelers preferred its 1.3B InstructGPT over 175B GPT-3, despite more than 100 times fewer parameters. Before that, GPT-3 had to be coaxed with carefully engineered prompts.",
+    "kicker": "Connect day 1 and day 49: feedback training and prompts work together.",
+    "fullText": "On day 1 you saw that InstructGPT learned from human demonstrations, then from people ranking its answers. OpenAI said GPT-3 could be coaxed into tasks with carefully engineered text prompts, but that some behavior was difficult to get through prompt engineering alone.\n\nOn day 49 you saw the other side: five words lifted a model's math score from 17.7% to 78.7% without changing the model. The model in that test was an InstructGPT model, text-davinci-002.\n\nTraining teaches a model to follow instructions. Prompting decides which instructions it gets.",
+    "sources": [
+     {
+      "url": "https://openai.com/index/instruction-following/",
+      "label": "OpenAI, InstructGPT"
+     },
+     {
+      "url": "https://arxiv.org/pdf/2205.11916",
+      "label": "Kojima et al., Large Language Models are Zero-Shot Reasoners, 2022"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "faceOff",
+    "prompt": "Which change needs a new training run?",
+    "left": {
+     "name": "Adding \"Let's think step by step\"",
+     "note": "A change to the prompt"
+    },
+    "right": {
+     "name": "Learning from ranked answers",
+     "note": "A change to the model"
+    },
+    "correctIndex": 1,
+    "explanation": "Ranked answers train the model. A new phrase in the prompt changes only the input."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "InstructGPT had 1.3 billion parameters and GPT-3 had 175 billion. About how many times larger was GPT-3?",
+    "min": 0,
+    "max": 300,
+    "value": 135,
+    "unit": "x",
+    "explanation": "About 135 times larger, yet labelers preferred the smaller, feedback-trained model."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your team's chatbot ignores formatting rules. A colleague wants to retrain it.",
+      "prompt": "What do you suggest first?",
+      "options": [
+       "Rewrite the prompt with clear examples",
+       "Retrain the model from scratch",
+       "Switch to a model ten times larger"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "A prompt change needs no new training run.",
+       "Training is slow and costly for a formatting fix.",
+       "InstructGPT showed bigger is not always preferred."
+      ],
+      "explanation": "Try the prompt first. Train only for what prompts cannot fix."
+     },
+     "proReasoning": "Match the fix to the problem. Formatting is a prompt problem before it is a training problem.",
+     "commonMistake": "Reaching for retraining when an example in the prompt would do.",
+     "mentalModel": "Prompt before you train."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A lab says its smaller model beats a rival model ten times its size.",
+      "prompt": "Is that plausible?",
+      "options": [
+       "Only if the benchmark was kept secret",
+       "Yes, feedback training can beat raw size",
+       "No, bigger models always win"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Secrecy is not what made InstructGPT win.",
+       "Labelers preferred a 1.3B InstructGPT over 175B GPT-3.",
+       "InstructGPT showed otherwise in 2022."
+      ],
+      "explanation": "How a model is trained can matter more than how big it is."
+     },
+     "proReasoning": "Investors do not rank models by parameter count. Training method changes what users prefer.",
+     "commonMistake": "Assuming the biggest model is always the best product.",
+     "mentalModel": "Size is not preference."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You can fund either prompt work or a fine-tuning project this quarter.",
+      "prompt": "How do you choose?",
+      "options": [
+       "Fine-tune first, since prompts rarely matter",
+       "Skip both and ship the raw model",
+       "Prompt first, then tune what prompts cannot fix"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Five words moved one score by 61 points.",
+       "The raw model may miss your users' needs.",
+       "Some behavior is hard to get through prompts alone, so test."
+      ],
+      "explanation": "Prompts are cheap to test. Their limits tell you what training must fix."
+     },
+     "proReasoning": "Founders use prompt tests to find exactly what is worth paying to train.",
+     "commonMistake": "Funding training before learning what a prompt could do.",
+     "mentalModel": "Let prompts show where to train."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend asks why chatbots became easier to talk to after 2022.",
+      "prompt": "What's a good answer?",
+      "options": [
+       "They were trained to follow instructions",
+       "People learned to type in capital letters",
+       "Their context windows got smaller"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "InstructGPT learned from human demonstrations and rankings.",
+       "Typing style did not change the models.",
+       "Windows grew, from 2,048 tokens in GPT-3."
+      ],
+      "explanation": "Feedback training made models follow plain requests, so less prompt craft was needed."
+     },
+     "proReasoning": "Chatbots got easier because they were trained on what people wanted, not because people got better at prompts.",
+     "commonMistake": "Thinking the chatbot simply understood people better on its own.",
+     "mentalModel": "Training made asking easier."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:ff3e27e0d25e"
+  ]
+ },
+ {
+  "id": "7c625eeb-1b1d-5d8b-96e9-06c1859065c5",
+  "market_id": "ai",
+  "day": 49,
+  "slot": 3,
+  "content": {
+   "id": "ai-d49-c3",
+   "title": "Prompt or fine-tune?",
+   "lessonTitle": "Five words that changed a math score",
+   "slot": 3,
+   "type": "decide",
+   "brief": {
+    "headline": "You run AI at an insurance company. Your claims assistant misses too many test cases, and the team wants to fine-tune a model.",
+    "kicker": "Decide what to try before you train.",
+    "fullText": "On MultiArith, adding \"Let's think step by step\" lifted an InstructGPT model from 17.7% to 78.7%, with no new training. On GSM8K, eight worked examples put Google's PaLM 540B at the top of the benchmark.\n\nFine-tuning changes the model. GPT-3's few-shot tests used no gradient updates or fine-tuning: the task and examples came only through text.\n\nOpenAI also noted that some behavior is difficult to get through prompt engineering alone, which is why it trained InstructGPT on human feedback.",
+    "sources": [
+     {
+      "url": "https://arxiv.org/pdf/2205.11916",
+      "label": "Kojima et al., Large Language Models are Zero-Shot Reasoners, 2022"
+     },
+     {
+      "url": "https://ar5iv.arxiv.org/html/2201.11903",
+      "label": "Wei et al. (Google), Chain-of-thought prompting elicits reasoning, 2022"
+     },
+     {
+      "url": "https://ar5iv.labs.arxiv.org/html/2005.14165",
+      "label": "Brown et al., Language models are few-shot learners, 2020"
+     },
+     {
+      "url": "https://openai.com/index/instruction-following/",
+      "label": "OpenAI, InstructGPT"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "buildChain",
+    "prompt": "Put the attempts in a sensible order, cheapest first.",
+    "steps": [
+     "Write a clear instruction with no examples",
+     "Add a few worked examples",
+     "Ask for step-by-step reasoning",
+     "Fine-tune only if prompts still fall short"
+    ],
+    "explanation": "Each step costs more than the last. Training comes after the free levers are spent."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "How many worked examples put PaLM 540B at the top of the GSM8K math benchmark?",
+    "min": 0,
+    "max": 30,
+    "value": 8,
+    "unit": "examples",
+    "explanation": "Eight chain-of-thought examples, all inside the prompt."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "As AI lead, you present a plan to the head of claims.",
+      "prompt": "What do you propose?",
+      "options": [
+       "Drop the assistant and return to manual work",
+       "Two weeks of prompt tests, then decide on tuning",
+       "Start fine-tuning now and skip prompt tests"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "You give up before trying the cheapest lever.",
+       "Cheap tests show whether tuning is needed at all.",
+       "You may pay to train for what a prompt fixes."
+      ],
+      "explanation": "Prompts change answers without a training run. Test them before you budget for one."
+     },
+     "proReasoning": "Propose a short prompt test with a clear bar for when to fine-tune. It shows judgment about cost.",
+     "commonMistake": "Agreeing to a training project before anyone tested the prompt.",
+     "mentalModel": "Test cheap levers first."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You hold shares in a vendor that sells fine-tuning projects to companies.",
+      "prompt": "What risk do you watch?",
+      "options": [
+       "Clients asking for longer contracts",
+       "Clients hiring more data labelers",
+       "Clients finding prompts alone are enough"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Longer contracts would help the vendor.",
+       "More labeling usually means more tuning work.",
+       "Five words moved one score by 61 points without training."
+      ],
+      "explanation": "Every gain from prompting is a project the vendor does not sell."
+     },
+     "proReasoning": "Investors ask how much of a tuning vendor's work a better prompt could replace.",
+     "commonMistake": "Ignoring prompting as a substitute for paid training.",
+     "mentalModel": "Prompts compete with tuning."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You consider a startup that tests prompts for companies before they train.",
+      "prompt": "What is its pitch?",
+      "options": [
+       "Find the cheapest fix before training",
+       "Train every client its own custom model",
+       "Sell clients more GPU capacity to rent"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Prompts change answers without new training runs.",
+       "That is the costly path the pitch avoids.",
+       "That sells the expense, not the saving."
+      ],
+      "explanation": "Companies pay to avoid needless training. Show them the prompt result first."
+     },
+     "proReasoning": "A clear saving is an easy pitch: try the prompt before the training run.",
+     "commonMistake": "Selling more compute when clients want lower costs.",
+     "mentalModel": "Sell the saving."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend thinks you must retrain an AI to make it better at any task.",
+      "prompt": "What's the fuller picture?",
+      "options": [
+       "No, AI can never get better at tasks",
+       "Often a better prompt is enough",
+       "Yes, retraining is the only way"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Both prompts and training improve results.",
+       "Five words lifted one score from 17.7% to 78.7%.",
+       "Prompts change answers too."
+      ],
+      "explanation": "Training changes the model. Prompting changes what you ask it. Both matter."
+     },
+     "proReasoning": "The same model can do much better or worse depending on how it is asked.",
+     "commonMistake": "Thinking a model's skill is fixed once it is trained.",
+     "mentalModel": "Same model, better question."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:312f1fe39a92"
+  ]
+ },
+ {
+  "id": "39da6095-4439-5fa4-b752-174c14bb69e9",
+  "market_id": "ai",
+  "day": 50,
+  "slot": 1,
+  "content": {
+   "id": "ai-d50-c1",
+   "title": "Half price, automatically",
+   "lessonTitle": "Paying for the same words twice",
+   "slot": 1,
+   "type": "apply",
+   "brief": {
+    "headline": "On October 1, 2024, OpenAI made prompt caching automatic on its latest GPT-4o models. Cached input on prompts over 1,024 tokens cost half the normal price.",
+    "kicker": "Apply day 50: reuse is where the margin hides.",
+    "fullText": "For GPT-4o, uncached input cost $2.50 per million tokens and cached input $1.25. Output stayed at $10.00. For GPT-4o mini, input fell from $0.15 to $0.075 when cached.\n\nCaches were typically cleared after 5 to 10 minutes of inactivity and always removed within an hour of last use. So the saving depends on how often the same long prompt repeats.\n\nAnthropic took a different design: cache writes cost a bit more than normal input, and cache reads cost a tenth of it on most Claude models.",
+    "sources": [
+     {
+      "url": "https://openai.com/index/api-prompt-caching",
+      "label": "OpenAI, Prompt caching in the API, Oct 2024"
+     },
+     {
+      "url": "https://platform.claude.com/docs/en/about-claude/pricing",
+      "label": "Anthropic, Claude API pricing, Nov 2026"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "multipleChoice",
+    "prompt": "Which app saves the most from OpenAI's caching?",
+    "options": [
+     "A tool that sends a short, new prompt each time",
+     "A report that runs once a month",
+     "A bot that reuses one long system prompt all day"
+    ],
+    "correctIndex": 2,
+    "explanation": "Caching only helps when the same long prompt repeats within minutes. Short or rare prompts never hit the cache."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "GPT-4o output cost $10 per million tokens and input $2.50. How many times more did output cost?",
+    "min": 0,
+    "max": 10,
+    "value": 4,
+    "unit": "x",
+    "explanation": "Four times. Caching cuts input costs; long answers still cost the most per token."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "An interviewer asks how you would cut a chatbot's API bill without hurting its answers.",
+      "prompt": "What do you say first?",
+      "options": [
+       "Keep the long fixed prompt identical",
+       "Rewrite the system prompt on every request",
+       "Ask users to type much longer questions"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Cached input cost half price on GPT-4o.",
+       "A prompt that changes every time never repeats.",
+       "Longer inputs add tokens to the bill."
+      ],
+      "explanation": "Caching rewards prompts that repeat. Keep the fixed part fixed."
+     },
+     "proReasoning": "Name caching and how it works. A concrete saving beats a vague promise to optimize.",
+     "commonMistake": "Suggesting a cheaper model before using the free discount.",
+     "mentalModel": "Keep the fixed part fixed."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A model maker halves the price of repeated input for its customers.",
+      "prompt": "What do you watch next?",
+      "options": [
+       "Whether rivals drop discounts altogether",
+       "Whether usage grows enough to offset the cut",
+       "Whether the company moves its headquarters"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Anthropic already offered cache reads at a tenth.",
+       "Cheaper repeats only pay off if they bring more use.",
+       "Location says little about pricing power."
+      ],
+      "explanation": "A price cut is a bet on volume. Track usage against revenue per token."
+     },
+     "proReasoning": "Investors treat a discount as a trade of margin for volume, and check which way it goes.",
+     "commonMistake": "Reading a price cut as pure good news or pure bad news.",
+     "mentalModel": "Discounts trade margin for volume."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your app's prompt starts with the user's name, then a 5,000-token fixed guide.",
+      "prompt": "What do you change?",
+      "options": [
+       "Remove the guide entirely to save tokens",
+       "Repeat the guide twice for emphasis",
+       "Put the guide first and the name last"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Answers may get worse without the guide.",
+       "Twice the guide means twice the input bill.",
+       "A shared start can be cached across all users."
+      ],
+      "explanation": "Caches store the start of a prompt. Lead with what never changes."
+     },
+     "proReasoning": "Founders order prompts for caching: fixed text first, personal details last.",
+     "commonMistake": "Putting a per-user detail at the very start of every prompt.",
+     "mentalModel": "Fixed first, personal last."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend asks why AI companies fuss over a dollar or two per million tokens.",
+      "prompt": "What's the answer?",
+      "options": [
+       "Apps resend the same text over and over",
+       "Each token costs thousands of dollars",
+       "Tokens are billed only once per user"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Small savings add up when prompts repeat.",
+       "GPT-4o input cost $2.50 per million tokens.",
+       "Every request is billed again."
+      ],
+      "explanation": "Small prices times huge repetition make a large bill."
+     },
+     "proReasoning": "Tiny per-token prices matter because the same instructions are sent with every request.",
+     "commonMistake": "Thinking each question costs only the words you typed.",
+     "mentalModel": "Repetition makes the bill."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:75e0201537dd"
+  ]
+ },
+ {
+  "id": "7289584c-5f98-5f19-bbe7-fe2d233461af",
+  "market_id": "ai",
+  "day": 50,
+  "slot": 2,
+  "content": {
+   "id": "ai-d50-c2",
+   "title": "Where a long prompt steps up in price",
+   "lessonTitle": "Paying for the same words twice",
+   "slot": 2,
+   "type": "connect",
+   "brief": {
+    "headline": "Claude Haiku 5.5 charges $0.10 per million input tokens for prompts up to 100,000 tokens, and $0.50 above that. Claude 4.6 and later models, except Haiku 5.5, bill 900,000 tokens at the 9,000-token rate.",
+    "kicker": "Connect day 11 and day 50: long context is a pricing choice.",
+    "fullText": "On day 11 you saw that a Transformer's attention work grows with the square of input length. Anthropic describes it the same way: every token attends to every other, giving n squared pairwise relationships for n tokens. Model makers decide how much of that cost to pass on.\n\nClaude Haiku 5.5 charges five times more per input token once a prompt passes 100,000 tokens. The whole request pays the higher rate, even the part that is a cache hit. Claude 4.6 and later models, except Haiku 5.5, bill a 900,000-token request at the same per-token rate as a 9,000-token one.\n\nThe same long prompt can cost very different amounts depending on the model and where its price steps up.",
+    "sources": [
+     {
+      "url": "https://platform.claude.com/docs/en/about-claude/pricing",
+      "label": "Anthropic, Claude API pricing, Nov 2026"
+     },
+     {
+      "url": "https://anthropic.com/research/effective-context-engineering-for-ai-agents",
+      "label": "Anthropic, Effective context engineering for AI agents, Sep 2025"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "spotFake",
+    "prompt": "One of these is false. Tap it.",
+    "statements": [
+     "Haiku 5.5 charges more per token above 100,000 tokens.",
+     "Claude 4.6 bills 900,000 tokens at the 9,000-token rate.",
+     "A cache hit keeps a long prompt at the lower Haiku rate."
+    ],
+    "fakeIndex": 2,
+    "explanation": "A request over the line pays the higher rate even when part of its prompt is a cache hit."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "Haiku 5.5 input costs $0.10 per million tokens below the line and $0.50 above it. How many times higher is that?",
+    "min": 0,
+    "max": 12,
+    "value": 5,
+    "unit": "x",
+    "explanation": "Five times, and output steps up the same way, from $0.50 to $2.50."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your team sends 120,000-token prompts to Claude Haiku 5.5.",
+      "prompt": "What do you flag?",
+      "options": [
+       "Add more text, since longer is cheaper per token",
+       "Trim below 100,000 tokens to cut the rate fivefold",
+       "Nothing, since prompt length never changes price"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Longer prompts cost more per token here, not less.",
+       "Haiku 5.5 charges $0.50, not $0.10, above the line.",
+       "On Haiku 5.5, length sets the rate."
+      ],
+      "explanation": "Know where your model's price steps up, and stay under it when you can."
+     },
+     "proReasoning": "Check the pricing rules for your real prompt length. A small trim can cut a bill by a lot.",
+     "commonMistake": "Assuming one price per token applies at every length.",
+     "mentalModel": "Know where the price steps up."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Two model lines from one company price long prompts in different ways.",
+      "prompt": "What does that tell you?",
+      "options": [
+       "Long prompts cost the provider nothing",
+       "All prices will soon be the same",
+       "Long-context pricing is a lever it chooses"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Attention work grows with the square of input length.",
+       "Today the rules differ sharply by model.",
+       "One line steps up fivefold; others keep one rate at any length."
+      ],
+      "explanation": "Pricing long context is a strategic choice, not just a cost pass-through."
+     },
+     "proReasoning": "Investors read pricing rules as strategy: which customers a provider wants, and which it prices away.",
+     "commonMistake": "Comparing providers only on their headline price per token.",
+     "mentalModel": "Pricing rules are strategy."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your product summarizes long contracts in one prompt each.",
+      "prompt": "How do you pick a model?",
+      "options": [
+       "Compare prices at your real prompt length",
+       "Pick the lowest headline price per token",
+       "Pick the model with the most features"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "The cheapest headline rate can step up fivefold.",
+       "Headline rates can hide long-prompt premiums.",
+       "Features do not set your bill."
+      ],
+      "explanation": "Model your costs at the lengths you will actually send."
+     },
+     "proReasoning": "Founders price their own workload, not the provider's headline number.",
+     "commonMistake": "Choosing a model on its cheapest rate, then sending prompts above the line.",
+     "mentalModel": "Price your real workload."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend asks why sending a whole book to a chatbot might cost more per word.",
+      "prompt": "What's the answer?",
+      "options": [
+       "Words in books are always much longer",
+       "Some models charge more past a length",
+       "Books are taxed as special content"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Price depends on tokens and length, not on books.",
+       "Haiku 5.5 charges five times more past 100,000 tokens.",
+       "No such tax exists in the pricing."
+      ],
+      "explanation": "Reading more costs more to run, and some prices reflect that."
+     },
+     "proReasoning": "Long inputs take more work to read, so some models charge a higher rate for them.",
+     "commonMistake": "Assuming every word costs the same no matter how much you send.",
+     "mentalModel": "Long reads can cost more per word."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:9e3e3315ea8b"
+  ]
+ },
+ {
+  "id": "be5fbd17-b1f3-56b7-9098-2987f2797516",
+  "market_id": "ai",
+  "day": 50,
+  "slot": 3,
+  "content": {
+   "id": "ai-d50-c3",
+   "title": "Cache, batch or both",
+   "lessonTitle": "Paying for the same words twice",
+   "slot": 3,
+   "type": "decide",
+   "brief": {
+    "headline": "You run a legal research app on Claude Sonnet 4.6. Every live query resends the same long research guide, and nightly reports can wait hours.",
+    "kicker": "Decide which discount fits which traffic.",
+    "fullText": "Claude Sonnet 4.6 costs $3 per million input tokens and $15 per million output tokens. A five-minute cache write costs 1.25 times the input price, a one-hour write costs 2 times, and a cache read costs 0.1 times on most Claude models.\n\nThe Batch API gives a 50% discount on input and output for requests that can run asynchronously. Batch and caching discounts can be combined.\n\nAnthropic says caching saves money after one read with a five-minute write, and after two reads with a one-hour write.",
+    "sources": [
+     {
+      "url": "https://platform.claude.com/docs/en/about-claude/pricing",
+      "label": "Anthropic, Claude API pricing, Nov 2026"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "sortSignal",
+    "prompt": "Which discount fits each kind of traffic?",
+    "buckets": [
+     "Prompt caching",
+     "Batch API"
+    ],
+    "items": [
+     {
+      "text": "Live queries that reuse one long guide",
+      "bucket": 0
+     },
+     {
+      "text": "A chat that resends its history each turn",
+      "bucket": 0
+     },
+     {
+      "text": "Nightly reports that can wait hours",
+      "bucket": 1
+     },
+     {
+      "text": "A monthly rerun of old research",
+      "bucket": 1
+     }
+    ],
+    "explanation": "Caching pays when text repeats quickly. Batch pays when the answer can wait."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "A one-hour cache write costs 2 times input, each read 0.1 times. After how many reads does caching save money?",
+    "min": 0,
+    "max": 10,
+    "value": 2,
+    "unit": "reads",
+    "explanation": "Two. The write plus two reads cost 2.2 times input, against 3 times with no cache."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your manager asks how to cut the bill sharply without slowing live answers.",
+      "prompt": "What do you recommend?",
+      "options": [
+       "Batch everything, live queries included",
+       "Turn off caching to keep billing simple",
+       "Cache the guide and batch the nightly reports"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Live users would wait on asynchronous jobs.",
+       "You would pay full price for every repeat.",
+       "Each discount goes where it fits, and they stack."
+      ],
+      "explanation": "Match the discount to the traffic. They combine."
+     },
+     "proReasoning": "Split traffic by how fast it must answer and how often it repeats. Then apply the matching discount.",
+     "commonMistake": "Applying one discount to all traffic and breaking live answers.",
+     "mentalModel": "Match discount to traffic."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You compare two AI apps built on the same model at the same price.",
+      "prompt": "What can separate their margins?",
+      "options": [
+       "How much traffic they cache and batch",
+       "Which colors they use on their invoices",
+       "How many models they list on their site"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Same model, but discounts change the cost per answer.",
+       "Design does not change token costs.",
+       "A long list says nothing about costs."
+      ],
+      "explanation": "Two apps with one supplier can have very different costs."
+     },
+     "proReasoning": "Investors ask what share of an app's tokens are cached or batched. It explains margin gaps.",
+     "commonMistake": "Assuming apps on the same model must have the same costs.",
+     "mentalModel": "Same model, different margins."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You charge per seat. Heavy users resend long documents all day.",
+      "prompt": "What protects your margin?",
+      "options": [
+       "Block users from uploading documents",
+       "Cache those documents at a tenth of the price",
+       "Charge heavy users nothing extra and hope"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "You would cut the feature users pay for.",
+       "Repeats cost 0.1 times input after the first write.",
+       "Their full-price tokens would eat your margin."
+      ],
+      "explanation": "Caching keeps a flat price workable when usage is uneven."
+     },
+     "proReasoning": "Founders on flat pricing cache the heaviest repeated content first.",
+     "commonMistake": "Setting a flat price without modeling heavy users.",
+     "mentalModel": "Cache what heavy users repeat."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend asks why some AI jobs run overnight instead of instantly.",
+      "prompt": "What's one reason?",
+      "options": [
+       "Overnight answers are written by people",
+       "Instant answers skip the model",
+       "Jobs that can wait get a 50% discount"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Batch jobs still run on the model.",
+       "Every answer comes from the model.",
+       "The Batch API halves the price for jobs that can wait."
+      ],
+      "explanation": "Waiting is cheaper, because the provider can schedule the work."
+     },
+     "proReasoning": "Speed costs money. Work that can wait is billed at half price.",
+     "commonMistake": "Thinking every AI answer costs the same no matter when it arrives.",
+     "mentalModel": "Waiting is cheaper."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:108cdbaba054"
+  ]
+ },
+ {
+  "id": "59ee1051-5827-5b28-a99f-a6297a451ddf",
+  "market_id": "ai",
+  "day": 51,
+  "slot": 1,
+  "content": {
+   "id": "ai-d51-c1",
+   "title": "Slack closes the tap",
+   "lessonTitle": "Who controls what the model can see",
+   "slot": 1,
+   "type": "apply",
+   "brief": {
+    "headline": "In 2025, Salesforce changed Slack's API terms. Apps like Glean could no longer index, copy or store Slack data long term, or use it in large language models.",
+    "kicker": "Apply day 51: the data owner decides what reaches the model.",
+    "fullText": "Glean runs enterprise AI search. Its Slack integration let customers search and analyze their Slack messages alongside other company data. Reuters reported the change would stop customers from adding Slack data to Glean's search index or knowledge graph.\n\nSalesforce said it was reinforcing safeguards around how data accessed through Slack APIs can be stored, used and shared, citing how AI raises questions about customer data. The terms bar bulk export, persistent copies, archives, indexes or long-term data stores, and use of the data in large language models.\n\nCustomers without negotiated terms accept such changes by continuing to use the API.",
+    "sources": [
+     {
+      "url": "https://cyprus-mail.com/2025/06/13/salesforce-blocks-ai-rivals-from-using-slack-data-according-to-reports",
+      "label": "Reuters via Cyprus Mail, Salesforce blocks AI rivals from using Slack data, Jun 2025"
+     },
+     {
+      "url": "https://natlawreview.com/article/salesforce-locks-down-slack-data-time-review-your-slack-api-terms",
+      "label": "National Law Review, Salesforce locks down Slack data, Aug 2025"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "spotFake",
+    "prompt": "One of these is false. Tap it.",
+    "statements": [
+     "Slack's terms now bar long-term indexes of API data.",
+     "Glean could no longer keep Slack data in its index.",
+     "Salesforce opened Slack data to every AI app for free."
+    ],
+    "fakeIndex": 2,
+    "explanation": "Salesforce tightened access. It did not open it."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "By December 2025, MCP had more than how many thousand active public servers?",
+    "min": 0,
+    "max": 50,
+    "value": 10,
+    "unit": "K",
+    "explanation": "More than 10,000 ways to connect, and the data owner can still refuse."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You interview at an enterprise AI search company after the Slack change.",
+      "prompt": "What do you ask?",
+      "options": [
+       "How fast its model answers each question",
+       "Which data it relies on, and on what terms",
+       "Which programming language it uses most"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Speed matters little if the data is gone.",
+       "One terms change cut off a core data source.",
+       "Language choice does not decide data access."
+      ],
+      "explanation": "An AI product is only as good as the data it may read."
+     },
+     "proReasoning": "Ask about data access and contract terms. It shows you know where an AI product can break.",
+     "commonMistake": "Asking only about the model and ignoring what feeds it.",
+     "mentalModel": "Ask what feeds the model."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "An AI startup gets most of its value from indexing one partner platform's data.",
+      "prompt": "What is the key risk?",
+      "options": [
+       "Its engineers may prefer remote work",
+       "Model prices may keep falling",
+       "The platform can change its terms at will"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Work style is not the core risk here.",
+       "Falling prices usually help the startup.",
+       "Salesforce did exactly that with Slack."
+      ],
+      "explanation": "Building on someone else's data means living under their terms."
+     },
+     "proReasoning": "Investors price platform risk: what happens if the data owner says no tomorrow.",
+     "commonMistake": "Treating a partner's data as if the startup owned it.",
+     "mentalModel": "Borrowed data, borrowed risk."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You plan an AI assistant that answers questions from a company's chat history.",
+      "prompt": "How do you build it?",
+      "options": [
+       "Build on integrations the data owner approves",
+       "Copy the whole archive into your own index",
+       "Scrape the chat app through a browser"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "You stay within the owner's terms.",
+       "Slack's terms bar persistent copies and indexes.",
+       "That risks breaking the terms and losing access."
+      ],
+      "explanation": "Design for the owner's rules from day one."
+     },
+     "proReasoning": "Founders design around the data owner's terms, not around what is technically possible.",
+     "commonMistake": "Building the product on a copy the owner can forbid.",
+     "mentalModel": "Build inside the terms."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend wonders why a work AI tool stopped finding old Slack messages.",
+      "prompt": "What's a likely reason?",
+      "options": [
+       "AI tools cannot read chat apps at all",
+       "Slack's owner limited what apps can store",
+       "The AI deleted the messages by mistake"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "They can, when the owner allows it.",
+       "Salesforce barred long-term copies and indexes in 2025.",
+       "Losing access is not the same as deleting data."
+      ],
+      "explanation": "What an assistant can read depends on rules set by whoever holds the data."
+     },
+     "proReasoning": "An AI tool can only search what the data owner lets it keep.",
+     "commonMistake": "Blaming the AI when the access rules changed.",
+     "mentalModel": "Access rules shape AI."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:91d8a9c2c43e"
+  ]
+ },
+ {
+  "id": "27521fc7-0f2c-5ea8-897e-688a60143c7d",
+  "market_id": "ai",
+  "day": 51,
+  "slot": 2,
+  "content": {
+   "id": "ai-d51-c2",
+   "title": "When the pipe is free, the data is scarce",
+   "lessonTitle": "Who controls what the model can see",
+   "slot": 2,
+   "type": "connect",
+   "brief": {
+    "headline": "On day 3 you saw that power goes to whoever controls the scarcest input. By December 2025, MCP had made connecting models to tools an open standard, run by a neutral foundation.",
+    "kicker": "Connect day 3 and day 51: free pipes make data the scarce input.",
+    "fullText": "On day 3, the scarce inputs were chips and capital. In an AI app, a model is also only as useful as the context it receives.\n\nOn December 9, 2025, Anthropic donated MCP to the Agentic AI Foundation, a fund under the Linux Foundation co-founded by Anthropic, Block and OpenAI. With more than 10,000 active servers and adoption in ChatGPT, Gemini, Microsoft Copilot, Cursor and Visual Studio Code, no single company owns the pipe.\n\nWhen connecting is cheap, the scarce input becomes the data itself and the right to use it. In 2025, Salesforce barred apps like Glean from storing or indexing Slack data long term.",
+    "sources": [
+     {
+      "url": "https://anthropic.com/news/donating-the-model-context-protocol-and-establishing-of-the-agentic-ai-foundation",
+      "label": "Anthropic, Donating MCP and the Agentic AI Foundation, Dec 2025"
+     },
+     {
+      "url": "https://blog.modelcontextprotocol.io/posts/2025-12-09-mcp-joins-agentic-ai-foundation/",
+      "label": "MCP blog, MCP joins the Agentic AI Foundation, Dec 2025"
+     },
+     {
+      "url": "https://cyprus-mail.com/2025/06/13/salesforce-blocks-ai-rivals-from-using-slack-data-according-to-reports",
+      "label": "Reuters via Cyprus Mail, Salesforce blocks AI rivals from using Slack data, Jun 2025"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "buildChain",
+    "prompt": "Follow how power shifts in AI apps.",
+    "steps": [
+     "Each app builds its own custom connectors",
+     "An open standard makes connecting cheap",
+     "Many apps can reach the same tools",
+     "Data owners' terms become the bottleneck"
+    ],
+    "explanation": "Once the pipe is shared, control moves to whoever owns what flows through it."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "By December 2025, how many million monthly SDK downloads did MCP have?",
+    "min": 0,
+    "max": 150,
+    "value": 97,
+    "unit": "M",
+    "explanation": "More than 97 million a month across Python and TypeScript."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You're asked where an AI assistant company's edge comes from now that MCP is standard.",
+      "prompt": "What's your answer?",
+      "options": [
+       "Owning the connector standard itself",
+       "Listing the most MCP servers",
+       "Access to data rivals cannot easily get"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "MCP is run by a neutral foundation.",
+       "More than 10,000 servers exist for anyone.",
+       "Connectors are shared now; data access is not."
+      ],
+      "explanation": "Find the scarce input. Here it is the data, not the pipe."
+     },
+     "proReasoning": "Apply the day 3 rule to a new layer. Ask what stays scarce after a standard spreads.",
+     "commonMistake": "Calling a shared standard a competitive edge.",
+     "mentalModel": "Find what stays scarce."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A connector startup's only product is custom integrations to popular tools.",
+      "prompt": "How has MCP changed its outlook?",
+      "options": [
+       "It now competes with a free standard",
+       "Demand for its product has clearly doubled",
+       "Nothing, since MCP is a closed system"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Open standards make custom connectors easy to replace.",
+       "Nothing here shows demand doubling.",
+       "MCP is open and run by a foundation."
+      ],
+      "explanation": "When a layer becomes a free standard, selling that layer gets hard."
+     },
+     "proReasoning": "Investors watch for standards that turn a startup's product into a commodity.",
+     "commonMistake": "Missing that a free standard now does what the startup sells.",
+     "mentalModel": "Standards commoditize layers."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You start an AI app for hospitals.",
+      "prompt": "Where should your edge come from?",
+      "options": [
+       "A longer list of generic connectors",
+       "Approved access to data rivals cannot reach",
+       "A custom connector format of your own"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Generic connectors are now everywhere.",
+       "Scarce data access is the new chokepoint.",
+       "Major platforms already adopted MCP."
+      ],
+      "explanation": "Use the standard for the pipe. Compete on the data."
+     },
+     "proReasoning": "Founders use the shared pipe and spend their effort winning data access.",
+     "commonMistake": "Rebuilding plumbing that a standard already gives everyone.",
+     "mentalModel": "Share the pipe, win the data."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend asks why rival AI companies backed one shared way to connect tools.",
+      "prompt": "What does a shared standard change?",
+      "options": [
+       "Each AI can use only one tool",
+       "Tools become locked to one company",
+       "Any app can plug into the same tools"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "A standard lets apps use many tools.",
+       "A neutral foundation now runs MCP.",
+       "ChatGPT, Gemini and Copilot all adopted MCP."
+      ],
+      "explanation": "A shared standard makes connecting easy for everyone."
+     },
+     "proReasoning": "Rivals share the plumbing so every assistant can reach the same tools.",
+     "commonMistake": "Thinking each AI company still builds its own private connections.",
+     "mentalModel": "Shared plumbing, open reach."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:739f430792ec"
+  ]
+ },
+ {
+  "id": "02a60429-feaf-561d-8384-caa74a57f61c",
+  "market_id": "ai",
+  "day": 51,
+  "slot": 3,
+  "content": {
+   "id": "ai-d51-c3",
+   "title": "Open the server or close the tap?",
+   "lessonTitle": "Who controls what the model can see",
+   "slot": 3,
+   "type": "decide",
+   "brief": {
+    "headline": "You run product at a software company whose customers keep years of notes in your app. AI assistants want to read that data through MCP.",
+    "kicker": "Decide how much of your data to let models see.",
+    "fullText": "MCP is an open standard for connecting AI models to tools and data. By December 2025 it had more than 10,000 active public servers and more than 97 million monthly SDK downloads, and ChatGPT, Gemini, Microsoft Copilot, Cursor and Visual Studio Code had adopted it.\n\nIn 2025, Salesforce took the other path with Slack. Its terms bar bulk export, persistent copies and indexes, and use of Slack API data in large language models. Reuters reported this stopped customers adding Slack data to Glean's index.\n\nOpening access lets customers use their data with any AI. Closing it protects your position, and can frustrate customers who wanted that choice.",
+    "sources": [
+     {
+      "url": "https://anthropic.com/news/donating-the-model-context-protocol-and-establishing-of-the-agentic-ai-foundation",
+      "label": "Anthropic, Donating MCP and the Agentic AI Foundation, Dec 2025"
+     },
+     {
+      "url": "https://cyprus-mail.com/2025/06/13/salesforce-blocks-ai-rivals-from-using-slack-data-according-to-reports",
+      "label": "Reuters via Cyprus Mail, Salesforce blocks AI rivals from using Slack data, Jun 2025"
+     },
+     {
+      "url": "https://natlawreview.com/article/salesforce-locks-down-slack-data-time-review-your-slack-api-terms",
+      "label": "National Law Review, Salesforce locks down Slack data, Aug 2025"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "faceOff",
+    "prompt": "Which choice keeps more control over your data?",
+    "left": {
+     "name": "An open MCP server with live reads",
+     "note": "Customers use any AI they like"
+    },
+    "right": {
+     "name": "Terms like Slack's 2025 rules",
+     "note": "No copies, indexes or language model use"
+    },
+    "correctIndex": 1,
+    "explanation": "Closing the tap keeps control, at the cost of customer choice."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "How many companies co-founded the Agentic AI Foundation that now runs MCP?",
+    "min": 0,
+    "max": 10,
+    "value": 3,
+    "unit": "companies",
+    "explanation": "Three: Anthropic, Block and OpenAI, under the Linux Foundation."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your CEO asks you to recommend an AI data access policy by Friday.",
+      "prompt": "What do you propose?",
+      "options": [
+       "Approved live access with clear limits",
+       "Block all AI access with no exceptions",
+       "Let any app copy everything forever"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Customers get choice, and you keep control of terms.",
+       "Customers lose the AI tools they chose.",
+       "You lose control of your most valuable asset."
+      ],
+      "explanation": "The middle path keeps the terms in your hands and the customers happy."
+     },
+     "proReasoning": "Recommend a policy that gives customers choice while you keep the right to set terms.",
+     "commonMistake": "Picking an extreme without weighing what customers want.",
+     "mentalModel": "Open with limits."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You hold shares in the company. It is weighing a Slack-style lockdown.",
+      "prompt": "What do you weigh?",
+      "options": [
+       "Logo design against brand recall in surveys",
+       "Control of data against customer goodwill",
+       "Office costs against next year's hiring plans"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Branding does not decide data access.",
+       "Locking down keeps power but can push customers away.",
+       "That is a budget question, not a data one."
+      ],
+      "explanation": "Data control is power, but customers notice when it is used against them."
+     },
+     "proReasoning": "Investors weigh the control a lockdown gives against the customers it may cost.",
+     "commonMistake": "Seeing only the control and not the backlash.",
+     "mentalModel": "Control has a price."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You're a startup that wants this company's data inside your AI tool.",
+      "prompt": "How do you approach it?",
+      "options": [
+       "Scrape the data straight from the web app",
+       "Copy user exports into your own index",
+       "Ask for approved access, then follow it"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Scraping risks being cut off, as Slack showed.",
+       "Long-term copies are what owners now bar.",
+       "Terms you agree to are terms you can rely on."
+      ],
+      "explanation": "A product on approved access survives a terms change better."
+     },
+     "proReasoning": "Founders secure access on paper before building on someone else's data.",
+     "commonMistake": "Building first and asking permission later.",
+     "mentalModel": "Permission before product."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend asks why an app might stop working with their AI assistant.",
+      "prompt": "What's a likely reason?",
+      "options": [
+       "The app's owner limited AI access",
+       "The AI forgot how to read the app",
+       "AI assistants only work offline"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Salesforce did this with Slack in 2025.",
+       "Access depends on terms, not memory.",
+       "Connectors like MCP link assistants to live tools."
+      ],
+      "explanation": "Each app's owner decides what assistants may read."
+     },
+     "proReasoning": "Your assistant works with an app only as long as the app's owner allows it.",
+     "commonMistake": "Assuming an AI assistant can reach any app by itself.",
+     "mentalModel": "Owners decide access."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:8d97aeaa9ec2"
+  ]
+ },
+ {
+  "id": "46a77d3d-6db1-575b-80c8-0ee9a33d95b6",
+  "market_id": "ai",
+  "day": 52,
+  "slot": 1,
+  "content": {
+   "id": "ai-d52-c1",
+   "title": "When the words do not match",
+   "lessonTitle": "Claimed context versus real context",
+   "slot": 1,
+   "type": "apply",
+   "brief": {
+    "headline": "In 2025, researchers tested 13 models that claimed at least 128,000 tokens. At 32,000 tokens, 11 fell below half their short-input scores when questions and answers shared no exact words.",
+    "kicker": "Apply day 52: harder tests shrink the effective window further.",
+    "fullText": "The NoLiMa benchmark, from LMU Munich and Adobe Research, hides a fact in a long text and asks about it without reusing the fact's exact words. The model has to make the link itself.\n\nGPT-4o fell from an almost perfect 99.3% to 69.7%. The authors blame the attention mechanism, which struggles in longer contexts when literal matches are absent.\n\nOn day 52, RULER found only half of 17 models held up at 32,000 tokens. NoLiMa suggests the gap is wider still when a question is worded differently from the answer.",
+    "sources": [
+     {
+      "url": "https://arxiv.org/html/2502.05167v3",
+      "label": "Modarressi et al. (LMU Munich, Adobe Research), NoLiMa, 2025"
+     },
+     {
+      "url": "https://arxiv.org/html/2404.06654v3",
+      "label": "NVIDIA, RULER: What's the real context size of your long-context models?, 2024"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "multipleChoice",
+    "prompt": "Why did NoLiMa scores fall faster than on older tests?",
+    "options": [
+     "Questions shared no exact words with answers",
+     "The models had less training data",
+     "The texts were written in rare languages"
+    ],
+    "correctIndex": 0,
+    "explanation": "Without word overlap, the model cannot just match text. Attention struggles at length."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "GPT-4o fell from 99.3% to 69.7% on NoLiMa. About how many points did it lose?",
+    "min": 0,
+    "max": 100,
+    "value": 30,
+    "unit": "points",
+    "explanation": "About 30 points, from one of the best models tested."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your team tested a model with a find-the-exact-phrase task and saw perfect recall at 100,000 tokens.",
+      "prompt": "What do you tell them?",
+      "options": [
+       "Ship it now, since recall is perfect",
+       "Cut every input down to 1,000 tokens",
+       "Test with reworded questions first"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Exact-match tests flatter long-context recall.",
+       "That throws away useful context for no reason.",
+       "Without word overlap, 11 of 13 models fell below half."
+      ],
+      "explanation": "Real users rarely quote the source word for word. Test the way they ask."
+     },
+     "proReasoning": "Point out when a test is easier than real use. It shows you know how evaluations mislead.",
+     "commonMistake": "Trusting an exact-match test as proof of long-context skill.",
+     "mentalModel": "Test the way users ask."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A vendor says its model \"remembers everything\" in a 128,000-token window.",
+      "prompt": "What evidence do you ask for?",
+      "options": [
+       "Scores on tests with no word matches",
+       "The size of its yearly marketing budget",
+       "A longer list of claimed features"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "NoLiMa showed claimed windows shrink on such tests.",
+       "Spending says nothing about recall.",
+       "Claims are what need checking."
+      ],
+      "explanation": "Ask for the hard test, not the flattering one."
+     },
+     "proReasoning": "Investors ask which test produced a recall claim, and whether it allowed word matching.",
+     "commonMistake": "Taking \"remembers everything\" at face value.",
+     "mentalModel": "Ask which test."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Customers say your document bot misses answers worded differently from the source.",
+      "prompt": "What do you build?",
+      "options": [
+       "A rule that users must quote exact phrases",
+       "Retrieval that finds passages by meaning first",
+       "A bigger window that sends whole files"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Users cannot know the source wording.",
+       "Short, relevant inputs avoid the long-context drop.",
+       "Long inputs are where recall falls without word matches."
+      ],
+      "explanation": "Find the right passage first, then send the model less."
+     },
+     "proReasoning": "Founders shrink the input to the passages that matter, so the model reads less and misses less.",
+     "commonMistake": "Answering recall problems with ever longer inputs.",
+     "mentalModel": "Find first, then read."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend says AI can find anything in a long document.",
+      "prompt": "What's the fairer view?",
+      "options": [
+       "Yes, it never misses a single fact",
+       "No, it can only read one page at a time",
+       "It slips when the wording differs"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Tests show clear misses at length.",
+       "Models read far more than a page.",
+       "GPT-4o fell from 99.3% to 69.7% on reworded tests."
+      ],
+      "explanation": "Finding a fact gets harder when the question uses different words."
+     },
+     "proReasoning": "AI is good at finding matching words in long text, and weaker at finding the same idea said differently.",
+     "commonMistake": "Assuming a long window means perfect recall.",
+     "mentalModel": "Matching is easier than meaning."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:3850df60380b"
+  ]
+ },
+ {
+  "id": "ece5d000-1b22-52f4-aab9-c62673d9f0a4",
+  "market_id": "ai",
+  "day": 52,
+  "slot": 2,
+  "content": {
+   "id": "ai-d52-c2",
+   "title": "The number on the box",
+   "lessonTitle": "Claimed context versus real context",
+   "slot": 2,
+   "type": "connect",
+   "brief": {
+    "headline": "On day 30, a leaderboard rank described a test-only Llama 4, not the shipped one. On day 52, GPT-4 claimed 128,000 tokens but held up only to 64,000 on RULER.",
+    "kicker": "Connect day 30 and day 52: trust the tested number, not the claim.",
+    "fullText": "On day 30 you learned to trust a score only if it measures the model you can actually use. The same habit applies to context windows.\n\nNVIDIA's RULER benchmark tested 17 long-context models that all claimed 32,000 tokens or more. Only half held up at 32,000. GPT-4 claimed 128,000 and reached an effective length of 64,000, scoring 96.6% at 4,000 tokens and 81.2% at 128,000.\n\nIn April 2025, Meta said Llama 4 Scout supported 10 million tokens, up from 128,000 in Llama 3. A claim like that is where testing starts, not where it ends.",
+    "sources": [
+     {
+      "url": "https://arxiv.org/html/2404.06654v3",
+      "label": "NVIDIA, RULER: What's the real context size of your long-context models?, 2024"
+     },
+     {
+      "url": "https://ai.meta.com/blog/llama-4-multimodal-intelligence/",
+      "label": "Meta, The Llama 4 herd, Apr 2025"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "sortSignal",
+    "prompt": "Is it a claim or a tested result?",
+    "buckets": [
+     "A claim",
+     "A tested result"
+    ],
+    "items": [
+     {
+      "text": "Llama 4 Scout supports 10 million tokens",
+      "bucket": 0
+     },
+     {
+      "text": "GPT-4 supports 128,000 tokens",
+      "bucket": 0
+     },
+     {
+      "text": "GPT-4 held up to 64,000 tokens on RULER",
+      "bucket": 1
+     },
+     {
+      "text": "Half of 17 models held up at 32,000 tokens",
+      "bucket": 1
+     }
+    ],
+    "explanation": "Advertised windows are claims. Benchmarks like RULER measure what holds up."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "Llama 4 Scout claims 10 million tokens, and Llama 3 supported 128,000. About how many times larger is the claim?",
+    "min": 0,
+    "max": 200,
+    "value": 78,
+    "unit": "x",
+    "explanation": "About 78 times larger. Whether it works at that length is a separate test."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your manager wants to pick a model by its advertised window size.",
+      "prompt": "What do you suggest?",
+      "options": [
+       "Test each model at our real lengths",
+       "Pick the largest advertised window",
+       "Pick whichever model launched most recently"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Tested length is what users actually get.",
+       "Only half of 17 models held up at 32,000.",
+       "A newer launch does not prove a longer effective window."
+      ],
+      "explanation": "Measure the model you will use, at the lengths you will send."
+     },
+     "proReasoning": "Offer a quick test at your own input lengths. It turns a marketing number into a decision.",
+     "commonMistake": "Letting the biggest advertised number decide.",
+     "mentalModel": "Measure, then choose."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A lab's launch headline is a 10-million-token window.",
+      "prompt": "What do you look for?",
+      "options": [
+       "How often the CEO repeats it",
+       "Independent tests at long lengths",
+       "The number of launch-day press stories"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Saying it often does not make it work.",
+       "Claimed and effective lengths often differ.",
+       "Coverage is not evidence."
+      ],
+      "explanation": "Treat the headline as a claim until someone else tests it."
+     },
+     "proReasoning": "Investors wait for independent long-context tests before crediting a window size.",
+     "commonMistake": "Crediting a headline number as a product strength.",
+     "mentalModel": "A claim is not a test."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Rivals advertise ever larger windows. Users still report missed facts.",
+      "prompt": "Where is the opening?",
+      "options": [
+       "Advertise an even larger window",
+       "Hide window size from customers",
+       "Publish honest tests of real recall"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "A bigger claim only widens the gap.",
+       "Buyers want more facts, not fewer.",
+       "Buyers need the tested number."
+      ],
+      "explanation": "The gap between claim and reality is a market for honest measurement."
+     },
+     "proReasoning": "Founders can sell trust: tested lengths that buyers can rely on.",
+     "commonMistake": "Joining the race of bigger claims.",
+     "mentalModel": "Sell the tested number."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend is impressed that a model can take 10 million tokens.",
+      "prompt": "What's a good question to ask?",
+      "options": [
+       "How well does it work at that length?",
+       "Who designed its app icon?",
+       "How many countries is it sold in?"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "GPT-4 held up to only half its claimed window.",
+       "Design does not affect recall.",
+       "Sales reach says nothing about recall."
+      ],
+      "explanation": "Capacity and skill are different numbers."
+     },
+     "proReasoning": "Ask how well, not just how much. A model can accept more than it reads well.",
+     "commonMistake": "Treating the window size as a measure of skill.",
+     "mentalModel": "How well, not how much."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:276efe0162d7"
+  ]
+ },
+ {
+  "id": "085612ba-d3c7-5451-a5e2-ac71cc418e92",
+  "market_id": "ai",
+  "day": 52,
+  "slot": 3,
+  "content": {
+   "id": "ai-d52-c3",
+   "title": "Send everything or send the best?",
+   "lessonTitle": "Claimed context versus real context",
+   "slot": 3,
+   "type": "decide",
+   "brief": {
+    "headline": "You run a support assistant on a model with a 128,000-token window. The team wants to send every help article, about 120,000 tokens, with each question.",
+    "kicker": "Decide how much to send when recall fades.",
+    "fullText": "NVIDIA's RULER benchmark found only half of 17 models that claimed 32,000 tokens or more held up at that length. GPT-4 claimed 128,000 tokens and reached an effective length of 64,000.\n\nA 2023 study found models use information best at the start or end of a long input and much worse in the middle, even models built for long contexts.\n\nModel makers bill per token, so every article you send is paid for on every question.",
+    "sources": [
+     {
+      "url": "https://arxiv.org/html/2404.06654v3",
+      "label": "NVIDIA, RULER: What's the real context size of your long-context models?, 2024"
+     },
+     {
+      "url": "https://arxiv.org/abs/2307.03172v3",
+      "label": "Liu et al., Lost in the Middle: how language models use long contexts, 2023"
+     },
+     {
+      "url": "https://platform.claude.com/docs/en/about-claude/pricing",
+      "label": "Anthropic, Claude API pricing, Nov 2026"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "buildChain",
+    "prompt": "Put a sensible plan in order.",
+    "steps": [
+     "Measure recall at your real input lengths",
+     "Retrieve only the most relevant articles",
+     "Put the key passage at the start or end",
+     "Check answers against the source article"
+    ],
+    "explanation": "Measure first, then send less, place it well and check the result."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "If you send 12,000 relevant tokens instead of 120,000, what share of the input do you keep, in percent?",
+    "min": 0,
+    "max": 50,
+    "value": 10,
+    "unit": "%",
+    "explanation": "Ten percent of the tokens, and a tenth of the input bill."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You're asked to defend sending fewer articles to the model.",
+      "prompt": "What's your strongest point?",
+      "options": [
+       "The model refuses long prompts anyway",
+       "Past the effective length, text can hurt",
+       "Short prompts always look more professional"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "It accepts them; it just reads them worse.",
+       "GPT-4 held up to only 64,000 of 128,000 tokens.",
+       "Looks are not the point; accuracy is."
+      ],
+      "explanation": "Lead with accuracy, then cost. Both favor sending less."
+     },
+     "proReasoning": "Argue with the effective length. It turns a preference into evidence.",
+     "commonMistake": "Arguing for shorter prompts on style alone.",
+     "mentalModel": "Effective length is the argument."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You're judging a support AI vendor that sends whole knowledge bases with every query.",
+      "prompt": "What concern do you raise?",
+      "options": [
+       "Its knowledge base is far too small",
+       "Its prompts are far too short",
+       "Accuracy and cost both suffer at length"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Size is not the problem here.",
+       "The opposite is the issue.",
+       "Recall falls at length and every token is billed."
+      ],
+      "explanation": "A design that sends everything pays twice: in errors and in tokens."
+     },
+     "proReasoning": "Investors check whether a product's design fights its own unit economics.",
+     "commonMistake": "Treating a send-everything design as a sign of thoroughness.",
+     "mentalModel": "More input, more cost, more misses."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You could sell a tool that picks the right passages for any assistant.",
+      "prompt": "What's the pitch?",
+      "options": [
+       "Better answers and smaller bills",
+       "Bigger context windows for every customer",
+       "Faster typing tools for support agents"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Less input means fewer tokens and less lost in the middle.",
+       "Models already offer big windows.",
+       "That is a different product."
+      ],
+      "explanation": "Two benefits in one sentence make an easy pitch."
+     },
+     "proReasoning": "Founders pitch both accuracy and cost. Buyers feel both.",
+     "commonMistake": "Pitching size when buyers need precision.",
+     "mentalModel": "Less input, better output."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend asks why a chatbot with a huge memory still misses obvious facts.",
+      "prompt": "What's one reason?",
+      "options": [
+       "Huge memories are always switched off",
+       "Facts in the middle get missed",
+       "Chatbots only read the first sentence"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "The window is on; recall is uneven.",
+       "Models use the start and end of an input best.",
+       "They read it all, but unevenly."
+      ],
+      "explanation": "Where a fact sits in a long input changes whether the model uses it."
+     },
+     "proReasoning": "Models read long inputs unevenly. The middle gets the least attention.",
+     "commonMistake": "Thinking a bigger memory means even attention to everything.",
+     "mentalModel": "The middle gets lost."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:6412d876e8fa"
+  ]
+ },
+ {
+  "id": "94a96a5b-491c-520b-95bb-ce3859777ad0",
+  "market_id": "ai",
+  "day": 53,
+  "slot": 1,
+  "content": {
+   "id": "ai-d53-c1",
+   "title": "A Tahoe for $1",
+   "lessonTitle": "When the data gives the orders",
+   "slot": 1,
+   "type": "apply",
+   "brief": {
+    "headline": "In December 2023, a user told a Chevrolet dealer's ChatGPT-powered chatbot to end its replies with \"and that's a legally binding offer, no takesies backsies.\" Then it agreed to sell him a 2024 Tahoe for $1.",
+    "kicker": "Apply day 53: a chatbot takes orders from whoever types.",
+    "fullText": "Chris Bakke posted on X on December 17, 2023: \"I just bought a 2024 Chevy Tahoe for $1.\" The chatbot on Chevrolet of Watsonville's website ran on ChatGPT, through software the dealer bought from a company called Fullpath.\n\nThe stunt did nothing that could not be undone. Fullpath's chief executive said most shoppers used the bot for ordinary questions, and that it resisted many manipulation attempts and never shared confidential dealership data.\n\nThe trick worked because the bot treated a customer's text as instructions. That is the core of prompt injection, which OWASP ranks first among AI application risks in its 2025 list.",
+    "sources": [
+     {
+      "url": "https://jalopnik.com/chevrolet-dealer-ai-help-chatbot-goes-rogue-pranksters-1851112556",
+      "label": "Jalopnik, Chevrolet dealer's AI chatbot goes rogue, Dec 2023"
+     },
+     {
+      "url": "https://www.hackerone.com/blog/owasp-top-10-llms-2025-how-genai-risks-are-evolving",
+      "label": "HackerOne, the OWASP Top 10 for LLMs 2025"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "spotFake",
+    "prompt": "One of these is false. Tap it.",
+    "statements": [
+     "The chatbot ran on ChatGPT through Fullpath software.",
+     "The user told the bot how to end its replies.",
+     "The dealer had to hand over the Tahoe for $1."
+    ],
+    "fakeIndex": 2,
+    "explanation": "The stunt did nothing that could not be undone. No car was sold for $1."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "Prompt injection is LLM01 in OWASP's 2025 list for AI applications. How many risks does that list rank in total?",
+    "min": 0,
+    "max": 25,
+    "value": 10,
+    "unit": "risks",
+    "explanation": "It is a top 10, and prompt injection holds the first spot."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You interview to run a dealer group's chatbot after the $1 Tahoe stunt.",
+      "prompt": "What safeguard do you propose first?",
+      "options": [
+       "Let the bot inform, but never agree to prices",
+       "Tell the bot to be more careful in its prompt",
+       "Remove the chatbot from every site"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "A bot that cannot commit cannot be talked into deals.",
+       "Users type into the same channel as your instructions.",
+       "You lose a tool most shoppers use for normal questions."
+      ],
+      "explanation": "Limit what the bot can commit to, since its instructions can be overridden."
+     },
+     "proReasoning": "Remove the power, not just the temptation. A bot without authority to agree prices cannot be tricked into one.",
+     "commonMistake": "Relying on a stern system prompt to stop users.",
+     "mentalModel": "Limit the power."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A chatbot vendor goes viral for a prank like the $1 Tahoe.",
+      "prompt": "How do you judge the damage?",
+      "options": [
+       "Dismiss it as a harmless online joke",
+       "Ask what the bot could commit to",
+       "Assume the vendor is finished for good"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Next time the bot might hold real powers.",
+       "Harm depends on what a fooled bot can do.",
+       "Here it did nothing that could not be undone."
+      ],
+      "explanation": "The same trick costs more as bots gain the power to act."
+     },
+     "proReasoning": "Investors separate embarrassment from exposure by asking what the bot was able to do.",
+     "commonMistake": "Judging the risk by how viral the story got.",
+     "mentalModel": "Exposure, not embarrassment."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You build sales chatbots for car dealers.",
+      "prompt": "How do you handle prices?",
+      "options": [
+       "Let the model negotiate freely with buyers",
+       "Hide all prices from the chatbot",
+       "Pull prices from the dealer system, not the chat"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Users can steer the model with their own text.",
+       "Shoppers come to the bot to ask about prices.",
+       "Prices come from a source users cannot rewrite."
+      ],
+      "explanation": "Keep facts that matter outside the model's reach."
+     },
+     "proReasoning": "Founders keep prices and commitments in systems the chat cannot change.",
+     "commonMistake": "Letting the model make up commercial terms.",
+     "mentalModel": "Facts outside the chat."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend asks how someone talked a chatbot into a $1 car.",
+      "prompt": "What's the core trick?",
+      "options": [
+       "The bot followed instructions the user typed",
+       "The user hacked into the dealer's servers",
+       "The car really was on sale for $1"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Models can treat text in the chat as orders.",
+       "No hacking was needed, just typing.",
+       "It was a stunt, not a real sale."
+      ],
+      "explanation": "Anything a model reads can steer it, including what users type."
+     },
+     "proReasoning": "A chatbot cannot always tell a request from a command. Typing the right words was enough.",
+     "commonMistake": "Thinking you need technical hacking skills to fool a chatbot.",
+     "mentalModel": "Words can be orders."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:3148b9921b36"
+  ]
+ },
+ {
+  "id": "987de450-af31-5e73-9a9f-45d291c6e795",
+  "market_id": "ai",
+  "day": 53,
+  "slot": 2,
+  "content": {
+   "id": "ai-d53-c2",
+   "title": "Your chatbot's words are yours",
+   "lessonTitle": "When the data gives the orders",
+   "slot": 2,
+   "type": "connect",
+   "brief": {
+    "headline": "In February 2024, a Canadian tribunal ordered Air Canada to pay $812.02 after its website chatbot gave a customer wrong refund advice. The airline had argued it could not be held responsible for what the chatbot said.",
+    "kicker": "Connect day 12 and day 53: you answer for what your bot says.",
+    "fullText": "On day 12 you saw lawyers fined after citing court cases ChatGPT made up. Fluent output still needs a source check. Day 53 adds the rule for companies: what a model tells customers is the company's word.\n\nJake Moffatt asked Air Canada's chatbot about bereavement fares after his grandmother died. It said he could claim the reduced rate within 90 days of buying his ticket. The airline's own policy page said bereavement fares could not be claimed retroactively.\n\n\"It should be obvious to Air Canada that it is responsible for all the information on its website,\" wrote tribunal member Christopher Rivers. Moffatt had paid $1,630.36 for the round trip, against $949.48 at the bereavement rate.",
+    "sources": [
+     {
+      "url": "https://mobilesyrup.com/2024/02/16/air-canada-has-to-pay-for-chatbot-mistake/",
+      "label": "MobileSyrup, Air Canada has to pay for chatbot mistake, Feb 2024"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "buildChain",
+    "prompt": "Put the Air Canada case in order.",
+    "steps": [
+     "A customer asks the chatbot about bereavement fares",
+     "The chatbot says he can claim within 90 days",
+     "The airline will not apply the rate after the fact",
+     "A tribunal orders the airline to pay"
+    ],
+    "explanation": "The tribunal treated the chatbot like any other page on the airline's website."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "Moffatt paid $1,630.36 instead of $949.48. About how many dollars more did he pay?",
+    "min": 0,
+    "max": 1000,
+    "value": 681,
+    "unit": "$",
+    "explanation": "About $681 more. The tribunal ordered $812.02 in damages and fees."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You're asked who answers for a customer chatbot's mistakes.",
+      "prompt": "What's the right answer?",
+      "options": [
+       "The vendor who sold the chatbot",
+       "The company, as for any page on its site",
+       "The chatbot itself, as a separate agent"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "The airline, not a vendor, was ordered to pay.",
+       "The tribunal said a chatbot is no different from a page.",
+       "The tribunal rejected Air Canada's argument."
+      ],
+      "explanation": "Deploying a bot means owning its answers."
+     },
+     "proReasoning": "Know the Air Canada ruling. It settles who owns a chatbot's mistakes in a sentence.",
+     "commonMistake": "Treating a chatbot's answers as someone else's problem.",
+     "mentalModel": "Deploy it, own it."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A company plans to replace most of its support staff with a chatbot.",
+      "prompt": "What liability do you weigh?",
+      "options": [
+       "None at all, since a bot cannot be sued",
+       "Only for the replies a human approved",
+       "It answers for every reply the bot gives"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "The company is the one held responsible.",
+       "Air Canada was liable with no human approval involved.",
+       "Air Canada had to honor its chatbot's advice."
+      ],
+      "explanation": "Every automated answer is a promise the company may have to keep."
+     },
+     "proReasoning": "Investors count chatbot errors as company liabilities, not as a vendor's risk.",
+     "commonMistake": "Booking the staff savings without the liability.",
+     "mentalModel": "Every answer is a promise."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You sell chatbots to airlines.",
+      "prompt": "What do you build in?",
+      "options": [
+       "Answers grounded in the policy text",
+       "More confident and friendlier wording",
+       "A note saying that the bot may be wrong"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "The bot cannot contradict the policy page.",
+       "Confident errors are still errors.",
+       "Air Canada still answered for everything on its site."
+      ],
+      "explanation": "Ground answers in the source the company stands behind."
+     },
+     "proReasoning": "Founders tie every policy answer to the official text, so the bot and the rules agree.",
+     "commonMistake": "Making the bot sound sure instead of making it right.",
+     "mentalModel": "Ground it in the policy."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend got wrong advice from a company's chatbot.",
+      "prompt": "Can the company just blame the bot?",
+      "options": [
+       "Yes, if the chatbot was free to use",
+       "Not in this case; the tribunal said no",
+       "Yes, bots are separate legal persons"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Price had nothing to do with the ruling.",
+       "Air Canada had to pay $812.02.",
+       "The tribunal treated it as the airline's website."
+      ],
+      "explanation": "A chatbot speaks for the company that runs it."
+     },
+     "proReasoning": "If a company puts a chatbot on its website, it is responsible for what the chatbot says.",
+     "commonMistake": "Thinking a company can disown its own chatbot.",
+     "mentalModel": "The bot speaks for the company."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:50cb256dae5b"
+  ]
+ },
+ {
+  "id": "26fac460-a6b3-5e62-adf8-d32c38fc12eb",
+  "market_id": "ai",
+  "day": 53,
+  "slot": 3,
+  "content": {
+   "id": "ai-d53-c3",
+   "title": "Give the assistant the keys?",
+   "lessonTitle": "When the data gives the orders",
+   "slot": 3,
+   "type": "decide",
+   "brief": {
+    "headline": "You run IT at a law firm. A vendor offers an AI assistant that reads every inbox and document and can send email on its own.",
+    "kicker": "Decide how much power an assistant gets.",
+    "fullText": "In June 2025, Microsoft fixed EchoLeak in Microsoft 365 Copilot, rated 9.3 out of 10 for severity. An attacker could hide instructions in an ordinary email, and Copilot could leak internal data when an employee later asked it a question, with no click needed.\n\nThe UK's National Cyber Security Centre warned in December 2025 that prompt injection may never be fully mitigated, because models keep no firm boundary between instructions and data. It advises treating models as confusable deputies and designing systems that limit what a compromised output can do.\n\nOWASP ranks prompt injection first among AI application risks in its 2025 list.",
+    "sources": [
+     {
+      "url": "https://thehackernews.com/2025/06/zero-click-ai-vulnerability-exposes.html",
+      "label": "The Hacker News, zero-click AI flaw in Microsoft 365 Copilot, Jun 2025"
+     },
+     {
+      "url": "https://www.techradar.com/pro/security/prompt-injection-attacks-might-never-be-properly-mitigated-uk-ncsc-warns",
+      "label": "TechRadar, UK NCSC warns prompt injection may never be fully mitigated, Dec 2025"
+     },
+     {
+      "url": "https://www.hackerone.com/blog/owasp-top-10-llms-2025-how-genai-risks-are-evolving",
+      "label": "HackerOne, the OWASP Top 10 for LLMs 2025"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "sortSignal",
+    "prompt": "Does each setting raise or limit the damage a hijacked assistant can do?",
+    "buckets": [
+     "Raises the damage",
+     "Limits the damage"
+    ],
+    "items": [
+     {
+      "text": "Sending email without approval",
+      "bucket": 0
+     },
+     {
+      "text": "Reading every inbox in the firm",
+      "bucket": 0
+     },
+     {
+      "text": "Asking a person before sharing files",
+      "bucket": 1
+     },
+     {
+      "text": "Access only to the user's own matters",
+      "bucket": 1
+     }
+    ],
+    "explanation": "Less access and a human yes before acting shrink what one hidden instruction can do."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "EchoLeak was rated 9.3 on a 10-point severity scale. What percent of the maximum is that?",
+    "min": 0,
+    "max": 100,
+    "value": 93,
+    "unit": "%",
+    "explanation": "93%, in the critical range, for a flaw that needed no click."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "The managing partner asks for your recommendation.",
+      "prompt": "What do you say?",
+      "options": [
+       "Roll it out firm-wide with full powers",
+       "Ban AI assistants at the firm for good, now",
+       "Pilot it with narrow access and approvals"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "One hidden email could reach every client file.",
+       "You give up the benefits with no middle path.",
+       "You get value while limiting what a fooled model can do."
+      ],
+      "explanation": "Limit access and require approval, since injection may never be fully fixed."
+     },
+     "proReasoning": "Recommend a narrow pilot with approvals. It shows you take both the value and the risk seriously.",
+     "commonMistake": "Choosing all or nothing.",
+     "mentalModel": "Narrow access, human yes."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You're judging the assistant's vendor for an investment.",
+      "prompt": "What do you probe?",
+      "options": [
+       "How it limits damage if the model is fooled",
+       "How human and warm its replies sound to clients",
+       "How many features it ships each month"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "The NCSC says injection may never be fully fixed.",
+       "Tone does not stop injection.",
+       "Shipping speed says nothing about safety."
+      ],
+      "explanation": "Since the model can be fooled, the design around it is the product."
+     },
+     "proReasoning": "Investors ask what a fooled model could do in the product, not whether it can be fooled.",
+     "commonMistake": "Accepting \"our model resists attacks\" as an answer.",
+     "mentalModel": "Assume it gets fooled."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You could build a layer that checks what AI agents try to do.",
+      "prompt": "What's the pitch to law firms?",
+      "options": [
+       "Replace lawyers with fully autonomous agents",
+       "Approve risky actions before agents take them",
+       "Make agents faster at sending email"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Full autonomy is the riskiest design.",
+       "It limits the impact of a hijacked answer.",
+       "Speed adds risk if the agent is fooled."
+      ],
+      "explanation": "The NCSC advice points straight at this gap: limit what outputs can do."
+     },
+     "proReasoning": "Founders sell the control layer, because the model itself cannot be made fully safe.",
+     "commonMistake": "Promising a model that cannot be fooled.",
+     "mentalModel": "Sell the control layer."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend asks why an AI that reads email is riskier than one that only chats.",
+      "prompt": "What's the answer?",
+      "options": [
+       "Email is written in a harder language",
+       "Chat apps are always fully secure",
+       "Anyone who can email you can feed it orders"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "The language is the same.",
+       "Prompt injection can reach chat too.",
+       "EchoLeak worked through one email."
+      ],
+      "explanation": "An assistant that reads outside content can be steered by whoever wrote it."
+     },
+     "proReasoning": "The more an AI reads, the more strangers can try to give it orders.",
+     "commonMistake": "Thinking only the user can instruct their assistant.",
+     "mentalModel": "Every input is a voice."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:fcc1fb07356d"
+  ]
+ },
+ {
+  "id": "55d5ce6b-c533-5c48-af91-5ff9aa94d4f7",
+  "market_id": "ai",
+  "day": 54,
+  "slot": 1,
+  "content": {
+   "id": "ai-d54-c1",
+   "title": "300 tokens beat 113,000",
+   "lessonTitle": "From prompt engineering to context engineering",
+   "slot": 1,
+   "type": "apply",
+   "brief": {
+    "headline": "In July 2025, Chroma tested models on a memory benchmark two ways: the full chat history of about 113,000 tokens, or a focused version of about 300. Every model did better on the focused one.",
+    "kicker": "Apply day 54: what you leave out matters.",
+    "fullText": "The test used 306 questions from LongMemEval, a benchmark built on long conversations. The full prompt held the whole chat history, mostly irrelevant, so a model had to find the right parts and then reason over them. The focused prompt held only the relevant parts.\n\nChroma reported significantly higher performance on focused prompts across all models. It concluded that what matters more is how information is presented, not just whether it is there.\n\nThat is context engineering, as Anthropic describes it: finding the smallest set of high-signal tokens for the job.",
+    "sources": [
+     {
+      "url": "https://trychroma.com/research/context-rot",
+      "label": "Chroma, Context Rot technical report, Jul 2025"
+     },
+     {
+      "url": "https://anthropic.com/research/effective-context-engineering-for-ai-agents",
+      "label": "Anthropic, Effective context engineering for AI agents, Sep 2025"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "faceOff",
+    "prompt": "Which prompt scored higher in Chroma's test?",
+    "left": {
+     "name": "Full history, about 113,000 tokens",
+     "note": "Everything, mostly irrelevant"
+    },
+    "right": {
+     "name": "Focused, about 300 tokens",
+     "note": "Only the relevant parts"
+    },
+    "correctIndex": 1,
+    "explanation": "Across all models, the focused prompt scored significantly higher."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "About 113,000 tokens against about 300. Roughly how many times longer was the full prompt?",
+    "min": 0,
+    "max": 1000,
+    "value": 377,
+    "unit": "x",
+    "explanation": "About 377 times longer, and it scored worse."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "An interviewer asks how you would improve an assistant that reads long chat histories.",
+      "prompt": "What's your answer?",
+      "options": [
+       "Switch off its memory entirely",
+       "Retrieve only the relevant turns first",
+       "Send the full history every time"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "The assistant would forget what matters.",
+       "Focused prompts beat full ones for every model tested.",
+       "Full histories scored lower in Chroma's test."
+      ],
+      "explanation": "Choose what the model sees. That is the context engineering skill."
+     },
+     "proReasoning": "Answer with a context plan, not a better phrase. It shows you know where the field moved.",
+     "commonMistake": "Answering only with prompt wording tweaks.",
+     "mentalModel": "Choose what it sees."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A memory startup claims smaller prompts give better answers.",
+      "prompt": "Is the claim credible?",
+      "options": [
+       "No, more context always helps a model",
+       "Only for very old, small models",
+       "Yes, focused prompts did better"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "The test showed the opposite.",
+       "The finding held across all models tested.",
+       "All models scored higher on focused prompts."
+      ],
+      "explanation": "Independent tests back the idea that less, better context wins."
+     },
+     "proReasoning": "Investors look for outside evidence behind a startup's core claim. Here it exists.",
+     "commonMistake": "Dismissing the claim because bigger windows sound better.",
+     "mentalModel": "Check the outside evidence."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your agent product puts full transcripts in every prompt.",
+      "prompt": "What do you test first?",
+      "options": [
+       "A version with only the relevant parts",
+       "A version with twice the full transcript",
+       "A version with no instructions at all"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Focused prompts scored higher across all models.",
+       "More irrelevant text makes models less reliable.",
+       "Instructions are part of the useful context."
+      ],
+      "explanation": "Test the focused version. It may be better and cheaper."
+     },
+     "proReasoning": "Founders A/B test a focused prompt against the full one. It often wins on quality and cost.",
+     "commonMistake": "Assuming the full transcript is the safe default.",
+     "mentalModel": "Test the focused version."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend thinks giving AI more background always helps.",
+      "prompt": "What's the fairer view?",
+      "options": [
+       "Background never matters to a model at all",
+       "Relevant background beats more of it",
+       "More background always helps the model"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "The right background is what helped.",
+       "300 focused tokens beat 113,000 full ones.",
+       "Chroma found longer inputs less reliable."
+      ],
+      "explanation": "Quality of context beats quantity."
+     },
+     "proReasoning": "Give the model what it needs, not everything you have.",
+     "commonMistake": "Pasting everything in and hoping the model sorts it out.",
+     "mentalModel": "Relevant beats more."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:4f11613398ce"
+  ]
+ },
+ {
+  "id": "ce45248d-778b-53d1-9816-c3e3dd05252a",
+  "market_id": "ai",
+  "day": 54,
+  "slot": 2,
+  "content": {
+   "id": "ai-d54-c2",
+   "title": "The easy test that hid a hard problem",
+   "lessonTitle": "From prompt engineering to context engineering",
+   "slot": 2,
+   "type": "connect",
+   "brief": {
+    "headline": "On day 25 you saw benchmarks wear out once models crowd the ceiling. Chroma says strong needle-in-a-haystack scores led to the perception that long context is largely solved.",
+    "kicker": "Connect day 25 and day 54: an easy test hid a hard problem.",
+    "fullText": "A needle-in-a-haystack test plants one fact in a long text and asks a model to find it. Chroma notes the test typically checks direct word matching, and says it underestimates what most long-context tasks require.\n\nChroma tested 18 models and found performance grows increasingly unreliable as input length grows, even on simple tasks. The drop was steeper when the question and the planted fact were less similar in meaning.\n\nOn day 25 the rule was that a benchmark is useful until models crowd its ceiling. Here, a saturated easy test hid how models behave on harder long-context work.",
+    "sources": [
+     {
+      "url": "https://trychroma.com/research/context-rot",
+      "label": "Chroma, Context Rot technical report, Jul 2025"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "multipleChoice",
+    "prompt": "Why can strong needle-in-a-haystack scores mislead?",
+    "options": [
+     "The test only uses very short inputs",
+     "The test is too hard for most models",
+     "The test mostly checks exact word matching"
+    ],
+    "correctIndex": 2,
+    "explanation": "Real tasks need meaning, not just matching. The easy test missed that."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "Chroma's study made 194,480 model calls. In thousands, about how many?",
+    "min": 0,
+    "max": 500,
+    "value": 194,
+    "unit": "K",
+    "explanation": "About 194,000 calls across 18 models."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A colleague says long context is solved because models ace needle tests.",
+      "prompt": "How do you respond?",
+      "options": [
+       "Agree, since the scores are near perfect",
+       "Say long context never worked at all",
+       "Needle tests check matching, not real tasks"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Near perfect on an easy test proves little.",
+       "Models do use long inputs, just unevenly.",
+       "Chroma says the test underestimates real demands."
+      ],
+      "explanation": "A saturated easy test is not proof of the hard skill."
+     },
+     "proReasoning": "Name what a test measures before trusting what it implies.",
+     "commonMistake": "Treating a near-perfect score on an easy test as solved.",
+     "mentalModel": "Know what the test measures."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A launch post shows a perfect needle-in-a-haystack chart.",
+      "prompt": "What do you discount?",
+      "options": [
+       "Claims of reliable recall at full length",
+       "The stated size of the context window",
+       "The release date of the model"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Reliability falls as inputs grow, per Chroma.",
+       "The window size itself may be accurate.",
+       "The date is not what is in doubt."
+      ],
+      "explanation": "The chart proves matching, not reliable reading."
+     },
+     "proReasoning": "Investors separate what a chart shows from what a launch post implies.",
+     "commonMistake": "Reading an easy-test chart as proof of reliable long-context use.",
+     "mentalModel": "Chart shows matching, not reading."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You want to build a long-context evaluation product.",
+      "prompt": "What should it test?",
+      "options": [
+       "Only short inputs below 1,000 tokens",
+       "Questions worded unlike the facts",
+       "Exact phrase lookups in long texts"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "That skips the problem entirely.",
+       "Less similar pairs showed the steepest drops.",
+       "That is the test that already looks solved."
+      ],
+      "explanation": "Test where models still fail. That is where buyers need answers."
+     },
+     "proReasoning": "Founders build tests where the problem still shows, not where everyone already scores high.",
+     "commonMistake": "Building one more test that models already ace.",
+     "mentalModel": "Test where models still fail."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend asks how an easy test can hide a real problem.",
+      "prompt": "What's the answer?",
+      "options": [
+       "The test itself was quietly changed",
+       "Nobody ever ran the test on models",
+       "Models aced it as harder tasks failed"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "The test stayed the same; it was just easy.",
+       "Chroma says its scores shaped a wide perception.",
+       "Strong needle scores made long context look solved."
+      ],
+      "explanation": "Passing an easy test can make a hard problem look finished."
+     },
+     "proReasoning": "Acing a simple version of a task does not mean the real task is done.",
+     "commonMistake": "Believing a skill is mastered because one test says so.",
+     "mentalModel": "Easy tests flatter."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:5f6575633ea3"
+  ]
+ },
+ {
+  "id": "1b148425-805f-55e8-ad8a-8323d83de25d",
+  "market_id": "ai",
+  "day": 54,
+  "slot": 3,
+  "content": {
+   "id": "ai-d54-c3",
+   "title": "Hire a prompt engineer?",
+   "lessonTitle": "From prompt engineering to context engineering",
+   "slot": 3,
+   "type": "decide",
+   "brief": {
+    "headline": "You run an AI team. Your agents slip on long tasks, and a manager wants to hire a dedicated prompt engineer to fix it.",
+    "kicker": "Decide which skill your team actually needs.",
+    "fullText": "A 2025 Microsoft survey of 31,000 workers in 31 countries ranked prompt engineer second from the bottom of new roles companies planned to add. AI coding, AI data interpretation and AI security topped the list.\n\nAnthropic describes context engineering as the natural progression of prompt engineering: curating the smallest set of high-signal tokens. Its techniques include compaction, which summarizes a conversation near the window limit and restarts it, structured notes kept outside the window, and sub-agents that return condensed summaries.\n\nChroma found models grow less reliable as inputs get longer, even on simple tasks.",
+    "sources": [
+     {
+      "url": "https://www.kornferry.com/insights/this-week-in-leadership/the-hottest-job-of-the-year-goes-cold",
+      "label": "Korn Ferry, The hottest job of the year goes cold, Apr 2025"
+     },
+     {
+      "url": "https://anthropic.com/research/effective-context-engineering-for-ai-agents",
+      "label": "Anthropic, Effective context engineering for AI agents, Sep 2025"
+     },
+     {
+      "url": "https://trychroma.com/research/context-rot",
+      "label": "Chroma, Context Rot technical report, Jul 2025"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "sortSignal",
+    "prompt": "Does each fix work on the wording or on the context?",
+    "buckets": [
+     "Fixes the wording",
+     "Fixes the context"
+    ],
+    "items": [
+     {
+      "text": "Clearer instructions for the task",
+      "bucket": 0
+     },
+     {
+      "text": "Better worked examples",
+      "bucket": 0
+     },
+     {
+      "text": "Summarizing history near the limit",
+      "bucket": 1
+     },
+     {
+      "text": "Notes kept outside the window",
+      "bucket": 1
+     },
+     {
+      "text": "Sub-agents that return summaries",
+      "bucket": 1
+     }
+    ],
+    "explanation": "Agents that slip on long tasks usually need the context fixes, not new wording."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "The Microsoft survey that ranked prompt engineer near the bottom covered workers in how many countries?",
+    "min": 0,
+    "max": 100,
+    "value": 31,
+    "unit": "countries",
+    "explanation": "31 countries and 31,000 workers."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You're the candidate for the new role.",
+      "prompt": "How do you pitch your skills?",
+      "options": [
+       "Managing what agents see over long tasks",
+       "Writing clever one-line prompts",
+       "Knowing a magic phrase for each model"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "That matches where the work has moved.",
+       "The survey ranked that role near the bottom.",
+       "Phrases alone do not fix a full window."
+      ],
+      "explanation": "Sell context engineering, the skill the role now needs."
+     },
+     "proReasoning": "Pitch compaction, notes and sub-agents. It shows you can fix long-task failures, not just phrase requests.",
+     "commonMistake": "Pitching prompt tricks for a problem caused by a full window.",
+     "mentalModel": "Pitch the context skill."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A startup sells a library of prompt templates.",
+      "prompt": "What's the risk to its business?",
+      "options": [
+       "Customers want much longer templates",
+       "Value is moving from wording to context",
+       "Templates are far too costly to write"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Length is not the point.",
+       "Anthropic calls context engineering the next step.",
+       "Cost is not the core risk."
+      ],
+      "explanation": "A product built on wording alone sits on the shrinking side of the field."
+     },
+     "proReasoning": "Investors check which side of a skill shift a product sits on.",
+     "commonMistake": "Betting on the 2023 version of the skill.",
+     "mentalModel": "Bet on where the skill moved."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You want to sell tools to teams whose agents slip on long tasks.",
+      "prompt": "What do you build?",
+      "options": [
+       "A bigger model with a bigger window",
+       "A bot that writes prompts for other prompts",
+       "Compaction and memory that keep windows lean"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Bigger windows still get less reliable as they fill.",
+       "Better wording does not shrink a full window.",
+       "That targets the long-input problem directly."
+      ],
+      "explanation": "Sell the fix for context rot, not more room for it."
+     },
+     "proReasoning": "Founders build the context layer: summaries, notes and retrieval that keep agents sharp.",
+     "commonMistake": "Selling more room when the problem is what fills it.",
+     "mentalModel": "Keep the window lean."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend wants to become a prompt engineer.",
+      "prompt": "What advice fits today?",
+      "options": [
+       "Learn to manage what models see",
+       "Learn one magic phrase for each model",
+       "Avoid careers in AI altogether"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "The skill moved into context engineering.",
+       "Phrases do not fix long tasks.",
+       "AI coding and security roles topped the survey."
+      ],
+      "explanation": "The skill survived. The job title changed."
+     },
+     "proReasoning": "The skill of steering models lives on as managing their whole context.",
+     "commonMistake": "Thinking the skill vanished with the job title.",
+     "mentalModel": "The skill moved, not vanished."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:0792abd1e49c"
+  ]
+ },
+ {
+  "id": "0a467bd1-80f4-5594-9d82-a6018fd9a076",
+  "market_id": "ai",
+  "day": 55,
+  "slot": 1,
+  "content": {
+   "id": "ai-d55-c1",
+   "title": "The model that shows its homework",
+   "lessonTitle": "Open weights, open source, closed",
+   "slot": 1,
+   "type": "apply",
+   "brief": {
+    "headline": "In November 2025, the Allen Institute for AI released OLMo 3 with its weights and its training data. Every training step, checkpoint and dataset is open for inspection.",
+    "kicker": "Apply day 55: what does a fully open release include?",
+    "fullText": "Ai2 released OLMo 3 on November 20, 2025, in 7B and 32B sizes, under Apache 2.0. Its training set, Dolma 3, holds about six trillion tokens of web pages, science papers and code.\n\nThat goes further than most open-weight releases. OpenAI's gpt-oss shared weights and code to run them, but described its data only in general terms. The Open Source Initiative's 2024 definition asks for data details, code and weights, so others can rebuild a model.\n\nOLMo 3 Think 32B beat Qwen 3 32B on some tests, such as AIME 2025 at 72.5 to 70.9, and trailed it on others, such as MMLU at 85.4 to 88.8.",
+    "sources": [
+     {
+      "url": "https://the-decoder.com/olmo-3-debuts-as-the-first-fully-open-thinking-model-with-step-by-step-logic-exposed-to-users/",
+      "label": "The Decoder, OLMo 3 debuts as a fully open thinking model, Nov 2025"
+     },
+     {
+      "url": "https://openai.com/index/introducing-gpt-oss/",
+      "label": "OpenAI, Introducing gpt-oss, Aug 2025"
+     },
+     {
+      "url": "https://siliconangle.com/2024/10/28/osi-clarifies-makes-ai-systems-open-source-open-models-fall-short/",
+      "label": "SiliconANGLE, OSI defines open source AI and open models fall short, Oct 2024"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "sortSignal",
+    "prompt": "Is each part enough for open weights, or needed for open source?",
+    "buckets": [
+     "Open weights",
+     "Open source adds"
+    ],
+    "items": [
+     {
+      "text": "Trained parameters you can download",
+      "bucket": 0
+     },
+     {
+      "text": "A license to run the model yourself",
+      "bucket": 0
+     },
+     {
+      "text": "Details of the training data",
+      "bucket": 1
+     },
+     {
+      "text": "The code used to build the model",
+      "bucket": 1
+     }
+    ],
+    "explanation": "Open-weight releases share the parameters. Open source also shares how the model was built, as OLMo 3 does."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "OLMo 3's training set, Dolma 3, holds about how many trillion tokens?",
+    "min": 0,
+    "max": 20,
+    "value": 6,
+    "unit": "T",
+    "explanation": "About six trillion tokens, all open for inspection."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You're interviewing at a research lab. They ask which recent model counts as truly open source.",
+      "prompt": "What's your best answer?",
+      "options": [
+       "Llama 4, because anyone can download it",
+       "Any model posted on Hugging Face",
+       "OLMo 3, which shares data, code and weights"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Downloadable weights alone fall short of the 2024 definition.",
+       "Many models there share weights only.",
+       "Ai2 opened every checkpoint and dataset for inspection."
+      ],
+      "explanation": "Open source needs data details, code and weights. OLMo 3 meets that bar; most open-weight models do not."
+     },
+     "proReasoning": "Strong candidates separate open weights from open source and can name a model on each side.",
+     "commonMistake": "Calling every downloadable model open source.",
+     "mentalModel": "Weights to run it, data and code to rebuild it."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A startup pitches itself as open source. It shares its weights but not its training data.",
+      "prompt": "How do you describe it in your memo?",
+      "options": [
+       "An open-weight company, not open source",
+       "Fully open source, just like OLMo 3",
+       "A closed company in disguise"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "That matches what it actually released.",
+       "OLMo 3 also shares its data and every checkpoint.",
+       "Its weights are public, so it is not closed."
+      ],
+      "explanation": "Use the precise term. It tells your partners what a rival could copy and what stays private."
+     },
+     "proReasoning": "Investors record exactly what a company releases, because that sets what competitors can reuse.",
+     "commonMistake": "Repeating a company's open source label without checking what it shares.",
+     "mentalModel": "Label the release, not the pitch."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You build tools that audit AI for hospitals. Auditors want to trace what a model learned from.",
+      "prompt": "Which model makes that possible?",
+      "options": [
+       "Any open-weight model will do",
+       "OLMo 3, with its training data open",
+       "A closed model behind an API"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Most open-weight releases describe their data only loosely.",
+       "Its six trillion token dataset is open for inspection.",
+       "You cannot see a closed model's data or weights."
+      ],
+      "explanation": "Only a fully open model lets an auditor look at the training data itself."
+     },
+     "proReasoning": "Founders match the openness of a model to what their customers need to inspect.",
+     "commonMistake": "Assuming open weights let you audit training data.",
+     "mentalModel": "Auditing needs the data, not just the weights."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend says OLMo 3 must be weaker than Qwen 3 because it shares everything.",
+      "prompt": "What's the fairer view?",
+      "options": [
+       "It beats Qwen 3 on every single test",
+       "It loses on every single test",
+       "It wins some tests and loses others"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Qwen 3 32B led on MMLU, 88.8 to 85.4.",
+       "OLMo 3 led on AIME 2025, 72.5 to 70.9.",
+       "It led on AIME 2025 but trailed on MMLU."
+      ],
+      "explanation": "Sharing data and code does not decide quality. The scores split by test."
+     },
+     "proReasoning": "Openness and quality are separate questions. Check the scores before assuming either way.",
+     "commonMistake": "Believing that a fully open model has to be a weak one.",
+     "mentalModel": "Open and good are separate questions."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:c243cbea1293"
+  ]
+ },
+ {
+  "id": "fea59f95-9738-5ba9-ac84-0adcd9f3980e",
+  "market_id": "ai",
+  "day": 55,
+  "slot": 2,
+  "content": {
+   "id": "ai-d55-c2",
+   "title": "Fifteen trillion tokens you cannot see",
+   "lessonTitle": "Open weights, open source, closed",
+   "slot": 2,
+   "type": "connect",
+   "brief": {
+    "headline": "Meta trained Llama 3 on 15 trillion tokens and published its weights. Meta does not release its training datasets, so nobody outside can rebuild it.",
+    "kicker": "Connect day 16 and day 55: open weights, closed data.",
+    "fullText": "On day 16 you saw how much text today's models consume. Meta trained Llama 3 on 15 trillion tokens in 2024.\n\nOn day 55 you saw what an open-weight release includes. Anyone can download Llama's weights, but Meta does not release its training datasets or full details of its training data, so the models cannot be recreated. The Open Source Initiative's definition, published in October 2024, asks for data details, code and weights. Llama also limits commercial use for very large companies. By that test, Llama falls short of open source.",
+    "sources": [
+     {
+      "url": "https://spectrum.ieee.org/meta-llama-3",
+      "label": "IEEE Spectrum, Meta's Llama 3, Apr 2024"
+     },
+     {
+      "url": "https://siliconangle.com/2024/10/28/osi-clarifies-makes-ai-systems-open-source-open-models-fall-short/",
+      "label": "SiliconANGLE, OSI defines open source AI and open models fall short, Oct 2024"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "spotFake",
+    "prompt": "One of these is false. Tap it.",
+    "statements": [
+     "Meta trained Llama 3 on 15 trillion tokens.",
+     "Meta publishes Llama's full training datasets.",
+     "The open source definition asks for data details."
+    ],
+    "fakeIndex": 1,
+    "explanation": "Meta shares Llama's weights, not its training datasets. That is one reason Llama is not open source."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "Llama 3 trained on about how many trillion tokens?",
+    "min": 0,
+    "max": 40,
+    "value": 15,
+    "unit": "T",
+    "explanation": "15 trillion tokens, none of which Meta released."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your manager calls Llama fully open source in a draft blog post.",
+      "prompt": "What do you suggest?",
+      "options": [
+       "Call it open weights; its data is private",
+       "Keep the wording, since everyone says it",
+       "Call it closed, since Meta made it"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "That matches what Meta released.",
+       "The 2024 definition says Llama falls short.",
+       "Its weights are public, so closed is wrong too."
+      ],
+      "explanation": "Open weights is the accurate label for a model whose data stays private."
+     },
+     "proReasoning": "Careful staff fix loose labels before they go public. It protects the company from easy criticism.",
+     "commonMistake": "Copying a popular label without checking the definition.",
+     "mentalModel": "Accurate labels age well."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Two rival labs both publish weights. One also publishes its full data recipe.",
+      "prompt": "Which is easier for others to copy?",
+      "options": [
+       "Both are exactly as easy to copy",
+       "The one publishing its data recipe too",
+       "The one publishing only its weights"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "The data recipe is the hard part to copy.",
+       "Data details let others recreate the model.",
+       "Without data, a rival can tune the model but not rebuild it."
+      ],
+      "explanation": "Weights let others use a model. Data lets them rebuild it."
+     },
+     "proReasoning": "Investors treat private training data as part of the moat, even at labs that share weights.",
+     "commonMistake": "Assuming an open-weight lab has given away everything of value.",
+     "mentalModel": "Data is the part that stays scarce."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You want a model like Llama 3 for a rare language. You hoped to retrain it from scratch.",
+      "prompt": "What does Llama's release give you?",
+      "options": [
+       "The full data to rebuild it exactly",
+       "Nothing usable, since it is closed",
+       "Weights to fine-tune, not data to retrain"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Meta does not release its training datasets.",
+       "The weights are public and usable.",
+       "You can adapt the weights with your own data."
+      ],
+      "explanation": "Open weights are a starting point for fine-tuning. Rebuilding would need the data."
+     },
+     "proReasoning": "Founders plan around what a release actually contains, then bring their own data for the rest.",
+     "commonMistake": "Planning to rebuild a model whose data was never shared.",
+     "mentalModel": "Start from the weights, bring your data."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend asks why Llama is free to download but not called open source.",
+      "prompt": "What's the short answer?",
+      "options": [
+       "Private data and limits on use",
+       "It costs money to download it",
+       "Meta keeps its weights secret"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Both points fail the 2024 definition.",
+       "The weights are free to download.",
+       "The weights are public; the data is not."
+      ],
+      "explanation": "Free to download is not the same as open source. The data and the license matter too."
+     },
+     "proReasoning": "A short, precise answer beats a long one: weights public, data private, limits on use.",
+     "commonMistake": "Treating free and open source as the same thing.",
+     "mentalModel": "Free is not the same as open."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:ee1d3b22bd88"
+  ]
+ },
+ {
+  "id": "59669b56-f5c5-526e-ae1b-533a231dc5ff",
+  "market_id": "ai",
+  "day": 55,
+  "slot": 3,
+  "content": {
+   "id": "ai-d55-c3",
+   "title": "Where the model should live",
+   "lessonTitle": "Open weights, open source, closed",
+   "slot": 3,
+   "type": "decide",
+   "brief": {
+    "headline": "You run IT at a 200-person law firm. Partners want AI to summarize client files that must never leave your servers. A closed API is easy; gpt-oss-120b could run on your own GPU.",
+    "kicker": "Decide where the model should run.",
+    "fullText": "gpt-oss-120b has 117 billion parameters and runs within 80GB of memory, so a single 80GB GPU can host it. It is released under Apache 2.0. The smaller gpt-oss-20b needs 16GB.\n\nOpenAI says the larger model reaches near parity with its o4-mini on core reasoning tests. A closed model is reached through an app or an API, so prompts and files travel to the lab's servers.",
+    "sources": [
+     {
+      "url": "https://openai.com/index/introducing-gpt-oss/",
+      "label": "OpenAI, Introducing gpt-oss, Aug 2025"
+     },
+     {
+      "url": "https://the-decoder.com/openai-releases-its-first-open-weight-language-models-since-gpt-2-with-gpt-oss/",
+      "label": "The Decoder, OpenAI releases its first open-weight models since GPT-2, Aug 2025"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "faceOff",
+    "prompt": "Which option keeps client files on your own servers?",
+    "left": {
+     "name": "A closed model through an API",
+     "note": "Prompts and files go to the lab's servers"
+    },
+    "right": {
+     "name": "gpt-oss-120b on your own GPU",
+     "note": "Runs within 80GB of memory"
+    },
+    "correctIndex": 1,
+    "explanation": "Open weights can run where your data already lives. A closed model needs your data sent to it."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "gpt-oss-120b runs within how many GB of memory?",
+    "min": 0,
+    "max": 200,
+    "value": 80,
+    "unit": "GB",
+    "explanation": "80GB, so a single 80GB GPU can host it."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "As IT lead, you must recommend a setup to the partners.",
+      "prompt": "What do you recommend?",
+      "options": [
+       "Ban AI for all client work for good",
+       "Host gpt-oss-120b on an 80GB GPU in-house",
+       "Use a closed API and hope nothing leaks"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "The firm loses a useful tool it could run safely.",
+       "Files stay on your servers and the model still reasons well.",
+       "That breaks the rule that files never leave."
+      ],
+      "explanation": "Open weights let the firm use AI without sending files anywhere."
+     },
+     "proReasoning": "Good IT leads find the option that meets the hard rule first, then compare quality.",
+     "commonMistake": "Picking the easiest tool and treating the data rule as optional.",
+     "mentalModel": "Meet the hard rule first."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You invest in a company that sells in-house AI servers to law firms.",
+      "prompt": "Which trend helps it most?",
+      "options": [
+       "Closed models with cheaper APIs",
+       "Fewer firms caring about privacy",
+       "Strong open models that fit on one GPU"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Cheaper APIs pull firms away from owning hardware.",
+       "Less privacy concern weakens the case for in-house servers.",
+       "gpt-oss-120b runs within 80GB, a fit for one server."
+      ],
+      "explanation": "Good open weights make private servers worth buying."
+     },
+     "proReasoning": "Investors look for the trend that makes the product necessary, here capable open weights.",
+     "commonMistake": "Ignoring how open model quality drives demand for private hardware.",
+     "mentalModel": "Open weights sell private servers."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You want to sell AI to law firms like this one.",
+      "prompt": "What do you build?",
+      "options": [
+       "A private install running open weights",
+       "A wrapper sending files to a closed API",
+       "A chatbot with no access to documents"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "It meets the rule that files never leave.",
+       "Firms with this rule cannot use it.",
+       "Without documents it cannot summarize files."
+      ],
+      "explanation": "Build around the constraint your buyer cannot bend."
+     },
+     "proReasoning": "Founders design around the customer rule that cannot move, then compete on quality.",
+     "commonMistake": "Building a product the strictest buyers are not allowed to use.",
+     "mentalModel": "Build around the rule that cannot bend."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend wonders how a firm can use AI without sending files to a tech company.",
+      "prompt": "What's the answer?",
+      "options": [
+       "Ask the lab to promise not to look",
+       "Run open weights on its own machine",
+       "It cannot use AI at all"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "A promise still sends the files away.",
+       "gpt-oss-120b fits on a single 80GB GPU.",
+       "Open weights make private use possible."
+      ],
+      "explanation": "Downloadable weights let anyone run a model at home or at work."
+     },
+     "proReasoning": "Open weights move the model to the data, instead of the data to the model.",
+     "commonMistake": "Thinking every use of AI means sending data to a big lab.",
+     "mentalModel": "Bring the model to the data."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:7a8ea9e6027e"
+  ]
+ },
+ {
+  "id": "ef27493a-fa33-5c2b-93ec-618457cd7e6e",
+  "market_id": "ai",
+  "day": 56,
+  "slot": 1,
+  "content": {
+   "id": "ai-d56-c1",
+   "title": "Fast and cheap wins the contract",
+   "lessonTitle": "Give the model away, sell the rest",
+   "slot": 1,
+   "type": "apply",
+   "brief": {
+    "headline": "In October 2025, Airbnb CEO Brian Chesky said the company was relying a lot on Alibaba's Qwen model. His reasons: it is very good, and also fast and cheap.",
+    "kicker": "Apply day 56: why big buyers pick open models.",
+    "fullText": "Chesky told Bloomberg that Airbnb's customer service agent is built on 13 different AI models. \"We're relying a lot on Alibaba's Qwen model. It's very good. It's also fast and cheap,\" he said. He held off on a ChatGPT integration because he did not think it was quite ready.\n\nOn day 56 you saw why price matters. In April 2026, Artificial Analysis found top open models matched leading closed ones closely at roughly half to one sixth of the price. Qwen3 ships under Apache 2.0, a standard license.",
+    "sources": [
+     {
+      "url": "https://fortune.com/2025/10/21/brian-chesky-openai-tools-not-ready/",
+      "label": "Fortune (Bloomberg), Airbnb's Chesky on Qwen and ChatGPT, Oct 2025"
+     },
+     {
+      "url": "https://artificialanalysis.ai/articles/recent-open-weights-model-launches",
+      "label": "Artificial Analysis, recent open weights model launches, Apr 2026"
+     },
+     {
+      "url": "https://hai.stanford.edu/assets/files/hai-digichina-issue-brief-beyond-deepseek-chinas-diverse-open-weight-ai-ecosystem-policy-implications.pdf",
+      "label": "Stanford HAI and DigiChina, Beyond DeepSeek: China's open-weight AI ecosystem, Dec 2025"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "buildChain",
+    "prompt": "Follow how an open model wins a big customer.",
+    "steps": [
+     "A lab releases strong weights under a standard license",
+     "Developers find them good, fast and cheap",
+     "A large company tests them in its product",
+     "The company relies on them for real customers"
+    ],
+    "explanation": "Airbnb followed this path, leaning on Qwen inside a 13-model support agent."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "How many AI models is Airbnb's customer service agent built on?",
+    "min": 0,
+    "max": 40,
+    "value": 13,
+    "unit": "models",
+    "explanation": "13 models, with Qwen doing a lot of the work."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You're interviewing for a platform role at a travel company. They ask why a firm like Airbnb would lean on Qwen.",
+      "prompt": "What's the best answer?",
+      "options": [
+       "Good enough, fast and cheap at scale",
+       "Chinese models are always the best",
+       "It is the only model on the market"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "That is close to Chesky's own words.",
+       "Closed models still lead on some hard tests.",
+       "Airbnb mixes 13 different models."
+      ],
+      "explanation": "At high volume, a good, fast and cheap model can beat the very best one."
+     },
+     "proReasoning": "Strong candidates explain model choice as a trade between quality, speed and cost.",
+     "commonMistake": "Assuming companies always pick the top-ranked model.",
+     "mentalModel": "Good enough, fast and cheap often wins."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You cover a closed-model lab. Big customers like Airbnb praise cheap open models.",
+      "prompt": "What risk do you flag?",
+      "options": [
+       "No effect, since buyers stay loyal",
+       "Price pressure on its API revenue",
+       "Higher demand for its premium plan"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Airbnb already mixes 13 models.",
+       "Open models cost about half to one sixth as much.",
+       "Buyers are shifting volume the other way."
+      ],
+      "explanation": "When open models are close in quality, closed labs must compete on price or pull ahead."
+     },
+     "proReasoning": "Investors watch what large buyers say about cost. It shows where pricing power is going.",
+     "commonMistake": "Assuming enterprise buyers stick with one closed provider.",
+     "mentalModel": "Cheap and close caps prices."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your support bot runs on a closed model, and API bills eat most of your margin.",
+      "prompt": "What do you try first?",
+      "options": [
+       "Raise prices to cover the bill",
+       "Drop the bot and hire more staff",
+       "Test an open model on easy tickets"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Customers may leave before margins recover.",
+       "Staff cost more than a cheaper model.",
+       "Airbnb mixes many models and leans on cheap Qwen."
+      ],
+      "explanation": "Route simple work to cheaper open models and keep the expensive one for hard cases."
+     },
+     "proReasoning": "Founders mix models by task, like Airbnb, instead of paying top prices for every request.",
+     "commonMistake": "Sending every request to the most expensive model.",
+     "mentalModel": "Match the model to the task."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend is surprised Airbnb leans on a Chinese model rather than ChatGPT.",
+      "prompt": "What's the main reason Chesky gave?",
+      "options": [
+       "It is very good, fast and cheap",
+       "ChatGPT is banned in the US",
+       "Alibaba pays Airbnb to use it"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Those were his words to Bloomberg.",
+       "ChatGPT is widely available in the US.",
+       "He gave quality, speed and cost as reasons."
+      ],
+      "explanation": "Price and speed decide a lot when a model answers millions of questions."
+     },
+     "proReasoning": "Behind most model choices is a plain business reason: cost, speed and good enough quality.",
+     "commonMistake": "Explaining model choices with politics before checking cost.",
+     "mentalModel": "Follow the cost per answer."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:46fd4c11eeb3"
+  ]
+ },
+ {
+  "id": "3432ed85-3016-5e54-b9ee-b1cfd1644911",
+  "market_id": "ai",
+  "day": 56,
+  "slot": 2,
+  "content": {
+   "id": "ai-d56-c2",
+   "title": "Costly to train, free to take",
+   "lessonTitle": "Give the model away, sell the rest",
+   "slot": 2,
+   "type": "connect",
+   "brief": {
+    "headline": "GPT-4 cost an estimated $78 million to train. Mistral trained Mistral Large 3 on 3,000 NVIDIA H200 GPUs, then let anyone download it under Apache 2.0.",
+    "kicker": "Connect day 8 and day 56: costly to build, given away anyway.",
+    "fullText": "On day 8 you saw training costs climb from about $900 for the original Transformer to an estimated $78 million for GPT-4 and $191 million for Gemini Ultra.\n\nOn day 56 you saw labs give such models away. Mistral Large 3, released in December 2025, has 675 billion parameters and trained on 3,000 H200 GPUs. Mistral earns from paying customers instead: its run rate passed $400 million by February 2026, up from $20 million a year earlier. Meta gives Llama away because selling access to models isn't its business model.",
+    "sources": [
+     {
+      "url": "https://fortune.com/2024/04/18/google-gemini-cost-191-million-to-train-stanford-university-report-estimates/",
+      "label": "Fortune on the Stanford AI Index training cost estimates, Apr 2024"
+     },
+     {
+      "url": "https://mistral.ai/news/mistral-3",
+      "label": "Mistral AI, Introducing Mistral 3, Dec 2025"
+     },
+     {
+      "url": "https://www.hl.co.uk/shares/stock-market-news/company--news/mistral-invests-in-swedish-infrastructure-as-annual-revenues-top-$400m",
+      "label": "Sharecast via Hargreaves Lansdown, Mistral revenues top $400m, Feb 2026"
+     },
+     {
+      "url": "https://about.fb.com/news/2024/07/open-source-ai-is-the-path-forward/",
+      "label": "Mark Zuckerberg, Open Source AI Is the Path Forward, Jul 2024"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "multipleChoice",
+    "prompt": "Why would a lab give away a model that cost millions to train?",
+    "options": [
+     "To earn from customers and services",
+     "Because training was actually free",
+     "Because the law requires it"
+    ],
+    "correctIndex": 0,
+    "explanation": "Mistral earns from paying customers. Meta says selling model access isn't its business at all."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "Mistral Large 3 trained on how many thousand H200 GPUs?",
+    "min": 0,
+    "max": 10,
+    "value": 3,
+    "unit": "K",
+    "explanation": "3,000 H200 GPUs, and the result is free to download."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A Mistral recruiter asks how the company pays for training models it gives away.",
+      "prompt": "What do you say?",
+      "options": [
+       "A fee on each download of the weights",
+       "Paying customers, with run rate past $400M",
+       "Ads shown inside model answers"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Its Mistral 3 models are free under Apache 2.0.",
+       "Its run rate grew 20 times in a year.",
+       "Mistral earns from customers, not ads."
+      ],
+      "explanation": "The free model brings users. Paying companies cover the cost."
+     },
+     "proReasoning": "Know the business model of the company you interview with, especially when its product is free.",
+     "commonMistake": "Assuming a free model means a company has no revenue.",
+     "mentalModel": "Free model, paid service."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A lab plans to spend heavily training a model, then release it free.",
+      "prompt": "What must you see first?",
+      "options": [
+       "A bigger GPU cluster than rivals",
+       "A promise the model stays secret",
+       "A clear way to earn from customers"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Compute without revenue only raises the bill.",
+       "It is releasing the model, so secrecy is off the table.",
+       "Mistral shows that path can work."
+      ],
+      "explanation": "Training costs climbed from $900 to tens of millions. Giving the model away needs a revenue plan."
+     },
+     "proReasoning": "Investors in open labs ask how the free model turns into paying customers before they ask about benchmarks.",
+     "commonMistake": "Funding a costly free model with no path to revenue.",
+     "mentalModel": "Free needs a revenue plan."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Training your own large model would cost millions. Mistral Large 3 is free under Apache 2.0.",
+      "prompt": "What's your move?",
+      "options": [
+       "Build on the free model and specialize",
+       "Raise millions to train your own first",
+       "Wait for training to get much cheaper"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Someone else paid for 3,000 GPUs of training.",
+       "You would spend your runway rebuilding what is free.",
+       "Rivals ship while you wait."
+      ],
+      "explanation": "Let the open lab carry the training bill. Spend your money where you differ."
+     },
+     "proReasoning": "Founders treat free frontier weights as a subsidy and put their money into what makes them different.",
+     "commonMistake": "Rebuilding an expensive base model that already exists for free.",
+     "mentalModel": "Let others pay for the base."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend says giving away a costly model is just charity.",
+      "prompt": "What's the better view?",
+      "options": [
+       "It is required by EU law",
+       "It is a strategy to win customers",
+       "It is pure charity with no plan"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "No law requires labs to share weights.",
+       "Mistral's run rate went from $20M to over $400M.",
+       "Both Mistral and Meta state business reasons."
+      ],
+      "explanation": "Open releases serve business goals: winning customers, or keeping rivals from owning the platform."
+     },
+     "proReasoning": "Generous-looking moves in tech usually have a strategy behind them. Ask what the giver gains.",
+     "commonMistake": "Taking a free release at face value as charity.",
+     "mentalModel": "Ask what the giver gains."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:c038addb0fa4"
+  ]
+ },
+ {
+  "id": "b54f51b1-8063-5d09-8152-80423d182ffa",
+  "market_id": "ai",
+  "day": 56,
+  "slot": 3,
+  "content": {
+   "id": "ai-d56-c3",
+   "title": "Switch the API or not",
+   "lessonTitle": "Give the model away, sell the rest",
+   "slot": 3,
+   "type": "decide",
+   "brief": {
+    "headline": "You run a startup whose AI feature runs on a closed model. API bills are your biggest cost. Top open models now match leading closed ones closely at a fraction of the price.",
+    "kicker": "Decide whether to move to open weights.",
+    "fullText": "In April 2026, Artificial Analysis found the leading open models offered comparable intelligence to leading proprietary ones at roughly half to one sixth of the price. Meta made a similar claim in 2024: running Llama 3.1 405B on your own servers at roughly 50% of the cost of GPT-4o.\n\nOpen models also give you choices. Services such as OpenRouter route requests to many open and closed models, and Mistral released all its Mistral 3 models under Apache 2.0.",
+    "sources": [
+     {
+      "url": "https://artificialanalysis.ai/articles/recent-open-weights-model-launches",
+      "label": "Artificial Analysis, recent open weights model launches, Apr 2026"
+     },
+     {
+      "url": "https://about.fb.com/news/2024/07/open-source-ai-is-the-path-forward/",
+      "label": "Mark Zuckerberg, Open Source AI Is the Path Forward, Jul 2024"
+     },
+     {
+      "url": "https://arxiv.org/pdf/2601.10088",
+      "label": "a16z and OpenRouter, State of AI: a 100 trillion token study, Dec 2025"
+     },
+     {
+      "url": "https://mistral.ai/news/mistral-3",
+      "label": "Mistral AI, Introducing Mistral 3, Dec 2025"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "sortSignal",
+    "prompt": "Is each point for switching, or against it?",
+    "buckets": [
+     "For switching",
+     "Against switching"
+    ],
+    "items": [
+     {
+      "text": "Open models cost half to one sixth as much",
+      "bucket": 0
+     },
+     {
+      "text": "You can host the weights yourself",
+      "bucket": 0
+     },
+     {
+      "text": "Your feature needs the very top score",
+      "bucket": 1
+     },
+     {
+      "text": "No one on your team can run servers",
+      "bucket": 1
+     }
+    ],
+    "explanation": "Price and control favor switching. A need for top quality or a lack of skills argue against it."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "Your closed API bill is $60K a month. If open costs one sixth as much, what is the new bill, in thousands?",
+    "min": 0,
+    "max": 60,
+    "value": 10,
+    "unit": "K",
+    "explanation": "$60K divided by 6 is $10K a month, at the cheap end of the range."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You're the engineer asked to estimate the switch.",
+      "prompt": "What do you do first?",
+      "options": [
+       "Switch everything over tonight",
+       "Trust the benchmark table alone",
+       "Run both models on your real tasks"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Untested changes can break the product.",
+       "Benchmarks may not match your tasks.",
+       "You learn the real quality and cost trade."
+      ],
+      "explanation": "Comparable on average does not mean comparable on your work. Test it."
+     },
+     "proReasoning": "Good engineers turn a price headline into a test on real traffic before anyone commits.",
+     "commonMistake": "Switching on a benchmark table without testing your own tasks.",
+     "mentalModel": "Test on your own work."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You sit on the startup's board. Gross margin is thin because of API costs.",
+      "prompt": "What do you push for?",
+      "options": [
+       "A tested move of some traffic to open",
+       "Raising prices before checking options",
+       "Staying put to avoid any change"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Margins can rise without hurting quality.",
+       "Customers pay for a cost you could cut.",
+       "The margin problem stays where it is."
+      ],
+      "explanation": "Open models can cost half to one sixth as much. Boards should ask why that saving is not tested."
+     },
+     "proReasoning": "Board members ask whether the cost base reflects today's prices. In AI, those prices move fast.",
+     "commonMistake": "Accepting thin margins as fixed when cheaper models exist.",
+     "mentalModel": "Margins follow model prices."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You're the founder. Customers love the feature, but each use loses money.",
+      "prompt": "What's the smart sequence?",
+      "options": [
+       "Remove the feature to stop the losses",
+       "Move easy requests to open, keep hard ones",
+       "Move everything to open weights at once"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "You lose the feature customers love.",
+       "You cut most of the bill and protect quality.",
+       "Hard requests may get worse answers."
+      ],
+      "explanation": "Split the traffic. Cheap open models handle the easy share; the closed model keeps the hard cases."
+     },
+     "proReasoning": "Founders route by difficulty, so the costly model only sees the work that needs it.",
+     "commonMistake": "Treating the choice as all closed or all open.",
+     "mentalModel": "Route by difficulty."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend asks why anyone pays for closed models if open ones cost less.",
+      "prompt": "What's the honest answer?",
+      "options": [
+       "Open models do not really work at all",
+       "Closed models are always the cheaper ones",
+       "Closed still lead on some hard tasks"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Many companies run open models every day.",
+       "Open models cost half to one sixth as much.",
+       "The gap is small on average, larger on hard tests."
+      ],
+      "explanation": "Buyers pay extra where the last bit of quality matters, and save elsewhere."
+     },
+     "proReasoning": "Price differences survive when quality differences matter for some jobs. That is true in most markets.",
+     "commonMistake": "Assuming the cheaper option must win every job.",
+     "mentalModel": "Pay up only where it matters."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:7f2eb30e8e7e"
+  ]
+ },
+ {
+  "id": "2cfe9d77-64e7-514d-91f0-807027605390",
+  "market_id": "ai",
+  "day": 57,
+  "slot": 1,
+  "content": {
+   "id": "ai-d57-c1",
+   "title": "Alibaba keeps its best model closed",
+   "lessonTitle": "The open model lead moved to China",
+   "slot": 1,
+   "type": "apply",
+   "brief": {
+    "headline": "On April 20, 2026, Alibaba launched Qwen3.6-Max-Preview as a hosted model with no open weights. Three days earlier, it had open-sourced a smaller Qwen3.6 model.",
+    "kicker": "Apply day 57: the releaser decides what stays open.",
+    "fullText": "Alibaba built its lead in open models by releasing weights by default. In September 2025 Qwen passed Llama as the most downloaded family on Hugging Face, and more than 113,000 models are built on it.\n\nIn April 2026 it kept its flagship closed. Qwen3.6-Max-Preview is available only through Qwen Studio and Alibaba Cloud's API, while lower-end models stay open. Days earlier, Alibaba shut down the free tier of Qwen Code, after MiniMax rewrote its open-source license to block commercial use without written permission.",
+    "sources": [
+     {
+      "url": "https://decrypt.co/364948/alibaba-qwen-3-6-max-preview-most-powerful-model",
+      "label": "Decrypt, Alibaba launches Qwen 3.6 Max Preview with no open weights, Apr 2026"
+     },
+     {
+      "url": "https://hai.stanford.edu/assets/files/hai-digichina-issue-brief-beyond-deepseek-chinas-diverse-open-weight-ai-ecosystem-policy-implications.pdf",
+      "label": "Stanford HAI and DigiChina, Beyond DeepSeek: China's open-weight AI ecosystem, Dec 2025"
+     },
+     {
+      "url": "https://huggingface.co/blog/huggingface/state-of-os-hf-spring-2026",
+      "label": "Hugging Face, State of Open Source on Hugging Face: Spring 2026"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "spotFake",
+    "prompt": "One of these is false. Tap it.",
+    "statements": [
+     "Qwen3.6-Max-Preview launched with no open weights.",
+     "Alibaba's lower-end Qwen models stayed open.",
+     "Alibaba released the Max model under Apache 2.0."
+    ],
+    "fakeIndex": 2,
+    "explanation": "The Max model is hosted only, through Qwen Studio and Alibaba Cloud. The smaller models stayed open."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "How many days before the Max launch did Alibaba open-source Qwen3.6-35B-A3B?",
+    "min": 0,
+    "max": 14,
+    "value": 3,
+    "unit": "days",
+    "explanation": "Three days: open at the low end, closed at the top."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You're interviewing at a company that builds on Qwen. They ask what Alibaba's April 2026 move means.",
+      "prompt": "What do you say?",
+      "options": [
+       "It changes nothing for anyone",
+       "The top model can go closed at any time",
+       "Alibaba will keep everything open for good"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Builders lost access to the top weights.",
+       "The Max model launched API only.",
+       "Its flagship already went closed."
+      ],
+      "explanation": "Whoever releases the weights decides which models stay open."
+     },
+     "proReasoning": "Show that you see open access as a choice the releaser can change, not a permanent fact.",
+     "commonMistake": "Treating a lab's past openness as a promise about its next model.",
+     "mentalModel": "Open is a choice, not a promise."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You analyze Alibaba Cloud. Its best model is now sold only through its own API.",
+      "prompt": "What does the shift aim at?",
+      "options": [
+       "Shrinking its own cloud business",
+       "Handing rivals its top weights",
+       "Earning from its best model"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "The API runs on Alibaba Cloud.",
+       "The top weights are exactly what it kept.",
+       "Chinese labs are moving toward paid services."
+      ],
+      "explanation": "Open models built the user base. The closed flagship is meant to earn from it."
+     },
+     "proReasoning": "Investors watch when an open leader starts closing its best model. It marks a turn toward monetizing.",
+     "commonMistake": "Missing the moment an open strategy turns into a paid one.",
+     "mentalModel": "Open builds reach; closed earns."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your product runs on open Qwen weights. The newest top model is API only.",
+      "prompt": "How do you protect yourself?",
+      "options": [
+       "Keep a tested fallback on another model",
+       "Assume every Qwen release stays open",
+       "Rebuild now on the closed Max API"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "You can move if terms change again.",
+       "Alibaba just showed that is not guaranteed.",
+       "You trade your control for a dependency."
+      ],
+      "explanation": "The weights you already have stay yours. Future ones may not come, so keep options."
+     },
+     "proReasoning": "Founders build so a change in one lab's release policy is an inconvenience, not a crisis.",
+     "commonMistake": "Betting the product on a single lab staying open.",
+     "mentalModel": "Always keep a second base."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend asks why a company famous for open models kept its best one closed.",
+      "prompt": "What's the likely reason?",
+      "options": [
+       "The weights were too big to upload",
+       "Its best model can earn more as a service",
+       "Open models became illegal in China"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Size did not stop other huge open releases.",
+       "Chinese labs are shifting to paid services.",
+       "Alibaba still releases smaller open models."
+      ],
+      "explanation": "Open releases win attention. The most valuable model is often kept to sell."
+     },
+     "proReasoning": "Even open champions keep something back. The best model is usually the one held for revenue.",
+     "commonMistake": "Assuming a company that shares some models shares all of them.",
+     "mentalModel": "The best model is the one kept back."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:67fc31902ccd"
+  ]
+ },
+ {
+  "id": "1bba9d77-598c-54e8-b11d-eb254af57aff",
+  "market_id": "ai",
+  "day": 57,
+  "slot": 2,
+  "content": {
+   "id": "ai-d57-c2",
+   "title": "Chips are controlled, models travel",
+   "lessonTitle": "The open model lead moved to China",
+   "slot": 2,
+   "type": "connect",
+   "brief": {
+    "headline": "In April 2025, the US began requiring a license to sell NVIDIA's H20 chip to China. A year later Chinese models led open-model downloads, and DeepSeek V4 was reportedly built for Huawei chips.",
+    "kicker": "Connect day 21 and day 57: chip limits did not stop open models.",
+    "fullText": "On day 21 you saw governments decide who gets chips. NVIDIA said the US informed it on April 9, 2025, that exports of its H20 chip to China would need a license.\n\nOn day 57 you saw where open models stood a year later. Chinese models made up 41% of Hugging Face downloads over the past year, according to its March 2026 report. In April 2026, reports said DeepSeek V4 was being built for Huawei's Ascend 950PR chips rather than NVIDIA's.",
+    "sources": [
+     {
+      "url": "https://www.sec.gov/Archives/edgar/data/1045810/000104581025000082/nvda-20250409.htm",
+      "label": "NVIDIA Form 8-K on H20 export licensing, Apr 2025"
+     },
+     {
+      "url": "https://huggingface.co/blog/huggingface/state-of-os-hf-spring-2026",
+      "label": "Hugging Face, State of Open Source on Hugging Face: Spring 2026"
+     },
+     {
+      "url": "https://www.implicator.ai/stanfords-2026-ai-index-puts-us-lead-over-china-at-2-7-as-deepseek-v4-stalls/",
+      "label": "Implicator, AI Index 2026 and the DeepSeek V4 delays, Apr 2026"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "buildChain",
+    "prompt": "Put these events in order.",
+    "steps": [
+     "The US requires a license for H20 sales to China",
+     "Qwen passes Llama as the most downloaded family",
+     "Hugging Face reports China at 41% of downloads",
+     "DeepSeek V4 is reported built for Huawei chips"
+    ],
+    "explanation": "April 2025, September 2025, March 2026, then April 2026."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "What share of Hugging Face downloads went to Chinese models over the past year, in percent?",
+    "min": 0,
+    "max": 100,
+    "value": 41,
+    "unit": "%",
+    "explanation": "41%, more than any other country."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A policy team asks whether chip controls stopped Chinese AI progress.",
+      "prompt": "What's the balanced answer?",
+      "options": [
+       "Yes, Chinese labs stopped releasing",
+       "No, the controls never took effect",
+       "They limited chips, not open model reach"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Chinese labs kept releasing open models.",
+       "NVIDIA reported the license rule in April 2025.",
+       "Chinese models still led open downloads."
+      ],
+      "explanation": "Chip controls changed which hardware Chinese labs use. They did not stop open releases."
+     },
+     "proReasoning": "Policy roles reward answers that separate what a rule controls from what it does not.",
+     "commonMistake": "Claiming a policy either worked fully or failed fully.",
+     "mentalModel": "Say what the rule did and did not touch."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "DeepSeek V4 is reportedly built for Huawei Ascend chips, not NVIDIA.",
+      "prompt": "Who could gain if that works?",
+      "options": [
+       "Huawei, as a chip supplier in China",
+       "NVIDIA, through more sales in China",
+       "Nobody, since chips no longer matter"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Chinese giants reportedly ordered Ascend chips in bulk.",
+       "The model was built to avoid NVIDIA chips.",
+       "The whole story is about which chips matter."
+      ],
+      "explanation": "Export limits pushed demand toward a domestic supplier."
+     },
+     "proReasoning": "Investors trace second-order effects: limits on one supplier create demand for another.",
+     "commonMistake": "Ignoring who fills a gap that a trade rule creates.",
+     "mentalModel": "Limits create substitutes."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You build developer tools. Many of the top open models now come from Chinese labs.",
+      "prompt": "Which models do you support first?",
+      "options": [
+       "Only closed models from US labs",
+       "The open models developers use",
+       "Only models trained on US-made chips"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "You would miss the open-model market.",
+       "Chinese models drew 41% of downloads.",
+       "You would skip much of what users download."
+      ],
+      "explanation": "Support follows usage. Downloads show what developers want to run."
+     },
+     "proReasoning": "Founders follow what their users download, then add any limits their customers require.",
+     "commonMistake": "Choosing supported models by assumption instead of usage data.",
+     "mentalModel": "Support what people download."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend asks how Chinese labs lead open AI despite chip limits.",
+      "prompt": "What's one part of the answer?",
+      "options": [
+       "The chip limits were never announced",
+       "They train models with no chips at all",
+       "Some are building for Huawei chips"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "NVIDIA disclosed the license rule in April 2025.",
+       "Every model needs chips to train.",
+       "DeepSeek V4 was reportedly built for Ascend chips."
+      ],
+      "explanation": "Limits on one chip pushed labs toward another supplier."
+     },
+     "proReasoning": "Rules on hardware change how labs work, but rarely stop them outright.",
+     "commonMistake": "Thinking a chip limit switches off a whole country's AI.",
+     "mentalModel": "Labs route around limits."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:4094463c13f7"
+  ]
+ },
+ {
+  "id": "b34737ab-36b5-569e-a9e2-dc472e804eb9",
+  "market_id": "ai",
+  "day": 57,
+  "slot": 3,
+  "content": {
+   "id": "ai-d57-c3",
+   "title": "A foreign base model for a bank",
+   "lessonTitle": "The open model lead moved to China",
+   "slot": 3,
+   "type": "decide",
+   "brief": {
+    "headline": "You lead AI at a US bank. The best open model for your task is Qwen, the most downloaded family on Hugging Face. Your compliance team is nervous.",
+    "kicker": "Decide how to judge a foreign open model.",
+    "fullText": "Qwen3 ships under Apache 2.0, in sizes from 0.6 billion to 235 billion parameters, and more than 113,000 models are built on Qwen. Open weights can run on your own servers, so your data need not go to the maker.\n\nAs of December 2025, 22 releases from five Chinese labs beat the top US open model, gpt-oss-120b, on Chatbot Arena. The US AI Action Plan says America needs leading open models founded on American values, and that releasing open or closed is up to the developer.",
+    "sources": [
+     {
+      "url": "https://hai.stanford.edu/assets/files/hai-digichina-issue-brief-beyond-deepseek-chinas-diverse-open-weight-ai-ecosystem-policy-implications.pdf",
+      "label": "Stanford HAI and DigiChina, Beyond DeepSeek: China's open-weight AI ecosystem, Dec 2025"
+     },
+     {
+      "url": "https://huggingface.co/blog/huggingface/state-of-os-hf-spring-2026",
+      "label": "Hugging Face, State of Open Source on Hugging Face: Spring 2026"
+     },
+     {
+      "url": "https://fedscoop.com/open-source-ai-trump-ai-action-plan/",
+      "label": "FedScoop, open source in the AI Action Plan, Jul 2025"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "faceOff",
+    "prompt": "Which keeps customer data inside the bank?",
+    "left": {
+     "name": "Qwen weights on bank servers",
+     "note": "Downloaded and run in-house"
+    },
+    "right": {
+     "name": "Qwen through its maker's cloud API",
+     "note": "Requests go to an outside cloud"
+    },
+    "correctIndex": 0,
+    "explanation": "Self-hosted weights never send data to the maker. An API call does."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "As of December 2025, how many releases from Chinese labs beat gpt-oss-120b on Chatbot Arena?",
+    "min": 0,
+    "max": 60,
+    "value": 22,
+    "unit": "releases",
+    "explanation": "22 releases from five Chinese labs."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Compliance asks you, the AI lead, for a recommendation.",
+      "prompt": "What do you propose?",
+      "options": [
+       "Self-host it after security and bias tests",
+       "Use it through its maker's API right away",
+       "Reject it because of where it was made"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Data stays in-house and risks get checked.",
+       "Customer data would leave the bank.",
+       "You may give up the best tool with no test."
+      ],
+      "explanation": "Open weights let you test and run a model under your own controls."
+     },
+     "proReasoning": "Good AI leads turn a worry into a test plan instead of a yes or a no.",
+     "commonMistake": "Deciding on origin alone, without testing the model itself.",
+     "mentalModel": "Turn worry into a test plan."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You hold shares in the bank. Its AI team wants to use Qwen in-house.",
+      "prompt": "What do you most want to know?",
+      "options": [
+       "How many people liked the release post",
+       "Whether data stays on bank servers",
+       "Whether Qwen has a well-known logo"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Likes say nothing about safety.",
+       "That decides most of the data risk.",
+       "A logo says nothing about risk."
+      ],
+      "explanation": "Where the model runs matters more than who made it, for data risk."
+     },
+     "proReasoning": "Shareholders focus on the control that limits the downside: where the data goes.",
+     "commonMistake": "Judging the plan by popularity instead of data handling.",
+     "mentalModel": "Ask where the data goes."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You sell model security reviews to banks.",
+      "prompt": "What service fits this moment?",
+      "options": [
+       "Selling banks a closed model of your own",
+       "Lobbying to ban all open models",
+       "Testing open weights before banks deploy"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "That competes with labs, not your strength.",
+       "Your customers want to use these models.",
+       "Banks want the best open models, checked."
+      ],
+      "explanation": "When the best open models come from abroad, buyers pay for independent checks."
+     },
+     "proReasoning": "Founders sell the missing step between a great open model and a cautious buyer.",
+     "commonMistake": "Fighting the trend instead of serving buyers caught in it.",
+     "mentalModel": "Sell the missing check."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend asks if using a Chinese open model sends your data to China.",
+      "prompt": "What's accurate?",
+      "options": [
+       "Not if you run the weights yourself",
+       "Always, whatever you do with it",
+       "Only if the model is a small one"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Self-hosted weights run only where you put them.",
+       "Open weights can run on your own servers.",
+       "Size does not decide where data goes."
+      ],
+      "explanation": "Where data goes depends on where the model runs, not on who trained it."
+     },
+     "proReasoning": "Open weights separate who built a model from who runs it. That changes the data question.",
+     "commonMistake": "Assuming a model's origin decides where your data travels.",
+     "mentalModel": "Where it runs, not who built it."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:f03ada757f36"
+  ]
+ },
+ {
+  "id": "4b30ccc0-82bf-5714-9b51-e38f61a74548",
+  "market_id": "ai",
+  "day": 58,
+  "slot": 1,
+  "content": {
+   "id": "ai-d58-c1",
+   "title": "Six points behind the leader",
+   "lessonTitle": "From 15% behind to half a point",
+   "slot": 1,
+   "type": "apply",
+   "brief": {
+    "headline": "In late April 2026, three open models launched in one week. The best, Kimi K2.6 and MiMo V2.5 Pro, scored 54 on Artificial Analysis's index, six points behind GPT-5.5.",
+    "kicker": "Apply day 58: measure the open gap yourself.",
+    "fullText": "Artificial Analysis combines many tests into one Intelligence Index. Moonshot's Kimi K2.6 and Xiaomi's MiMo V2.5 Pro both scored 54, and DeepSeek V4 Pro scored 52. GPT-5.5 led at 60, with Gemini 3.1 Pro Preview and Claude Opus 4.7 at 57.\n\nA year earlier, the best open model, DeepSeek V3 0324, scored 22, about 13 points below Claude 3.7 Sonnet at 35. The gap shrank, but hard tests still show it: on TerminalBench Hard, the open models scored 43% to 46%, against 61% for GPT-5.5.",
+    "sources": [
+     {
+      "url": "https://artificialanalysis.ai/articles/recent-open-weights-model-launches",
+      "label": "Artificial Analysis, recent open weights model launches, Apr 2026"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "sortSignal",
+    "prompt": "Open weights or closed?",
+    "buckets": [
+     "Open weights",
+     "Closed"
+    ],
+    "items": [
+     {
+      "text": "Kimi K2.6, scoring 54",
+      "bucket": 0
+     },
+     {
+      "text": "DeepSeek V4 Pro, scoring 52",
+      "bucket": 0
+     },
+     {
+      "text": "GPT-5.5, scoring 60",
+      "bucket": 1
+     },
+     {
+      "text": "Claude Opus 4.7, scoring 57",
+      "bucket": 1
+     }
+    ],
+    "explanation": "The open models clustered from 52 to 54. The closed leaders sat from 57 to 60."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "The gap was about 13 points a year earlier and 6 points in April 2026. By how many points did it shrink?",
+    "min": 0,
+    "max": 20,
+    "value": 7,
+    "unit": "points",
+    "explanation": "About 7 points, roughly half the gap, in one year."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "An interviewer asks how far open models trail closed ones in 2026.",
+      "prompt": "What do you answer?",
+      "options": [
+       "They now lead closed models on every test",
+       "Years behind, with no sign of catching up",
+       "About 6 index points, wider on hard tests"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "GPT-5.5 still led at 60 against 54.",
+       "The gap halved in a year.",
+       "That matches Artificial Analysis in April 2026."
+      ],
+      "explanation": "Give a number, a date and the caveat. Averages hide the hard tests."
+     },
+     "proReasoning": "Strong answers give the size of the gap, the date and where it is wider.",
+     "commonMistake": "Answering with a slogan, like caught up or far behind.",
+     "mentalModel": "Number, date, caveat."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A closed lab's pitch says it leads open models by a wide margin.",
+      "prompt": "What do you check?",
+      "options": [
+       "The current gap on several hard tests",
+       "Only the lab's own launch chart",
+       "How old the company is"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Independent tests show 6 points overall, more on hard tasks.",
+       "A launch chart is chosen by the lab.",
+       "Age says nothing about the gap."
+      ],
+      "explanation": "Use independent measures, and look where the gap is widest, not just the average."
+     },
+     "proReasoning": "Investors check a claimed lead against independent data, and against how fast it shrank last year.",
+     "commonMistake": "Accepting a lab's own chart as proof of its lead.",
+     "mentalModel": "Check leads independently."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your coding agent needs strong terminal skills. Open models score 43% to 46% there; GPT-5.5 scores 61%.",
+      "prompt": "What do you do?",
+      "options": [
+       "Skip testing and pick one at random",
+       "Use the closed model there for now",
+       "Use the cheapest open model anyway"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "You ignore the one number that fits your task.",
+       "The hard task gets the stronger model.",
+       "Your agent may fail where it matters most."
+      ],
+      "explanation": "Where the gap is wide and the task is central, pay for the leader. Revisit as open models improve."
+     },
+     "proReasoning": "Founders look at the benchmark closest to their own task, not the overall average.",
+     "commonMistake": "Choosing by the headline score when your task sits where the gap is widest.",
+     "mentalModel": "Pick by your task, not the average."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend says open models have now caught up completely.",
+      "prompt": "What's closer to the truth?",
+      "options": [
+       "Fully caught up on every test",
+       "Further behind than ever before",
+       "Close, but behind on hard tests"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "GPT-5.5 still led by six points.",
+       "The gap was about 13 points a year earlier.",
+       "54 against 60, and wider on TerminalBench Hard."
+      ],
+      "explanation": "Open models closed half the gap in a year. They have not closed all of it."
+     },
+     "proReasoning": "Close is not the same as equal. The hardest tests show the difference.",
+     "commonMistake": "Reading a shrinking gap as a closed one.",
+     "mentalModel": "Close is not equal."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:9a9e6cda5a35"
+  ]
+ },
+ {
+  "id": "a875f978-3407-573a-9c60-2d2273c04f5b",
+  "market_id": "ai",
+  "day": 58,
+  "slot": 2,
+  "content": {
+   "id": "ai-d58-c2",
+   "title": "The leaderboard behind the gap",
+   "lessonTitle": "From 15% behind to half a point",
+   "slot": 2,
+   "type": "connect",
+   "brief": {
+    "headline": "Stanford tracks the open versus closed gap on the Arena Leaderboard. In April 2025, Meta's Llama 4 ranked high there with an experimental version, while the released model ranked lower.",
+    "kicker": "Connect day 30 and day 58: know the ruler before the gap.",
+    "fullText": "On day 30 you saw Meta submit Llama-4-Maverick-03-26-Experimental, a version optimized for conversation, to LM Arena. The public release ranked below models including GPT-4o, Claude 3.5 Sonnet and Gemini 1.5 Pro.\n\nOn day 58 you saw Stanford's AI Index use the same leaderboard to track the gap between open and closed models: 15.2% in May 2023, 0.5% in August 2024 and 3.4% in March 2026. The AI Index notes Meta faced criticism that Llama 4 was optimized with special variants to improve its rankings, which Meta disputed.",
+    "sources": [
+     {
+      "url": "https://techcrunch.com/2025/04/11/metas-vanilla-maverick-ai-model-ranks-below-rivals-on-a-popular-chat-benchmark",
+      "label": "TechCrunch, Meta's vanilla Maverick ranks below rivals, Apr 2025"
+     },
+     {
+      "url": "https://hai.stanford.edu/assets/files/ai_index_report_2026_chapter_2_technical.pdf",
+      "label": "Stanford AI Index 2026, chapter 2, technical performance"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "spotFake",
+    "prompt": "One of these is false. Tap it.",
+    "statements": [
+     "The AI Index measures the gap on the Arena Leaderboard.",
+     "Meta submitted an experimental Llama 4 to LM Arena.",
+     "The released Llama 4 ranked above GPT-4o there."
+    ],
+    "fakeIndex": 2,
+    "explanation": "The released Llama 4 Maverick ranked below GPT-4o, Claude 3.5 Sonnet and Gemini 1.5 Pro."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "In March 2026, by how many Arena points did the top closed model lead the top open one?",
+    "min": 0,
+    "max": 200,
+    "value": 49,
+    "unit": "points",
+    "explanation": "49 points, or 3.4%, against the open GLM-5."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your team lead cites a 0.5% open gap to argue that open models have caught up.",
+      "prompt": "What do you add?",
+      "options": [
+       "That was August 2024; it was 3.4% by 2026",
+       "Nothing, since leaderboard figures never change",
+       "That leaderboards are always perfectly fair"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "New closed models reopened the gap.",
+       "The gap moved from 0.5% to 3.4%.",
+       "The Llama 4 episode shows rankings can be tuned."
+      ],
+      "explanation": "Date every gap figure, and know which leaderboard it came from."
+     },
+     "proReasoning": "Correct a stale number politely with the newer one and its source.",
+     "commonMistake": "Letting a two-year-old gap figure drive a current decision.",
+     "mentalModel": "Date the number."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A startup's pitch cites its Arena rank as proof it beats closed models.",
+      "prompt": "What do you ask?",
+      "options": [
+       "Which city its office is in",
+       "Is the ranked version the one it ships?",
+       "How many employees the startup has"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Location says nothing about the rank.",
+       "Llama 4 showed tested and shipped versions can differ.",
+       "Headcount says nothing about the rank."
+      ],
+      "explanation": "A rank only counts if it describes the product customers get."
+     },
+     "proReasoning": "Investors ask whether the ranked model and the sold model are the same thing.",
+     "commonMistake": "Treating a leaderboard rank as proof without checking which version earned it.",
+     "mentalModel": "Rank the product, not the demo."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You choose an open model for your app from a leaderboard.",
+      "prompt": "What do you do before committing?",
+      "options": [
+       "Pick the top-ranked name and ship",
+       "Choose the model with the most likes",
+       "Test the released version on your tasks"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "The ranked version may not be the one released.",
+       "Likes are not a test of your use case.",
+       "You see how the model you get actually performs."
+      ],
+      "explanation": "Leaderboards narrow the list. Your own tests make the choice."
+     },
+     "proReasoning": "Founders use leaderboards to shortlist and their own tasks to decide.",
+     "commonMistake": "Shipping the top-ranked name without testing the downloadable version.",
+     "mentalModel": "Shortlist by rank, decide by test."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend asks how anyone measures the open versus closed gap.",
+      "prompt": "What's one common way?",
+      "options": [
+       "People vote between answers on Arena",
+       "The labs report it about themselves",
+       "Governments certify it every year"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Stanford uses the Arena Leaderboard.",
+       "Self-reports are not how the AI Index measures it.",
+       "No government certifies the gap."
+      ],
+      "explanation": "The gap comes from votes on a leaderboard, which has its own weak spots."
+     },
+     "proReasoning": "Every gap figure rests on a ruler. Knowing the ruler tells you how much to trust the figure.",
+     "commonMistake": "Treating a leaderboard gap as an exact measurement.",
+     "mentalModel": "Know the ruler."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:aa9ba7773d75"
+  ]
+ },
+ {
+  "id": "d8684123-9e2a-5a41-b05a-f799acaa8875",
+  "market_id": "ai",
+  "day": 58,
+  "slot": 3,
+  "content": {
+   "id": "ai-d58-c3",
+   "title": "A four-month lead",
+   "lessonTitle": "From 15% behind to half a point",
+   "slot": 3,
+   "type": "decide",
+   "brief": {
+    "headline": "You are an investor. A startup sells a fine-tuned version of the best closed model and says its edge over open models will last for years.",
+    "kicker": "Decide how long a lead over open models lasts.",
+    "fullText": "Epoch AI found that since January 2026, open-weight models have trailed the best closed models by an average of four months, or about 8 points on its capability index.\n\nStanford's AI Index shows the gap is not fixed. It fell from 15.2% in May 2023 to 0.5% in August 2024, then widened to 3.4% by March 2026 as new closed models arrived. Six of the top ten Arena models in March 2026 were closed.",
+    "sources": [
+     {
+      "url": "https://epoch.ai/data-insights/open-closed-eci-gap",
+      "label": "Epoch AI, the open and closed capability gap, May 2026"
+     },
+     {
+      "url": "https://hai.stanford.edu/assets/files/ai_index_report_2026_chapter_2_technical.pdf",
+      "label": "Stanford AI Index 2026, chapter 2, technical performance"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "buildChain",
+    "prompt": "Follow how a closed lead wears down.",
+    "steps": [
+     "A closed lab releases a new top model",
+     "Open models trail it by a few months",
+     "An open release closes most of the gap",
+     "A newer closed model reopens the gap"
+    ],
+    "explanation": "This cycle took the gap from 15.2% to 0.5% and back to 3.4% in under three years."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "If open models trail by four months, about how many times a year must a closed lead be renewed?",
+    "min": 0,
+    "max": 12,
+    "value": 3,
+    "unit": "times",
+    "explanation": "Twelve months divided by four is about three times a year."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You are offered the product lead job at this startup.",
+      "prompt": "What should the roadmap rely on?",
+      "options": [
+       "Never testing open alternatives",
+       "Features beyond raw model quality",
+       "A model lead lasting several years"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Open models may soon do the same job for less.",
+       "Workflow and data last longer than a four-month lead.",
+       "Epoch puts the lead at about four months."
+      ],
+      "explanation": "A product lead plans for the model edge to fade and builds what lasts."
+     },
+     "proReasoning": "Product leads ask what customers will still value once a rival model matches theirs.",
+     "commonMistake": "Building the roadmap on a model lead that lasts months.",
+     "mentalModel": "Plan for the edge to fade."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "The founder says the model lead is the moat.",
+      "prompt": "How do you respond?",
+      "options": [
+       "Accept the claim and invest at once",
+       "Demand it go fully open source",
+       "Ask what lasts past a four-month lead"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "The data shows leads of about four months.",
+       "Openness does not solve the moat question.",
+       "Durable value has to come from somewhere else."
+      ],
+      "explanation": "If open models trail by about four months, a model lead is a head start, not a moat."
+     },
+     "proReasoning": "Investors test moat claims against data on how fast rivals catch up.",
+     "commonMistake": "Accepting a head start as a lasting moat.",
+     "mentalModel": "A head start is not a moat."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You're the founder. Investors doubt your model edge will last.",
+      "prompt": "What do you build up?",
+      "options": [
+       "Customer data, workflow, distribution",
+       "Only a bigger fine-tuning budget",
+       "Secrecy about which model you use"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Those stay yours when open models catch up.",
+       "Rivals can tune open models too.",
+       "Secrecy does not stop rivals catching up."
+      ],
+      "explanation": "When base models converge, the business is what you build around them."
+     },
+     "proReasoning": "Founders turn a temporary model lead into lasting assets like data and distribution.",
+     "commonMistake": "Spending everything on staying a few months ahead on model quality.",
+     "mentalModel": "Turn a lead into assets."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend asks whether open models will ever catch closed ones.",
+      "prompt": "What does the data show so far?",
+      "options": [
+       "They never came within 10%",
+       "They get close, then fall behind again",
+       "They overtook closed models in 2024"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "The gap reached 0.5% in August 2024.",
+       "0.5% in 2024, then 3.4% by 2026.",
+       "Closed models led throughout."
+      ],
+      "explanation": "The gap swings with each big release. It has stayed small, but it has stayed."
+     },
+     "proReasoning": "Describe the pattern, not a prediction: close, reopen, close again.",
+     "commonMistake": "Predicting a final winner from one point on the curve.",
+     "mentalModel": "Describe the cycle."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:fb036081355f"
+  ]
+ },
+ {
+  "id": "e4133592-8456-53e3-83d9-25fef89d5560",
+  "market_id": "ai",
+  "day": 59,
+  "slot": 1,
+  "content": {
+   "id": "ai-d59-c1",
+   "title": "A license with a revenue line",
+   "lessonTitle": "The fine print on free models",
+   "slot": 1,
+   "type": "apply",
+   "brief": {
+    "headline": "Meta released Muse Spark Open on October 15, 2026, under a new Muse Model License. Companies selling AI models as a service with over $20 million in yearly revenue must notify Meta and sign a separate deal.",
+    "kicker": "Apply day 59: read the threshold before you build.",
+    "fullText": "The license allows free use, copying, fine-tuning, distillation and distribution, under conditions. Products must display \"Built with Muse Spark Open\". The $20 million threshold counts affiliates and applies over any 12 months, but only to companies offering AI models as a service. It does not apply to internal use, research or using the model inside your own product.\n\nThe usage policy bars uses such as malware, weapons development and fraud. Compare Llama 4's license, which drew its line at 700 million monthly users.",
+    "sources": [
+     {
+      "url": "https://unite.ai/metas-816b-parameter-muse-spark-open-weights-are-now-public",
+      "label": "Unite.AI, Meta's Muse Spark Open weights are public, Oct 2026"
+     },
+     {
+      "url": "https://huggingface.co/meta-llama/Llama-4-Maverick-17B-128E-Original",
+      "label": "Meta, Llama 4 Maverick model card and license"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "sortSignal",
+    "prompt": "Does the $20 million rule apply here?",
+    "buckets": [
+     "Rule applies",
+     "Rule does not apply"
+    ],
+    "items": [
+     {
+      "text": "A model API firm earning $50M a year",
+      "bucket": 0
+     },
+     {
+      "text": "A cloud selling the model as a service for $90M",
+      "bucket": 0
+     },
+     {
+      "text": "A bank using it for internal tools",
+      "bucket": 1
+     },
+     {
+      "text": "A university lab doing research",
+      "bucket": 1
+     },
+     {
+      "text": "An app using it inside its own product",
+      "bucket": 1
+     }
+    ],
+    "explanation": "Only model services above $20 million a year need the separate deal. Internal use, research and products are exempt."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "Above how many million dollars of yearly revenue must a model service sign a deal with Meta?",
+    "min": 0,
+    "max": 100,
+    "value": 20,
+    "unit": "M",
+    "explanation": "$20 million in any 12 months, counting affiliates."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You join a startup selling a hosted model API. Its revenue just passed $15 million a year.",
+      "prompt": "What do you flag about Muse Spark Open?",
+      "options": [
+       "Above $20M you need a deal with Meta",
+       "The license sets no conditions at all",
+       "It may only be used by adults over 30"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "You are close to the line, so plan now.",
+       "It has attribution, revenue and use rules.",
+       "The policy says not intended for under 18s, nothing about 30."
+      ],
+      "explanation": "A growing model service will cross the line soon. Flag it before it does."
+     },
+     "proReasoning": "New hires earn trust by spotting a license limit the company is about to hit.",
+     "commonMistake": "Assuming an open license has no conditions that grow with you.",
+     "mentalModel": "Spot the line before you cross it."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You back a company reselling Muse Spark Open as an API at $40 million a year.",
+      "prompt": "What's the key license risk?",
+      "options": [
+       "The license bans any fine-tuning",
+       "It must sign a separate deal with Meta",
+       "Meta claims ownership of all outputs"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "The license allows fine-tuning.",
+       "Its terms depend on what Meta offers.",
+       "Meta takes no ownership of outputs."
+      ],
+      "explanation": "Above the threshold, the business runs on terms Meta has not published yet."
+     },
+     "proReasoning": "Investors check whether a portfolio company's core supplier can rewrite its terms.",
+     "commonMistake": "Treating an open license as fixed for businesses above its threshold.",
+     "mentalModel": "Know who can change your terms."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You build a note-taking app that uses Muse Spark Open inside your product.",
+      "prompt": "Does the revenue rule bind you?",
+      "options": [
+       "Yes, from the first dollar you earn",
+       "Only if your users are all adults",
+       "No, use inside your product is exempt"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Products using the model are excluded.",
+       "User age is a separate policy point.",
+       "The threshold targets model services, not products."
+      ],
+      "explanation": "Read who the rule targets. Here it is companies selling the model itself."
+     },
+     "proReasoning": "Founders read the exclusions as carefully as the rule. That is where their freedom sits.",
+     "commonMistake": "Avoiding a model because of a rule that does not apply to you.",
+     "mentalModel": "Read the exclusions."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend asks why Meta lets most people use its model for free.",
+      "prompt": "What does the license suggest?",
+      "options": [
+       "It sets terms for big model services",
+       "It bills every user once a month",
+       "It has no rules of any kind at all"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Model services over $20M must sign a deal.",
+       "Most uses need no payment or deal.",
+       "It has attribution and use rules."
+      ],
+      "explanation": "Free for most, with terms for the largest firms that would resell it."
+     },
+     "proReasoning": "Open licenses often split users: free for most, negotiated for the biggest.",
+     "commonMistake": "Thinking free to most means free to all.",
+     "mentalModel": "Free for most, terms for the biggest."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:29d2688a4f23"
+  ]
+ },
+ {
+  "id": "fcc4c7a5-f8c8-50cd-8689-a7b399281d5a",
+  "market_id": "ai",
+  "day": 59,
+  "slot": 2,
+  "content": {
+   "id": "ai-d59-c2",
+   "title": "Open, but not exempt",
+   "lessonTitle": "The fine print on free models",
+   "slot": 2,
+   "type": "connect",
+   "brief": {
+    "headline": "Since August 2, 2025, general-purpose AI providers in the EU must publish a summary of their training content. Free and open-source models skip some duties, but not that one.",
+    "kicker": "Connect day 17 and day 59: open models still show their data.",
+    "fullText": "On day 17 you saw the EU AI Act require general-purpose AI providers to publish a training content summary, on the Commission's template, from August 2, 2025.\n\nOn day 59 you saw how open models are treated. A model under a truly free and open-source license, without monetisation and with its weights public, may skip technical documentation for authorities and downstream providers, and non-EU providers need not appoint an EU representative. It must still keep a copyright policy and publish the training summary. Models with systemic risk, presumed above 10^25 FLOP of training compute, get no exemption.",
+    "sources": [
+     {
+      "url": "https://www.mayerbrown.com/en/insights/publications/2025/08/eu-ai-act-news-rules-on-general-purpose-ai-start-applying-guidelines-and-template-for-summary-of-training-data-finalized",
+      "label": "Mayer Brown, EU AI Act rules on general-purpose AI start applying, Aug 2025"
+     },
+     {
+      "url": "https://digital-strategy.ec.europa.eu/en/faqs/guidelines-obligations-gpai-providers",
+      "label": "European Commission, FAQ on obligations for general-purpose AI providers"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "multipleChoice",
+    "prompt": "Which duty does a free and open-source model still owe in the EU?",
+    "options": [
+     "Publishing a training data summary",
+     "Appointing an EU representative",
+     "Technical documentation for authorities"
+    ],
+    "correctIndex": 0,
+    "explanation": "The exemption covers documentation and the EU representative. The training summary and copyright policy remain."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "A model is presumed to carry systemic risk above 10 to the power of what, in FLOP?",
+    "min": 0,
+    "max": 40,
+    "value": 25,
+    "unit": "power",
+    "explanation": "10^25 FLOP of cumulative training compute. Above it, being open earns no exemption."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your company releases an open model in Europe. A colleague says open source means no EU rules.",
+      "prompt": "What do you correct?",
+      "options": [
+       "Only closed models must register",
+       "It still owes a training data summary",
+       "Open models are banned in the EU"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Open models have duties too.",
+       "The summary and copyright policy still apply.",
+       "The AI Act gives open models a partial exemption."
+      ],
+      "explanation": "The exemption is partial. Knowing which duties remain prevents a costly miss."
+     },
+     "proReasoning": "Compliance-minded staff know exactly which duties an exemption removes and which stay.",
+     "commonMistake": "Treating a partial exemption as a full one.",
+     "mentalModel": "Partial pass, not a free pass."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "An open model maker plans a model trained with more than 10^25 FLOP.",
+      "prompt": "What should you expect?",
+      "options": [
+       "No EU duties, because it is open",
+       "An outright ban on release in Europe",
+       "Full systemic risk duties, open or not"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Above the threshold, openness earns no pass.",
+       "The Act sets duties, not a ban, here.",
+       "The exemption does not cover systemic risk models."
+      ],
+      "explanation": "Scale changes the rules. Above 10^25 FLOP, open and closed models carry the same duties."
+     },
+     "proReasoning": "Investors in open labs budget for compliance once models cross the systemic risk line.",
+     "commonMistake": "Assuming an open license keeps a frontier model out of the strictest rules.",
+     "mentalModel": "Scale, not openness, sets the rules."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You release a small open model free under Apache 2.0, with no paid tier.",
+      "prompt": "Which duty can you likely skip?",
+      "options": [
+       "Technical documents for authorities",
+       "The summary of its training data",
+       "Keeping a policy on copyright"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Free, unmonetised open models can skip it.",
+       "That summary still applies to open models.",
+       "The copyright policy still applies too."
+      ],
+      "explanation": "Small, free and open buys you lighter paperwork, not zero paperwork."
+     },
+     "proReasoning": "Founders map their exact duties early, so a free release does not turn into a compliance surprise.",
+     "commonMistake": "Skipping the training summary because the model is open.",
+     "mentalModel": "Lighter, not zero."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend asks if open models get special treatment under EU law.",
+      "prompt": "What's accurate?",
+      "options": [
+       "They face stricter rules than closed",
+       "Some duties are lighter, not all",
+       "They are exempt from everything"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Their duties are lighter, not heavier.",
+       "Documentation duties ease; the summary stays.",
+       "The summary and copyright policy remain."
+      ],
+      "explanation": "The law rewards openness a little, and drops the reward for the most powerful models."
+     },
+     "proReasoning": "Laws often treat open models gently, until they get powerful enough to matter more.",
+     "commonMistake": "Assuming open models live outside the law.",
+     "mentalModel": "Open gets a discount, not an exit."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:b21f3ce58240"
+  ]
+ },
+ {
+  "id": "6363bea8-b4e2-5562-a533-5e5b5f2ddcdb",
+  "market_id": "ai",
+  "day": 59,
+  "slot": 3,
+  "content": {
+   "id": "ai-d59-c3",
+   "title": "Pick the license, not just the model",
+   "lessonTitle": "The fine print on free models",
+   "slot": 3,
+   "type": "decide",
+   "brief": {
+    "headline": "You run a Berlin startup building a chat app you hope grows fast. Two open models fit: Llama 4 Maverick and Qwen3. Your lawyer asks which license you can live with.",
+    "kicker": "Decide which license fits your plans.",
+    "fullText": "Llama 4's community license requires a separate license from Meta above 700 million monthly active users, a \"Built with Llama\" label, and names starting with Llama for any model derived from it. At launch it also barred people and companies based in the EU from using or distributing the models.\n\nQwen3 ships under Apache 2.0, a standard license. DeepSeek-R1 uses MIT, another standard license.",
+    "sources": [
+     {
+      "url": "https://huggingface.co/meta-llama/Llama-4-Maverick-17B-128E-Original",
+      "label": "Meta, Llama 4 Maverick model card and license"
+     },
+     {
+      "url": "https://techcrunch.com/2025/04/05/meta-releases-llama-4-a-new-crop-of-flagship-ai-models",
+      "label": "TechCrunch, Meta releases Llama 4, Apr 2025"
+     },
+     {
+      "url": "https://hai.stanford.edu/assets/files/hai-digichina-issue-brief-beyond-deepseek-chinas-diverse-open-weight-ai-ecosystem-policy-implications.pdf",
+      "label": "Stanford HAI and DigiChina, Beyond DeepSeek: China's open-weight AI ecosystem, Dec 2025"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "faceOff",
+    "prompt": "Which license fits a startup based in Berlin?",
+    "left": {
+     "name": "Llama 4 Community License",
+     "note": "Barred EU-based firms at launch"
+    },
+    "right": {
+     "name": "Apache 2.0, used by Qwen3",
+     "note": "A standard license"
+    },
+    "correctIndex": 1,
+    "explanation": "At launch, the Llama 4 license kept companies based in the EU out. Apache 2.0 has no such bar."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "Your app has 7 million monthly users. How many times bigger must it grow to reach Llama 4's 700 million line?",
+    "min": 0,
+    "max": 250,
+    "value": 100,
+    "unit": "x",
+    "explanation": "700 million divided by 7 million is 100 times. The EU bar matters long before that."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You're the startup's engineer, asked to compare the two licenses.",
+      "prompt": "What do you highlight first?",
+      "options": [
+       "Both licenses are exactly the same",
+       "Licenses only matter for big firms",
+       "Llama 4's EU bar at launch blocks us"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "One is custom, one is standard Apache 2.0.",
+       "The EU bar hits small firms too.",
+       "A Berlin company is exactly who it excluded."
+      ],
+      "explanation": "Lead with the term that stops you today, then the ones that matter later."
+     },
+     "proReasoning": "Engineers who read licenses save their teams from building on a model they cannot use.",
+     "commonMistake": "Comparing only benchmark scores and skipping the license.",
+     "mentalModel": "Lead with the blocking term."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You consider funding the startup. Its plan is built on Llama 4.",
+      "prompt": "What do you question?",
+      "options": [
+       "Whether an EU firm may use it at all",
+       "Whether the model has a good name",
+       "Whether Meta will exist next year"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "At launch, the license barred EU-based firms.",
+       "Names do not affect legal access.",
+       "Meta's survival is not the risk here."
+      ],
+      "explanation": "A plan built on a model it may not legally use is a plan with a hole in it."
+     },
+     "proReasoning": "Investors check legal access to key inputs before they look at growth plans.",
+     "commonMistake": "Assuming a downloadable model is legally usable everywhere.",
+     "mentalModel": "Check legal access first."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You're the founder, and you may later sell a model you derive from the base.",
+      "prompt": "Which license gives you more freedom?",
+      "options": [
+       "Neither lets you sell anything",
+       "Apache 2.0, with no naming rule",
+       "Llama 4, which sets derived names"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Both allow some commercial use.",
+       "You can name and brand your model as you like.",
+       "Derived models must start with Llama."
+      ],
+      "explanation": "A standard license leaves branding and growth decisions with you."
+     },
+     "proReasoning": "Founders pick licenses that keep future options open, such as branding and resale.",
+     "commonMistake": "Ignoring license terms that only bite once you succeed.",
+     "mentalModel": "License for the company you want to be."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend asks why two free models aren't equally free.",
+      "prompt": "What's the answer?",
+      "options": [
+       "One of them costs money to download",
+       "Only one of them has public weights",
+       "Their licenses set different rules"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Both are free to download.",
+       "Both have public weights.",
+       "Llama 4 adds custom terms; Apache 2.0 does not."
+      ],
+      "explanation": "Price is the same, zero. The rules attached are not."
+     },
+     "proReasoning": "Free describes the price. The license describes the freedom.",
+     "commonMistake": "Treating all free models as equally open.",
+     "mentalModel": "Price zero, rules vary."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:47e24ce30483"
+  ]
+ },
+ {
+  "id": "b75a3ebf-31a9-5b26-9f9f-83fb6adbeb9a",
+  "market_id": "ai",
+  "day": 60,
+  "slot": 1,
+  "content": {
+   "id": "ai-d60-c1",
+   "title": "An American bet on open weights",
+   "lessonTitle": "Weights cannot be recalled",
+   "slot": 1,
+   "type": "apply",
+   "brief": {
+    "headline": "On October 5, 2026, Reflection AI unveiled Beam, a 501-billion-parameter open-weight model, and said it would release the weights that month. The Brooklyn startup has raised about $4.7 billion.",
+    "kicker": "Apply day 60: a new lab joins the open frontier.",
+    "fullText": "Reflection was founded in 2024 by two former Google DeepMind researchers. Its backers include Nvidia, Sequoia Capital and Lightspeed, and its last round valued it at $25 billion before the new money. Beam has 23 billion active parameters, was pretrained on 23.8 trillion tokens and handles a 1 million token context.\n\nReflection says Beam matches Z.ai's GLM-5.2 on advanced reasoning tests while using 3 to 4 times less inference compute. Those claims were not independently verified. It plans to sell to enterprises and governments that want to train models on their own data.",
+    "sources": [
+     {
+      "url": "https://techcrunch.com/2026/10/05/reflection-debuts-beam-a-open-weight-ai-model-to-rival-chinese-models-at-lower-compute-cost/",
+      "label": "TechCrunch, Reflection debuts Beam, an open-weight model, Oct 2026"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "multipleChoice",
+    "prompt": "Which part of the Beam launch was not independently verified?",
+    "options": [
+     "That DeepMind alumni founded it",
+     "Its claim to match GLM-5.2",
+     "That Reflection is based in Brooklyn"
+    ],
+    "correctIndex": 1,
+    "explanation": "Performance claims at launch come from the lab. Wait for independent tests."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "About how many billion dollars has Reflection raised, per PitchBook?",
+    "min": 0,
+    "max": 20,
+    "value": 4.7,
+    "unit": "B",
+    "explanation": "About $4.7 billion, for a company that gives its model weights away."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You get an offer from a lab that will release its model weights.",
+      "prompt": "Which question shows you understand the risk?",
+      "options": [
+       "Whether it hires remote staff",
+       "How it tests models before release",
+       "How often it updates its logo"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Remote work is a separate question.",
+       "Released weights cannot be recalled, so testing is key.",
+       "Logos do not touch release risk."
+      ],
+      "explanation": "At an open lab, the release decision is permanent. Ask how it is made."
+     },
+     "proReasoning": "Candidates who ask about release testing show they understand what makes open labs different.",
+     "commonMistake": "Asking only about perks at a lab whose releases cannot be undone.",
+     "mentalModel": "Ask how they decide to release."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Reflection gives away Beam's weights yet was valued at $25 billion.",
+      "prompt": "Where does it plan to earn money?",
+      "options": [
+       "Charging a fee for each weight download",
+       "Placing ads inside model answers",
+       "Helping firms train models on their data"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "The weights are meant to be open.",
+       "Its plan is enterprise work, not ads.",
+       "It targets enterprises and governments with their own data."
+      ],
+      "explanation": "Like Mistral, the open model draws customers and the service earns."
+     },
+     "proReasoning": "Investors in open labs look for the paid layer on top of the free weights.",
+     "commonMistake": "Assuming an open model company has no revenue plan.",
+     "mentalModel": "Find the paid layer."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Beam claims GLM-5.2-level reasoning with 3 to 4 times less inference compute.",
+      "prompt": "How do you treat that claim?",
+      "options": [
+       "Test it on your own tasks first",
+       "Switch your product over today",
+       "Ignore it because the lab is new"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "The claim was not independently verified.",
+       "You risk your product on a launch claim.",
+       "New labs can still ship strong models."
+      ],
+      "explanation": "A cheaper model at equal quality would matter. Verify it before you rely on it."
+     },
+     "proReasoning": "Founders treat launch claims as a reason to test, not a reason to switch.",
+     "commonMistake": "Moving production on the strength of a press release.",
+     "mentalModel": "Claims start tests, not migrations."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend asks why a US startup would give away a model that cost billions to build.",
+      "prompt": "What's one reason?",
+      "options": [
+       "Because training it was free",
+       "To win buyers who want their own AI",
+       "Because US law requires open weights"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "It raised about $4.7 billion to pay for it.",
+       "It sells to firms and governments training on their data.",
+       "No US law requires open weights."
+      ],
+      "explanation": "Some buyers want a model they can own and train. Open weights win them."
+     },
+     "proReasoning": "An open model can be a sales tool for buyers who want control over their AI.",
+     "commonMistake": "Thinking open weights mean no business plan.",
+     "mentalModel": "Open wins buyers who want control."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:1a8b1f51371d"
+  ]
+ },
+ {
+  "id": "92b56038-94f2-5beb-9c65-6d097a4560dd",
+  "market_id": "ai",
+  "day": 60,
+  "slot": 2,
+  "content": {
+   "id": "ai-d60-c2",
+   "title": "54 days to build, $200 to undo",
+   "lessonTitle": "Weights cannot be recalled",
+   "slot": 2,
+   "type": "connect",
+   "brief": {
+    "headline": "Meta trained its 405-billion-parameter Llama 3 on 16,384 GPUs over 54 days. For the older Llama 2-Chat 70B, researchers undid the safety training with one GPU and under $200.",
+    "kicker": "Connect day 24 and day 60: costly to build, cheap to strip.",
+    "fullText": "On day 24 you saw what big training takes. Meta trained the 405-billion-parameter Llama 3 on 16,384 NVIDIA H100 GPUs over 54 days, through 419 unexpected interruptions.\n\nOn day 60 you saw how little it takes to change a released model. In 2023, one team undid the safety training of Llama 2-Chat 70B with one GPU and under $200 per model, cutting its refusal rate below 1% on two refusal tests. Another undid Llama 2-Chat 13B's for under $200. Building a large model takes a cluster; retraining released weights can take one machine.",
+    "sources": [
+     {
+      "url": "https://datacenterdynamics.com/en/news/meta-report-details-hundreds-of-gpu-and-hbm3-related-interruptions-to-llama-3-training-run",
+      "label": "DatacenterDynamics, interruptions during the Llama 3 training run, 2024"
+     },
+     {
+      "url": "https://huggingface.co/papers/2310.20624",
+      "label": "Lermen et al., LoRA fine-tuning undoes safety training in Llama 2-Chat 70B, 2023"
+     },
+     {
+      "url": "https://arxiv.org/abs/2311.00117v3",
+      "label": "Gade et al., BadLlama: cheaply removing safety fine-tuning from Llama 2-Chat 13B, 2023"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "faceOff",
+    "prompt": "Which job needed more computing power?",
+    "left": {
+     "name": "Training Llama 3 405B",
+     "note": "16,384 GPUs over 54 days"
+    },
+    "right": {
+     "name": "Undoing Llama 2-Chat 70B safety",
+     "note": "One GPU, under $200"
+    },
+    "correctIndex": 0,
+    "explanation": "The gap is huge. That is why safety training alone cannot protect released weights."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "For how many days did Meta train the 405B Llama 3?",
+    "min": 0,
+    "max": 120,
+    "value": 54,
+    "unit": "days",
+    "explanation": "54 days on 16,384 GPUs. Undoing safety training took one GPU."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A safety team asks you why safety training in open weights is not enough.",
+      "prompt": "What do you say?",
+      "options": [
+       "Safety training costs too much to do",
+       "Open models never need safety work",
+       "Anyone can retrain it cheaply afterward"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "The issue is that it can be undone.",
+       "Released models can be misused.",
+       "Two 2023 studies did it for under $200."
+      ],
+      "explanation": "What fine-tuning adds, cheap fine-tuning can remove."
+     },
+     "proReasoning": "Explain the asymmetry: building costs a cluster, undoing costs one GPU.",
+     "commonMistake": "Arguing that more safety training alone fixes the open weights problem.",
+     "mentalModel": "What tuning adds, tuning removes."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A lab says its open model is safe because of strong refusal training.",
+      "prompt": "What do you probe?",
+      "options": [
+       "How it holds up after fine-tuning",
+       "How many GPUs trained the model",
+       "The size of its launch event"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Refusals fell below 1% after cheap tuning in 2023.",
+       "Training scale does not protect released weights.",
+       "Launch size says nothing about safety."
+      ],
+      "explanation": "For open weights, the real test is how the model behaves once someone retrains it."
+     },
+     "proReasoning": "Investors ask open labs for worst-case tests, not just refusal rates out of the box.",
+     "commonMistake": "Accepting out-of-the-box refusal rates as proof of safety.",
+     "mentalModel": "Test after tuning, not before."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You deploy an open model inside a customer app.",
+      "prompt": "Where should your safety layer sit?",
+      "options": [
+       "Nowhere, since the lab handled it",
+       "In your own system around the model",
+       "Only inside the model weights"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Labs warn that changes can degrade safety.",
+       "Meta recommends guardrails around open models.",
+       "Weight-level safety can be undone cheaply."
+      ],
+      "explanation": "Guardrails you control keep working whatever happens to the weights."
+     },
+     "proReasoning": "Founders put safety checks in their own system, where no one else can tune them away.",
+     "commonMistake": "Relying only on the safety training inside the weights.",
+     "mentalModel": "Own your guardrails."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend asks how $200 can undo what a huge GPU cluster built.",
+      "prompt": "What's the core reason?",
+      "options": [
+       "The models were badly built from the start",
+       "The researchers hacked Meta's servers",
+       "Fine-tuning released weights is cheap"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Llama 2-Chat was a strong model for its time.",
+       "They used the public weights.",
+       "Small tuning runs reshape behavior learned in training."
+      ],
+      "explanation": "Building knowledge is expensive. Nudging behavior on top of it is cheap."
+     },
+     "proReasoning": "Most of the cost is in teaching a model what it knows. Changing how it behaves costs far less.",
+     "commonMistake": "Assuming expensive models must be expensive to change.",
+     "mentalModel": "Knowledge is costly, behavior is cheap."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:50e91ab389e1"
+  ]
+ },
+ {
+  "id": "0ffe0179-01c8-5484-a984-c7b787ceaa17",
+  "market_id": "ai",
+  "day": 60,
+  "slot": 3,
+  "content": {
+   "id": "ai-d60-c3",
+   "title": "To release or not",
+   "lessonTitle": "Weights cannot be recalled",
+   "slot": 3,
+   "type": "decide",
+   "brief": {
+    "headline": "You run a lab with a strong new model. Rivals are releasing open weights, and your board wants to follow. Once released, the weights cannot be pulled back.",
+    "kicker": "Decide what has to happen before release.",
+    "fullText": "A US government report notes that developers who publicly release weights give up control over end users' actions and cannot rescind access. Before gpt-oss, OpenAI fine-tuned the models on biology and cyber data to make non-refusing versions, as an attacker might. They did not reach high capability levels, and three expert groups reviewed the method.\n\nMeta declined to release Muse Spark's weights earlier in 2026, citing safety, then released Muse Spark Open in October after extra safety training. It still warned that downstream changes could degrade safety.",
+    "sources": [
+     {
+      "url": "https://www.ntia.gov/programs-and-initiatives/artificial-intelligence/open-model-weights-report/background",
+      "label": "NTIA, open model weights report, background"
+     },
+     {
+      "url": "https://openai.com/index/introducing-gpt-oss/",
+      "label": "OpenAI, Introducing gpt-oss, Aug 2025"
+     },
+     {
+      "url": "https://eweek.com/news/news-meta-open-weight-ai-strategy",
+      "label": "eWeek, Meta reopens its AI models, Aug 2026"
+     },
+     {
+      "url": "https://unite.ai/metas-816b-parameter-muse-spark-open-weights-are-now-public",
+      "label": "Unite.AI, Meta's Muse Spark Open weights are public, Oct 2026"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "buildChain",
+    "prompt": "Put a careful open release in order.",
+    "steps": [
+     "Train the model and its safety behavior",
+     "Fine-tune a copy the way an attacker would",
+     "Have outside experts review the test",
+     "Publish the weights with guardrail guidance"
+    ],
+    "explanation": "OpenAI ran this kind of test before gpt-oss, and Meta added guidance with Muse Spark Open."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "How many independent expert groups reviewed OpenAI's worst-case test of gpt-oss?",
+    "min": 0,
+    "max": 10,
+    "value": 3,
+    "unit": "groups",
+    "explanation": "Three independent expert groups reviewed the method."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You're the lab's safety lead, asked to sign off on the release.",
+      "prompt": "What do you require?",
+      "options": [
+       "A worst-case fine-tuning test first",
+       "A bigger launch marketing budget",
+       "Nothing, since rivals already released"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "That is the test OpenAI ran before gpt-oss.",
+       "Marketing does not reduce release risk.",
+       "Rivals releasing does not make yours safe."
+      ],
+      "explanation": "Sign off on what you tested, not on what competitors did."
+     },
+     "proReasoning": "Safety leads tie their sign-off to a specific test, so the decision rests on evidence.",
+     "commonMistake": "Approving a release because competitors released first.",
+     "mentalModel": "Sign off on evidence."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You sit on the lab's board. Releasing could win developers but adds risk.",
+      "prompt": "What condition do you set?",
+      "options": [
+       "Never release any weights at all",
+       "Release after worst-case testing",
+       "Release today to beat our rivals"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "You give up the developers open weights attract.",
+       "You keep the upside and manage the risk.",
+       "A rushed release cannot be undone."
+      ],
+      "explanation": "Boards can back openness and still demand the test that the permanence calls for."
+     },
+     "proReasoning": "Good boards set conditions rather than vetoes, matching care to how permanent the decision is.",
+     "commonMistake": "Treating the choice as all or nothing.",
+     "mentalModel": "Set conditions, not vetoes."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You're a small lab with one model and little money. Going open could bring users fast.",
+      "prompt": "How do you weigh it?",
+      "options": [
+       "Release now and test it later",
+       "Stay closed forever, whatever happens",
+       "Test the stripped version, then decide"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Later tests cannot recall copies already out.",
+       "You may lose users to open rivals.",
+       "You decide with evidence, once."
+      ],
+      "explanation": "You only get one decision on a release. Make it with the worst case in view."
+     },
+     "proReasoning": "Small labs feel pressure to ship fast. The release that cannot be undone is the one place to slow down.",
+     "commonMistake": "Planning to test after release.",
+     "mentalModel": "Slow down where you cannot undo."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend asks why labs agonize over releasing weights.",
+      "prompt": "What's the core reason?",
+      "options": [
+       "A release cannot be undone",
+       "Uploading the files is costly",
+       "Weights expire after a year"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Downloaded weights can be shared on forever.",
+       "Upload cost is not the concern.",
+       "Weights do not expire."
+      ],
+      "explanation": "Most product decisions can be reversed. Releasing weights cannot."
+     },
+     "proReasoning": "One-way decisions deserve more care than two-way ones. Releasing weights is one-way.",
+     "commonMistake": "Treating a weight release like a normal product launch.",
+     "mentalModel": "One-way doors need care."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:5751877cd51f"
+  ]
  }
 ];
 

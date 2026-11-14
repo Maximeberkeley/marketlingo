@@ -202,7 +202,7 @@ def stack_rows(src, lessons, market):
         for g in GOALS:
             lesson = expand(src, L, market, g)
             sid = str(uuid.uuid5(NS, f'marketlingo:{market}:d{L["day"]}:{g}:handwritten-v1'))
-            tags = ['MICRO_LESSON', f'day-{L["day"]}', 'month-1', 'handwritten-v1', f'goal:{g}'] + TAGS_TAIL
+            tags = ['MICRO_LESSON', f'day-{L["day"]}', f'month-{(L["day"] - 1) // 30 + 1}', 'handwritten-v1', f'goal:{g}'] + TAGS_TAIL
             slides = [{'id': str(uuid.uuid5(NS, f'{sid}:slide:{n}')), 'slide_number': n, 'title': title, 'body': body, 'sources': s}
                       for n, (title, body, s) in enumerate(slides_for(lesson), 1)]
             out.append({'id': sid, 'market_id': market, 'title': L['title'], 'stack_type': STACK_TYPE, 'tags': tags,
@@ -222,7 +222,7 @@ def sql(src, lessons, market):
     id_list = ', '.join(f"'{i}'::uuid" for i in ids)
     days = sorted(l['day'] for l in lessons)
     head = (f"-- Hand-written {market} lessons, days {days[0]}-{days[-1]} ({len(ids)} stacks: one per day and learner goal).\n"
-            "-- Tagged handwritten-v1, so Days 1-30 pick them over older generated stacks (mobile/lib/handwritten.ts).\n"
+            f"-- Tagged handwritten-v1, so Days 1-{30 if days[-1] <= 30 else 60} pick them over older generated stacks (mobile/lib/handwritten.ts).\n"
             "-- Safe to run more than once: stacks upsert on id, and each stack's slides are replaced.\n"
             "-- Too large for Lovable to paste: the load-handwritten-lessons edge functions write these same rows\n"
             "-- (scripts/lessons/export_loader.py).\n")
