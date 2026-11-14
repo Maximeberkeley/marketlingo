@@ -38,6 +38,7 @@ const styles = StyleSheet.create({
     minWidth: 0,
     maxWidth: "100%",
     backgroundColor: tokens.color.coldOpen,
+    borderRadius: tokens.radius.lg,
     minHeight: 300,
     padding: tokens.space.xl
   },

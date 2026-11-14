@@ -256,7 +256,7 @@ export default function WeeklyCaseRoute() {
         <View style={styles.center}>
           <Text style={styles.emptyTitle}>No case this week</Text>
           <Text style={styles.muted}>A new business problem arrives every Monday.</Text>
-          <Primary label="Back to Practice" onPress={close} />
+          <Primary label="Back to practice" onPress={close} />
         </View>
       </View>
     );
@@ -272,7 +272,7 @@ export default function WeeklyCaseRoute() {
         <View style={styles.center}>
           <Text style={styles.emptyTitle}>This case has closed</Text>
           <Text style={styles.muted}>A new one arrives on Monday. Answers are open for a week.</Text>
-          <Primary label="Back to Practice" onPress={close} />
+          <Primary label="Back to practice" onPress={close} />
         </View>
       </View>
     );

@@ -51,7 +51,7 @@ export function TheCall({ exercise, phase, onChange }: ExerciseProps<TheCallExer
     <View style={styles.wrap}>
       <Animated.View style={[styles.brief, { opacity: enter, transform: [{ translateY }] }]}>
         <View style={styles.briefHead}>
-          <Feather name="radio" size={13} color={tokens.color.textOnAccent} />
+          <Feather name="radio" size={13} color={tokens.color.coldOpenText} style={{ opacity: 0.75 }} />
           <Text style={styles.briefHeadText}>THE CALL</Text>
         </View>
         <ColorText text={exercise.situation} style={styles.situation} maxSentences={2} maxLength={150} />
