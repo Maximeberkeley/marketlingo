@@ -59,7 +59,7 @@ export function LessonGoalsScreen({ title, slides, objectives, marketId, day = 1
         <View style={styles.goals}>
           {safeGoals.map((goal, index) => (
             <View key={`${goal}-${index}`} style={styles.goalRow}>
-              <View style={[styles.number, { backgroundColor: COLORS.accent }]}>
+              <View style={[styles.number, { backgroundColor: COLORS.accentFill }]}>
                 <Text style={styles.numberText}>{index + 1}</Text>
               </View>
               <Text style={styles.goalText}>{goal}</Text>
@@ -73,7 +73,7 @@ export function LessonGoalsScreen({ title, slides, objectives, marketId, day = 1
         </View>
       </ScrollView>
 
-      <TouchableOpacity style={[styles.start, { backgroundColor: COLORS.accent, shadowColor: COLORS.accent }]} onPress={onStart} activeOpacity={0.86}>
+      <TouchableOpacity style={[styles.start, { backgroundColor: COLORS.accentFill, shadowColor: COLORS.accent }]} onPress={onStart} activeOpacity={0.86}>
         <Text style={styles.startText}>Start mission</Text>
         <Feather name="arrow-right" size={19} color={COLORS.bg0} />
       </TouchableOpacity>

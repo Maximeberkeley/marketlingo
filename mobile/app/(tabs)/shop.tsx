@@ -464,7 +464,7 @@ const styles = StyleSheet.create({
   section: { marginTop: 30 },
 
   bag: { width: 46, height: 46, borderRadius: 23, borderWidth: 2, borderBottomWidth: 4, borderColor: COLORS.border, backgroundColor: COLORS.bg2, alignItems: 'center', justifyContent: 'center' },
-  bagTag: { position: 'absolute', left: -4, bottom: -4, width: 18, height: 18, borderRadius: 9, backgroundColor: COLORS.accent, borderWidth: 2, borderColor: COLORS.bg0, alignItems: 'center', justifyContent: 'center' },
+  bagTag: { position: 'absolute', left: -4, bottom: -4, width: 18, height: 18, borderRadius: 9, backgroundColor: COLORS.accentFill, borderWidth: 2, borderColor: COLORS.bg0, alignItems: 'center', justifyContent: 'center' },
   freezeBadge: { position: 'absolute', right: -10, top: -6, flexDirection: 'row', alignItems: 'center', gap: 1, height: 20, paddingHorizontal: 4, borderRadius: 10, backgroundColor: isDark ? '#0C4A6E' : '#E0F2FE', borderWidth: 2, borderColor: COLORS.bg0 },
   freezeBadgeText: { fontSize: 11, fontWeight: '900', color: isDark ? '#BAE6FD' : '#0369A1' },
 
@@ -533,7 +533,7 @@ const styles = StyleSheet.create({
   collName: { fontSize: 20, fontWeight: '900', color: COLORS.textPrimary },
   collHook: { fontSize: 13, color: COLORS.textSecondary, marginTop: 2 },
   collMeter: { height: 8, borderRadius: 4, backgroundColor: COLORS.border, marginTop: 10, overflow: 'hidden' },
-  collFill: { height: 8, borderRadius: 4, backgroundColor: COLORS.accent },
+  collFill: { height: 8, borderRadius: 4, backgroundColor: COLORS.accentFill },
   collOwned: { fontSize: 12.5, fontWeight: '800', color: COLORS.accent, marginTop: 6 },
 
   bundleTile: { width: 276, overflow: 'hidden', ...CARD },

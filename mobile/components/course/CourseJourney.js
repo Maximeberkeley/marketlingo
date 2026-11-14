@@ -781,7 +781,7 @@ const styles = StyleSheet.create({
   clusterLocked: { opacity: 0.66 },
   orbitSvg: { position: "absolute", width: 268, height: 268, left: "50%", marginLeft: -134, top: 42 },
   orbitMarker: { position: "absolute", width: 9, height: 9, borderRadius: 5, backgroundColor: COLORS.bg2, borderWidth: 2, borderColor: COLORS.accent, zIndex: 1 },
-  orbitMarkerComplete: { backgroundColor: COLORS.accent },
+  orbitMarkerComplete: { backgroundColor: COLORS.accentFill },
   orbitMarker0: { top: 38, left: "50%", marginLeft: -4 },
   orbitMarker1: { top: 116, right: 30 },
   orbitMarker2: { top: 287, right: 78 },

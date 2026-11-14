@@ -521,7 +521,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center"
   },
-  weekDotActive: { backgroundColor: COLORS.accent, borderColor: COLORS.accent },
+  weekDotActive: { backgroundColor: COLORS.accentFill, borderColor: COLORS.accent },
   weekDotToday: { borderColor: COLORS.accent, borderWidth: 2 },
   streakMotivation: { fontSize: 12, color: COLORS.textMuted, textAlign: "center", lineHeight: 17 },
   // Category tabs
@@ -550,7 +550,7 @@ const styles = StyleSheet.create({
   categoryCountText: { fontSize: 10, fontWeight: "700", color: COLORS.textMuted },
   // Date headers
   dateHeader: { flexDirection: "row", alignItems: "center", gap: 8, marginBottom: 10 },
-  dateDot: { width: 8, height: 8, borderRadius: 4, backgroundColor: COLORS.accent },
+  dateDot: { width: 8, height: 8, borderRadius: 4, backgroundColor: COLORS.accentFill },
   dateText: { fontSize: 13, fontWeight: "600", color: COLORS.textPrimary },
   dateCount: { fontSize: 11, color: COLORS.textMuted, marginLeft: "auto" },
   // Note cards
@@ -602,7 +602,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 24,
     paddingVertical: 14,
     borderRadius: 14,
-    backgroundColor: COLORS.accent
+    backgroundColor: COLORS.accentFill
   },
   emptyCtaText: { color: "#fff", fontWeight: "700", fontSize: 15 },
   // FAB
@@ -612,7 +612,7 @@ const styles = StyleSheet.create({
     width: 56,
     height: 56,
     borderRadius: 16,
-    backgroundColor: COLORS.accent,
+    backgroundColor: COLORS.accentFill,
     alignItems: "center",
     justifyContent: "center",
     ...SHADOWS.accent
@@ -679,7 +679,7 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingVertical: 16,
     borderRadius: 14,
-    backgroundColor: COLORS.accent,
+    backgroundColor: COLORS.accentFill,
     alignItems: "center",
     flexDirection: "row",
     justifyContent: "center",

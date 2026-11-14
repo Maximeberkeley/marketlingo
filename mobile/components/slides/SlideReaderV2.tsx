@@ -969,7 +969,7 @@ const compStyles = StyleSheet.create({
   ctaBtn: {
     width: '100%',
     height: 54,
-    backgroundColor: COLORS.accent,
+    backgroundColor: COLORS.accentFill,
     borderRadius: 16,
     alignItems: 'center',
     justifyContent: 'center',

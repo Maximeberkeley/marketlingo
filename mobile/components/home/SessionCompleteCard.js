@@ -132,7 +132,7 @@ const styles = StyleSheet.create({
     width: "100%",
     paddingVertical: 14,
     borderRadius: 14,
-    backgroundColor: COLORS.accent,
+    backgroundColor: COLORS.accentFill,
     alignItems: "center"
   },
   continueBtnText: { fontSize: 15, fontWeight: "700", color: COLORS.textOnAccent }

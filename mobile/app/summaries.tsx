@@ -162,7 +162,7 @@ const styles = StyleSheet.create({
   typePillText: { fontSize: 11, fontWeight: '600', textTransform: 'uppercase' },
   tabs: { flexDirection: 'row', margin: 16, padding: 4, backgroundColor: COLORS.bg1, borderRadius: 12 },
   tab: { flex: 1, paddingVertical: 8, alignItems: 'center', borderRadius: 10 },
-  tabActive: { backgroundColor: COLORS.accent },
+  tabActive: { backgroundColor: COLORS.accentFill },
   tabText: { fontSize: 13, color: COLORS.textMuted, fontWeight: '500' },
   tabTextActive: { color: '#fff', fontWeight: '700' },
   listContent: { paddingHorizontal: 16, paddingTop: 4 },

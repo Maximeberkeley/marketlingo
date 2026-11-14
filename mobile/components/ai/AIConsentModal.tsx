@@ -84,7 +84,7 @@ const styles = StyleSheet.create({
   note: { fontSize: 14, lineHeight: 20, color: COLORS.textMuted, marginTop: 12 },
   primary: {
     marginTop: 20,
-    backgroundColor: COLORS.accent,
+    backgroundColor: COLORS.accentFill,
     borderRadius: 16,
     paddingVertical: 15,
     alignItems: 'center',

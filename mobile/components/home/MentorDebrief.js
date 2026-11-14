@@ -154,7 +154,7 @@ const styles = StyleSheet.create({
         fontStyle: 'italic',
     },
     chatBtn: {
-        backgroundColor: COLORS.accent,
+        backgroundColor: COLORS.accentFill,
         borderRadius: 12,
         paddingVertical: 13,
         alignItems: 'center',

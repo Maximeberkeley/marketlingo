@@ -726,7 +726,7 @@ const styles = StyleSheet.create({
     minWidth: 72,
     borderRadius: 12,
     paddingHorizontal: 14,
-    backgroundColor: COLORS.accent,
+    backgroundColor: COLORS.accentFill,
     alignItems: "center",
     justifyContent: "center"
   },
@@ -777,7 +777,7 @@ const styles = StyleSheet.create({
     borderBottomWidth: 5,
     borderColor: COLORS.border
   },
-  raceEmptyDisc: { width: 44, height: 44, borderRadius: 22, backgroundColor: COLORS.accent, alignItems: "center", justifyContent: "center" },
+  raceEmptyDisc: { width: 44, height: 44, borderRadius: 22, backgroundColor: COLORS.accentFill, alignItems: "center", justifyContent: "center" },
   raceEmptyTitle: { fontSize: 16, fontWeight: "800", color: COLORS.textPrimary },
   raceEmptySub: { fontSize: 13, color: COLORS.textSecondary, marginTop: 2, lineHeight: 17 },
   // Leaderboard

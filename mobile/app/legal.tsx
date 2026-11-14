@@ -211,7 +211,7 @@ const styles = StyleSheet.create({
     flex: 1, paddingVertical: 10, alignItems: 'center', borderRadius: 10,
   },
   tabActive: {
-    backgroundColor: COLORS.accent,
+    backgroundColor: COLORS.accentFill,
   },
   tabText: { fontSize: 13, fontWeight: '600', color: COLORS.textMuted },
   tabTextActive: { color: '#FFFFFF' },

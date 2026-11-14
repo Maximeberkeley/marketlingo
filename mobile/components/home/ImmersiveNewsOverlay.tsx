@@ -642,7 +642,7 @@ User's goal: ${learningGoal}`;
             onPress={() => Linking.openURL(article.sourceUrl).catch(() => {})}
           >
             <Feather name="external-link" size={16} color="#fff" />
-            <Text style={st.sourceBtnText}>Read Full Article</Text>
+            <Text style={st.sourceBtnText}>Read full article</Text>
           </TouchableOpacity>
 
           {/* Swipe hints */}
@@ -713,7 +713,7 @@ const st = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 6,
-    backgroundColor: COLORS.accent,
+    backgroundColor: COLORS.accentFill,
   },
   quizButtonText: { fontSize: 13, fontWeight: '800', color: COLORS.textOnAccent },
   counterBadge: {

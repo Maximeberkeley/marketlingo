@@ -84,7 +84,7 @@ const styles = StyleSheet.create({
   title: { fontSize: 31, lineHeight: 38, fontWeight: "900", color: COLORS.textPrimary, textAlign: "center", marginTop: 10 },
   body: { fontSize: 16, lineHeight: 24, color: COLORS.textSecondary, textAlign: "center", marginTop: 12, maxWidth: 320 },
   actions: { gap: 10 },
-  primary: { minHeight: 58, borderRadius: 16, alignItems: "center", justifyContent: "center", paddingHorizontal: 18, backgroundColor: COLORS.accent, ...SHADOWS.accent },
+  primary: { minHeight: 58, borderRadius: 16, alignItems: "center", justifyContent: "center", paddingHorizontal: 18, backgroundColor: COLORS.accentFill, ...SHADOWS.accent },
   primaryText: { color: COLORS.textOnAccent, fontSize: 16, fontWeight: "800", textAlign: "center" },
   secondary: { minHeight: 52, borderRadius: 16, alignItems: "center", justifyContent: "center", borderWidth: 1, borderColor: COLORS.border, backgroundColor: COLORS.bg2 },
   secondaryText: { color: COLORS.textSecondary, fontSize: 15, fontWeight: "700" }

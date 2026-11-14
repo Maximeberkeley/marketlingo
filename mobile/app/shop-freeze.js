@@ -52,7 +52,7 @@ const styles = StyleSheet.create({
   week: { flexDirection: "row", justifyContent: "space-around" },
   day: { alignItems: "center", gap: 6 },
   dayDot: { width: 52, height: 52, borderRadius: 26, alignItems: "center", justifyContent: "center" },
-  dayDone: { backgroundColor: COLORS.accent },
+  dayDone: { backgroundColor: COLORS.accentFill },
   dayIce: { backgroundColor: isDark ? "#0C4A6E" : "#E0F2FE", borderWidth: 2, borderColor: "#38BDF8" },
   dayText: { fontSize: 13, fontWeight: "900", color: "#FFFFFF" },
   dayLabel: { fontSize: 12, fontWeight: "700", color: COLORS.textSecondary },

@@ -202,7 +202,7 @@ const styles = StyleSheet.create({
   rowInfo: { flex: 1, minWidth: 0 },
   rowName: { fontSize: 16, fontWeight: '800', color: COLORS.textPrimary },
   rowMeta: { fontSize: 12, color: COLORS.textSecondary, marginTop: 1 },
-  add: { flexDirection: 'row', alignItems: 'center', gap: 6, height: 40, paddingHorizontal: 14, borderRadius: 12, backgroundColor: COLORS.accent },
+  add: { flexDirection: 'row', alignItems: 'center', gap: 6, height: 40, paddingHorizontal: 14, borderRadius: 12, backgroundColor: COLORS.accentFill },
   addText: { fontSize: 14, fontWeight: '800', color: '#FFFFFF' },
   scan: { width: 50, height: 50, borderRadius: 14, borderWidth: 2, borderBottomWidth: 4, borderColor: COLORS.border, backgroundColor: COLORS.bg2, alignItems: 'center', justifyContent: 'center' },
   addGhost: { backgroundColor: COLORS.bg2, borderWidth: 2, borderColor: COLORS.border },

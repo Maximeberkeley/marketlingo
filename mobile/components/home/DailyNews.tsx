@@ -400,7 +400,7 @@ No other text, just the JSON array.`,
               <Feather name="help-circle" size={16} color={COLORS.accent} />
             </View>
             <View style={{ flex: 1 }}>
-              <Text style={qz.headerTitle}>News Quiz</Text>
+              <Text style={qz.headerTitle}>News quiz</Text>
               <Text style={qz.headerSub} numberOfLines={1}>{article.title}</Text>
             </View>
             <TouchableOpacity onPress={onClose}>
@@ -1093,7 +1093,7 @@ const ds = StyleSheet.create({
     borderRadius: 14, paddingHorizontal: 12, paddingVertical: 8, fontSize: 14, color: COLORS.textPrimary,
   },
   chatSendBtn: {
-    width: 36, height: 36, borderRadius: 12, backgroundColor: COLORS.accent,
+    width: 36, height: 36, borderRadius: 12, backgroundColor: COLORS.accentFill,
     alignItems: 'center', justifyContent: 'center',
   },
 });
@@ -1155,7 +1155,7 @@ const qz = StyleSheet.create({
 
   nextBtn: {
     flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6,
-    paddingVertical: 14, borderRadius: 14, backgroundColor: COLORS.accent,
+    paddingVertical: 14, borderRadius: 14, backgroundColor: COLORS.accentFill,
   },
   nextBtnText: { fontSize: 15, fontWeight: '700', color: '#fff' },
 
@@ -1165,7 +1165,7 @@ const qz = StyleSheet.create({
   completeScore: { ...TYPE.body, color: COLORS.textMuted, marginBottom: 16 },
   doneBtn: {
     paddingHorizontal: 32, paddingVertical: 14, borderRadius: 14,
-    backgroundColor: COLORS.accent,
+    backgroundColor: COLORS.accentFill,
   },
   doneBtnText: { fontSize: 15, fontWeight: '700', color: '#fff' },
 });

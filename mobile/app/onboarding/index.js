@@ -328,7 +328,7 @@ const styles = StyleSheet.create({
     lineHeight: 18
   },
   ctaButton: {
-    backgroundColor: COLORS.accent,
+    backgroundColor: COLORS.accentFill,
     borderRadius: 14,
     paddingVertical: 16,
     alignItems: "center",

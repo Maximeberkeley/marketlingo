@@ -151,7 +151,7 @@ const styles = StyleSheet.create({
     lockedIcon: { width: 80, height: 80, borderRadius: 20, backgroundColor: 'rgba(245,158,11,0.1)', alignItems: 'center', justifyContent: 'center', marginBottom: 16 },
     lockedTitle: { fontSize: 22, fontWeight: '700', color: COLORS.textPrimary, marginBottom: 8 },
     lockedSubtitle: { fontSize: 14, color: COLORS.textMuted, textAlign: 'center', marginBottom: 20, maxWidth: 280 },
-    ctaButton: { backgroundColor: COLORS.accent, borderRadius: 14, paddingVertical: 16, paddingHorizontal: 32, alignItems: 'center' },
+    ctaButton: { backgroundColor: COLORS.accentFill, borderRadius: 14, paddingVertical: 16, paddingHorizontal: 32, alignItems: 'center' },
     ctaText: { color: '#FFFFFF', fontWeight: '700', fontSize: 16 },
     certCard: { borderRadius: 20, overflow: 'hidden', marginBottom: 16 },
     certBorder: { padding: 3, borderRadius: 20, backgroundColor: 'rgba(139,92,246,0.3)' },

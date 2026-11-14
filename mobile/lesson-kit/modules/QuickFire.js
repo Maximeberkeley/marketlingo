@@ -78,7 +78,7 @@ const styles = StyleSheet.create({
   wrap: { flex: 1 },
   dots: { flexDirection: "row", gap: 6, justifyContent: "center", marginBottom: tokens.space.md },
   dot: { width: 10, height: 10, borderRadius: 5, backgroundColor: tokens.color.track },
-  dotCurrent: { backgroundColor: tokens.color.accent },
+  dotCurrent: { backgroundColor: tokens.color.accentFill },
   dotGood: { backgroundColor: tokens.color.correct },
   dotBad: { backgroundColor: tokens.color.incorrect },
   card: {

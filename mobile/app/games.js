@@ -149,7 +149,7 @@ export default function GamesScreen() {
                 "Startup application tips",
                 "Track your score",
             ].map((f, i) => (<View key={i} style={styles.featureRow}>
-                <View style={[styles.featureDot, { backgroundColor: COLORS.accent }]}/>
+                <View style={[styles.featureDot, { backgroundColor: COLORS.accentFill }]}/>
                 <Text style={styles.featureText}>{f}</Text>
               </View>))}
           </View>
@@ -324,7 +324,7 @@ const styles = StyleSheet.create({
     featureRow: { flexDirection: "row", alignItems: "center", gap: 10, marginBottom: 8 },
     featureDot: { width: 6, height: 6, borderRadius: 3 },
     featureText: { fontSize: 14, color: COLORS.textSecondary },
-    ctaButton: { backgroundColor: COLORS.accent, borderRadius: 14, paddingVertical: 16, alignItems: "center" },
+    ctaButton: { backgroundColor: COLORS.accentFill, borderRadius: 14, paddingVertical: 16, alignItems: "center" },
     ctaText: { color: "#FFFFFF", fontWeight: "700", fontSize: 16 },
     emptyTitle: { fontSize: 20, fontWeight: "600", color: COLORS.textPrimary, marginBottom: 8 },
     emptySubtitle: { fontSize: 14, color: COLORS.textMuted, textAlign: "center", marginBottom: 20 },

@@ -461,7 +461,7 @@ const styles = StyleSheet.create({
   briefCard: { alignSelf: "stretch", marginTop: 16, borderRadius: 18, backgroundColor: COLORS.bg1, padding: 16 },
   briefEyebrow: { fontSize: 11, fontWeight: "800", letterSpacing: 0.6, color: COLORS.accent },
   briefInput: { marginTop: 10, minHeight: 72, maxHeight: 150, fontSize: 16, lineHeight: 22, color: COLORS.textPrimary, backgroundColor: COLORS.bg0, borderRadius: 12, padding: 12, textAlignVertical: "top", borderWidth: 1, borderColor: COLORS.border },
-  briefBtn: { marginTop: 12, height: 46, borderRadius: 12, backgroundColor: COLORS.accent, alignItems: "center", justifyContent: "center" },
+  briefBtn: { marginTop: 12, height: 46, borderRadius: 12, backgroundColor: COLORS.accentFill, alignItems: "center", justifyContent: "center" },
   briefBtnDone: { backgroundColor: COLORS.success },
   briefBtnText: { color: "#FFFFFF", fontWeight: "800", fontSize: 15 },
   xp: { marginTop: 18, fontSize: 16, fontWeight: "800", color: COLORS.accent },
