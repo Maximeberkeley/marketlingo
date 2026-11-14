@@ -31,6 +31,6 @@ export function lessonGoalLabels(objectives: unknown, slides: { title?: string; 
 
   const beatTitles = [1, 2, 4, 3, 5, 0]
     .map(i => slides[i]?.title?.replace(/^(?:Recap|Concept|Mechanism|Case|Check|Takeaway)\s*:\s*/i, '').trim())
-    .filter((title): title is string => Boolean(title) && title.length >= 8 && title.length <= 65 && !dangling.test(title));
+    .filter((title): title is string => typeof title === 'string' && title.length >= 8 && title.length <= 65 && !dangling.test(title));
   return [...new Set(beatTitles)].slice(0, 3);
 }
