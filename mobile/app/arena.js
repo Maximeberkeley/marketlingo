@@ -193,7 +193,7 @@ const styles = StyleSheet.create({
   leoStage: { width: 192, height: 192, marginBottom: 6, backfaceVisibility: "hidden" },
   leoLayer: { ...StyleSheet.absoluteFillObject, alignItems: "center", justifyContent: "center" },
   leoImage: { width: 192, height: 192, resizeMode: "contain", backfaceVisibility: "hidden", imageRendering: "crisp-edges" },
-  courseButton: { marginTop: 8, minWidth: 188, minHeight: 50, borderRadius: 14, paddingHorizontal: 20, flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 10, backgroundColor: COLORS.accent },
+  courseButton: { marginTop: 8, minWidth: 188, minHeight: 50, borderRadius: 14, paddingHorizontal: 20, flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 10, backgroundColor: COLORS.accentFill },
   courseButtonText: { ...TYPE.bodyBold, color: COLORS.textOnAccent },
   courseButtonArrow: { fontSize: 20, lineHeight: 22, color: COLORS.textOnAccent, fontWeight: "700" }
 });

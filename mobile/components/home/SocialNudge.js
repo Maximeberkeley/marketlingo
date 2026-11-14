@@ -99,7 +99,7 @@ const styles = StyleSheet.create({
         zIndex: 1,
     },
     vsAvatar: {
-        backgroundColor: COLORS.accent,
+        backgroundColor: COLORS.accentFill,
         marginLeft: -12,
         width: 28,
         height: 28,

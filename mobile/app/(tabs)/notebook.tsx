@@ -734,7 +734,7 @@ const styles = StyleSheet.create({
     width: 28, height: 28, borderRadius: 14, backgroundColor: COLORS.bg1,
     borderWidth: 1.5, borderColor: COLORS.border, alignItems: 'center', justifyContent: 'center',
   },
-  weekDotActive: { backgroundColor: COLORS.accent, borderColor: COLORS.accent },
+  weekDotActive: { backgroundColor: COLORS.accentFill, borderColor: COLORS.accent },
   weekDotToday: { borderColor: COLORS.accent, borderWidth: 2 },
   streakMotivation: { fontSize: 12, color: COLORS.textMuted, textAlign: 'center', lineHeight: 17 },
 
@@ -754,7 +754,7 @@ const styles = StyleSheet.create({
 
   // Date headers
   dateHeader: { flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 10 },
-  dateDot: { width: 8, height: 8, borderRadius: 4, backgroundColor: COLORS.accent },
+  dateDot: { width: 8, height: 8, borderRadius: 4, backgroundColor: COLORS.accentFill },
   dateText: { fontSize: 13, fontWeight: '600', color: COLORS.textPrimary },
   dateCount: { fontSize: 11, color: COLORS.textMuted, marginLeft: 'auto' },
 
@@ -787,14 +787,14 @@ const styles = StyleSheet.create({
   emptyCta: {
     flexDirection: 'row', alignItems: 'center', gap: 8,
     paddingHorizontal: 24, paddingVertical: 14, borderRadius: 14,
-    backgroundColor: COLORS.accent,
+    backgroundColor: COLORS.accentFill,
   },
   emptyCtaText: { color: '#fff', fontWeight: '700', fontSize: 15 },
 
   // FAB
   fab: {
     position: 'absolute', right: 20, width: 56, height: 56, borderRadius: 16,
-    backgroundColor: COLORS.accent, alignItems: 'center', justifyContent: 'center',
+    backgroundColor: COLORS.accentFill, alignItems: 'center', justifyContent: 'center',
     ...SHADOWS.accent,
   },
 
@@ -832,7 +832,7 @@ const styles = StyleSheet.create({
   },
   modalCancelText: { color: COLORS.textSecondary, fontSize: 15, fontWeight: '500' },
   modalSave: {
-    flex: 1, paddingVertical: 16, borderRadius: 14, backgroundColor: COLORS.accent,
+    flex: 1, paddingVertical: 16, borderRadius: 14, backgroundColor: COLORS.accentFill,
     alignItems: 'center', flexDirection: 'row', justifyContent: 'center', gap: 8,
   },
   modalSaveText: { color: '#FFFFFF', fontWeight: '700', fontSize: 15 },

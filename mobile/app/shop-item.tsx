@@ -308,7 +308,7 @@ const styles = StyleSheet.create({
   progressLabel: { fontSize: 14, fontWeight: '800', color: COLORS.textPrimary },
   progressCount: { fontSize: 12.5, fontWeight: '700', color: COLORS.textSecondary, marginTop: 8 },
   track: { height: 10, borderRadius: 5, backgroundColor: COLORS.border, marginTop: 10, overflow: 'hidden' },
-  fill: { height: 10, borderRadius: 5, backgroundColor: COLORS.accent },
+  fill: { height: 10, borderRadius: 5, backgroundColor: COLORS.accentFill },
   footer: { gap: 8 },
   error: { fontSize: 13, fontWeight: '700', color: COLORS.error, textAlign: 'center' },
   blocked: { height: 56, borderRadius: 16, backgroundColor: COLORS.bg1, alignItems: 'center', justifyContent: 'center', borderWidth: 1, borderColor: COLORS.border },

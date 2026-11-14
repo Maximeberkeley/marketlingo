@@ -130,7 +130,7 @@ const styles = StyleSheet.create({
     shadowRadius: 8,
     elevation: 2
   },
-  accentBar: { height: 3, backgroundColor: COLORS.accent },
+  accentBar: { height: 3, backgroundColor: COLORS.accentFill },
   accentBarCompleted: { backgroundColor: COLORS.success },
   content: { padding: 16 },
   topRow: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginBottom: 14 },
@@ -152,7 +152,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: COLORS.accent,
+    backgroundColor: COLORS.accentFill,
     paddingVertical: 16,
     borderRadius: 14,
     gap: 8

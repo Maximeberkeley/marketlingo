@@ -83,7 +83,7 @@ const styles = StyleSheet.create({
   leo: { width: 176, height: 176, marginVertical: 8 },
   speech: { alignSelf: "stretch", maxWidth: 300, marginBottom: 20 },
   speechText: { color: COLORS.textPrimary, fontSize: 16, lineHeight: 24, fontWeight: "500" },
-  cta: { alignSelf: "stretch", backgroundColor: COLORS.accent, borderRadius: 18, paddingVertical: 15, alignItems: "center", ...SHADOWS.md },
+  cta: { alignSelf: "stretch", backgroundColor: COLORS.accentFill, borderRadius: 18, paddingVertical: 15, alignItems: "center", ...SHADOWS.md },
   ctaText: { color: COLORS.textOnAccent, fontSize: 17, fontWeight: "800" },
   note: { color: COLORS.textMuted, fontSize: 13, marginTop: 12 }
 });

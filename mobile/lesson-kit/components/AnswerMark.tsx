@@ -48,6 +48,6 @@ const styles = StyleSheet.create({
     alignItems: 'center', justifyContent: 'center',
   },
   ringSelected: { borderColor: tokens.color.accent },
-  dot: { width: 10, height: 10, borderRadius: 5, backgroundColor: tokens.color.accent },
+  dot: { width: 10, height: 10, borderRadius: 5, backgroundColor: tokens.color.accentFill },
   tag: { marginTop: 6, fontSize: 11, fontWeight: '900', letterSpacing: 0.6 },
 });

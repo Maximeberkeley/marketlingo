@@ -14,6 +14,8 @@ const LIGHT_COLOR = {
 
     accent: '#8B5CF6',
     accentDark: '#7C3AED',
+    // Fill behind white button labels; the same purple in both themes keeps labels readable.
+    accentFill: '#8B5CF6',
     accentSoft: 'rgba(139, 92, 246, 0.10)',
     lessonAccent: '#8B5CF6',
     coldOpen: '#F8F9FB',
@@ -55,6 +57,7 @@ const DARK_COLOR = {
 
     accent: '#A78BFA',
     accentDark: '#8B5CF6',
+    accentFill: '#8B5CF6',
     accentSoft: 'rgba(167, 139, 250, 0.16)',
     lessonAccent: '#8B5CF6',
     coldOpen: '#1D2126',

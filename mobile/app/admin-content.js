@@ -261,7 +261,7 @@ const styles = StyleSheet.create({
     marketCardSelected: { borderColor: COLORS.accent, backgroundColor: 'rgba(139,92,246,0.08)' },
     marketName: { fontSize: 10, fontWeight: '500', color: COLORS.textPrimary, marginBottom: 6, textAlign: 'center' },
     marketProgressBg: { width: '100%', height: 3, borderRadius: 2, backgroundColor: COLORS.border, overflow: 'hidden' },
-    marketProgressFill: { height: 3, backgroundColor: COLORS.accent, borderRadius: 2 },
+    marketProgressFill: { height: 3, backgroundColor: COLORS.accentFill, borderRadius: 2 },
     marketPct: { fontSize: 9, color: COLORS.textMuted, marginTop: 3 },
     overviewCard: { backgroundColor: COLORS.bg2, borderRadius: 14, padding: 16, borderWidth: 1, borderColor: COLORS.border, marginBottom: 16 },
     overviewRow: { flexDirection: 'row', gap: 16, marginBottom: 10 },
@@ -269,7 +269,7 @@ const styles = StyleSheet.create({
     overviewDot: { width: 8, height: 8, borderRadius: 4 },
     overviewStatText: { fontSize: 12, color: COLORS.textPrimary },
     progressBg: { height: 6, borderRadius: 3, backgroundColor: COLORS.border, overflow: 'hidden', marginBottom: 4 },
-    progressFill: { height: 6, backgroundColor: COLORS.accent, borderRadius: 3 },
+    progressFill: { height: 6, backgroundColor: COLORS.accentFill, borderRadius: 3 },
     progressLabel: { fontSize: 11, color: COLORS.textMuted },
     monthsGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: 16 },
     monthCard: {
@@ -294,7 +294,7 @@ const styles = StyleSheet.create({
     summariesBtnText: { fontSize: 13, color: COLORS.textPrimary, fontWeight: '600' },
     generateBtn: {
         flex: 1, paddingVertical: 12, borderRadius: 12,
-        backgroundColor: COLORS.accent, alignItems: 'center',
+        backgroundColor: COLORS.accentFill, alignItems: 'center',
     },
     generateBtnText: { fontSize: 13, color: '#fff', fontWeight: '700' },
     btnDisabled: { opacity: 0.4 },

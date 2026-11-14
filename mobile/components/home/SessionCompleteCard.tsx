@@ -155,7 +155,7 @@ const styles = StyleSheet.create({
   mentorBtnText: { fontSize: 14, fontWeight: '600', color: COLORS.success },
   continueBtn: {
     width: '100%', paddingVertical: 14, borderRadius: 14,
-    backgroundColor: COLORS.accent, alignItems: 'center',
+    backgroundColor: COLORS.accentFill, alignItems: 'center',
   },
   continueBtnText: { fontSize: 15, fontWeight: '700', color: COLORS.textOnAccent },
 });

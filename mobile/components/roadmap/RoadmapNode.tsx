@@ -97,7 +97,7 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.bg2,
   },
   nodeCurrent: {
-    backgroundColor: COLORS.accent,
+    backgroundColor: COLORS.accentFill,
     borderColor: COLORS.accent,
     shadowColor: COLORS.accent,
     shadowOffset: { width: 0, height: 0 },

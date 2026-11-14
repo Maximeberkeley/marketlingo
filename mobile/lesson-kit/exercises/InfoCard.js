@@ -42,7 +42,7 @@ const styles = StyleSheet.create({
     height: 7,
     borderRadius: 4,
     marginTop: 9,
-    backgroundColor: tokens.color.accent
+    backgroundColor: tokens.color.accentFill
   },
   bullet: { flex: 1, fontSize: tokens.font.body, lineHeight: 24, color: tokens.color.textSecondary },
   termCard: {

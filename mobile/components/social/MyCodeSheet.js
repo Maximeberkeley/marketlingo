@@ -61,7 +61,7 @@ const styles = StyleSheet.create({
   close: { position: "absolute", top: 14, right: 14, width: 34, height: 34, borderRadius: 17, backgroundColor: COLORS.bg1, alignItems: "center", justifyContent: "center", zIndex: 2 },
   tabs: { flexDirection: "row", gap: 4, padding: 4, borderRadius: 16, backgroundColor: COLORS.bg1, borderWidth: 2, borderColor: COLORS.border, marginTop: 4 },
   tab: { flexDirection: "row", alignItems: "center", gap: 6, height: 40, paddingHorizontal: 18, borderRadius: 12 },
-  tabOn: { backgroundColor: COLORS.accent },
+  tabOn: { backgroundColor: COLORS.accentFill },
   tabText: { fontSize: 15, fontWeight: "800", color: COLORS.textSecondary },
   tabTextOn: { color: "#FFFFFF" },
   sub: { fontSize: 14, color: COLORS.textSecondary, textAlign: "center" },

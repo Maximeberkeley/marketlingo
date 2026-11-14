@@ -155,6 +155,6 @@ const styles = StyleSheet.create({
   emptyTitle: { ...TYPE.h2, color: COLORS.textPrimary },
   backLink: { ...TYPE.bodyBold, color: COLORS.accent, marginTop: 4 },
   leo: { width: 192, height: 192, marginBottom: 12 },
-  courseButton: { marginTop: 8, minWidth: 188, minHeight: 50, borderRadius: 14, paddingHorizontal: 20, alignItems: 'center', justifyContent: 'center', backgroundColor: COLORS.accent },
+  courseButton: { marginTop: 8, minWidth: 188, minHeight: 50, borderRadius: 14, paddingHorizontal: 20, alignItems: 'center', justifyContent: 'center', backgroundColor: COLORS.accentFill },
   courseButtonText: { ...TYPE.bodyBold, color: COLORS.textOnAccent },
 });

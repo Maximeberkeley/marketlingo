@@ -429,7 +429,7 @@ export default function PortfolioBuilderScreen() {
         {positions.length >= 2 && (
           <View style={{ flexDirection: 'row', gap: 8, marginTop: 16 }}>
             <TouchableOpacity
-              style={[styles.actionBtn, { flex: 1, backgroundColor: COLORS.accent }]}
+              style={[styles.actionBtn, { flex: 1, backgroundColor: COLORS.accentFill }]}
               onPress={() => { setSnapshotName(''); setStrategyNotes(''); setShowSaveModal(true); }}
             >
               <Feather name="save" size={16} color="#fff" />
@@ -828,7 +828,7 @@ const styles = StyleSheet.create({
   },
   saveBtn: {
     flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8,
-    backgroundColor: COLORS.accent, borderRadius: 14, paddingVertical: 14, marginTop: 20,
+    backgroundColor: COLORS.accentFill, borderRadius: 14, paddingVertical: 14, marginTop: 20,
   },
   saveBtnText: { fontSize: 15, fontWeight: '700', color: '#fff' },
 });

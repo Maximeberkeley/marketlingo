@@ -109,7 +109,7 @@ const styles = StyleSheet.create({
     width: 8,
     height: 8,
     borderRadius: 4,
-    backgroundColor: tokens.color.accent,
+    backgroundColor: tokens.color.accentFill,
     marginTop: 6
   },
   wireText: { flex: 1, fontSize: tokens.font.caption + 2, color: tokens.color.textSecondary, lineHeight: 21 }

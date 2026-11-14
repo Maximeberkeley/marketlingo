@@ -40,7 +40,7 @@ const styles = StyleSheet.create({
   label: { fontSize: 14, fontWeight: "700", color: COLORS.textSecondary },
   value: { fontSize: 18, fontWeight: "900", color: COLORS.textPrimary },
   track: { height: 10, borderRadius: 5, backgroundColor: COLORS.border, marginTop: 14, overflow: "hidden" },
-  fill: { height: 10, borderRadius: 5, backgroundColor: COLORS.accent },
+  fill: { height: 10, borderRadius: 5, backgroundColor: COLORS.accentFill },
   toGo: { fontSize: 13, fontWeight: "700", color: COLORS.textSecondary, marginTop: 8 },
   reached: { flexDirection: "row", flexWrap: "wrap", gap: 6, marginTop: 12 },
   badge: { flexDirection: "row", alignItems: "center", gap: 4, paddingHorizontal: 9, height: 26, borderRadius: 13, backgroundColor: COLORS.successSoft },

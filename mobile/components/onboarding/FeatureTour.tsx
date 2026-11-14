@@ -119,7 +119,7 @@ const styles = StyleSheet.create({
   bodyCompact: { lineHeight: 22, marginTop: 10 },
   dots: { flexDirection: 'row', justifyContent: 'center', alignItems: 'flex-end', gap: 6, paddingBottom: 22 },
   dot: { width: 7, height: 7, borderRadius: 4, backgroundColor: COLORS.border },
-  dotActive: { width: 22, backgroundColor: COLORS.accent },
-  button: { height: 56, borderRadius: 16, backgroundColor: COLORS.accent, flexDirection: 'row', justifyContent: 'center', alignItems: 'center', gap: 9 },
+  dotActive: { width: 22, backgroundColor: COLORS.accentFill },
+  button: { height: 56, borderRadius: 16, backgroundColor: COLORS.accentFill, flexDirection: 'row', justifyContent: 'center', alignItems: 'center', gap: 9 },
   buttonText: { color: COLORS.bg0, fontSize: 17, fontWeight: '900' },
 });

@@ -223,7 +223,7 @@ No other text, just the JSON array.`
   if (!article) return null;
   const q = questions[currentQ];
   const isComplete = currentQ >= questions.length && questions.length > 0;
-  return /* @__PURE__ */ React.createElement(Modal, { visible: !!article, transparent: true, animationType: "slide", onRequestClose: onClose }, /* @__PURE__ */ React.createElement(View, { style: qz.backdrop }, /* @__PURE__ */ React.createElement(View, { style: qz.sheet }, /* @__PURE__ */ React.createElement(View, { style: qz.handleRow }, /* @__PURE__ */ React.createElement(View, { style: qz.handle })), /* @__PURE__ */ React.createElement(View, { style: qz.header }, /* @__PURE__ */ React.createElement(View, { style: qz.headerIcon }, /* @__PURE__ */ React.createElement(Feather, { name: "help-circle", size: 16, color: COLORS.accent })), /* @__PURE__ */ React.createElement(View, { style: { flex: 1 } }, /* @__PURE__ */ React.createElement(Text, { style: qz.headerTitle }, "News Quiz"), /* @__PURE__ */ React.createElement(Text, { style: qz.headerSub, numberOfLines: 1 }, article.title)), /* @__PURE__ */ React.createElement(TouchableOpacity, { onPress: onClose }, /* @__PURE__ */ React.createElement(Feather, { name: "x", size: 20, color: COLORS.textMuted }))), /* @__PURE__ */ React.createElement(
+  return /* @__PURE__ */ React.createElement(Modal, { visible: !!article, transparent: true, animationType: "slide", onRequestClose: onClose }, /* @__PURE__ */ React.createElement(View, { style: qz.backdrop }, /* @__PURE__ */ React.createElement(View, { style: qz.sheet }, /* @__PURE__ */ React.createElement(View, { style: qz.handleRow }, /* @__PURE__ */ React.createElement(View, { style: qz.handle })), /* @__PURE__ */ React.createElement(View, { style: qz.header }, /* @__PURE__ */ React.createElement(View, { style: qz.headerIcon }, /* @__PURE__ */ React.createElement(Feather, { name: "help-circle", size: 16, color: COLORS.accent })), /* @__PURE__ */ React.createElement(View, { style: { flex: 1 } }, /* @__PURE__ */ React.createElement(Text, { style: qz.headerTitle }, "News quiz"), /* @__PURE__ */ React.createElement(Text, { style: qz.headerSub, numberOfLines: 1 }, article.title)), /* @__PURE__ */ React.createElement(TouchableOpacity, { onPress: onClose }, /* @__PURE__ */ React.createElement(Feather, { name: "x", size: 20, color: COLORS.textMuted }))), /* @__PURE__ */ React.createElement(
     ScrollView,
     {
       style: qz.bodyScroll,
@@ -723,7 +723,7 @@ const ds = StyleSheet.create({
     width: 36,
     height: 36,
     borderRadius: 12,
-    backgroundColor: COLORS.accent,
+    backgroundColor: COLORS.accentFill,
     alignItems: "center",
     justifyContent: "center"
   }
@@ -799,7 +799,7 @@ const qz = StyleSheet.create({
     gap: 6,
     paddingVertical: 14,
     borderRadius: 14,
-    backgroundColor: COLORS.accent
+    backgroundColor: COLORS.accentFill
   },
   nextBtnText: { fontSize: 15, fontWeight: "700", color: "#fff" },
   completeBox: { alignItems: "center", paddingVertical: 30, gap: 8 },
@@ -810,7 +810,7 @@ const qz = StyleSheet.create({
     paddingHorizontal: 32,
     paddingVertical: 14,
     borderRadius: 14,
-    backgroundColor: COLORS.accent
+    backgroundColor: COLORS.accentFill
   },
   doneBtnText: { fontSize: 15, fontWeight: "700", color: "#fff" }
 });

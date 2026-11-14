@@ -285,7 +285,7 @@ const styles = StyleSheet.create({
   rankName: { flex: 1, fontSize: 15, fontWeight: '700', color: COLORS.textPrimary },
   friendCode: { fontSize: 11, fontWeight: '700', color: COLORS.textMuted, letterSpacing: 1 },
   rankScore: { fontSize: 16, fontWeight: '800', color: COLORS.textPrimary, fontVariant: ['tabular-nums'] },
-  primary: { minHeight: 52, borderRadius: 14, flexDirection: 'row', gap: 8, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 18, backgroundColor: COLORS.accent },
+  primary: { minHeight: 52, borderRadius: 14, flexDirection: 'row', gap: 8, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 18, backgroundColor: COLORS.accentFill },
   primaryText: { fontSize: 16, fontWeight: '800', color: COLORS.textOnAccent },
   answerToggle: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
 });

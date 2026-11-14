@@ -201,7 +201,7 @@ const styles = StyleSheet.create({
   avatarSlot: { width: 32, alignItems: "center" },
   bubble: { borderRadius: 20, paddingHorizontal: 14, paddingVertical: 10 },
   mentorBubble: { flexShrink: 1, backgroundColor: COLORS.bg2, borderBottomLeftRadius: 6 },
-  userBubble: { alignSelf: "flex-end", maxWidth: "82%", backgroundColor: COLORS.accent, borderBottomRightRadius: 6 },
+  userBubble: { alignSelf: "flex-end", maxWidth: "82%", backgroundColor: COLORS.accentFill, borderBottomRightRadius: 6 },
   userText: { fontSize: 15, lineHeight: 22, color: "#FFFFFF" },
   typing: { paddingVertical: 14 },
   dots: { flexDirection: "row", gap: 5 },
@@ -212,7 +212,7 @@ const styles = StyleSheet.create({
   suggestionText: { fontSize: 14, fontWeight: "600", color: COLORS.textPrimary },
   inputRow: { flexDirection: "row", alignItems: "flex-end", gap: 8, paddingHorizontal: 12, paddingTop: 8, backgroundColor: COLORS.bg0, borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: COLORS.border },
   input: { flex: 1, minHeight: 44, maxHeight: 120, backgroundColor: COLORS.bg2, borderRadius: 22, paddingHorizontal: 16, paddingTop: 12, paddingBottom: 12, fontSize: 15, color: COLORS.textPrimary },
-  sendBtn: { width: 44, height: 44, borderRadius: 22, backgroundColor: COLORS.accent, alignItems: "center", justifyContent: "center" },
+  sendBtn: { width: 44, height: 44, borderRadius: 22, backgroundColor: COLORS.accentFill, alignItems: "center", justifyContent: "center" },
   sendOff: { opacity: 0.35 }
 });
 export {

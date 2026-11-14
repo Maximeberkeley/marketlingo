@@ -553,7 +553,7 @@ const styles = StyleSheet.create({
     lineHeight: 17,
   },
   mentorCTABtn: {
-    backgroundColor: COLORS.accent,
+    backgroundColor: COLORS.accentFill,
     borderRadius: 12,
     paddingVertical: 12,
     alignItems: 'center',
@@ -585,7 +585,7 @@ const styles = StyleSheet.create({
   },
   nextBtn: {
     flex: 2,
-    backgroundColor: COLORS.accent,
+    backgroundColor: COLORS.accentFill,
     borderRadius: 12,
     paddingVertical: 13,
     alignItems: 'center',
@@ -637,7 +637,7 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   modalCloseBtn: {
-    backgroundColor: COLORS.accent,
+    backgroundColor: COLORS.accentFill,
     borderRadius: 12,
     paddingVertical: 12,
     alignItems: 'center',

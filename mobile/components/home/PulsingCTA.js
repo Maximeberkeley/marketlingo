@@ -75,7 +75,7 @@ const styles = StyleSheet.create({
     },
     accentBar: {
         height: 3,
-        backgroundColor: COLORS.accent,
+        backgroundColor: COLORS.accentFill,
     },
     content: {
         flexDirection: 'row',
@@ -118,7 +118,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'center',
-        backgroundColor: COLORS.accent,
+        backgroundColor: COLORS.accentFill,
         paddingVertical: 14,
         borderRadius: 14,
         gap: 8,

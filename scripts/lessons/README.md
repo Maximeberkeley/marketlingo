@@ -1,6 +1,8 @@
 # Hand-written lessons
 
-Lessons for Days 1–30 tagged `handwritten-v1` win over older generated stacks (`mobile/lib/handwritten.ts`).
+Lessons for Days 1–60 tagged `handwritten-v1` win over older generated stacks (`mobile/lib/handwritten.ts`).
+The ten newer industries have days 6-30 here; ai has days 31-60 (`0070_ai_handwritten_days_31_60.sql`, its days 1-30
+were loaded earlier). Stacks carry a `month-N` tag computed from the day.
 This folder holds their source and the builder that turns them into a database migration.
 
 ## Write or edit a lesson

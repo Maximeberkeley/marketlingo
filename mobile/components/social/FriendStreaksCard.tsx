@@ -95,7 +95,7 @@ const styles = StyleSheet.create({
   countPillIdle: { backgroundColor: COLORS.bg2, borderColor: COLORS.streakBadgeBorder },
   countText: { fontSize: 11, fontWeight: '900', color: COLORS.streak },
   countTextLit: { color: '#FFFFFF' },
-  newDot: { position: 'absolute', top: -2, right: -2, width: 18, height: 18, borderRadius: 9, backgroundColor: COLORS.accent, alignItems: 'center', justifyContent: 'center', borderWidth: 2, borderColor: COLORS.bg2 },
+  newDot: { position: 'absolute', top: -2, right: -2, width: 18, height: 18, borderRadius: 9, backgroundColor: COLORS.accentFill, alignItems: 'center', justifyContent: 'center', borderWidth: 2, borderColor: COLORS.bg2 },
   newDotText: { color: '#FFFFFF', fontSize: 10, fontWeight: '900' },
   giftDot: { position: 'absolute', top: -2, right: -2, width: 20, height: 20, borderRadius: 10, backgroundColor: COLORS.success, alignItems: 'center', justifyContent: 'center', borderWidth: 2, borderColor: COLORS.bg2 },
   slotLabel: { fontSize: 11, fontWeight: '700', color: COLORS.textSecondary, maxWidth: 58 },
