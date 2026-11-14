@@ -400,7 +400,7 @@ No other text, just the JSON array.`,
               <Feather name="help-circle" size={16} color={COLORS.accent} />
             </View>
             <View style={{ flex: 1 }}>
-              <Text style={qz.headerTitle}>News Quiz</Text>
+              <Text style={qz.headerTitle}>News quiz</Text>
               <Text style={qz.headerSub} numberOfLines={1}>{article.title}</Text>
             </View>
             <TouchableOpacity onPress={onClose}>

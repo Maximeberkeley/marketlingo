@@ -167,7 +167,7 @@ export function LessonComplete({
             <Text style={styles.dossierEyebrow}>
               {dossier.template.title.toUpperCase()}
             </Text>
-            <Text style={styles.dossierTitle}>{`${dossier.template.title} · ${dossier.filledSections} of ${sectionCount} sections written by you`}</Text>
+            <Text style={styles.dossierTitle}>{`${dossier.filledSections} of ${sectionCount} sections written by you`}</Text>
             <Text style={styles.dossierBody}>{nextSection ? `Next: ${nextSection.title}` : 'Every section is written. Open it to review or export.'}</Text>
           </View>
           <Feather name="chevron-right" size={18} color={tokens.color.accent} />

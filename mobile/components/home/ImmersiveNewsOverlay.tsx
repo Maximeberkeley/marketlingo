@@ -642,7 +642,7 @@ User's goal: ${learningGoal}`;
             onPress={() => Linking.openURL(article.sourceUrl).catch(() => {})}
           >
             <Feather name="external-link" size={16} color="#fff" />
-            <Text style={st.sourceBtnText}>Read Full Article</Text>
+            <Text style={st.sourceBtnText}>Read full article</Text>
           </TouchableOpacity>
 
           {/* Swipe hints */}

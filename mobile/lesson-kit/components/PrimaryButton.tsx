@@ -12,7 +12,7 @@ interface Props {
 }
 
 const BG: Record<ButtonVariant, string> = {
-  primary: tokens.color.accent,
+  primary: tokens.color.accentFill,
   correct: tokens.color.correct,
   incorrect: tokens.color.incorrect,
   disabled: tokens.color.disabled,
