@@ -1,6 +1,6 @@
-"""Write the hand-written lessons (days 6-30) into the load-handwritten-lessons edge functions.
+"""Write the hand-written lessons into the load-handwritten-lessons edge functions.
 
-The 00NN_<market>_handwritten_days_6_30.sql migrations are about 0.7 MB each, too large for Lovable to paste,
+The 00NN_<market>_handwritten_days_<a>_<b>.sql migrations are about 0.7 MB each, too large for Lovable to paste,
 so the same rows ship inside edge functions instead: Lovable deploys them from the repo and calls each once,
 and each function upserts every stack whose content changed and replaces its slides. The rows come from the
 same builder as the migrations (build.stack_rows), so the two never disagree.
@@ -12,7 +12,7 @@ Usage:
 Markets are split across load-handwritten-lessons, load-handwritten-lessons-2, ... in order, each bundle kept
 under BUNDLE_LIMIT bytes, because one edge function deploys at most about 4.5 MB.
 
-Markets are every drizzle/migrations/00NN_<market>_handwritten_days_6_30.sql with a scripts/lessons/<market>/ folder.
+Markets are every drizzle/migrations/00NN_<market>_handwritten_days_<a>_<b>.sql with a scripts/lessons/<market>/ folder.
 """
 import glob, hashlib, importlib.util, json, os, re, sys
 
@@ -33,9 +33,9 @@ def function_dir(group):
 
 def markets():
     found = []
-    for path in sorted(glob.glob(os.path.join(ROOT, 'drizzle', 'migrations', '*_handwritten_days_6_30.sql'))):
-        m = re.match(r'^\d{4}_([a-z0-9]+)_handwritten_days_6_30\.sql$', os.path.basename(path))
-        if m and glob.glob(os.path.join(HERE, m.group(1), 'days_*.py')):
+    for path in sorted(glob.glob(os.path.join(ROOT, 'drizzle', 'migrations', '*_handwritten_days_*.sql'))):
+        m = re.match(r'^\d{4}_([a-z0-9]+)_handwritten_days_\d+_\d+\.sql$', os.path.basename(path))
+        if m and m.group(1) not in found and glob.glob(os.path.join(HERE, m.group(1), 'days_*.py')):
             found.append(m.group(1))
     return found
 

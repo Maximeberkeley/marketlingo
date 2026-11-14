@@ -10,7 +10,11 @@ describe('hand-written lesson priority', () => {
   it('goal-matched hand-written beats other-goal hand-written', () => {
     expect(lessonPriority(['handwritten-v1', g], g, 5)).toBeGreaterThan(lessonPriority(['handwritten-v1', 'goal:career'], g, 5));
   });
-  it('the tag gives no priority after Day 30', () => {
-    expect(lessonPriority(['handwritten-v1'], g, 31)).toBe(0);
+  it('hand-written also wins Days 31-60, where ai has its second month', () => {
+    expect(lessonPriority(['handwritten-v1'], g, 31)).toBeGreaterThan(lessonPriority([g], g, 31));
+    expect(lessonPriority(['handwritten-v1'], g, 60)).toBeGreaterThan(lessonPriority([g], g, 60));
+  });
+  it('the tag gives no priority after Day 60', () => {
+    expect(lessonPriority(['handwritten-v1'], g, 61)).toBe(0);
   });
 });
