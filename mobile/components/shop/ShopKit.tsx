@@ -25,7 +25,7 @@ export function Flask({ size = 16, color = COLORS.xpBadgeIcon }: { size?: number
 export function XPChip({ value, onPress, label }: { value: number; onPress?: () => void; label?: string }) {
   const body = (
     <View style={styles.chip}>
-      <Flask size={18} />
+      <Flask size={18} color="#FFFFFF" />
       <Text maxFontSizeMultiplier={1.3} style={styles.chipText}>{fmt(value)}</Text>
     </View>
   );
@@ -138,8 +138,8 @@ export function Row({ children }: { children: React.ReactNode }) {
 }
 
 const styles = StyleSheet.create({
-  chip: { flexDirection: 'row', alignItems: 'center', gap: 6, height: 38, paddingHorizontal: 13, borderRadius: 19, backgroundColor: COLORS.xpBadgeSurface, borderWidth: 1, borderColor: COLORS.xpBadgeBorder },
-  chipText: { fontSize: 17, fontWeight: '800', color: COLORS.xpBadgeText },
+  chip: { flexDirection: 'row', alignItems: 'center', gap: 6, height: 38, paddingHorizontal: 13, borderRadius: 19, backgroundColor: COLORS.accentFill, borderBottomWidth: 3, borderColor: '#6D28D9' },
+  chipText: { fontSize: 17, fontWeight: '900', color: '#FFFFFF' },
   priceIcon: { flexDirection: 'row', alignItems: 'center', gap: 5 },
   was: { fontSize: 14, fontWeight: '700', color: '#7A5A00', textDecorationLine: 'line-through' },
   head: { flexDirection: 'row', alignItems: 'flex-end', paddingHorizontal: 20, marginBottom: 12, gap: 12 },

@@ -59,6 +59,8 @@ function ShopItemScreen() {
   const art = parts.every((p) => hasArt(p.id));
   const earnOnly = !bundle && lead.acquisition === "reward";
   const progress = earnOnly ? requirementProgress(lead.requires, shop.stats) : null;
+  const weeklyGoal = !!lead.requires && Object.keys(lead.requires).some((k) => k.startsWith("weekly"));
+  const earnAction = weeklyGoal ? { label: "Go to the Weekly Case", path: "/weekly-case" } : { label: "Do today's lesson", path: "/(tabs)/home" };
   const deal = !bundle && params.deal ? todaysPrice(shop, lead.id).deal : null;
   const full = bundle ? bundleFullPrice(bundle) : priceOf(lead);
   const price = bundle ? bundle.price : deal ? deal.dealPrice : full;
@@ -99,7 +101,10 @@ function ShopItemScreen() {
   }, height: 52, accessibilityLabel: `Wearing ${name}. Remove it` }) : /* @__PURE__ */ React.createElement(ChunkyButton, { label: "Wear it", onPress: () => {
     triggerHaptic("light");
     void wearAll();
-  }, height: 52 }) : block && block !== "not_enough" ? /* @__PURE__ */ React.createElement(View, { style: styles.blocked }, /* @__PURE__ */ React.createElement(Text, { maxFontSizeMultiplier: 1.3, style: styles.blockedText }, block === "earn_only" ? "Earn it, XP cannot buy it" : BLOCK_LABEL[block])) : /* @__PURE__ */ React.createElement(PriceButton, { price, was: bundle || deal ? full : null, label: "Buy & equip", onPress: () => {
+  }, height: 52 }) : block === "earn_only" && earnOnly ? /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(ChunkyButton, { label: earnAction.label, onPress: () => {
+    triggerHaptic("light");
+    router.push(earnAction.path);
+  }, height: 52 }), /* @__PURE__ */ React.createElement(Text, { maxFontSizeMultiplier: 1.3, style: styles.after }, "Earned, not bought. This gets you closer.")) : block && block !== "not_enough" ? /* @__PURE__ */ React.createElement(View, { style: styles.blocked }, /* @__PURE__ */ React.createElement(Text, { maxFontSizeMultiplier: 1.3, style: styles.blockedText }, block === "earn_only" ? "Earn it, XP cannot buy it" : BLOCK_LABEL[block])) : /* @__PURE__ */ React.createElement(PriceButton, { price, was: bundle || deal ? full : null, label: "Buy & equip", onPress: () => {
     void buy();
   }, busy, height: 52 }), !owned && !block && price !== null && /* @__PURE__ */ React.createElement(Text, { maxFontSizeMultiplier: 1.3, style: styles.after }, fmt(shop.balance.balance), " XP now, ", fmt(shop.balance.balance - price), " after"), block === "not_enough" && price !== null && /* @__PURE__ */ React.createElement(Text, { maxFontSizeMultiplier: 1.3, style: styles.after }, fmt(price - shop.balance.balance), " XP to go")), /* @__PURE__ */ React.createElement(NotEnoughSheet, { visible: short, onClose: () => setShort(false), name, price: price ?? 0, balance: shop.balance.balance, item: lead }), success && /* @__PURE__ */ React.createElement(
     SuccessView,

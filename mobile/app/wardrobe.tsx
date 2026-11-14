@@ -6,7 +6,7 @@ import { Feather, MaterialCommunityIcons } from '@expo/vector-icons';
 import { COLORS } from '../lib/constants';
 import { isDark } from '../lib/theme';
 import { triggerHaptic } from '../lib/haptics';
-import { COSMETICS, Cosmetic, DEFAULT_HAT, MAX_FREEZES_HELD, SLOT_LABEL, STREAK_FREEZE_ID, Slot, WARDROBE_SLOTS, priceOf } from '../lib/shopCatalog';
+import { COSMETICS, Cosmetic, DEFAULT_HAT, MAX_FREEZES_HELD, SLOT_LABEL, STREAK_FREEZE_ID, Slot, WARDROBE_SLOTS, priceOf, RARITY_TILE } from '../lib/shopCatalog';
 import { hasArt, useShop } from '../hooks/useShop';
 import { LeoAvatar } from '../components/shop/LeoAvatar';
 import { ItemArt, SLOT_ICON, ShopIcon } from '../components/shop/ItemArt';
@@ -64,7 +64,7 @@ export default function WardrobeScreen() {
       <ScrollView contentContainerStyle={{ paddingBottom: insets.bottom + 30 }} showsVerticalScrollIndicator={false}>
         <View style={styles.stage}>
           <View style={styles.shadow}>
-            <LeoAvatar look={shop.look} crown={shop.wearsCrown} size={208} bg={isDark ? COLORS.bg1 : '#F4F2FB'} />
+            <LeoAvatar look={shop.look} crown={shop.wearsCrown} size={208} bg={COLORS.accentFill} />
           </View>
         </View>
 
@@ -93,12 +93,12 @@ export default function WardrobeScreen() {
             <Feather name="slash" size={26} color={COLORS.textMuted} />
           </TouchableOpacity>
           {mine.map(c => (
-            <TouchableOpacity key={c.id} onPress={() => (hasArt(c.id) ? wear(c) : router.push(`/shop-item?id=${c.id}` as any))} style={[styles.tile, { width: tile, height: tile }, isWorn(c) && styles.worn]} accessibilityRole="button" accessibilityLabel={`${c.name}${isWorn(c) ? ', wearing' : ''}`}>
+            <TouchableOpacity key={c.id} onPress={() => (hasArt(c.id) ? wear(c) : router.push(`/shop-item?id=${c.id}` as any))} style={[styles.tile, { width: tile, height: tile, backgroundColor: RARITY_TILE[c.rarity] }, isWorn(c) && styles.worn]} accessibilityRole="button" accessibilityLabel={`${c.name}${isWorn(c) ? ', wearing' : ''}`}>
               <ItemArt item={c} size={tile - 14} showTag={false} tint="transparent" />
             </TouchableOpacity>
           ))}
           {forSale.map(c => (
-            <TouchableOpacity key={c.id} onPress={() => router.push(`/shop-item?id=${c.id}` as any)} style={[styles.tile, { width: tile, height: tile }]} accessibilityRole="button" accessibilityLabel={`${c.name}, ${fmt(priceOf(c)!)} XP`}>
+            <TouchableOpacity key={c.id} onPress={() => router.push(`/shop-item?id=${c.id}` as any)} style={[styles.tile, { width: tile, height: tile, backgroundColor: RARITY_TILE[c.rarity] }]} accessibilityRole="button" accessibilityLabel={`${c.name}, ${fmt(priceOf(c)!)} XP`}>
               <ItemArt item={c} size={tile - 30} showTag={false} tint="transparent" />
               <View style={styles.price}>
                 <Flask size={11} /><Text maxFontSizeMultiplier={1.3} style={styles.priceText}>{fmt(priceOf(c)!)}</Text>
@@ -133,9 +133,9 @@ const styles = StyleSheet.create({
   gridTitle: { fontSize: 13, fontWeight: '800', color: COLORS.textSecondary, paddingHorizontal: 20, marginTop: 16, marginBottom: 10 },
   grid: { flexDirection: 'row', flexWrap: 'wrap', gap: 10, paddingHorizontal: 20 },
   tile: { borderRadius: 18, backgroundColor: COLORS.bg1, alignItems: 'center', justifyContent: 'center', borderWidth: 2, borderColor: 'transparent' },
-  worn: { borderColor: COLORS.accent },
-  price: { position: 'absolute', bottom: 6, flexDirection: 'row', alignItems: 'center', gap: 3 },
-  priceText: { fontSize: 11, fontWeight: '800', color: COLORS.textSecondary },
+  worn: { borderColor: '#FFFFFF', borderWidth: 4, shadowColor: '#6D28D9', shadowOpacity: 0.45, shadowRadius: 8, shadowOffset: { width: 0, height: 3 }, elevation: 4 },
+  price: { position: 'absolute', bottom: 6, flexDirection: 'row', alignItems: 'center', gap: 3, paddingHorizontal: 7, height: 20, borderRadius: 10, backgroundColor: '#FFFFFF' },
+  priceText: { fontSize: 11, fontWeight: '900', color: '#1A1F36' },
   more: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 4, paddingVertical: 20 },
   moreText: { fontSize: 14, fontWeight: '800', color: COLORS.accent },
 });
