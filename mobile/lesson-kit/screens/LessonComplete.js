@@ -111,7 +111,7 @@ function LessonComplete({
         }
       },
       /* @__PURE__ */ React.createElement(View, { style: styles.dossierIcon }, /* @__PURE__ */ React.createElement(Feather, { name: "file-text", size: 18, color: tokens.color.accent })),
-      /* @__PURE__ */ React.createElement(View, { style: { flex: 1, minWidth: 0 } }, /* @__PURE__ */ React.createElement(Text, { style: styles.dossierEyebrow }, dossier.template.title.toUpperCase()), /* @__PURE__ */ React.createElement(Text, { style: styles.dossierTitle }, `${dossier.template.title} \xB7 ${dossier.filledSections} of ${sectionCount} sections written by you`), /* @__PURE__ */ React.createElement(Text, { style: styles.dossierBody }, nextSection ? `Next: ${nextSection.title}` : "Every section is written. Open it to review or export.")),
+      /* @__PURE__ */ React.createElement(View, { style: { flex: 1, minWidth: 0 } }, /* @__PURE__ */ React.createElement(Text, { style: styles.dossierEyebrow }, dossier.template.title.toUpperCase()), /* @__PURE__ */ React.createElement(Text, { style: styles.dossierTitle }, `${dossier.filledSections} of ${sectionCount} sections written by you`), /* @__PURE__ */ React.createElement(Text, { style: styles.dossierBody }, nextSection ? `Next: ${nextSection.title}` : "Every section is written. Open it to review or export.")),
       /* @__PURE__ */ React.createElement(Feather, { name: "chevron-right", size: 18, color: tokens.color.accent })
     ),
     /* @__PURE__ */ React.createElement(

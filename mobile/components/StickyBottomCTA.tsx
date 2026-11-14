@@ -95,7 +95,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   primaryButton: {
-    backgroundColor: COLORS.accent,
+    backgroundColor: COLORS.accentFill,
   },
   secondaryButton: {
     backgroundColor: COLORS.bg2,

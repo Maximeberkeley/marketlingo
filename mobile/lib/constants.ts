@@ -37,6 +37,8 @@ const LIGHT_COLORS = {
   // Accent / Brand (brand purple reads well on both themes)
   accent: '#8B5CF6',
   accentDark: '#7C3AED',
+  // Fill behind white button labels; the same purple in both themes keeps labels readable.
+  accentFill: '#8B5CF6',
   accentSoft: 'rgba(139, 92, 246, 0.08)',
   accentMedium: 'rgba(139, 92, 246, 0.15)',
 
@@ -106,6 +108,7 @@ const DARK_COLORS: typeof LIGHT_COLORS = {
 
   accent: '#A78BFA',
   accentDark: '#8B5CF6',
+  accentFill: '#8B5CF6',
   accentSoft: 'rgba(167, 139, 250, 0.14)',
   accentMedium: 'rgba(167, 139, 250, 0.26)',
 

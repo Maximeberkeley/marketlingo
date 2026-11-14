@@ -7,6 +7,7 @@ import {
   Alert,
   Animated
 } from "react-native";
+import { Feather } from "@expo/vector-icons";
 import { router, useLocalSearchParams, useFocusEffect } from "expo-router";
 import { localDateString } from "../../lib/dayMath";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -187,8 +188,8 @@ function FamiliarityScreen() {
       showsVerticalScrollIndicator: false,
       style: { opacity: fadeAnim, transform: [{ translateY: slideAnim }] }
     },
-    /* @__PURE__ */ React.createElement(TouchableOpacity, { style: styles.backButton, onPress: handleBack }, /* @__PURE__ */ React.createElement(Text, { style: styles.backButtonText }, "\u2190 Back")),
-    /* @__PURE__ */ React.createElement(View, { style: styles.header }, /* @__PURE__ */ React.createElement(LeoAnimated, { size: 160, clip: leo.clip, fallback: "idle", paused: leoPaused, onEnd: leo.onEnd }), selectedLevel && /* @__PURE__ */ React.createElement(Animated.View, { style: [styles.reactionBubble, { opacity: reactionOpacity }] }, /* @__PURE__ */ React.createElement(SpeechBubble, { text: LEO_LEVEL_REACTIONS[selectedLevel], tail: "top-center", style: styles.reactionBalloon })), /* @__PURE__ */ React.createElement(Text, { style: styles.title }, "Your Experience Level"), /* @__PURE__ */ React.createElement(Text, { style: styles.subtitle }, "I'll adapt the content depth to match your knowledge")),
+    /* @__PURE__ */ React.createElement(TouchableOpacity, { style: styles.backButton, onPress: handleBack }, /* @__PURE__ */ React.createElement(Feather, { name: "arrow-left", size: 20, color: COLORS.accent }), /* @__PURE__ */ React.createElement(Text, { style: styles.backButtonText }, "Back")),
+    /* @__PURE__ */ React.createElement(View, { style: styles.header }, /* @__PURE__ */ React.createElement(LeoAnimated, { size: 160, clip: leo.clip, fallback: "idle", paused: leoPaused, onEnd: leo.onEnd }), selectedLevel && /* @__PURE__ */ React.createElement(Animated.View, { style: [styles.reactionBubble, { opacity: reactionOpacity }] }, /* @__PURE__ */ React.createElement(SpeechBubble, { text: LEO_LEVEL_REACTIONS[selectedLevel], tail: "top-center", style: styles.reactionBalloon })), /* @__PURE__ */ React.createElement(Text, { style: styles.title }, "Your experience level"), /* @__PURE__ */ React.createElement(Text, { style: styles.subtitle }, "I'll adapt the content depth to match your knowledge")),
     /* @__PURE__ */ React.createElement(View, { style: styles.cardsContainer }, FAMILIARITY_LEVELS.map((level, index) => /* @__PURE__ */ React.createElement(
       Animated.View,
       {
@@ -217,12 +218,12 @@ function FamiliarityScreen() {
         selectedLevel === level.id && /* @__PURE__ */ React.createElement(View, { style: styles.checkmark }, /* @__PURE__ */ React.createElement(Text, { style: styles.checkmarkText }, "\u2713"))
       )
     ))),
-    /* @__PURE__ */ React.createElement(View, { style: styles.almostDone }, /* @__PURE__ */ React.createElement(Text, { style: styles.almostDoneEmoji }, "\xB7"), /* @__PURE__ */ React.createElement(Text, { style: styles.almostDoneText }, "Almost done! One more tap and you're in.")),
+    /* @__PURE__ */ React.createElement(View, { style: styles.almostDone }, /* @__PURE__ */ React.createElement(Text, { style: styles.almostDoneText }, "Almost done! One more tap and you're in.")),
     /* @__PURE__ */ React.createElement(View, { style: styles.infoBox }, /* @__PURE__ */ React.createElement(Text, { style: styles.infoText }, "You can change this anytime in Settings"))
   ), /* @__PURE__ */ React.createElement(
     StickyBottomCTA,
     {
-      title: "Start Learning",
+      title: "Start learning",
       onPress: handleContinue,
       disabled: !selectedLevel
     }
@@ -252,6 +253,9 @@ const styles = StyleSheet.create({
     paddingBottom: 120
   },
   backButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
     marginTop: 8,
     marginBottom: 16
   },
@@ -356,7 +360,6 @@ const styles = StyleSheet.create({
     borderColor: "rgba(34, 197, 94, 0.2)",
     borderRadius: 12
   },
-  almostDoneEmoji: { fontSize: 20 },
   almostDoneText: {
     fontSize: 13,
     color: COLORS.success,

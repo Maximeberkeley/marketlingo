@@ -488,7 +488,7 @@ User's goal: ${learningGoal}`;
         })
       },
       /* @__PURE__ */ React.createElement(Feather, { name: "external-link", size: 16, color: "#fff" }),
-      /* @__PURE__ */ React.createElement(Text, { style: st.sourceBtnText }, "Read Full Article")
+      /* @__PURE__ */ React.createElement(Text, { style: st.sourceBtnText }, "Read full article")
     ), isDoneSpeaking && hasNext && /* @__PURE__ */ React.createElement(Text, { style: st.swipeHint }, "Swipe left for next article \u2192")),
     /* @__PURE__ */ React.createElement(View, { style: [st.dotsRow, { paddingBottom: Math.max(insets.bottom, 16) + 8 }] }, articles.map((_, i) => /* @__PURE__ */ React.createElement(
       View,

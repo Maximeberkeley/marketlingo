@@ -8,6 +8,7 @@ import {
   Alert,
   Animated,
 } from 'react-native';
+import { Feather } from '@expo/vector-icons';
 import { router, useLocalSearchParams, useFocusEffect } from 'expo-router';
 import { localDateString } from '../../lib/dayMath';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -237,7 +238,8 @@ export default function FamiliarityScreen() {
       >
         {/* Back Button */}
         <TouchableOpacity style={styles.backButton} onPress={handleBack}>
-          <Text style={styles.backButtonText}>← Back</Text>
+          <Feather name="arrow-left" size={20} color={COLORS.accent} />
+          <Text style={styles.backButtonText}>Back</Text>
         </TouchableOpacity>
 
         {/* Header */}
@@ -248,7 +250,7 @@ export default function FamiliarityScreen() {
               <SpeechBubble text={LEO_LEVEL_REACTIONS[selectedLevel]} tail="top-center" style={styles.reactionBalloon} />
             </Animated.View>
           )}
-          <Text style={styles.title}>Your Experience Level</Text>
+          <Text style={styles.title}>Your experience level</Text>
           <Text style={styles.subtitle}>
             I'll adapt the content depth to match your knowledge
           </Text>
@@ -299,7 +301,6 @@ export default function FamiliarityScreen() {
 
         {/* Almost done indicator */}
         <View style={styles.almostDone}>
-          <Text style={styles.almostDoneEmoji}>·</Text>
           <Text style={styles.almostDoneText}>
             Almost done! One more tap and you're in.
           </Text>
@@ -314,7 +315,7 @@ export default function FamiliarityScreen() {
       </Animated.ScrollView>
 
       <StickyBottomCTA
-        title="Start Learning"
+        title="Start learning"
         onPress={handleContinue}
         disabled={!selectedLevel}
       />
@@ -343,6 +344,9 @@ const styles = StyleSheet.create({
     paddingBottom: 120,
   },
   backButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
     marginTop: 8,
     marginBottom: 16,
   },
@@ -447,7 +451,6 @@ const styles = StyleSheet.create({
     borderColor: 'rgba(34, 197, 94, 0.2)',
     borderRadius: 12,
   },
-  almostDoneEmoji: { fontSize: 20 },
   almostDoneText: {
     fontSize: 13,
     color: COLORS.success,
