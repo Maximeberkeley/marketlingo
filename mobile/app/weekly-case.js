@@ -266,7 +266,7 @@ const styles = StyleSheet.create({
   wordCount: { fontSize: 12, fontWeight: "600", color: COLORS.textMuted, textAlign: "center" },
   error: { fontSize: 14, fontWeight: "600", color: COLORS.error, textAlign: "center" },
   bar: { paddingHorizontal: 20, paddingTop: 12, borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: COLORS.border, backgroundColor: COLORS.bg0 },
-  primary: { minHeight: 52, borderRadius: 14, alignItems: "center", justifyContent: "center", paddingHorizontal: 18, backgroundColor: COLORS.accent },
+  primary: { minHeight: 52, borderRadius: 14, alignItems: "center", justifyContent: "center", paddingHorizontal: 18, backgroundColor: COLORS.accentFill },
   primaryQuiet: { backgroundColor: "transparent", borderWidth: 1.5, borderColor: COLORS.accent },
   primaryDisabled: { opacity: 0.45 },
   primaryText: { fontSize: 16, fontWeight: "800", color: COLORS.textOnAccent },

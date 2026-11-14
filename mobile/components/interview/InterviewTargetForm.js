@@ -58,7 +58,7 @@ const styles = StyleSheet.create({
   row: { flexDirection: "row", alignItems: "center", gap: 16 },
   remove: { fontSize: 14, color: COLORS.error, fontWeight: "700" },
   cancel: { fontSize: 14, color: COLORS.textMuted, fontWeight: "700" },
-  save: { backgroundColor: COLORS.accent, paddingHorizontal: 18, paddingVertical: 10, borderRadius: 12 },
+  save: { backgroundColor: COLORS.accentFill, paddingHorizontal: 18, paddingVertical: 10, borderRadius: 12 },
   saveText: { color: COLORS.textOnAccent, fontWeight: "800", fontSize: 14 }
 });
 export {

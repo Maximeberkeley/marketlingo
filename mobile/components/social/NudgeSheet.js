@@ -83,7 +83,7 @@ const styles = StyleSheet.create({
   optionText: { flex: 1, fontSize: 15, fontWeight: "600", color: COLORS.textPrimary, lineHeight: 20 },
   optionTextOn: { color: COLORS.accentDark },
   radio: { width: 24, height: 24, borderRadius: 12, borderWidth: 2, borderColor: COLORS.border, alignItems: "center", justifyContent: "center" },
-  radioOn: { backgroundColor: COLORS.accent, borderColor: COLORS.accent },
+  radioOn: { backgroundColor: COLORS.accentFill, borderColor: COLORS.accent },
   error: { fontSize: 13, fontWeight: "700", color: COLORS.error, marginTop: 10 },
   doneWrap: { alignItems: "center", gap: 8, paddingTop: 6 },
   bubble: { backgroundColor: COLORS.accentSoft, borderRadius: 18, paddingHorizontal: 16, paddingVertical: 12, borderWidth: 1.5, borderColor: COLORS.accentMedium, marginTop: 4 },

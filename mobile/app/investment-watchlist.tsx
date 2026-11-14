@@ -716,7 +716,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     gap: 10,
-    backgroundColor: COLORS.accent,
+    backgroundColor: COLORS.accentFill,
     borderRadius: 14,
     paddingVertical: 14,
     marginTop: 16,
@@ -788,7 +788,7 @@ const styles = StyleSheet.create({
   thesisHint: { fontSize: 11, color: COLORS.textMuted, marginTop: 8, marginBottom: 16 },
   skipBtn: {
     flex: 1, alignItems: 'center', paddingVertical: 14,
-    backgroundColor: COLORS.accent, borderRadius: 14,
+    backgroundColor: COLORS.accentFill, borderRadius: 14,
   },
   skipBtnText: { fontSize: 15, fontWeight: '700', color: '#fff' },
 });

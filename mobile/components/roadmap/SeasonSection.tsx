@@ -260,7 +260,7 @@ const styles = StyleSheet.create({
   },
   progressBarFill: {
     height: 2,
-    backgroundColor: COLORS.accent,
+    backgroundColor: COLORS.accentFill,
     borderRadius: 1,
   },
   weeksContainer: { paddingHorizontal: 14, paddingBottom: 14, paddingTop: 8 },
@@ -277,7 +277,7 @@ const styles = StyleSheet.create({
   weekTitle: { fontSize: 13, fontWeight: '500', color: COLORS.textPrimary },
   weekDayRange: { fontSize: 11, color: COLORS.textMuted, marginTop: 1 },
   currentChip: {
-    backgroundColor: COLORS.accent,
+    backgroundColor: COLORS.accentFill,
     borderRadius: 8,
     paddingHorizontal: 7,
     paddingVertical: 3,
@@ -291,7 +291,7 @@ const styles = StyleSheet.create({
     borderRadius: 1,
     marginVertical: 2,
   },
-  connectorCompleted: { backgroundColor: COLORS.accent },
+  connectorCompleted: { backgroundColor: COLORS.accentFill },
   lessonsContainer: {
     marginLeft: 58,
     marginTop: 4,

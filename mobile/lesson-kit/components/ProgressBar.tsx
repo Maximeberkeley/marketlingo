@@ -43,6 +43,6 @@ const styles = StyleSheet.create({
   fill: {
     height: '100%',
     borderRadius: tokens.radius.pill,
-    backgroundColor: tokens.color.accent,
+    backgroundColor: tokens.color.accentFill,
   },
 });

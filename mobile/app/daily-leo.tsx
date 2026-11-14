@@ -173,6 +173,6 @@ const styles = StyleSheet.create({
 
   footer: { gap: 14 },
   caption: { color: COLORS.textSecondary, fontSize: 13, lineHeight: 19, textAlign: 'center', fontWeight: '600' },
-  continueButton: { height: 58, borderRadius: 18, backgroundColor: COLORS.accent, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 10, ...SHADOWS.accent },
+  continueButton: { height: 58, borderRadius: 18, backgroundColor: COLORS.accentFill, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 10, ...SHADOWS.accent },
   continueText: { color: '#FFFFFF', fontSize: 17, fontWeight: '900' },
 });

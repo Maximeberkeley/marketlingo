@@ -181,11 +181,11 @@ const styles = StyleSheet.create({
     cancelBtnText: { fontSize: 14, fontWeight: '600', color: COLORS.textMuted },
     updateBtn: {
         flex: 2, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8,
-        paddingVertical: 14, borderRadius: 14, backgroundColor: COLORS.accent,
+        paddingVertical: 14, borderRadius: 14, backgroundColor: COLORS.accentFill,
     },
     updateBtnText: { fontSize: 14, fontWeight: '600', color: '#fff' },
     dotsRow: { flexDirection: 'row', justifyContent: 'center', gap: 6, marginTop: 8 },
     dot: { width: 8, height: 8, borderRadius: 4, backgroundColor: COLORS.border },
-    dotActive: { backgroundColor: COLORS.accent, width: 20 },
+    dotActive: { backgroundColor: COLORS.accentFill, width: 20 },
     dotDone: { backgroundColor: 'rgba(34,197,94,0.5)' },
 });

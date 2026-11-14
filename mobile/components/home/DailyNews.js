@@ -723,7 +723,7 @@ const ds = StyleSheet.create({
     width: 36,
     height: 36,
     borderRadius: 12,
-    backgroundColor: COLORS.accent,
+    backgroundColor: COLORS.accentFill,
     alignItems: "center",
     justifyContent: "center"
   }
@@ -799,7 +799,7 @@ const qz = StyleSheet.create({
     gap: 6,
     paddingVertical: 14,
     borderRadius: 14,
-    backgroundColor: COLORS.accent
+    backgroundColor: COLORS.accentFill
   },
   nextBtnText: { fontSize: 15, fontWeight: "700", color: "#fff" },
   completeBox: { alignItems: "center", paddingVertical: 30, gap: 8 },
@@ -810,7 +810,7 @@ const qz = StyleSheet.create({
     paddingHorizontal: 32,
     paddingVertical: 14,
     borderRadius: 14,
-    backgroundColor: COLORS.accent
+    backgroundColor: COLORS.accentFill
   },
   doneBtnText: { fontSize: 15, fontWeight: "700", color: "#fff" }
 });

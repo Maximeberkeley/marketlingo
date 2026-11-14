@@ -196,7 +196,7 @@ const styles = StyleSheet.create({
   benefitTitle: { fontSize: 14, fontWeight: '600', color: COLORS.textPrimary },
   benefitDesc: { fontSize: 12, color: COLORS.textMuted, lineHeight: 17, marginTop: 2 },
   primaryBtn: {
-    backgroundColor: COLORS.accent, borderRadius: 14,
+    backgroundColor: COLORS.accentFill, borderRadius: 14,
     paddingVertical: 14, alignItems: 'center', marginBottom: 10,
     flexDirection: 'row', justifyContent: 'center',
   },

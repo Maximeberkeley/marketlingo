@@ -50,7 +50,7 @@ const styles = StyleSheet.create({
   progressRow: { flexDirection: "row", alignItems: "center", gap: 6 },
   progressText: { fontSize: 15, fontWeight: "800", color: COLORS.textPrimary },
   track: { height: 10, borderRadius: 5, backgroundColor: COLORS.border, overflow: "hidden" },
-  fill: { height: 10, borderRadius: 5, backgroundColor: COLORS.accent },
+  fill: { height: 10, borderRadius: 5, backgroundColor: COLORS.accentFill },
   grid: { flexDirection: "row", flexWrap: "wrap", gap: 12, paddingHorizontal: 20, paddingTop: 18 },
   tile: { borderRadius: 20, backgroundColor: COLORS.bg2, borderWidth: 2, borderBottomWidth: 4, borderColor: COLORS.border, overflow: "hidden" },
   art: { overflow: "hidden" },

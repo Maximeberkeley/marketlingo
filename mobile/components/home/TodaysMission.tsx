@@ -205,7 +205,7 @@ const styles = StyleSheet.create({
     borderWidth: 1, borderColor: 'rgba(139, 92, 246, 0.15)', marginBottom: 20,
     shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.04, shadowRadius: 8, elevation: 2,
   },
-  accentBar: { height: 3, backgroundColor: COLORS.accent },
+  accentBar: { height: 3, backgroundColor: COLORS.accentFill },
   accentBarCompleted: { backgroundColor: COLORS.success },
   content: { padding: 16 },
   topRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 },
@@ -225,7 +225,7 @@ const styles = StyleSheet.create({
   metaText: { fontSize: 10, fontWeight: '500', color: COLORS.textMuted },
   startBtn: {
     flexDirection: 'row', alignItems: 'center', justifyContent: 'center',
-    backgroundColor: COLORS.accent, paddingVertical: 16, borderRadius: 14, gap: 8,
+    backgroundColor: COLORS.accentFill, paddingVertical: 16, borderRadius: 14, gap: 8,
   },
   startBtnText: { fontSize: 17, fontWeight: '700', color: '#FFFFFF' },
   completedActions: { flexDirection: 'row', gap: 10 },

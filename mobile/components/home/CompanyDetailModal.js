@@ -262,7 +262,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         gap: 8,
-        backgroundColor: COLORS.accent,
+        backgroundColor: COLORS.accentFill,
         borderRadius: 14,
         paddingVertical: 14,
         marginTop: 4,
@@ -281,7 +281,7 @@ const styles = StyleSheet.create({
         backgroundColor: COLORS.border,
     },
     progressDotActive: {
-        backgroundColor: COLORS.accent,
+        backgroundColor: COLORS.accentFill,
     },
     slideContent: {
         paddingHorizontal: 16,

@@ -169,7 +169,7 @@ const styles = StyleSheet.create({
     width: 16,
     height: 16,
     borderRadius: 8,
-    backgroundColor: COLORS.accent,
+    backgroundColor: COLORS.accentFill,
     alignItems: 'center',
     justifyContent: 'center',
   },

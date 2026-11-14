@@ -159,7 +159,7 @@ const styles = StyleSheet.create({
   heroSub: { fontSize: 13, fontWeight: '600', color: 'rgba(255,255,255,0.85)', marginTop: 2 },
   body: { padding: 20, gap: 14 },
   barTrack: { height: 10, borderRadius: 6, backgroundColor: COLORS.bg1, overflow: 'hidden' },
-  barFill: { height: '100%', borderRadius: 6, backgroundColor: COLORS.accent },
+  barFill: { height: '100%', borderRadius: 6, backgroundColor: COLORS.accentFill },
   barLabel: { ...TYPE.caption, color: COLORS.textMuted, textAlign: 'center' },
   statRow: {
     flexDirection: 'row',
@@ -177,7 +177,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     gap: 8,
-    backgroundColor: COLORS.accent,
+    backgroundColor: COLORS.accentFill,
     borderRadius: 16,
     paddingVertical: 16,
     ...SHADOWS.accent,

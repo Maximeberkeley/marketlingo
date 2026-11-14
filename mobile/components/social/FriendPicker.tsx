@@ -52,7 +52,7 @@ export function FriendPicker({ mode, friends, busyId, error, onPick, onClose, on
           {friends.length === 0 ? (
             <View style={styles.empty}>
               <Text style={styles.emptyText}>Add a friend first, then {streak ? 'start a streak together' : 'race them'}.</Text>
-              <TouchableOpacity style={[styles.pick, { backgroundColor: COLORS.accent }]} onPress={onAddFriends}><Text style={styles.pickText}>Add friends</Text></TouchableOpacity>
+              <TouchableOpacity style={[styles.pick, { backgroundColor: COLORS.accentFill }]} onPress={onAddFriends}><Text style={styles.pickText}>Add friends</Text></TouchableOpacity>
             </View>
           ) : friends.map(f => (
             <View key={f.id} style={styles.row}>

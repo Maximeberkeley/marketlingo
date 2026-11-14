@@ -361,7 +361,7 @@ const styles = StyleSheet.create({
     featureDot: { width: 6, height: 6, borderRadius: 3, backgroundColor: '#EF4444' },
     featureText: { fontSize: 14, color: COLORS.textSecondary, flex: 1 },
     ctaButton: {
-        backgroundColor: COLORS.accent, borderRadius: 14, paddingVertical: 16, alignItems: 'center',
+        backgroundColor: COLORS.accentFill, borderRadius: 14, paddingVertical: 16, alignItems: 'center',
     },
     ctaText: { color: '#FFFFFF', fontWeight: '700', fontSize: 16 },
     emptyTitle: { fontSize: 20, fontWeight: '600', color: COLORS.textPrimary, marginBottom: 8 },

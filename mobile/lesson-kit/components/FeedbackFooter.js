@@ -54,7 +54,7 @@ const styles = StyleSheet.create({
   sheetTitle: { marginTop: 4, fontSize: tokens.font.prompt, fontWeight: "800", color: tokens.color.text },
   sheetScroll: { marginTop: tokens.space.sm, flexGrow: 0 },
   sheetBody: { fontSize: tokens.font.body, lineHeight: 24, color: tokens.color.text },
-  sheetButton: { minHeight: 50, borderRadius: 14, alignItems: "center", justifyContent: "center", backgroundColor: tokens.color.accent },
+  sheetButton: { minHeight: 50, borderRadius: 14, alignItems: "center", justifyContent: "center", backgroundColor: tokens.color.accentFill },
   sheetButtonText: { fontSize: 16, fontWeight: "800", color: tokens.color.textOnAccent }
 });
 export {

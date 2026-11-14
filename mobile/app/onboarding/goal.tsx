@@ -293,7 +293,7 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.bg2, borderRadius: 18, padding: 14,
     borderWidth: 2, borderColor: 'transparent',
   },
-  cardSelected: { borderColor: COLORS.accent, backgroundColor: COLORS.accent + '08' },
+  cardSelected: { borderColor: COLORS.accent, backgroundColor: COLORS.accentFill + '08' },
   cardRow: { flexDirection: 'row', gap: 12 },
   iconBox: {
     width: 48, height: 48, borderRadius: 14,
@@ -312,7 +312,7 @@ const styles = StyleSheet.create({
   chipText: { fontSize: 10, color: COLORS.textMuted, fontWeight: '500' },
   checkmark: {
     width: 24, height: 24, borderRadius: 12,
-    backgroundColor: COLORS.accent, alignItems: 'center', justifyContent: 'center',
+    backgroundColor: COLORS.accentFill, alignItems: 'center', justifyContent: 'center',
   },
   destinationBox: {
     marginTop: 22, padding: 18, borderRadius: 16,

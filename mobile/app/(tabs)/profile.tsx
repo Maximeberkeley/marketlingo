@@ -478,7 +478,7 @@ function MenuRow({ icon, title, subtitle, onPress, last, highlight }: {
 const styles = StyleSheet.create({
   headerTop: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 },
   gear: { width: 40, height: 40, borderRadius: 20, backgroundColor: COLORS.bg2, borderWidth: 1, borderColor: COLORS.border, alignItems: 'center', justifyContent: 'center' },
-  editBadge: { position: 'absolute', right: -2, bottom: -2, width: 22, height: 22, borderRadius: 11, backgroundColor: COLORS.accent, borderWidth: 2, borderColor: COLORS.bg2, alignItems: 'center', justifyContent: 'center' },
+  editBadge: { position: 'absolute', right: -2, bottom: -2, width: 22, height: 22, borderRadius: 11, backgroundColor: COLORS.accentFill, borderWidth: 2, borderColor: COLORS.bg2, alignItems: 'center', justifyContent: 'center' },
   idCard: { flexDirection: 'row', alignItems: 'center', gap: 14, padding: 14, borderRadius: 22, backgroundColor: COLORS.bg2, borderWidth: 2, borderBottomWidth: 4, borderColor: COLORS.border },
   name: { fontSize: 22, fontWeight: '900', color: COLORS.textPrimary },
   industry: { fontSize: 14, color: COLORS.textSecondary, marginTop: 2 },
@@ -529,7 +529,7 @@ const styles = StyleSheet.create({
   certSubtitle: { fontSize: 12, color: COLORS.textMuted, marginTop: 2 },
   certProgressRow: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 6 },
   certProgressLabel: { fontSize: 11, color: COLORS.textMuted },
-  certButton: { backgroundColor: COLORS.accent, borderRadius: 12, paddingVertical: 12, alignItems: 'center', marginTop: 14 },
+  certButton: { backgroundColor: COLORS.accentFill, borderRadius: 12, paddingVertical: 12, alignItems: 'center', marginTop: 14 },
   certButtonText: { color: '#FFFFFF', fontWeight: '600', fontSize: 14 },
   menuItem: {
     backgroundColor: COLORS.bg2, borderRadius: 14, padding: 14, flexDirection: 'row', alignItems: 'center',

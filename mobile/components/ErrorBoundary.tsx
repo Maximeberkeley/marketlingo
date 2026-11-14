@@ -93,7 +93,7 @@ const styles = StyleSheet.create({
   message: { fontSize: 14, color: COLORS.textMuted, textAlign: 'center', marginBottom: 8 },
   location: { fontSize: 11, color: COLORS.textMuted, textAlign: 'center', marginBottom: 24, opacity: 0.7 },
   button: {
-    backgroundColor: COLORS.accent,
+    backgroundColor: COLORS.accentFill,
     paddingHorizontal: 24,
     paddingVertical: 12,
     borderRadius: 12,

@@ -137,7 +137,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     height: 10,
     borderRadius: tokens.radius.pill,
-    backgroundColor: tokens.color.accent,
+    backgroundColor: tokens.color.accentFill,
   },
   knob: {
     position: 'absolute',

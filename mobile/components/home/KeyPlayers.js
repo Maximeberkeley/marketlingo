@@ -184,7 +184,7 @@ const styles = StyleSheet.create({
         left: 0,
         right: 0,
         height: 2,
-        backgroundColor: COLORS.accent,
+        backgroundColor: COLORS.accentFill,
         opacity: 0.5,
         borderRadius: 1,
     },

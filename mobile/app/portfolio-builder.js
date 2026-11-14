@@ -313,7 +313,7 @@ export default function PortfolioBuilderScreen() {
 
         {/* Save & History Actions */}
         {positions.length >= 2 && (<View style={{ flexDirection: 'row', gap: 8, marginTop: 16 }}>
-            <TouchableOpacity style={[styles.actionBtn, { flex: 1, backgroundColor: COLORS.accent }]} onPress={() => { setSnapshotName(''); setStrategyNotes(''); setShowSaveModal(true); }}>
+            <TouchableOpacity style={[styles.actionBtn, { flex: 1, backgroundColor: COLORS.accentFill }]} onPress={() => { setSnapshotName(''); setStrategyNotes(''); setShowSaveModal(true); }}>
               <Feather name="save" size={16} color="#fff"/>
               <Text style={[styles.actionBtnText, { color: '#fff' }]}>Save Snapshot</Text>
             </TouchableOpacity>
@@ -650,7 +650,7 @@ const styles = StyleSheet.create({
     },
     saveBtn: {
         flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8,
-        backgroundColor: COLORS.accent, borderRadius: 14, paddingVertical: 14, marginTop: 20,
+        backgroundColor: COLORS.accentFill, borderRadius: 14, paddingVertical: 14, marginTop: 20,
     },
     saveBtnText: { fontSize: 15, fontWeight: '700', color: '#fff' },
 });

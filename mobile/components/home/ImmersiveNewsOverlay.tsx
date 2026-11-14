@@ -713,7 +713,7 @@ const st = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 6,
-    backgroundColor: COLORS.accent,
+    backgroundColor: COLORS.accentFill,
   },
   quizButtonText: { fontSize: 13, fontWeight: '800', color: COLORS.textOnAccent },
   counterBadge: {

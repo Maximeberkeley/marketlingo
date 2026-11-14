@@ -103,6 +103,6 @@ const styles = StyleSheet.create({
   line: { fontSize: 14, color: COLORS.textSecondary, textAlign: 'center', marginTop: 6, lineHeight: 20 },
   xpPill: { flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 18, paddingHorizontal: 22, paddingVertical: 10, borderRadius: 999, backgroundColor: COLORS.accentSoft, borderWidth: 2, borderColor: COLORS.accent + '40' },
   xpText: { fontSize: 30, fontWeight: '900', color: COLORS.accent },
-  button: { alignSelf: 'stretch', height: 54, borderRadius: 16, backgroundColor: COLORS.accent, alignItems: 'center', justifyContent: 'center', marginTop: 20 },
+  button: { alignSelf: 'stretch', height: 54, borderRadius: 16, backgroundColor: COLORS.accentFill, alignItems: 'center', justifyContent: 'center', marginTop: 20 },
   buttonText: { fontSize: 16, fontWeight: '800', color: '#FFFFFF' },
 });

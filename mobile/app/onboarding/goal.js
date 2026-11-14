@@ -212,7 +212,7 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderColor: "transparent"
   },
-  cardSelected: { borderColor: COLORS.accent, backgroundColor: COLORS.accent + "08" },
+  cardSelected: { borderColor: COLORS.accent, backgroundColor: COLORS.accentFill + "08" },
   cardRow: { flexDirection: "row", gap: 12 },
   iconBox: {
     width: 48,
@@ -238,7 +238,7 @@ const styles = StyleSheet.create({
     width: 24,
     height: 24,
     borderRadius: 12,
-    backgroundColor: COLORS.accent,
+    backgroundColor: COLORS.accentFill,
     alignItems: "center",
     justifyContent: "center"
   },

@@ -128,7 +128,7 @@ const styles = StyleSheet.create({
   progressRow: { flexDirection: 'row', alignItems: 'center', gap: 10, marginBottom: 24 },
   progressText: { fontSize: 13, fontWeight: '600', color: COLORS.textMuted },
   progressBar: { flex: 1, height: 6, backgroundColor: COLORS.bg2, borderRadius: 3, overflow: 'hidden' },
-  progressFill: { height: '100%', backgroundColor: COLORS.accent, borderRadius: 3 },
+  progressFill: { height: '100%', backgroundColor: COLORS.accentFill, borderRadius: 3 },
   card: {
     backgroundColor: COLORS.bg2, borderRadius: 20, padding: 24, borderWidth: 1, borderColor: COLORS.border,
   },
@@ -155,7 +155,7 @@ const styles = StyleSheet.create({
   doneTitle: { fontSize: 24, fontWeight: '800', color: COLORS.textPrimary, marginBottom: 8 },
   doneSub: { fontSize: 14, color: COLORS.textSecondary, textAlign: 'center', marginBottom: 32 },
   doneBtn: {
-    backgroundColor: COLORS.accent, borderRadius: 14, paddingVertical: 16, paddingHorizontal: 48, alignItems: 'center',
+    backgroundColor: COLORS.accentFill, borderRadius: 14, paddingVertical: 16, paddingHorizontal: 48, alignItems: 'center',
   },
   doneBtnText: { fontSize: 16, fontWeight: '700', color: '#FFFFFF' },
 });

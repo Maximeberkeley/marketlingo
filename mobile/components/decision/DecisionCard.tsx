@@ -184,7 +184,7 @@ const styles = StyleSheet.create({
   optionText: { fontSize: 16, lineHeight: 22, color: COLORS.textPrimary },
   submit: {
     marginTop: 16,
-    backgroundColor: COLORS.accent,
+    backgroundColor: COLORS.accentFill,
     borderRadius: 16,
     paddingVertical: 15,
     alignItems: 'center',

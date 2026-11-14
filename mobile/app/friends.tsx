@@ -865,7 +865,7 @@ const styles = StyleSheet.create({
   },
   nameSave: {
     height: 44, minWidth: 72, borderRadius: 12, paddingHorizontal: 14,
-    backgroundColor: COLORS.accent, alignItems: 'center', justifyContent: 'center',
+    backgroundColor: COLORS.accentFill, alignItems: 'center', justifyContent: 'center',
   },
   nameSaveText: { color: '#FFF', fontWeight: '700', fontSize: 15 },
   header: { flexDirection: 'row', alignItems: 'center', gap: 10, paddingHorizontal: 16, paddingBottom: 12, paddingTop: 8 },
@@ -902,7 +902,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row', alignItems: 'center', gap: 12, padding: 14, borderRadius: 20,
     backgroundColor: COLORS.bg2, borderWidth: 2, borderBottomWidth: 5, borderColor: COLORS.border,
   },
-  raceEmptyDisc: { width: 44, height: 44, borderRadius: 22, backgroundColor: COLORS.accent, alignItems: 'center', justifyContent: 'center' },
+  raceEmptyDisc: { width: 44, height: 44, borderRadius: 22, backgroundColor: COLORS.accentFill, alignItems: 'center', justifyContent: 'center' },
   raceEmptyTitle: { fontSize: 16, fontWeight: '800', color: COLORS.textPrimary },
   raceEmptySub: { fontSize: 13, color: COLORS.textSecondary, marginTop: 2, lineHeight: 17 },
 

@@ -60,7 +60,7 @@ const styles = StyleSheet.create({
     },
     dotActive: {
         borderColor: COLORS.accent,
-        backgroundColor: COLORS.accent + '20',
+        backgroundColor: COLORS.accentFill + '20',
     },
     dotNumber: {
         fontSize: 12,
@@ -90,7 +90,7 @@ const styles = StyleSheet.create({
     },
     barFill: {
         height: '100%',
-        backgroundColor: COLORS.accent,
+        backgroundColor: COLORS.accentFill,
         borderRadius: 2,
     },
 });

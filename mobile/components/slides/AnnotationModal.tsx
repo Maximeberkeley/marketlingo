@@ -147,7 +147,7 @@ const styles = StyleSheet.create({
   cancelText: { color: COLORS.textSecondary, fontSize: 15, fontWeight: '500' },
   saveBtn: {
     flex: 1, paddingVertical: 16, borderRadius: 14,
-    backgroundColor: COLORS.accent, alignItems: 'center',
+    backgroundColor: COLORS.accentFill, alignItems: 'center',
     flexDirection: 'row', justifyContent: 'center', gap: 8,
   },
   saveText: { color: '#fff', fontWeight: '700', fontSize: 15 },
