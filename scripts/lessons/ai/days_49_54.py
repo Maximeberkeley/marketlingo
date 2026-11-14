@@ -125,7 +125,7 @@ LESSONS = [
         'open': {
             'eyebrow': 'Day 52 · The numbers', 'kicker': 'The number on the box is not the number that works.',
             'headline': 'In 2024, NVIDIA researchers tested 17 models that claimed windows of 32,000 tokens or more. Only half held up at 32,000.',
-            'fullText': 'The RULER benchmark asks models to find, trace and combine information hidden in long inputs, across 13 tasks. GPT-4 claimed 128,000 tokens, but its effective length, how far it read while still performing well, was 64,000. Its score fell from 96.6% at 4,000 tokens to 81.2% at 128,000. The gap between the claimed and the effective window is the number insiders argue about.',
+            'fullText': 'The RULER benchmark asks models to find, trace and combine information hidden in long inputs, across 13 tasks. GPT-4 claimed 128,000 tokens, but its effective length, how far it read while still performing well, was 64,000. Its score fell from 96.6% at 4,000 tokens to 81.2% at 128,000. The gap between the claimed and the effective window is what to check before trusting a long input.',
             'sources': ['ruler_49'],
         },
         'cards': [

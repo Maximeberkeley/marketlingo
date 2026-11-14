@@ -146,7 +146,7 @@ LESSONS = [
             'curiosity': ("A town's worth of power", "Training Grok 4 used about 310 gigawatt-hours, enough to power a town of 4,000 Americans, by Epoch's estimate.", ['epoch_grok4_37']),
         },
         'rule': ('In AI, the bill for the biggest training run multiplies every year.', ['epoch_cost_37', 'arxiv_cost_37']),
-        'takeaway': "Epoch put Grok 4's training at about $490 million. Frontier run costs grow about 2.4 times a year and could pass $1 billion by 2027.",
+        'takeaway': "Epoch put Grok 4's training at about $490 million. Frontier run costs grow about 2.4 times a year, and Epoch expects them to pass $1 billion by 2027 if that holds.",
     },
     {
         'day': 41, 'facet': 'rules', 'title': 'A law that counts operations',

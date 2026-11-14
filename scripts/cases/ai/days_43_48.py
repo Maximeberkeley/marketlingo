@@ -1083,7 +1083,7 @@ CASES = [
         'brief': {
             'headline': 'Since August 2, 2025, general-purpose AI providers in the EU must publish a training summary. Fine-tune a model with over a third of its compute, and you become a provider too.',
             'kicker': 'Connect day 17 and day 47: heavy fine-tuning brings disclosure duties.',
-            'fullText': "On day 17 you saw the disclosure rule. Since August 2, 2025, providers of general-purpose AI models must publish a summary of their training content using the Commission's template, and keep a copyright policy. Models on the market before that date have until August 2, 2027.\n\nOn day 47 you saw who counts as a provider. A modifier whose fine-tune uses more than one third of the original model's training compute is presumed the new provider. If the original compute is unknown, the fallback is one third of 10^23 FLOP.\n\nA modifier's summary and copyright policy cover only the added compute and data.",
+            'fullText': "On day 17 you saw the disclosure rule. Since August 2, 2025, providers of general-purpose AI models must publish a summary of their training content using the Commission's template, and keep a copyright policy. Models on the market before that date have until August 2, 2027.\n\nOn day 47 you saw who counts as a provider. A modifier whose fine-tune uses more than one third of the original model's training compute is presumed the new provider. If the original compute is unknown, the fallback is one third of 10^23 FLOP, or one third of 10^25 FLOP for a model with systemic risk.\n\nA modifier's summary and copyright policy cover only the added compute and data.",
             'sources': ['mayerbrown_gpai_43', 'aiact_gpai_43'],
         },
         'evidence': {

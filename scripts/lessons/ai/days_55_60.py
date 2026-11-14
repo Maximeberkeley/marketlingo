@@ -201,7 +201,7 @@ LESSONS = [
         'cards': [
             {'kind': 'microInsight', 'id': 'cheap', 'eyebrow': 'Cheap to undo', 'text': "In 2023, researchers undid the safety training of Meta's Llama 2-Chat 13B for less than $200.", 'highlight': 'They concluded safety fine-tuning cannot stop misuse once weights are public.', 'sources': ['badllama_55']},
             {'kind': 'microInsight', 'id': 'gpu', 'eyebrow': 'One GPU', 'text': 'Another team did the same to Llama 2-Chat 70B, using one GPU and under $200 per model.', 'highlight': 'Its refusal rate fell below 1% on two refusal tests.', 'sources': ['lora_55']},
-            {'kind': 'info', 'id': 'test', 'eyebrow': 'The new test', 'title': 'Labs now test the worst case first', 'body': 'Before gpt-oss shipped, OpenAI tuned it to drop refusals on biology and cyber, as an attacker might. It still fell short of High capability.', 'bullets': ['Three independent expert groups reviewed the method.'], 'sources': ['oai_gptoss_55']},
+            {'kind': 'info', 'id': 'test', 'eyebrow': 'The new test', 'title': 'OpenAI tested the worst case first', 'body': 'Before gpt-oss shipped, OpenAI tuned it to drop refusals on biology and cyber, as an attacker might. It still fell short of High capability.', 'bullets': ['Three independent expert groups reviewed the method.'], 'sources': ['oai_gptoss_55']},
         ],
         'checks': [
             {'kind': 'faceOff', 'id': 'face', 'prompt': 'Which can its maker still pull back after release?',
@@ -220,6 +220,6 @@ LESSONS = [
             'curiosity': ('Sharing only goes one way', 'Once people download weights they can share them by other means. A released model cannot be un-released.', ['ntia_bg_55']),
         },
         'rule': ('In open AI, a release is permanent, so test the worst case before you ship.', ['ntia_bg_55', 'oai_gptoss_55']),
-        'takeaway': 'Meta released Muse Spark Open in October 2026, and released weights cannot be recalled. Safety training was undone for under $200 in 2023, so labs now test the worst case first.',
+        'takeaway': 'Meta released Muse Spark Open in October 2026, and released weights cannot be recalled. Safety training was undone for under $200 in 2023, so OpenAI tested a worst case fine-tune of gpt-oss before release.',
     },
 ]

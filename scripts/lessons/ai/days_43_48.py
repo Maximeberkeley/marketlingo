@@ -207,6 +207,6 @@ LESSONS = [
             'curiosity': ('Models that just follow orders', 'Base models got good enough at following instructions that OpenAI is closing its fine-tuning service.', ['tessl_ft_43', 'oai_4o_ft_43']),
         },
         'rule': ('In AI, the better base models follow instructions, the less often fine-tuning is worth it.', ['tessl_ft_43', 'oai_4o_ft_43']),
-        'takeaway': 'OpenAI is winding down fine-tuning because newer base models follow instructions and formats far better. RLHF still breeds flattery, and custom tuning moves to other providers and open models.',
+        'takeaway': 'OpenAI says it is winding down fine-tuning because newer base models follow instructions and formats far better. RLHF still breeds flattery, and teams that need custom tuning look to other providers and open models.',
     },
 ]
