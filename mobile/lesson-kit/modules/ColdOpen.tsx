@@ -62,6 +62,7 @@ const styles = StyleSheet.create({
   card: {
     flexGrow: 1, flexShrink: 0, minWidth: 0, maxWidth: '100%',
     backgroundColor: tokens.color.coldOpen,
+    borderRadius: tokens.radius.lg,
     minHeight: 300,
     padding: tokens.space.xl,
   },

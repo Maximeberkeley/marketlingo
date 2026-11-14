@@ -131,7 +131,8 @@ const styles = StyleSheet.create({
     color: tokens.color.textMuted,
     textTransform: 'uppercase',
   },
-  trackWrap: { height: 44, justifyContent: 'center' },
+  // Inset by half the knob so it never hangs past the screen gutter at 0% or 100%.
+  trackWrap: { height: 44, justifyContent: 'center', marginHorizontal: 15 },
   track: { height: 10, borderRadius: tokens.radius.pill, backgroundColor: tokens.color.track },
   fill: {
     position: 'absolute',
