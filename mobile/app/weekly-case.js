@@ -211,12 +211,12 @@ function WeeklyCaseRoute() {
     return /* @__PURE__ */ React.createElement(View, { style: [styles.root, styles.center] }, /* @__PURE__ */ React.createElement(ActivityIndicator, { size: "large", color: COLORS.accent }));
   }
   if (!current) {
-    return /* @__PURE__ */ React.createElement(View, { style: styles.root }, /* @__PURE__ */ React.createElement(Header, { onClose: close }), /* @__PURE__ */ React.createElement(View, { style: styles.center }, /* @__PURE__ */ React.createElement(Text, { style: styles.emptyTitle }, "No case this week"), /* @__PURE__ */ React.createElement(Text, { style: styles.muted }, "A new business problem arrives every Monday."), /* @__PURE__ */ React.createElement(Primary, { label: "Back to Practice", onPress: close })));
+    return /* @__PURE__ */ React.createElement(View, { style: styles.root }, /* @__PURE__ */ React.createElement(Header, { onClose: close }), /* @__PURE__ */ React.createElement(View, { style: styles.center }, /* @__PURE__ */ React.createElement(Text, { style: styles.emptyTitle }, "No case this week"), /* @__PURE__ */ React.createElement(Text, { style: styles.muted }, "A new business problem arrives every Monday."), /* @__PURE__ */ React.createElement(Primary, { label: "Back to practice", onPress: close })));
   }
   const phase = phaseOf(current, Date.now());
   const open = phase === "open";
   if (!done && !open) {
-    return /* @__PURE__ */ React.createElement(View, { style: styles.root }, /* @__PURE__ */ React.createElement(Header, { onClose: close }), /* @__PURE__ */ React.createElement(View, { style: styles.center }, /* @__PURE__ */ React.createElement(Text, { style: styles.emptyTitle }, "This case has closed"), /* @__PURE__ */ React.createElement(Text, { style: styles.muted }, "A new one arrives on Monday. Answers are open for a week."), /* @__PURE__ */ React.createElement(Primary, { label: "Back to Practice", onPress: close })));
+    return /* @__PURE__ */ React.createElement(View, { style: styles.root }, /* @__PURE__ */ React.createElement(Header, { onClose: close }), /* @__PURE__ */ React.createElement(View, { style: styles.center }, /* @__PURE__ */ React.createElement(Text, { style: styles.emptyTitle }, "This case has closed"), /* @__PURE__ */ React.createElement(Text, { style: styles.muted }, "A new one arrives on Monday. Answers are open for a week."), /* @__PURE__ */ React.createElement(Primary, { label: "Back to practice", onPress: close })));
   }
   const missing = blockingParts(answers, parts);
   const ready = canSubmit(answers, parts);
