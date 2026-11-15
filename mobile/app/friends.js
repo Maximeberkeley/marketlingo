@@ -43,7 +43,8 @@ import { nudgeOptions } from "../lib/nudges";
 import { CrownCard } from "../components/social/CrownCard";
 import { CrownBadge } from "../components/social/CrownBadge";
 import { LeoAvatar } from "../components/shop/LeoAvatar";
-import { useShop } from "../hooks/useShop";
+import { hasArt, useShop } from "../hooks/useShop";
+import { cosmetic, priceOf } from "../lib/shopCatalog";
 import { useEquippedLooks, usePublicLooks } from "../hooks/useEquippedLooks";
 import { LeoPodium } from "../components/social/LeoPodium";
 import { RankCard } from "../components/social/RankCard";
@@ -394,6 +395,12 @@ function FriendsScreen() {
     return (Date.now() - new Date(friend.lastActivityAt).getTime()) / (1e3 * 60 * 60) < 24;
   };
   const friendRow = friends.find((f) => f.id === friendSheetId) ?? null;
+  const lookIds = friendRow ? Object.values(looks[friendRow.id]?.look ?? {}).filter((id) => {
+    const c = id ? cosmetic(id) : void 0;
+    return !!c && c.acquisition === "purchase" && hasArt(c.id);
+  }) : [];
+  const lookMissing = shop.available ? lookIds.filter((id) => !shop.owns(id)) : [];
+  const lookToGet = lookMissing.length ? { pieces: lookMissing.length, price: lookMissing.reduce((s, id) => s + (priceOf(cosmetic(id)) ?? 0), 0) } : null;
   const sheetFriend = friendRow ? {
     id: friendRow.id,
     name: friendRow.username,
@@ -598,6 +605,12 @@ function FriendsScreen() {
       },
       onRemove: () => {
         if (friendRow) void handleRemove(friendRow);
+      },
+      lookToGet,
+      onGetLook: () => {
+        if (!friendRow) return;
+        setFriendSheetId(null);
+        router.push(`/shop-item?look=${lookIds.join(",")}&from=${encodeURIComponent(friendRow.username || "Friend")}`);
       }
     }
   ), /* @__PURE__ */ React.createElement(NudgeSheet, { target: nudgeTarget, onSend: sendNudge, onClose: () => setNudgeTarget(null) }), /* @__PURE__ */ React.createElement(

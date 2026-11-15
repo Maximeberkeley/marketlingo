@@ -28,12 +28,17 @@ const LEO_TRY = 336;
 /** Try an item (or a full set) on Leo, then buy and wear it. Also the "It's yours" moment and the not-enough-XP sheet. */
 export default function ShopItemScreen() {
   const insets = useSafeAreaInsets();
-  const params = useLocalSearchParams<{ id?: string; bundle?: string; deal?: string; claimed?: string }>();
+  const params = useLocalSearchParams<{ id?: string; bundle?: string; deal?: string; claimed?: string; look?: string; from?: string }>();
   const shop = useShop();
   const { width } = useWindowDimensions();
   const bundle = params.bundle ? BUNDLES.find(b => b.id === params.bundle) : undefined;
   const item = params.id ? cosmetic(params.id) : undefined;
-  const parts: Cosmetic[] = bundle ? bundle.items.map(id => cosmetic(id)!).filter(Boolean) : item ? [item] : [];
+  // A friend's look ("Get this look"): the pieces of their outfit that XP can buy and that are drawn.
+  const lookParts = !bundle && !item && params.look
+    ? params.look.split(',').map(id => cosmetic(id)).filter((c): c is Cosmetic => !!c && c.acquisition === 'purchase' && hasArt(c.id))
+    : [];
+  const isLook = lookParts.length > 0;
+  const parts: Cosmetic[] = bundle ? bundle.items.map(id => cosmetic(id)!).filter(Boolean) : item ? [item] : lookParts;
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(!!params.claimed);
@@ -48,7 +53,7 @@ export default function ShopItemScreen() {
     );
   }
 
-  const name = bundle ? bundle.name : item!.name;
+  const name = bundle ? bundle.name : item ? item.name : params.from ? `${params.from}'s look` : 'This look';
   const lead = parts[0];
   const color = RARITY_COLOR[lead.rarity];
   const collection = (bundle?.collection ?? lead.collection) ? collectionOf((bundle?.collection ?? lead.collection)!) : null;
@@ -59,18 +64,23 @@ export default function ShopItemScreen() {
   const owned = parts.every(p => shop.owns(p.id));
   const worn = parts.every(p => (shop.look[p.slot] ?? (p.id === 'grad-cap' ? 'grad-cap' : undefined)) === p.id);
   const art = parts.every(p => hasArt(p.id));
-  const earnOnly = !bundle && lead.acquisition === 'reward';
+  const earnOnly = !bundle && !isLook && lead.acquisition === 'reward';
   const progress = earnOnly ? requirementProgress(lead.requires, shop.stats) : null;
   // Earn-only items point at the thing that earns them instead of a grey dead end.
   const weeklyGoal = !!lead.requires && Object.keys(lead.requires).some(k => k.startsWith('weekly'));
   const earnAction = weeklyGoal ? { label: 'Go to the Weekly Case', path: '/weekly-case' } : { label: "Do today's lesson", path: '/(tabs)/home' };
-  const deal = !bundle && params.deal ? todaysPrice(shop, lead.id).deal : null;
-  const full = bundle ? bundleFullPrice(bundle) : priceOf(lead);
+  const deal = !bundle && !isLook && params.deal ? todaysPrice(shop, lead.id).deal : null;
+  // A look costs only the pieces not owned yet.
+  const toBuy = isLook ? parts.filter(p => !shop.owns(p.id)) : parts;
+  const full = bundle ? bundleFullPrice(bundle) : isLook ? toBuy.reduce((sum, p) => sum + (priceOf(p) ?? 0), 0) : priceOf(lead);
   const price = bundle ? bundle.price : deal ? deal.dealPrice : full;
   const block = owned ? 'owned' : buyBlock({ price, balance: shop.balance.balance, hasArt: art, earnOnly, comingSoon: !shop.available && shop.ready });
+  // Saving for it: single items XP can buy, not owned yet, drawn.
+  const canGoal = !bundle && !isLook && !owned && !earnOnly && art && price !== null;
+  const isGoal = shop.goal === lead.id;
   // Its named look first (Winter royal, Crow), then other drawn pieces from its collection in another slot.
   const paired = (lead.pairsWith ?? []).map(id => cosmetic(id)).filter((c): c is Cosmetic => !!c && hasArt(c.id));
-  const goesWith = bundle ? [] : (paired.length ? paired : lead.collection
+  const goesWith = bundle || isLook ? [] : (paired.length ? paired : lead.collection
     ? COSMETICS.filter(c => c.collection === lead.collection && c.id !== lead.id && c.slot !== lead.slot && hasArt(c.id))
     : []).slice(0, 3);
 
@@ -87,7 +97,16 @@ export default function ShopItemScreen() {
     if (block) return;
     setBusy(true);
     setError(null);
-    const r = await shop.purchase(bundle ? bundle.id : lead.id, { dealDate: deal ? shop.dealDate : undefined });
+    let r: Awaited<ReturnType<typeof shop.purchase>> = { ok: true, balance: shop.balance.balance };
+    if (isLook) {
+      // One piece at a time; a piece that fails stops the rest, and what was bought stays bought.
+      for (const p of toBuy) {
+        r = await shop.purchase(p.id);
+        if (r.ok === false) break;
+      }
+    } else {
+      r = await shop.purchase(bundle ? bundle.id : lead.id, { dealDate: deal ? shop.dealDate : undefined });
+    }
     setBusy(false);
     if (r.ok === false) {
       if (r.error === 'not_enough') { setShort(true); return; }
@@ -104,7 +123,7 @@ export default function ShopItemScreen() {
         <TouchableOpacity onPress={() => router.back()} hitSlop={12} accessibilityRole="button" accessibilityLabel="Close">
           <Feather name="x" size={24} color={COLORS.textPrimary} />
         </TouchableOpacity>
-        <Text maxFontSizeMultiplier={1.3} style={styles.topCaption} numberOfLines={1}>{collection ? collection.name : SLOT_LABEL[lead.slot]}</Text>
+        <Text maxFontSizeMultiplier={1.3} style={styles.topCaption} numberOfLines={1}>{isLook ? `${parts.length} ${parts.length === 1 ? 'piece' : 'pieces'}` : collection ? collection.name : SLOT_LABEL[lead.slot]}</Text>
         <XPChip value={shop.balance.balance} />
       </View>
 
@@ -131,11 +150,11 @@ export default function ShopItemScreen() {
 
       <View style={styles.info}>
         <Text maxFontSizeMultiplier={1.3} style={[styles.kicker, { color }]}>
-          {bundle ? `Set of ${parts.length}` : `${RARITY_LABEL[lead.rarity]} ${SLOT_LABEL[lead.slot].toLowerCase()}`}
+          {bundle ? `Set of ${parts.length}` : isLook ? 'Friend\'s look' : `${RARITY_LABEL[lead.rarity]} ${SLOT_LABEL[lead.slot].toLowerCase()}`}
         </Text>
         <Text maxFontSizeMultiplier={1.3} style={styles.name}>{name}</Text>
-        {bundle ? (
-          <View style={styles.parts}>{parts.map(p => <ItemArt key={p.id} item={p} size={64} showTag={false} />)}</View>
+        {bundle || isLook ? (
+          <View style={styles.parts}>{parts.map(p => <ItemArt key={p.id} item={p} size={64} showTag={false} style={isLook && shop.owns(p.id) ? { opacity: 0.45 } : undefined} />)}</View>
         ) : earnOnly && progress ? (
           <View style={styles.progressCard}>
             <Text maxFontSizeMultiplier={1.3} style={styles.progressLabel}>{progress.met ? 'Unlocked' : progress.label}</Text>
@@ -174,7 +193,19 @@ export default function ShopItemScreen() {
         ) : block && block !== 'not_enough' ? (
           <View style={styles.blocked}><Text maxFontSizeMultiplier={1.3} style={styles.blockedText}>{block === 'earn_only' ? 'Earn it, XP cannot buy it' : BLOCK_LABEL[block]}</Text></View>
         ) : (
-          <PriceButton price={price!} was={bundle || deal ? full : null} label="Buy & equip" onPress={() => { void buy(); }} busy={busy} height={52} />
+          <PriceButton price={price!} was={bundle || deal ? full : null} label={isLook ? 'Buy the look' : 'Buy & equip'} onPress={() => { void buy(); }} busy={busy} height={52} />
+        )}
+        {canGoal && (
+          <TouchableOpacity
+            style={[styles.goalRow, isGoal && styles.goalRowOn]}
+            onPress={() => { triggerHaptic(isGoal ? 'light' : 'success'); void shop.setGoal(isGoal ? null : lead.id); }}
+            accessibilityRole="button"
+            accessibilityLabel={isGoal ? `${name} is your goal. Remove it` : `Make ${name} your goal`}
+          >
+            <Feather name={isGoal ? 'check-circle' : 'target'} size={16} color={isGoal ? '#FFFFFF' : COLORS.accent} />
+            <Text maxFontSizeMultiplier={1.3} style={[styles.goalText, isGoal && { color: '#FFFFFF' }]}>{isGoal ? 'Your goal · on Home' : 'Make it my goal'}</Text>
+            {isGoal && <Text maxFontSizeMultiplier={1.3} style={styles.goalRemove}>Remove</Text>}
+          </TouchableOpacity>
         )}
         {!owned && !block && price !== null && (
           <Text maxFontSizeMultiplier={1.3} style={styles.after}>{fmt(shop.balance.balance)} XP now, {fmt(shop.balance.balance - price)} after</Text>
@@ -184,7 +215,8 @@ export default function ShopItemScreen() {
         )}
       </View>
 
-      <NotEnoughSheet visible={short} onClose={() => setShort(false)} name={name} price={price ?? 0} balance={shop.balance.balance} item={lead} />
+      <NotEnoughSheet visible={short} onClose={() => setShort(false)} name={name} price={price ?? 0} balance={shop.balance.balance} item={lead}
+        onGoal={canGoal && !isGoal ? () => { triggerHaptic('success'); void shop.setGoal(lead.id); setShort(false); } : undefined} />
       {success && (
         <SuccessView
           name={name}
@@ -254,7 +286,7 @@ function shade(hex: string, amount: number): string {
   return `#${((1 << 24) | (r << 16) | (g << 8) | b).toString(16).slice(1)}`;
 }
 
-function NotEnoughSheet({ visible, onClose, name, price, balance, item }: { visible: boolean; onClose: () => void; name: string; price: number; balance: number; item: Cosmetic }) {
+function NotEnoughSheet({ visible, onClose, name, price, balance, item, onGoal }: { visible: boolean; onClose: () => void; name: string; price: number; balance: number; item: Cosmetic; onGoal?: () => void }) {
   const insets = useSafeAreaInsets();
   const go = (path: string) => { onClose(); router.push(path as any); };
   const rows: { icon: keyof typeof Feather.glyphMap; title: string; sub: string; xp: string; path: string }[] = [
@@ -287,6 +319,7 @@ function NotEnoughSheet({ visible, onClose, name, price, balance, item }: { visi
           </TouchableOpacity>
         ))}
         <ChunkyButton label="Start today's lesson" onPress={() => go('/(tabs)/home')} height={50} style={{ marginTop: 10 }} />
+        {onGoal && <ChunkyButton label="Save for it: make it my goal" tone="plain" icon={<Feather name="target" size={16} color={COLORS.accent} />} onPress={onGoal} height={46} style={{ marginTop: 8 }} />}
         <TouchableOpacity onPress={onClose} style={styles.keep} accessibilityRole="button"><Text maxFontSizeMultiplier={1.3} style={[styles.keepText, { color: COLORS.textSecondary }]}>Maybe later</Text></TouchableOpacity>
       </View>
     </Modal>
@@ -318,6 +351,10 @@ const styles = StyleSheet.create({
   track: { height: 10, borderRadius: 5, backgroundColor: COLORS.border, marginTop: 10, overflow: 'hidden' },
   fill: { height: 10, borderRadius: 5, backgroundColor: COLORS.accentFill },
   footer: { gap: 8 },
+  goalRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, height: 44, borderRadius: 14, borderWidth: 2, borderColor: COLORS.accentFill },
+  goalRowOn: { backgroundColor: COLORS.accentFill },
+  goalText: { fontSize: 15, fontWeight: '800', color: COLORS.accent },
+  goalRemove: { fontSize: 13, fontWeight: '700', color: 'rgba(255,255,255,0.8)', marginLeft: 4, textDecorationLine: 'underline' },
   error: { fontSize: 13, fontWeight: '700', color: COLORS.error, textAlign: 'center' },
   blocked: { height: 56, borderRadius: 16, backgroundColor: COLORS.bg1, alignItems: 'center', justifyContent: 'center', borderWidth: 1, borderColor: COLORS.border },
   blockedText: { fontSize: 15, fontWeight: '800', color: COLORS.textMuted },

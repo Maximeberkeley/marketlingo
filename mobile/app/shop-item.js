@@ -38,7 +38,9 @@ function ShopItemScreen() {
   const { width } = useWindowDimensions();
   const bundle = params.bundle ? BUNDLES.find((b) => b.id === params.bundle) : void 0;
   const item = params.id ? cosmetic(params.id) : void 0;
-  const parts = bundle ? bundle.items.map((id) => cosmetic(id)).filter(Boolean) : item ? [item] : [];
+  const lookParts = !bundle && !item && params.look ? params.look.split(",").map((id) => cosmetic(id)).filter((c) => !!c && c.acquisition === "purchase" && hasArt(c.id)) : [];
+  const isLook = lookParts.length > 0;
+  const parts = bundle ? bundle.items.map((id) => cosmetic(id)).filter(Boolean) : item ? [item] : lookParts;
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(!!params.claimed);
@@ -46,7 +48,7 @@ function ShopItemScreen() {
   if (!parts.length) {
     return /* @__PURE__ */ React.createElement(View, { style: [styles.root, styles.center] }, /* @__PURE__ */ React.createElement(Text, { maxFontSizeMultiplier: 1.3, style: styles.name }, "That item is gone"), /* @__PURE__ */ React.createElement(Text, { maxFontSizeMultiplier: 1.3, style: styles.link, onPress: () => router.back() }, "Back to the Shop"));
   }
-  const name = bundle ? bundle.name : item.name;
+  const name = bundle ? bundle.name : item ? item.name : params.from ? `${params.from}'s look` : "This look";
   const lead = parts[0];
   const color = RARITY_COLOR[lead.rarity];
   const collection = bundle?.collection ?? lead.collection ? collectionOf(bundle?.collection ?? lead.collection) : null;
@@ -57,16 +59,19 @@ function ShopItemScreen() {
   const owned = parts.every((p) => shop.owns(p.id));
   const worn = parts.every((p) => (shop.look[p.slot] ?? (p.id === "grad-cap" ? "grad-cap" : void 0)) === p.id);
   const art = parts.every((p) => hasArt(p.id));
-  const earnOnly = !bundle && lead.acquisition === "reward";
+  const earnOnly = !bundle && !isLook && lead.acquisition === "reward";
   const progress = earnOnly ? requirementProgress(lead.requires, shop.stats) : null;
   const weeklyGoal = !!lead.requires && Object.keys(lead.requires).some((k) => k.startsWith("weekly"));
   const earnAction = weeklyGoal ? { label: "Go to the Weekly Case", path: "/weekly-case" } : { label: "Do today's lesson", path: "/(tabs)/home" };
-  const deal = !bundle && params.deal ? todaysPrice(shop, lead.id).deal : null;
-  const full = bundle ? bundleFullPrice(bundle) : priceOf(lead);
+  const deal = !bundle && !isLook && params.deal ? todaysPrice(shop, lead.id).deal : null;
+  const toBuy = isLook ? parts.filter((p) => !shop.owns(p.id)) : parts;
+  const full = bundle ? bundleFullPrice(bundle) : isLook ? toBuy.reduce((sum, p) => sum + (priceOf(p) ?? 0), 0) : priceOf(lead);
   const price = bundle ? bundle.price : deal ? deal.dealPrice : full;
   const block = owned ? "owned" : buyBlock({ price, balance: shop.balance.balance, hasArt: art, earnOnly, comingSoon: !shop.available && shop.ready });
+  const canGoal = !bundle && !isLook && !owned && !earnOnly && art && price !== null;
+  const isGoal = shop.goal === lead.id;
   const paired = (lead.pairsWith ?? []).map((id) => cosmetic(id)).filter((c) => !!c && hasArt(c.id));
-  const goesWith = bundle ? [] : (paired.length ? paired : lead.collection ? COSMETICS.filter((c) => c.collection === lead.collection && c.id !== lead.id && c.slot !== lead.slot && hasArt(c.id)) : []).slice(0, 3);
+  const goesWith = bundle || isLook ? [] : (paired.length ? paired : lead.collection ? COSMETICS.filter((c) => c.collection === lead.collection && c.id !== lead.id && c.slot !== lead.slot && hasArt(c.id)) : []).slice(0, 3);
   const wearAll = async () => {
     for (const p of parts) await shop.equip(p.slot, p.id);
   };
@@ -81,7 +86,15 @@ function ShopItemScreen() {
     if (block) return;
     setBusy(true);
     setError(null);
-    const r = await shop.purchase(bundle ? bundle.id : lead.id, { dealDate: deal ? shop.dealDate : void 0 });
+    let r = { ok: true, balance: shop.balance.balance };
+    if (isLook) {
+      for (const p of toBuy) {
+        r = await shop.purchase(p.id);
+        if (r.ok === false) break;
+      }
+    } else {
+      r = await shop.purchase(bundle ? bundle.id : lead.id, { dealDate: deal ? shop.dealDate : void 0 });
+    }
     setBusy(false);
     if (r.ok === false) {
       if (r.error === "not_enough") {
@@ -95,7 +108,7 @@ function ShopItemScreen() {
     });
     setSuccess(true);
   };
-  return /* @__PURE__ */ React.createElement(View, { style: [styles.root, { paddingTop: insets.top + 6, paddingBottom: insets.bottom + 14 }] }, /* @__PURE__ */ React.createElement(View, { style: styles.top }, /* @__PURE__ */ React.createElement(TouchableOpacity, { onPress: () => router.back(), hitSlop: 12, accessibilityRole: "button", accessibilityLabel: "Close" }, /* @__PURE__ */ React.createElement(Feather, { name: "x", size: 24, color: COLORS.textPrimary })), /* @__PURE__ */ React.createElement(Text, { maxFontSizeMultiplier: 1.3, style: styles.topCaption, numberOfLines: 1 }, collection ? collection.name : SLOT_LABEL[lead.slot]), /* @__PURE__ */ React.createElement(XPChip, { value: shop.balance.balance })), /* @__PURE__ */ React.createElement(View, { style: styles.middle }, /* @__PURE__ */ React.createElement(View, { style: [styles.stage, { width: stageW }] }, /* @__PURE__ */ React.createElement(View, { style: styles.stageCard }, /* @__PURE__ */ React.createElement(SceneBackdrop, { theme, sceneId: sceneKey }), /* @__PURE__ */ React.createElement(Sunburst, { size: 520, cx: stageW / 2, cy: STAGE_H * 0.6, color: SCENES[theme].ray, opacity: SCENES[theme].rayOpacity }), /* @__PURE__ */ React.createElement(Twinkles, { w: stageW, h: STAGE_H, color: SCENES[theme].spark }), /* @__PURE__ */ React.createElement(FloorShadow, { width: 260, cx: stageW / 2, y: STAGE_H - 4, dark: 0.45 }), (lead.rarity === "epic" || lead.rarity === "legendary") && /* @__PURE__ */ React.createElement(Sheen, { width: stageW, every: 3600 })), /* @__PURE__ */ React.createElement(FloatIcon, { id: SCENES[theme].icons[0], size: 50, x: 10, y: STAGE_H - 78, depth: 2, phase: 200 }), /* @__PURE__ */ React.createElement(FloatIcon, { id: SCENES[theme].icons[1], size: 40, x: stageW - 58, y: 22, depth: 0, phase: 900 }), /* @__PURE__ */ React.createElement(Float, { distance: 6, style: { position: "absolute", left: stageW / 2 - LEO_TRY / 2, top: STAGE_H - LEO_TRY * 0.955 + 4 } }, /* @__PURE__ */ React.createElement(LeoAvatar, { look: art ? { ...shop.look, ...wearing } : {}, size: LEO_TRY, crop: false })), /* @__PURE__ */ React.createElement(View, { style: [styles.rarityTag, { backgroundColor: color }] }, /* @__PURE__ */ React.createElement(Text, { maxFontSizeMultiplier: 1.3, style: styles.rarityTagText }, RARITY_LABEL[lead.rarity].toUpperCase())), !art && /* @__PURE__ */ React.createElement(View, { style: styles.drawing }, /* @__PURE__ */ React.createElement(Feather, { name: "edit-3", size: 13, color: "#FFFFFF" }), /* @__PURE__ */ React.createElement(Text, { maxFontSizeMultiplier: 1.3, style: styles.drawingText }, "Picture on the way"))), /* @__PURE__ */ React.createElement(View, { style: styles.info }, /* @__PURE__ */ React.createElement(Text, { maxFontSizeMultiplier: 1.3, style: [styles.kicker, { color }] }, bundle ? `Set of ${parts.length}` : `${RARITY_LABEL[lead.rarity]} ${SLOT_LABEL[lead.slot].toLowerCase()}`), /* @__PURE__ */ React.createElement(Text, { maxFontSizeMultiplier: 1.3, style: styles.name }, name), bundle ? /* @__PURE__ */ React.createElement(View, { style: styles.parts }, parts.map((p) => /* @__PURE__ */ React.createElement(ItemArt, { key: p.id, item: p, size: 64, showTag: false }))) : earnOnly && progress ? /* @__PURE__ */ React.createElement(View, { style: styles.progressCard }, /* @__PURE__ */ React.createElement(Text, { maxFontSizeMultiplier: 1.3, style: styles.progressLabel }, progress.met ? "Unlocked" : progress.label), /* @__PURE__ */ React.createElement(View, { style: styles.track }, /* @__PURE__ */ React.createElement(View, { style: [styles.fill, { width: `${Math.max(4, progress.current / progress.target * 100)}%` }] })), /* @__PURE__ */ React.createElement(Text, { maxFontSizeMultiplier: 1.3, style: styles.progressCount }, fmt(progress.current), " / ", fmt(progress.target), " \xB7 Earned, not bought")) : collection ? /* @__PURE__ */ React.createElement(Text, { maxFontSizeMultiplier: 1.3, style: styles.line }, collection.hook, ".") : null, goesWith.length > 0 && /* @__PURE__ */ React.createElement(Text, { maxFontSizeMultiplier: 1.3, style: styles.goes }, "Goes with ", goesWith.map((g, i) => /* @__PURE__ */ React.createElement(Text, { key: g.id }, i === 0 ? "" : i === goesWith.length - 1 ? " and " : ", ", /* @__PURE__ */ React.createElement(Text, { maxFontSizeMultiplier: 1.3, style: styles.link, onPress: () => router.replace(`/shop-item?id=${g.id}`) }, g.name)))))), /* @__PURE__ */ React.createElement(View, { style: styles.footer }, error ? /* @__PURE__ */ React.createElement(Text, { maxFontSizeMultiplier: 1.3, style: styles.error }, error) : null, owned ? worn ? /* @__PURE__ */ React.createElement(ChunkyButton, { label: "Remove", tone: "plain", onPress: () => {
+  return /* @__PURE__ */ React.createElement(View, { style: [styles.root, { paddingTop: insets.top + 6, paddingBottom: insets.bottom + 14 }] }, /* @__PURE__ */ React.createElement(View, { style: styles.top }, /* @__PURE__ */ React.createElement(TouchableOpacity, { onPress: () => router.back(), hitSlop: 12, accessibilityRole: "button", accessibilityLabel: "Close" }, /* @__PURE__ */ React.createElement(Feather, { name: "x", size: 24, color: COLORS.textPrimary })), /* @__PURE__ */ React.createElement(Text, { maxFontSizeMultiplier: 1.3, style: styles.topCaption, numberOfLines: 1 }, isLook ? `${parts.length} ${parts.length === 1 ? "piece" : "pieces"}` : collection ? collection.name : SLOT_LABEL[lead.slot]), /* @__PURE__ */ React.createElement(XPChip, { value: shop.balance.balance })), /* @__PURE__ */ React.createElement(View, { style: styles.middle }, /* @__PURE__ */ React.createElement(View, { style: [styles.stage, { width: stageW }] }, /* @__PURE__ */ React.createElement(View, { style: styles.stageCard }, /* @__PURE__ */ React.createElement(SceneBackdrop, { theme, sceneId: sceneKey }), /* @__PURE__ */ React.createElement(Sunburst, { size: 520, cx: stageW / 2, cy: STAGE_H * 0.6, color: SCENES[theme].ray, opacity: SCENES[theme].rayOpacity }), /* @__PURE__ */ React.createElement(Twinkles, { w: stageW, h: STAGE_H, color: SCENES[theme].spark }), /* @__PURE__ */ React.createElement(FloorShadow, { width: 260, cx: stageW / 2, y: STAGE_H - 4, dark: 0.45 }), (lead.rarity === "epic" || lead.rarity === "legendary") && /* @__PURE__ */ React.createElement(Sheen, { width: stageW, every: 3600 })), /* @__PURE__ */ React.createElement(FloatIcon, { id: SCENES[theme].icons[0], size: 50, x: 10, y: STAGE_H - 78, depth: 2, phase: 200 }), /* @__PURE__ */ React.createElement(FloatIcon, { id: SCENES[theme].icons[1], size: 40, x: stageW - 58, y: 22, depth: 0, phase: 900 }), /* @__PURE__ */ React.createElement(Float, { distance: 6, style: { position: "absolute", left: stageW / 2 - LEO_TRY / 2, top: STAGE_H - LEO_TRY * 0.955 + 4 } }, /* @__PURE__ */ React.createElement(LeoAvatar, { look: art ? { ...shop.look, ...wearing } : {}, size: LEO_TRY, crop: false })), /* @__PURE__ */ React.createElement(View, { style: [styles.rarityTag, { backgroundColor: color }] }, /* @__PURE__ */ React.createElement(Text, { maxFontSizeMultiplier: 1.3, style: styles.rarityTagText }, RARITY_LABEL[lead.rarity].toUpperCase())), !art && /* @__PURE__ */ React.createElement(View, { style: styles.drawing }, /* @__PURE__ */ React.createElement(Feather, { name: "edit-3", size: 13, color: "#FFFFFF" }), /* @__PURE__ */ React.createElement(Text, { maxFontSizeMultiplier: 1.3, style: styles.drawingText }, "Picture on the way"))), /* @__PURE__ */ React.createElement(View, { style: styles.info }, /* @__PURE__ */ React.createElement(Text, { maxFontSizeMultiplier: 1.3, style: [styles.kicker, { color }] }, bundle ? `Set of ${parts.length}` : isLook ? "Friend's look" : `${RARITY_LABEL[lead.rarity]} ${SLOT_LABEL[lead.slot].toLowerCase()}`), /* @__PURE__ */ React.createElement(Text, { maxFontSizeMultiplier: 1.3, style: styles.name }, name), bundle || isLook ? /* @__PURE__ */ React.createElement(View, { style: styles.parts }, parts.map((p) => /* @__PURE__ */ React.createElement(ItemArt, { key: p.id, item: p, size: 64, showTag: false, style: isLook && shop.owns(p.id) ? { opacity: 0.45 } : void 0 }))) : earnOnly && progress ? /* @__PURE__ */ React.createElement(View, { style: styles.progressCard }, /* @__PURE__ */ React.createElement(Text, { maxFontSizeMultiplier: 1.3, style: styles.progressLabel }, progress.met ? "Unlocked" : progress.label), /* @__PURE__ */ React.createElement(View, { style: styles.track }, /* @__PURE__ */ React.createElement(View, { style: [styles.fill, { width: `${Math.max(4, progress.current / progress.target * 100)}%` }] })), /* @__PURE__ */ React.createElement(Text, { maxFontSizeMultiplier: 1.3, style: styles.progressCount }, fmt(progress.current), " / ", fmt(progress.target), " \xB7 Earned, not bought")) : collection ? /* @__PURE__ */ React.createElement(Text, { maxFontSizeMultiplier: 1.3, style: styles.line }, collection.hook, ".") : null, goesWith.length > 0 && /* @__PURE__ */ React.createElement(Text, { maxFontSizeMultiplier: 1.3, style: styles.goes }, "Goes with ", goesWith.map((g, i) => /* @__PURE__ */ React.createElement(Text, { key: g.id }, i === 0 ? "" : i === goesWith.length - 1 ? " and " : ", ", /* @__PURE__ */ React.createElement(Text, { maxFontSizeMultiplier: 1.3, style: styles.link, onPress: () => router.replace(`/shop-item?id=${g.id}`) }, g.name)))))), /* @__PURE__ */ React.createElement(View, { style: styles.footer }, error ? /* @__PURE__ */ React.createElement(Text, { maxFontSizeMultiplier: 1.3, style: styles.error }, error) : null, owned ? worn ? /* @__PURE__ */ React.createElement(ChunkyButton, { label: "Remove", tone: "plain", onPress: () => {
     triggerHaptic("light");
     void removeAll();
   }, height: 52, accessibilityLabel: `Wearing ${name}. Remove it` }) : /* @__PURE__ */ React.createElement(ChunkyButton, { label: "Wear it", onPress: () => {
@@ -104,9 +117,38 @@ function ShopItemScreen() {
   }, height: 52 }) : block === "earn_only" && earnOnly ? /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(ChunkyButton, { label: earnAction.label, onPress: () => {
     triggerHaptic("light");
     router.push(earnAction.path);
-  }, height: 52 }), /* @__PURE__ */ React.createElement(Text, { maxFontSizeMultiplier: 1.3, style: styles.after }, "Earned, not bought. This gets you closer.")) : block && block !== "not_enough" ? /* @__PURE__ */ React.createElement(View, { style: styles.blocked }, /* @__PURE__ */ React.createElement(Text, { maxFontSizeMultiplier: 1.3, style: styles.blockedText }, block === "earn_only" ? "Earn it, XP cannot buy it" : BLOCK_LABEL[block])) : /* @__PURE__ */ React.createElement(PriceButton, { price, was: bundle || deal ? full : null, label: "Buy & equip", onPress: () => {
+  }, height: 52 }), /* @__PURE__ */ React.createElement(Text, { maxFontSizeMultiplier: 1.3, style: styles.after }, "Earned, not bought. This gets you closer.")) : block && block !== "not_enough" ? /* @__PURE__ */ React.createElement(View, { style: styles.blocked }, /* @__PURE__ */ React.createElement(Text, { maxFontSizeMultiplier: 1.3, style: styles.blockedText }, block === "earn_only" ? "Earn it, XP cannot buy it" : BLOCK_LABEL[block])) : /* @__PURE__ */ React.createElement(PriceButton, { price, was: bundle || deal ? full : null, label: isLook ? "Buy the look" : "Buy & equip", onPress: () => {
     void buy();
-  }, busy, height: 52 }), !owned && !block && price !== null && /* @__PURE__ */ React.createElement(Text, { maxFontSizeMultiplier: 1.3, style: styles.after }, fmt(shop.balance.balance), " XP now, ", fmt(shop.balance.balance - price), " after"), block === "not_enough" && price !== null && /* @__PURE__ */ React.createElement(Text, { maxFontSizeMultiplier: 1.3, style: styles.after }, fmt(price - shop.balance.balance), " XP to go")), /* @__PURE__ */ React.createElement(NotEnoughSheet, { visible: short, onClose: () => setShort(false), name, price: price ?? 0, balance: shop.balance.balance, item: lead }), success && /* @__PURE__ */ React.createElement(
+  }, busy, height: 52 }), canGoal && /* @__PURE__ */ React.createElement(
+    TouchableOpacity,
+    {
+      style: [styles.goalRow, isGoal && styles.goalRowOn],
+      onPress: () => {
+        triggerHaptic(isGoal ? "light" : "success");
+        void shop.setGoal(isGoal ? null : lead.id);
+      },
+      accessibilityRole: "button",
+      accessibilityLabel: isGoal ? `${name} is your goal. Remove it` : `Make ${name} your goal`
+    },
+    /* @__PURE__ */ React.createElement(Feather, { name: isGoal ? "check-circle" : "target", size: 16, color: isGoal ? "#FFFFFF" : COLORS.accent }),
+    /* @__PURE__ */ React.createElement(Text, { maxFontSizeMultiplier: 1.3, style: [styles.goalText, isGoal && { color: "#FFFFFF" }] }, isGoal ? "Your goal \xB7 on Home" : "Make it my goal"),
+    isGoal && /* @__PURE__ */ React.createElement(Text, { maxFontSizeMultiplier: 1.3, style: styles.goalRemove }, "Remove")
+  ), !owned && !block && price !== null && /* @__PURE__ */ React.createElement(Text, { maxFontSizeMultiplier: 1.3, style: styles.after }, fmt(shop.balance.balance), " XP now, ", fmt(shop.balance.balance - price), " after"), block === "not_enough" && price !== null && /* @__PURE__ */ React.createElement(Text, { maxFontSizeMultiplier: 1.3, style: styles.after }, fmt(price - shop.balance.balance), " XP to go")), /* @__PURE__ */ React.createElement(
+    NotEnoughSheet,
+    {
+      visible: short,
+      onClose: () => setShort(false),
+      name,
+      price: price ?? 0,
+      balance: shop.balance.balance,
+      item: lead,
+      onGoal: canGoal && !isGoal ? () => {
+        triggerHaptic("success");
+        void shop.setGoal(lead.id);
+        setShort(false);
+      } : void 0
+    }
+  ), success && /* @__PURE__ */ React.createElement(
     SuccessView,
     {
       name,
@@ -138,7 +180,7 @@ function shade(hex, amount) {
   const [r, g, b] = [n >> 16 & 255, n >> 8 & 255, n & 255].map(ch);
   return `#${(1 << 24 | r << 16 | g << 8 | b).toString(16).slice(1)}`;
 }
-function NotEnoughSheet({ visible, onClose, name, price, balance, item }) {
+function NotEnoughSheet({ visible, onClose, name, price, balance, item, onGoal }) {
   const insets = useSafeAreaInsets();
   const go = (path) => {
     onClose();
@@ -149,7 +191,7 @@ function NotEnoughSheet({ visible, onClose, name, price, balance, item }) {
     { icon: "zap", title: "Daily Arena", sub: "Three quick rounds", xp: "up to +100 XP", path: "/arena" },
     { icon: "briefcase", title: "Deep Cases", sub: "Three a day", xp: "+30 XP each", path: "/deep-case" }
   ];
-  return /* @__PURE__ */ React.createElement(Modal, { visible, transparent: true, animationType: "slide", onRequestClose: onClose }, /* @__PURE__ */ React.createElement(Pressable, { style: styles.scrim, onPress: onClose }), /* @__PURE__ */ React.createElement(View, { style: [styles.sheet, { paddingBottom: insets.bottom + 16 }] }, /* @__PURE__ */ React.createElement(View, { style: styles.grip }), /* @__PURE__ */ React.createElement(View, { style: styles.shortHead }, /* @__PURE__ */ React.createElement(ItemArt, { item, size: 58, showTag: false }), /* @__PURE__ */ React.createElement(View, { style: { flex: 1 } }, /* @__PURE__ */ React.createElement(Text, { maxFontSizeMultiplier: 1.3, style: styles.shortTitle }, fmt(Math.max(0, price - balance)), " XP to go"), /* @__PURE__ */ React.createElement(Text, { maxFontSizeMultiplier: 1.3, style: styles.shortSub }, name, " costs ", fmt(price), ". You have ", fmt(balance), "."))), /* @__PURE__ */ React.createElement(View, { style: styles.track }, /* @__PURE__ */ React.createElement(View, { style: [styles.fill, { width: `${Math.max(4, Math.min(100, balance / Math.max(1, price) * 100))}%` }] })), /* @__PURE__ */ React.createElement(Text, { maxFontSizeMultiplier: 1.3, style: styles.earnToday }, "Earn it today"), rows.map((r) => /* @__PURE__ */ React.createElement(TouchableOpacity, { key: r.title, style: styles.earnRow, onPress: () => go(r.path), activeOpacity: 0.85, accessibilityRole: "button" }, /* @__PURE__ */ React.createElement(View, { style: styles.earnIcon }, /* @__PURE__ */ React.createElement(Feather, { name: r.icon, size: 17, color: COLORS.accent })), /* @__PURE__ */ React.createElement(View, { style: { flex: 1 } }, /* @__PURE__ */ React.createElement(Text, { maxFontSizeMultiplier: 1.3, style: styles.earnTitle }, r.title), /* @__PURE__ */ React.createElement(Text, { maxFontSizeMultiplier: 1.3, style: styles.earnSub }, r.sub)), /* @__PURE__ */ React.createElement(Text, { maxFontSizeMultiplier: 1.3, style: styles.earnXp }, r.xp))), /* @__PURE__ */ React.createElement(ChunkyButton, { label: "Start today's lesson", onPress: () => go("/(tabs)/home"), height: 50, style: { marginTop: 10 } }), /* @__PURE__ */ React.createElement(TouchableOpacity, { onPress: onClose, style: styles.keep, accessibilityRole: "button" }, /* @__PURE__ */ React.createElement(Text, { maxFontSizeMultiplier: 1.3, style: [styles.keepText, { color: COLORS.textSecondary }] }, "Maybe later"))));
+  return /* @__PURE__ */ React.createElement(Modal, { visible, transparent: true, animationType: "slide", onRequestClose: onClose }, /* @__PURE__ */ React.createElement(Pressable, { style: styles.scrim, onPress: onClose }), /* @__PURE__ */ React.createElement(View, { style: [styles.sheet, { paddingBottom: insets.bottom + 16 }] }, /* @__PURE__ */ React.createElement(View, { style: styles.grip }), /* @__PURE__ */ React.createElement(View, { style: styles.shortHead }, /* @__PURE__ */ React.createElement(ItemArt, { item, size: 58, showTag: false }), /* @__PURE__ */ React.createElement(View, { style: { flex: 1 } }, /* @__PURE__ */ React.createElement(Text, { maxFontSizeMultiplier: 1.3, style: styles.shortTitle }, fmt(Math.max(0, price - balance)), " XP to go"), /* @__PURE__ */ React.createElement(Text, { maxFontSizeMultiplier: 1.3, style: styles.shortSub }, name, " costs ", fmt(price), ". You have ", fmt(balance), "."))), /* @__PURE__ */ React.createElement(View, { style: styles.track }, /* @__PURE__ */ React.createElement(View, { style: [styles.fill, { width: `${Math.max(4, Math.min(100, balance / Math.max(1, price) * 100))}%` }] })), /* @__PURE__ */ React.createElement(Text, { maxFontSizeMultiplier: 1.3, style: styles.earnToday }, "Earn it today"), rows.map((r) => /* @__PURE__ */ React.createElement(TouchableOpacity, { key: r.title, style: styles.earnRow, onPress: () => go(r.path), activeOpacity: 0.85, accessibilityRole: "button" }, /* @__PURE__ */ React.createElement(View, { style: styles.earnIcon }, /* @__PURE__ */ React.createElement(Feather, { name: r.icon, size: 17, color: COLORS.accent })), /* @__PURE__ */ React.createElement(View, { style: { flex: 1 } }, /* @__PURE__ */ React.createElement(Text, { maxFontSizeMultiplier: 1.3, style: styles.earnTitle }, r.title), /* @__PURE__ */ React.createElement(Text, { maxFontSizeMultiplier: 1.3, style: styles.earnSub }, r.sub)), /* @__PURE__ */ React.createElement(Text, { maxFontSizeMultiplier: 1.3, style: styles.earnXp }, r.xp))), /* @__PURE__ */ React.createElement(ChunkyButton, { label: "Start today's lesson", onPress: () => go("/(tabs)/home"), height: 50, style: { marginTop: 10 } }), onGoal && /* @__PURE__ */ React.createElement(ChunkyButton, { label: "Save for it: make it my goal", tone: "plain", icon: /* @__PURE__ */ React.createElement(Feather, { name: "target", size: 16, color: COLORS.accent }), onPress: onGoal, height: 46, style: { marginTop: 8 } }), /* @__PURE__ */ React.createElement(TouchableOpacity, { onPress: onClose, style: styles.keep, accessibilityRole: "button" }, /* @__PURE__ */ React.createElement(Text, { maxFontSizeMultiplier: 1.3, style: [styles.keepText, { color: COLORS.textSecondary }] }, "Maybe later"))));
 }
 const styles = StyleSheet.create({
   drawing: { position: "absolute", alignSelf: "center", bottom: 14, flexDirection: "row", alignItems: "center", gap: 6, paddingHorizontal: 12, height: 30, borderRadius: 15, backgroundColor: "rgba(0,0,0,0.45)" },
@@ -176,6 +218,10 @@ const styles = StyleSheet.create({
   track: { height: 10, borderRadius: 5, backgroundColor: COLORS.border, marginTop: 10, overflow: "hidden" },
   fill: { height: 10, borderRadius: 5, backgroundColor: COLORS.accentFill },
   footer: { gap: 8 },
+  goalRow: { flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 8, height: 44, borderRadius: 14, borderWidth: 2, borderColor: COLORS.accentFill },
+  goalRowOn: { backgroundColor: COLORS.accentFill },
+  goalText: { fontSize: 15, fontWeight: "800", color: COLORS.accent },
+  goalRemove: { fontSize: 13, fontWeight: "700", color: "rgba(255,255,255,0.8)", marginLeft: 4, textDecorationLine: "underline" },
   error: { fontSize: 13, fontWeight: "700", color: COLORS.error, textAlign: "center" },
   blocked: { height: 56, borderRadius: 16, backgroundColor: COLORS.bg1, alignItems: "center", justifyContent: "center", borderWidth: 1, borderColor: COLORS.border },
   blockedText: { fontSize: 15, fontWeight: "800", color: COLORS.textMuted },

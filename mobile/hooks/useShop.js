@@ -20,7 +20,8 @@ const EMPTY = {
   dealDate: localDateString(),
   perks: {},
   stats: { bestStreak: 0, xpEarned: 0, weeklyCasesSubmitted: 0, lessonsCompleted: 0 },
-  doubleXpUntil: 0
+  doubleXpUntil: 0,
+  goal: null
 };
 let state = EMPTY;
 let storeUser = null;
@@ -31,6 +32,7 @@ const emit = (next) => {
   listeners.forEach((fn) => fn(state));
 };
 const lookKey = (uid) => `ml_leo_look_v1/${uid}`;
+const goalKey = (uid) => `ml_shop_goal_v1/${uid}`;
 const isMissing = (error) => !!error && (error.code === "PGRST202" || error.code === "42883" || error.code === "42P01" || /does not exist|Could not find/i.test(error.message || ""));
 function localDeals(date) {
   return dailyDeals(COSMETICS.filter((c) => ART.has(c.id)), date).map((d) => ({ itemId: d.item.id, price: d.price, dealPrice: d.dealPrice }));
@@ -44,7 +46,7 @@ async function load(uid) {
     } catch {
     }
   }
-  const [bal, inv, eq, looks, deals, perks, progress, xp, cases, placements, boost] = await Promise.all([
+  const [bal, inv, eq, looks, deals, perks, progress, xp, cases, placements, boost, goalRow] = await Promise.all([
     supabase.rpc("shop_balance"),
     supabase.from("user_inventory").select("item_id, qty, source, seen_at").eq("user_id", uid),
     supabase.from("user_equipped").select("slot, item_id").eq("user_id", uid),
@@ -55,7 +57,8 @@ async function load(uid) {
     supabase.from("user_xp").select("total_xp").eq("user_id", uid),
     supabase.from("weekly_case_submissions").select("id", { count: "exact", head: true }).eq("user_id", uid).eq("status", "submitted"),
     supabase.from("weekly_case_placements").select("rank, board_size").eq("user_id", uid),
-    supabase.from("user_boosts").select("double_xp_until").eq("user_id", uid).maybeSingle()
+    supabase.from("user_boosts").select("double_xp_until").eq("user_id", uid).maybeSingle(),
+    supabase.from("user_shop_goal").select("item_id").eq("user_id", uid).maybeSingle()
   ]);
   const available = !bal.error;
   if (bal.error && !isMissing(bal.error)) log.warn("[Shop] Balance could not load:", bal.error.message);
@@ -92,10 +95,24 @@ async function load(uid) {
     dealDate: date,
     perks: perkMap,
     stats,
-    doubleXpUntil: boost.error ? 0 : Date.parse(boost.data?.double_xp_until ?? "") || 0
+    doubleXpUntil: boost.error ? 0 : Date.parse(boost.data?.double_xp_until ?? "") || 0,
+    goal: await loadGoal(uid, goalRow, owned)
   });
   if (!eq.error) AsyncStorage.setItem(lookKey(uid), JSON.stringify(look)).catch(() => {
   });
+}
+async function loadGoal(uid, row, owned) {
+  let id = null;
+  if (!row.error) id = row.data?.item_id ?? null;
+  else {
+    try {
+      id = await AsyncStorage.getItem(goalKey(uid));
+    } catch {
+      id = null;
+    }
+  }
+  if (!id || !cosmetic(id) || (owned[id]?.qty ?? 0) > 0) return null;
+  return id;
 }
 function podiumCounts(rows) {
   const real = (rows ?? []).filter((r) => Number(r.board_size) >= 3);
@@ -210,6 +227,17 @@ function useShop() {
     await refreshShop(user.id);
     return { ok: true, streak: Number(r.streak) || 0 };
   }, [user]);
+  const setGoal = useCallback(async (itemId) => {
+    if (!user) return;
+    emit({ goal: itemId });
+    try {
+      if (itemId) await AsyncStorage.setItem(goalKey(user.id), itemId);
+      else await AsyncStorage.removeItem(goalKey(user.id));
+    } catch {
+    }
+    const { error } = itemId ? await supabase.from("user_shop_goal").upsert({ user_id: user.id, item_id: itemId, set_at: (/* @__PURE__ */ new Date()).toISOString() }, { onConflict: "user_id" }) : await supabase.from("user_shop_goal").delete().eq("user_id", user.id);
+    if (error && !isMissing(error)) log.warn("[Shop] Goal could not save:", error.message);
+  }, [user]);
   return {
     ...snap,
     refresh,
@@ -221,6 +249,7 @@ function useShop() {
     startDoubleXp,
     repairStatus,
     repairStreak,
+    setGoal,
     owns: (id) => ownsItem(snap, id)
   };
 }

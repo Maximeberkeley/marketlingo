@@ -54,6 +54,7 @@ import { useLeoPopups } from '../../hooks/useLeoPopups';
 import { useSocialNudges } from '../../hooks/useSocialNudges';
 import { useRepairOffer } from '../../hooks/useRepairOffer';
 import { useShop } from '../../hooks/useShop';
+import { GoalCard } from '../../components/shop/GoalCard';
 import { XPSheet } from '../../components/shop/XPSheet';
 import { trackEvent } from '../../lib/analytics';
 import { useAchievements } from '../../hooks/useAchievements';
@@ -691,6 +692,7 @@ function HomeScreenContent() {
             onAskLeo={() => setShowLeoChat(true)}
             belowToday={(
               <>
+                {shop.available && <GoalCard />}
                 {deliverable.loading ? null : (
                   <TouchableOpacity
                     style={styles.dossierChip}
