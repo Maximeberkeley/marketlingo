@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { ActivityIndicator, KeyboardAvoidingView, Modal, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, Modal, Pressable, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { Feather, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { COLORS } from '../../lib/constants';
@@ -9,16 +9,22 @@ import type { FriendSearchResult } from '../../hooks/useFriends';
 import { SocialAvatar } from './SocialAvatar';
 
 export interface SentRequestRow { id: string; toUserId: string; toUsername: string; toMarket: string | null }
+export interface IncomingRequestRow { id: string; fromUsername: string; fromMarket: string | null }
 
-/** Search by name or code, enter a friend's code, and see the requests you sent. */
-export function FindFriendsSheet({ visible, searchPeople, friendIds, sentRequests, incomingFromIds, busyId, onAdd, onCancelSent, onRedeem, onScan, onShare, onClose }: {
+/** Answer friend requests, search by name or code, enter a friend's code, share your own, and see the requests you sent. */
+export function FindFriendsSheet({ visible, searchPeople, friendIds, sentRequests, incomingRequests = [], incomingFromIds, myCode, busyId, onAdd, onAccept, onDecline, onCancelSent, onRedeem, onScan, onShare, onClose }: {
   visible: boolean;
   searchPeople: (q: string) => Promise<FriendSearchResult[]>;
   friendIds: Set<string>;
   sentRequests: SentRequestRow[];
+  /** Requests waiting for your answer: the badge on the button that opens this sheet. */
+  incomingRequests?: IncomingRequestRow[];
   incomingFromIds: Set<string>;
+  myCode?: string | null;
   busyId: string | null;
   onAdd: (person: FriendSearchResult) => void;
+  onAccept?: (requestId: string) => void;
+  onDecline?: (requestId: string) => void;
   onCancelSent: (requestId: string) => void;
   onRedeem: (code: string) => Promise<{ ok: boolean; message: string }>;
   /** Opens the camera to scan a friend's QR instead of typing. */
@@ -77,7 +83,7 @@ export function FindFriendsSheet({ visible, searchPeople, friendIds, sentRequest
   return (
     <Modal visible transparent animationType="slide" onRequestClose={onClose}>
       <Pressable style={styles.backdrop} onPress={onClose} accessibilityLabel="Close" />
-      <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={styles.kav} pointerEvents="box-none">
+      <View style={styles.kav} pointerEvents="box-none">
         <View style={[styles.sheet, { paddingBottom: insets.bottom + 12 }]}>
           <View style={styles.handle} />
           <View style={styles.head}>
@@ -95,14 +101,13 @@ export function FindFriendsSheet({ visible, searchPeople, friendIds, sentRequest
               onChangeText={setQuery}
               autoCapitalize="none"
               autoCorrect={false}
-              autoFocus
               returnKeyType="search"
               clearButtonMode="while-editing"
             />
             {searching && <ActivityIndicator size="small" color={COLORS.accent} />}
           </View>
 
-          <ScrollView style={{ flexGrow: 0 }} contentContainerStyle={{ gap: 8, paddingBottom: 8 }} keyboardShouldPersistTaps="handled">
+          <ScrollView style={{ flex: 1 }} contentContainerStyle={{ gap: 8, paddingBottom: 8 }} keyboardShouldPersistTaps="handled" keyboardDismissMode="on-drag" automaticallyAdjustKeyboardInsets>
             {typing ? (
               searchError ? <Text style={styles.note}>Search is unavailable right now. Please try again.</Text>
               : !searching && results.length === 0 ? (
@@ -134,6 +139,37 @@ export function FindFriendsSheet({ visible, searchPeople, friendIds, sentRequest
               })
             ) : (
               <>
+                {incomingRequests.length > 0 && (
+                  <>
+                    <Text style={styles.label}>{incomingRequests.length === 1 ? 'Friend request' : `${incomingRequests.length} friend requests`}</Text>
+                    {incomingRequests.map(r => (
+                      <View key={r.id} style={styles.row}>
+                        <SocialAvatar name={r.fromUsername} size={44} ring={COLORS.accent} />
+                        <View style={styles.rowInfo}>
+                          <Text style={styles.rowName} numberOfLines={1}>{r.fromUsername}</Text>
+                          <Text style={styles.rowMeta} numberOfLines={1}>{r.fromMarket ? getMarketName(r.fromMarket) : 'Wants to be friends'}</Text>
+                        </View>
+                        {busyId === r.id ? <ActivityIndicator size="small" color={COLORS.accent} /> : (
+                          <>
+                            {onDecline && (
+                              <TouchableOpacity style={styles.decline} onPress={() => onDecline(r.id)} accessibilityLabel={`Decline ${r.fromUsername}`}>
+                                <Feather name="x" size={17} color={COLORS.textMuted} />
+                              </TouchableOpacity>
+                            )}
+                            {onAccept && (
+                              <TouchableOpacity style={styles.add} onPress={() => onAccept(r.id)} accessibilityLabel={`Accept ${r.fromUsername}`}>
+                                <Feather name="check" size={15} color="#FFFFFF" />
+                                <Text style={styles.addText}>Accept</Text>
+                              </TouchableOpacity>
+                            )}
+                          </>
+                        )}
+                      </View>
+                    ))}
+                    <View style={styles.divider} />
+                  </>
+                )}
+
                 <Text style={styles.label}>Have a friend's code?</Text>
                 <View style={styles.codeRow}>
                   <TextInput
@@ -156,6 +192,15 @@ export function FindFriendsSheet({ visible, searchPeople, friendIds, sentRequest
                   </TouchableOpacity>
                 </View>
                 {!!codeNote && <Text style={[styles.note, { color: codeNote.ok ? COLORS.success : COLORS.error }]}>{codeNote.message}</Text>}
+
+                <Text style={[styles.label, { marginTop: 10 }]}>Your code</Text>
+                <View style={styles.mine}>
+                  <Text style={styles.mineCode} selectable>{myCode || '······'}</Text>
+                  <TouchableOpacity style={styles.linkBtn} onPress={onShare} accessibilityLabel="Share invite link">
+                    <Feather name="share" size={15} color={COLORS.accent} />
+                    <Text style={styles.linkBtnText}>Share invite link</Text>
+                  </TouchableOpacity>
+                </View>
 
                 {sentRequests.length > 0 && (
                   <>
@@ -180,7 +225,7 @@ export function FindFriendsSheet({ visible, searchPeople, friendIds, sentRequest
             )}
           </ScrollView>
         </View>
-      </KeyboardAvoidingView>
+      </View>
     </Modal>
   );
 }
@@ -188,7 +233,11 @@ export function FindFriendsSheet({ visible, searchPeople, friendIds, sentRequest
 const styles = StyleSheet.create({
   backdrop: { ...StyleSheet.absoluteFillObject, backgroundColor: 'rgba(11, 16, 32, 0.55)' },
   kav: { flex: 1, justifyContent: 'flex-end' },
-  sheet: { backgroundColor: COLORS.bg2, borderTopLeftRadius: 28, borderTopRightRadius: 28, paddingHorizontal: 18, paddingTop: 10, gap: 12, width: '100%', maxWidth: 680, alignSelf: 'center', maxHeight: '88%', minHeight: '60%' },
+  divider: { height: 1, backgroundColor: COLORS.border, marginVertical: 6 },
+  decline: { width: 40, height: 40, borderRadius: 20, borderWidth: 2, borderColor: COLORS.border, alignItems: 'center', justifyContent: 'center' },
+  mine: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 10, paddingHorizontal: 14, height: 56, borderRadius: 16, backgroundColor: COLORS.bg1 },
+  mineCode: { fontSize: 20, fontWeight: '900', letterSpacing: 3, color: COLORS.textPrimary },
+  sheet: { backgroundColor: COLORS.bg2, borderTopLeftRadius: 28, borderTopRightRadius: 28, paddingHorizontal: 18, paddingTop: 10, gap: 12, width: '100%', maxWidth: 680, alignSelf: 'center', height: '88%' },
   handle: { alignSelf: 'center', width: 40, height: 5, borderRadius: 3, backgroundColor: COLORS.border },
   head: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   title: { fontSize: 22, fontWeight: '900', color: COLORS.textPrimary },

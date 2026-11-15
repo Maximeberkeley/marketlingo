@@ -654,10 +654,18 @@ function FriendsScreen() {
       searchPeople,
       friendIds,
       sentRequests,
+      incomingRequests: pendingRequests,
       incomingFromIds: new Set(pendingRequests.map((r) => r.fromUserId)),
+      myCode: myFriendCode,
       busyId,
       onAdd: (p) => {
         void handleAdd(p);
+      },
+      onAccept: (id) => {
+        void handleAccept(id);
+      },
+      onDecline: (id) => {
+        void handleDecline(id);
       },
       onCancelSent: (id) => {
         void handleCancelSent(id);

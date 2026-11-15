@@ -768,9 +768,13 @@ export default function FriendsScreen() {
         searchPeople={searchPeople}
         friendIds={friendIds}
         sentRequests={sentRequests}
+        incomingRequests={pendingRequests}
         incomingFromIds={new Set(pendingRequests.map(r => r.fromUserId))}
+        myCode={myFriendCode}
         busyId={busyId}
         onAdd={p => { void handleAdd(p); }}
+        onAccept={id => { void handleAccept(id); }}
+        onDecline={id => { void handleDecline(id); }}
         onCancelSent={id => { void handleCancelSent(id); }}
         onRedeem={redeemCode}
         onScan={() => closeThen(() => setFindOpen(false), () => openCodeSheet('scan'))}
