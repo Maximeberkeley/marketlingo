@@ -40,7 +40,9 @@ import { useLeoPopups } from "../../hooks/useLeoPopups";
 import { useSocialNudges } from "../../hooks/useSocialNudges";
 import { useRepairOffer } from "../../hooks/useRepairOffer";
 import { useShop } from "../../hooks/useShop";
-import { GoalCard } from "../../components/shop/GoalCard";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { goalReminder, goalReminderKey } from "../../lib/shopGoal";
+import { cosmetic, priceOf } from "../../lib/shopCatalog";
 import { XPSheet } from "../../components/shop/XPSheet";
 import { trackEvent } from "../../lib/analytics";
 import { useAchievements } from "../../hooks/useAchievements";
@@ -405,6 +407,41 @@ function HomeScreenContent() {
   const shop = useShop();
   const [xpSheetOpen, setXpSheetOpen] = useState(false);
   const pillXP = shop.available ? shop.balance.balance : xpData?.total_xp || 0;
+  const goalId = shop.available && shop.ready ? shop.goal : null;
+  useEffect(() => {
+    if (!socialNudgesActive || !goalId || !user) return;
+    const item = cosmetic(goalId);
+    const price = item ? priceOf(item) : null;
+    if (!item || price === null || shop.owns(item.id)) return;
+    const t = setTimeout(() => {
+      void (async () => {
+        const today = localDateString();
+        try {
+          if (await AsyncStorage.getItem(goalReminderKey(user.id)) === today) return;
+        } catch {
+          return;
+        }
+        const r = goalReminder(item, price, shop.balance.balance, lessonCompletedToday);
+        try {
+          await AsyncStorage.setItem(goalReminderKey(user.id), today);
+        } catch {
+        }
+        leoPopups.enqueue({
+          category: r.ready ? "achievement" : "learning",
+          title: r.title,
+          body: r.body,
+          actionLabel: r.actionLabel,
+          onAction: () => {
+            if (r.action === "lesson" && lessonStack) session.handleOpenStack(lessonStack);
+            else router.push(`/shop-item?id=${item.id}`);
+          },
+          duration: 6e3,
+          compact: { icon: r.ready ? "gift" : "target", color: r.ready ? COLORS.success : COLORS.accentFill }
+        });
+      })();
+    }, 4e3);
+    return () => clearTimeout(t);
+  }, [socialNudgesActive, goalId, user?.id, lessonCompletedToday]);
   const shopCheckRewards = shop.checkRewards;
   useEffect(() => {
     if (!socialNudgesActive || !shop.available) return;
@@ -601,7 +638,7 @@ function HomeScreenContent() {
         void openLessonById(stackId, day);
       },
       onAskLeo: () => setShowLeoChat(true),
-      belowToday: /* @__PURE__ */ React.createElement(React.Fragment, null, shop.available && /* @__PURE__ */ React.createElement(GoalCard, null), deliverable.loading ? null : /* @__PURE__ */ React.createElement(
+      belowToday: /* @__PURE__ */ React.createElement(React.Fragment, null, deliverable.loading ? null : /* @__PURE__ */ React.createElement(
         TouchableOpacity,
         {
           style: styles.dossierChip,

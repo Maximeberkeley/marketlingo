@@ -58,6 +58,14 @@ function LeoPopup({ message, onDismiss }) {
   }, [message?.id]);
   if (!message) return null;
   const config = CATEGORY_CONFIG[message.category];
+  if (message.compact) {
+    const act = () => {
+      if (dismissTimer.current) clearTimeout(dismissTimer.current);
+      message.onAction?.();
+      animateOut();
+    };
+    return /* @__PURE__ */ React.createElement(Animated.View, { style: [styles.container, { transform: [{ translateY }], opacity }] }, /* @__PURE__ */ React.createElement(TouchableOpacity, { activeOpacity: 0.9, onPress: act, style: styles.pill, accessibilityRole: "button", accessibilityLabel: `${message.title}. ${message.actionLabel ?? ""}` }, /* @__PURE__ */ React.createElement(View, { style: [styles.pillIcon, { backgroundColor: message.compact.color }] }, /* @__PURE__ */ React.createElement(Feather, { name: message.compact.icon, size: 14, color: "#FFFFFF" })), /* @__PURE__ */ React.createElement(Text, { style: styles.pillText, numberOfLines: 1 }, message.title), message.actionLabel && /* @__PURE__ */ React.createElement(Text, { style: [styles.pillAction, { color: message.compact.color }] }, message.actionLabel), /* @__PURE__ */ React.createElement(TouchableOpacity, { onPress: animateOut, hitSlop: { top: 12, right: 12, bottom: 12, left: 12 }, accessibilityLabel: "Dismiss" }, /* @__PURE__ */ React.createElement(Feather, { name: "x", size: 15, color: COLORS.textMuted }))));
+  }
   return /* @__PURE__ */ React.createElement(
     Animated.View,
     {
@@ -95,6 +103,28 @@ function LeoPopup({ message, onDismiss }) {
   );
 }
 const styles = StyleSheet.create({
+  pill: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 10,
+    alignSelf: "center",
+    maxWidth: 560,
+    height: 46,
+    paddingLeft: 8,
+    paddingRight: 14,
+    borderRadius: 23,
+    backgroundColor: COLORS.bg2,
+    borderWidth: 1,
+    borderColor: COLORS.border,
+    shadowColor: COLORS.cardShadow,
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.18,
+    shadowRadius: 14,
+    elevation: 8
+  },
+  pillIcon: { width: 30, height: 30, borderRadius: 15, alignItems: "center", justifyContent: "center" },
+  pillText: { flexShrink: 1, fontSize: 14, fontWeight: "800", color: COLORS.textPrimary },
+  pillAction: { fontSize: 13, fontWeight: "900" },
   container: {
     position: "absolute",
     top: 54,
