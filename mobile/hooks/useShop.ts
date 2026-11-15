@@ -33,6 +33,8 @@ export interface ShopState {
   stats: EarnStats;
   /** When the running Double XP ends (epoch ms), 0 when none runs. */
   doubleXpUntil: number;
+  /** The item the learner is saving for (Home shows its progress), null when none. */
+  goal: string | null;
 }
 
 const ART = new Set(ART_READY_IDS);
@@ -48,6 +50,7 @@ const EMPTY: ShopState = {
   perks: {},
   stats: { bestStreak: 0, xpEarned: 0, weeklyCasesSubmitted: 0, lessonsCompleted: 0 },
   doubleXpUntil: 0,
+  goal: null,
 };
 
 // ── Shared store ────────────────────────────────────────────────────────────
@@ -60,6 +63,7 @@ const emit = (next: Partial<ShopState>) => {
   listeners.forEach(fn => fn(state));
 };
 const lookKey = (uid: string) => `ml_leo_look_v1/${uid}`;
+const goalKey = (uid: string) => `ml_shop_goal_v1/${uid}`;
 
 const isMissing = (error: { code?: string; message?: string } | null | undefined) =>
   !!error && (error.code === 'PGRST202' || error.code === '42883' || error.code === '42P01' || /does not exist|Could not find/i.test(error.message || ''));
@@ -78,7 +82,7 @@ async function load(uid: string): Promise<void> {
       if (raw) emit({ look: JSON.parse(raw) });
     } catch { /* first open */ }
   }
-  const [bal, inv, eq, looks, deals, perks, progress, xp, cases, placements, boost] = await Promise.all([
+  const [bal, inv, eq, looks, deals, perks, progress, xp, cases, placements, boost, goalRow] = await Promise.all([
     supabase.rpc('shop_balance'),
     supabase.from('user_inventory').select('item_id, qty, source, seen_at').eq('user_id', uid),
     supabase.from('user_equipped').select('slot, item_id').eq('user_id', uid),
@@ -90,6 +94,7 @@ async function load(uid: string): Promise<void> {
     supabase.from('weekly_case_submissions').select('id', { count: 'exact', head: true }).eq('user_id', uid).eq('status', 'submitted'),
     supabase.from('weekly_case_placements').select('rank, board_size').eq('user_id', uid),
     supabase.from('user_boosts').select('double_xp_until').eq('user_id', uid).maybeSingle(),
+    supabase.from('user_shop_goal').select('item_id').eq('user_id', uid).maybeSingle(),
   ]);
   const available = !bal.error;
   if (bal.error && !isMissing(bal.error)) log.warn('[Shop] Balance could not load:', bal.error.message);
@@ -128,8 +133,20 @@ async function load(uid: string): Promise<void> {
     perks: perkMap,
     stats,
     doubleXpUntil: boost.error ? 0 : Date.parse((boost.data as { double_xp_until?: string | null } | null)?.double_xp_until ?? '') || 0,
+    goal: await loadGoal(uid, goalRow, owned),
   });
   if (!eq.error) AsyncStorage.setItem(lookKey(uid), JSON.stringify(look)).catch(() => {});
+}
+
+/** The saved goal: the server row once the goal migration is live, else this phone's copy. A goal already owned is done. */
+async function loadGoal(uid: string, row: { data: unknown; error: { code?: string; message?: string } | null }, owned: Record<string, OwnedItem>): Promise<string | null> {
+  let id: string | null = null;
+  if (!row.error) id = (row.data as { item_id?: string } | null)?.item_id ?? null;
+  else {
+    try { id = await AsyncStorage.getItem(goalKey(uid)); } catch { id = null; }
+  }
+  if (!id || !cosmetic(id) || (owned[id]?.qty ?? 0) > 0) return null;
+  return id;
 }
 
 /** Weekly Case placements among friends into podium counts; only cases at least 3 friends submitted count. */
@@ -260,8 +277,22 @@ export function useShop() {
     return { ok: true, streak: Number(r.streak) || 0 };
   }, [user]);
 
+  /** Pins the item the learner is saving for (null clears it). Saved on this phone at once and on the server when it can. */
+  const setGoal = useCallback(async (itemId: string | null): Promise<void> => {
+    if (!user) return;
+    emit({ goal: itemId });
+    try {
+      if (itemId) await AsyncStorage.setItem(goalKey(user.id), itemId);
+      else await AsyncStorage.removeItem(goalKey(user.id));
+    } catch { /* storage full or blocked */ }
+    const { error } = itemId
+      ? await supabase.from('user_shop_goal').upsert({ user_id: user.id, item_id: itemId, set_at: new Date().toISOString() }, { onConflict: 'user_id' })
+      : await supabase.from('user_shop_goal').delete().eq('user_id', user.id);
+    if (error && !isMissing(error)) log.warn('[Shop] Goal could not save:', error.message);
+  }, [user]);
+
   return {
-    ...snap, refresh, purchase, equip, joinWaitlist, checkRewards, markSeen, startDoubleXp, repairStatus, repairStreak,
+    ...snap, refresh, purchase, equip, joinWaitlist, checkRewards, markSeen, startDoubleXp, repairStatus, repairStreak, setGoal,
     owns: (id: string) => ownsItem(snap, id),
   };
 }

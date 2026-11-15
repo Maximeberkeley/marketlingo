@@ -29,7 +29,7 @@ export interface FriendSheetInfo {
 }
 
 /** Everything you can do with one friend, so the board rows stay clean. */
-export function FriendSheet({ friend, social, onClose, onNudge, onRace, onStreak, onRemove }: {
+export function FriendSheet({ friend, social, onClose, onNudge, onRace, onStreak, onRemove, lookToGet, onGetLook }: {
   friend: FriendSheetInfo | null;
   social: boolean;
   onClose: () => void;
@@ -37,6 +37,9 @@ export function FriendSheet({ friend, social, onClose, onNudge, onRace, onStreak
   onRace: () => void;
   onStreak: () => void;
   onRemove: () => void;
+  /** Pieces of their outfit you could buy (not owned, XP can buy them) and what they cost together. */
+  lookToGet?: { pieces: number; price: number } | null;
+  onGetLook?: () => void;
 }) {
   const insets = useSafeAreaInsets();
   if (!friend) return null;
@@ -70,6 +73,16 @@ export function FriendSheet({ friend, social, onClose, onNudge, onRace, onStreak
           <Stat icon={<MaterialCommunityIcons name="trophy-outline" size={18} color={COLORS.gold} />} value={`#${friend.rank}`} label="Among friends" />
         </View>
 
+        {lookToGet && onGetLook && (
+          <ChunkyButton
+            label={`Get this look · ${lookToGet.pieces === 1 ? '1 piece' : `${lookToGet.pieces} pieces`}, ${lookToGet.price.toLocaleString('en-US')} XP`}
+            icon={<MaterialCommunityIcons name="tshirt-crew" size={19} color="#3B2600" />}
+            tone="gold"
+            onPress={onGetLook}
+            style={{ marginBottom: 10 }}
+            haptic
+          />
+        )}
         <ChunkyButton
           label={friend.doneToday ? `${friend.name} is done for today` : friend.nudged ? 'Nudged today' : `Nudge ${friend.name}`}
           icon={<MaterialCommunityIcons name={friend.doneToday ? 'check-bold' : 'hand-wave'} size={20} color="#FFFFFF" />}

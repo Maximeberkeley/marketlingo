@@ -484,6 +484,13 @@
       "when": 1794500000071,
       "tag": "0071_shop_catalog_new_arrivals",
       "breakpoints": true
+    },
+    {
+      "idx": 69,
+      "version": "7",
+      "when": 1794500000072,
+      "tag": "0072_shop_goal",
+      "breakpoints": true
     }
   ]
 }

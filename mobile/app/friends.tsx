@@ -35,7 +35,8 @@ import { NudgeId, NudgeResult, nudgeOptions } from '../lib/nudges';
 import { CrownCard } from '../components/social/CrownCard';
 import { CrownBadge } from '../components/social/CrownBadge';
 import { LeoAvatar } from '../components/shop/LeoAvatar';
-import { useShop } from '../hooks/useShop';
+import { hasArt, useShop } from '../hooks/useShop';
+import { cosmetic, priceOf } from '../lib/shopCatalog';
 import { useEquippedLooks, usePublicLooks } from '../hooks/useEquippedLooks';
 import { LeoPodium } from '../components/social/LeoPodium';
 import { RankCard, RankPerson } from '../components/social/RankCard';
@@ -415,6 +416,13 @@ export default function FriendsScreen() {
   };
 
   const friendRow = friends.find(f => f.id === friendSheetId) ?? null;
+  // "Get this look": the drawn pieces of their outfit that XP can buy and you don't own yet.
+  const lookIds = friendRow ? Object.values(looks[friendRow.id]?.look ?? {}).filter((id): id is string => {
+    const c = id ? cosmetic(id) : undefined;
+    return !!c && c.acquisition === 'purchase' && hasArt(c.id);
+  }) : [];
+  const lookMissing = shop.available ? lookIds.filter(id => !shop.owns(id)) : [];
+  const lookToGet = lookMissing.length ? { pieces: lookMissing.length, price: lookMissing.reduce((s, id) => s + (priceOf(cosmetic(id)!) ?? 0), 0) } : null;
   const sheetFriend: FriendSheetInfo | null = friendRow ? {
     id: friendRow.id,
     name: friendRow.username,
@@ -732,6 +740,12 @@ export default function FriendsScreen() {
         onRace={() => { if (friendRow) void sheetStart(friendRow.id, 'race'); }}
         onStreak={() => { if (friendRow) void sheetStart(friendRow.id, 'streak'); }}
         onRemove={() => { if (friendRow) void handleRemove(friendRow); }}
+        lookToGet={lookToGet}
+        onGetLook={() => {
+          if (!friendRow) return;
+          setFriendSheetId(null);
+          router.push(`/shop-item?look=${lookIds.join(',')}&from=${encodeURIComponent(friendRow.username || 'Friend')}` as any);
+        }}
       />
       <NudgeSheet target={nudgeTarget} onSend={sendNudge} onClose={() => setNudgeTarget(null)} />
       <StreakSheet

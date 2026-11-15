@@ -40,6 +40,7 @@ import { useLeoPopups } from "../../hooks/useLeoPopups";
 import { useSocialNudges } from "../../hooks/useSocialNudges";
 import { useRepairOffer } from "../../hooks/useRepairOffer";
 import { useShop } from "../../hooks/useShop";
+import { GoalCard } from "../../components/shop/GoalCard";
 import { XPSheet } from "../../components/shop/XPSheet";
 import { trackEvent } from "../../lib/analytics";
 import { useAchievements } from "../../hooks/useAchievements";
@@ -600,7 +601,7 @@ function HomeScreenContent() {
         void openLessonById(stackId, day);
       },
       onAskLeo: () => setShowLeoChat(true),
-      belowToday: /* @__PURE__ */ React.createElement(React.Fragment, null, deliverable.loading ? null : /* @__PURE__ */ React.createElement(
+      belowToday: /* @__PURE__ */ React.createElement(React.Fragment, null, shop.available && /* @__PURE__ */ React.createElement(GoalCard, null), deliverable.loading ? null : /* @__PURE__ */ React.createElement(
         TouchableOpacity,
         {
           style: styles.dossierChip,
