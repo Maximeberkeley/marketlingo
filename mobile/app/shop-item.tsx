@@ -61,6 +61,9 @@ export default function ShopItemScreen() {
   const art = parts.every(p => hasArt(p.id));
   const earnOnly = !bundle && lead.acquisition === 'reward';
   const progress = earnOnly ? requirementProgress(lead.requires, shop.stats) : null;
+  // Earn-only items point at the thing that earns them instead of a grey dead end.
+  const weeklyGoal = !!lead.requires && Object.keys(lead.requires).some(k => k.startsWith('weekly'));
+  const earnAction = weeklyGoal ? { label: 'Go to the Weekly Case', path: '/weekly-case' } : { label: "Do today's lesson", path: '/(tabs)/home' };
   const deal = !bundle && params.deal ? todaysPrice(shop, lead.id).deal : null;
   const full = bundle ? bundleFullPrice(bundle) : priceOf(lead);
   const price = bundle ? bundle.price : deal ? deal.dealPrice : full;
@@ -163,6 +166,11 @@ export default function ShopItemScreen() {
           ) : (
             <ChunkyButton label="Wear it" onPress={() => { triggerHaptic('light'); void wearAll(); }} height={52} />
           )
+        ) : block === 'earn_only' && earnOnly ? (
+          <>
+            <ChunkyButton label={earnAction.label} onPress={() => { triggerHaptic('light'); router.push(earnAction.path as any); }} height={52} />
+            <Text maxFontSizeMultiplier={1.3} style={styles.after}>Earned, not bought. This gets you closer.</Text>
+          </>
         ) : block && block !== 'not_enough' ? (
           <View style={styles.blocked}><Text maxFontSizeMultiplier={1.3} style={styles.blockedText}>{block === 'earn_only' ? 'Earn it, XP cannot buy it' : BLOCK_LABEL[block]}</Text></View>
         ) : (

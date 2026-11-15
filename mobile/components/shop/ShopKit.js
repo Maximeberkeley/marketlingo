@@ -10,7 +10,7 @@ function Flask({ size = 16, color = COLORS.xpBadgeIcon }) {
   return /* @__PURE__ */ React.createElement(View, { style: { width: size + 2, height: size + 2, alignItems: "center", justifyContent: "center" } }, /* @__PURE__ */ React.createElement(MaterialCommunityIcons, { name: "flask", size, color }), /* @__PURE__ */ React.createElement(MaterialCommunityIcons, { name: "star-four-points", size: Math.round(size * 0.46), color: COLORS.xpBadgeSpark, style: { position: "absolute", top: -3, right: -3 } }));
 }
 function XPChip({ value, onPress, label }) {
-  const body = /* @__PURE__ */ React.createElement(View, { style: styles.chip }, /* @__PURE__ */ React.createElement(Flask, { size: 18 }), /* @__PURE__ */ React.createElement(Text, { maxFontSizeMultiplier: 1.3, style: styles.chipText }, fmt(value)));
+  const body = /* @__PURE__ */ React.createElement(View, { style: styles.chip }, /* @__PURE__ */ React.createElement(Flask, { size: 18, color: "#FFFFFF" }), /* @__PURE__ */ React.createElement(Text, { maxFontSizeMultiplier: 1.3, style: styles.chipText }, fmt(value)));
   return onPress ? /* @__PURE__ */ React.createElement(TouchableOpacity, { onPress, activeOpacity: 0.85, accessibilityRole: "button", accessibilityLabel: label ?? `${fmt(value)} XP to spend` }, body) : body;
 }
 function PriceButton({ price, was, label, onPress, disabled, busy, height = 48, style }) {
@@ -74,8 +74,8 @@ function Row({ children }) {
   return /* @__PURE__ */ React.createElement(ScrollView, { horizontal: true, showsHorizontalScrollIndicator: false, contentContainerStyle: { paddingHorizontal: 20, gap: 12, paddingBottom: 6 } }, children);
 }
 const styles = StyleSheet.create({
-  chip: { flexDirection: "row", alignItems: "center", gap: 6, height: 38, paddingHorizontal: 13, borderRadius: 19, backgroundColor: COLORS.xpBadgeSurface, borderWidth: 1, borderColor: COLORS.xpBadgeBorder },
-  chipText: { fontSize: 17, fontWeight: "800", color: COLORS.xpBadgeText },
+  chip: { flexDirection: "row", alignItems: "center", gap: 6, height: 38, paddingHorizontal: 13, borderRadius: 19, backgroundColor: COLORS.accentFill, borderBottomWidth: 3, borderColor: "#6D28D9" },
+  chipText: { fontSize: 17, fontWeight: "900", color: "#FFFFFF" },
   priceIcon: { flexDirection: "row", alignItems: "center", gap: 5 },
   was: { fontSize: 14, fontWeight: "700", color: "#7A5A00", textDecorationLine: "line-through" },
   head: { flexDirection: "row", alignItems: "flex-end", paddingHorizontal: 20, marginBottom: 12, gap: 12 },

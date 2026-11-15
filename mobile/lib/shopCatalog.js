@@ -12,11 +12,18 @@ const SLOT_LABEL = {
 const RARITY_PRICE = { common: 300, uncommon: 500, rare: 800, epic: 2e3, legendary: 4e3 };
 const RARITY_LABEL = { common: "Common", uncommon: "Uncommon", rare: "Rare", epic: "Epic", legendary: "Legendary" };
 const RARITY_COLOR = {
-  common: "#94A3B8",
+  common: "#0EA5E9",
   uncommon: "#22C55E",
   rare: "#3B82F6",
   epic: "#A855F7",
   legendary: "#F59E0B"
+};
+const RARITY_TILE = {
+  common: "#38BDF8",
+  uncommon: "#34D399",
+  rare: "#3B82F6",
+  epic: "#A855F7",
+  legendary: "#FBBF24"
 };
 const DEFAULT_HAT = "grad-cap";
 const CROWN_ID = "monthly-crown";
@@ -166,6 +173,7 @@ export {
   RARITY_COLOR,
   RARITY_LABEL,
   RARITY_PRICE,
+  RARITY_TILE,
   SLOT_LABEL,
   SLOT_ORDER,
   STREAK_FREEZE_ID,

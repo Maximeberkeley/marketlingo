@@ -58,7 +58,11 @@ export const SLOT_LABEL: Record<Slot, string> = {
 export const RARITY_PRICE: Record<Rarity, number> = { common: 300, uncommon: 500, rare: 800, epic: 2000, legendary: 4000 };
 export const RARITY_LABEL: Record<Rarity, string> = { common: 'Common', uncommon: 'Uncommon', rare: 'Rare', epic: 'Epic', legendary: 'Legendary' };
 export const RARITY_COLOR: Record<Rarity, string> = {
-  common: '#94A3B8', uncommon: '#22C55E', rare: '#3B82F6', epic: '#A855F7', legendary: '#F59E0B',
+  common: '#0EA5E9', uncommon: '#22C55E', rare: '#3B82F6', epic: '#A855F7', legendary: '#F59E0B',
+};
+/** Bright tile backdrops by rarity: Leo pops on a saturated colour, never a washed-out pastel. */
+export const RARITY_TILE: Record<Rarity, string> = {
+  common: '#38BDF8', uncommon: '#34D399', rare: '#3B82F6', epic: '#A855F7', legendary: '#FBBF24',
 };
 
 /** Everyone owns the graduation cap: Leo's signature look. */

@@ -36,7 +36,7 @@ export default function StreakFreezeScreen() {
 
   return (
     <View style={[styles.root, { paddingBottom: insets.bottom + 14 }]}>
-      <LinearGradient colors={isDark ? ['#0C2A3B', '#15171B'] : ['#D8F0FD', '#FFFFFF']} style={[styles.hero, { paddingTop: insets.top + 8 }]}>
+      <LinearGradient colors={['#38BDF8', '#0284C7']} style={[styles.hero, { paddingTop: insets.top + 8 }]}>
         <TouchableOpacity onPress={() => router.back()} hitSlop={12} style={styles.close} accessibilityRole="button" accessibilityLabel="Close">
           <Feather name="x" size={22} color={COLORS.textPrimary} />
         </TouchableOpacity>
@@ -93,8 +93,8 @@ const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: COLORS.bg0 },
   hero: { alignItems: 'center', paddingBottom: 26 },
   close: { alignSelf: 'flex-start', marginLeft: 16, width: 40, height: 40, borderRadius: 12, backgroundColor: COLORS.bg2 + 'CC', alignItems: 'center', justifyContent: 'center' },
-  title: { fontSize: 28, fontWeight: '900', color: isDark ? '#BAE6FD' : '#075985', marginTop: 8 },
-  sub: { fontSize: 15, fontWeight: '700', color: isDark ? '#7DD3FC' : '#0369A1', marginTop: 2 },
+  title: { fontSize: 28, fontWeight: '900', color: '#FFFFFF', marginTop: 8 },
+  sub: { fontSize: 15, fontWeight: '700', color: 'rgba(255,255,255,0.92)', marginTop: 2 },
   body: { flex: 1, paddingHorizontal: 20, paddingTop: 18, gap: 18 },
   holdCard: { flexDirection: 'row', alignItems: 'center', gap: 12, padding: 14, borderRadius: 18, borderWidth: 2, borderBottomWidth: 4, borderColor: COLORS.border, backgroundColor: COLORS.bg2 },
   holdLabel: { flex: 1, fontSize: 16, fontWeight: '800', color: COLORS.textPrimary },

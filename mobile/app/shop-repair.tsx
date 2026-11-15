@@ -59,7 +59,7 @@ export default function StreakRepairScreen() {
 
   return (
     <View style={[styles.root, { paddingBottom: insets.bottom + 14 }]}>
-      <LinearGradient colors={isDark ? ['#3B1A0C', '#15171B'] : ['#FFEDD5', '#FFFFFF']} style={[styles.hero, { paddingTop: insets.top + 8 }]}>
+      <LinearGradient colors={['#FB923C', '#EA580C']} style={[styles.hero, { paddingTop: insets.top + 8 }]}>
         <TouchableOpacity onPress={() => router.back()} hitSlop={12} style={styles.close} accessibilityRole="button" accessibilityLabel="Close">
           <Feather name="x" size={22} color={COLORS.textPrimary} />
         </TouchableOpacity>
@@ -117,7 +117,7 @@ export default function StreakRepairScreen() {
             </Text>
           </>
         ) : (
-          <ChunkyButton label="Get a Streak Freeze" tone="plain" onPress={() => router.replace('/shop-freeze' as any)} height={52} />
+          <ChunkyButton label="Get a Streak Freeze" onPress={() => router.replace('/shop-freeze' as any)} height={52} />
         )}
       </View>
     </View>
@@ -128,8 +128,8 @@ const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: COLORS.bg0 },
   hero: { alignItems: 'center', paddingBottom: 26 },
   close: { alignSelf: 'flex-start', marginLeft: 16, width: 40, height: 40, borderRadius: 12, backgroundColor: COLORS.bg2 + 'CC', alignItems: 'center', justifyContent: 'center' },
-  title: { fontSize: 28, fontWeight: '900', color: isDark ? '#FDBA74' : '#9A3412', marginTop: 8 },
-  sub: { fontSize: 15, fontWeight: '700', color: isDark ? '#FB923C' : '#C2410C', marginTop: 2 },
+  title: { fontSize: 28, fontWeight: '900', color: '#FFFFFF', marginTop: 8 },
+  sub: { fontSize: 15, fontWeight: '700', color: 'rgba(255,255,255,0.92)', marginTop: 2 },
   body: { flex: 1, paddingHorizontal: 20, paddingTop: 18, gap: 18 },
   card: { alignItems: 'center', gap: 2, padding: 16, borderRadius: 18, borderWidth: 2, borderBottomWidth: 4, borderColor: COLORS.border, backgroundColor: COLORS.bg2 },
   goodCard: { borderColor: COLORS.success },

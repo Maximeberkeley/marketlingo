@@ -6,7 +6,7 @@ import { Feather, MaterialCommunityIcons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { COLORS } from '../lib/constants';
 import { isDark } from '../lib/theme';
-import { COLLECTIONS, COSMETICS, RARITY_COLOR, RARITY_LABEL, SLOT_LABEL, priceOf } from '../lib/shopCatalog';
+import { COLLECTIONS, COSMETICS, RARITY_COLOR, RARITY_TILE, RARITY_LABEL, SLOT_LABEL, priceOf } from '../lib/shopCatalog';
 import { hasArt, useShop } from '../hooks/useShop';
 import { LeoAvatar } from '../components/shop/LeoAvatar';
 import { SLOT_ICON } from '../components/shop/ItemArt';
@@ -80,8 +80,8 @@ export default function CollectionScreen() {
             const color = RARITY_COLOR[c.rarity];
             return (
               <PressScale key={c.id} onPress={() => router.push(`/shop-item?id=${c.id}` as any)} style={{ ...styles.tile, width: tile, ...(own ? { borderColor: COLORS.success + '88' } : {}) }} accessibilityLabel={`${c.name}, ${own ? 'owned' : price !== null ? `${price} XP` : 'earn it'}`}>
-                <View style={[styles.art, { height: tile * 0.82, backgroundColor: color + (isDark ? '1F' : '14') }]}>
-                  <Sunburst size={tile * 1.6} cx={(tile - 4) / 2} cy={tile * 0.44} color={color} opacity={0.26} period={48000} />
+                <View style={[styles.art, { height: tile * 0.82, backgroundColor: RARITY_TILE[c.rarity] }]}>
+                  <Sunburst size={tile * 1.6} cx={(tile - 4) / 2} cy={tile * 0.44} color="#FFFFFF" opacity={0.34} period={48000} />
                   <View style={{ position: 'absolute', left: (tile - 4) / 2 - (tile * 0.86) / 2, bottom: -2 }}>
                     <LeoAvatar look={{ hat: '', [c.slot]: c.id }} size={tile * 0.86} crop={false} />
                   </View>

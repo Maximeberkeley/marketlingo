@@ -9,7 +9,7 @@ import { COLORS } from '../../lib/constants';
 import { isDark } from '../../lib/theme';
 import { triggerHaptic } from '../../lib/haptics';
 import {
-  BUNDLES, Bundle, COLLECTIONS, COSMETICS, Collection, Cosmetic, PERKS, POWER_UPS, Perk, RARITY_COLOR, RARITY_LABEL,
+  BUNDLES, Bundle, COLLECTIONS, COSMETICS, Collection, Cosmetic, PERKS, POWER_UPS, Perk, RARITY_COLOR, RARITY_TILE, RARITY_LABEL,
   SLOT_LABEL, STREAK_FREEZE_ID, bundleFullPrice, cosmetic, priceOf,
 } from '../../lib/shopCatalog';
 import { Feature, formatCountdown, msUntilLocalMidnight, msUntilNextMonday, pickFeature, requirementProgress } from '../../lib/shopEconomy';
@@ -28,6 +28,9 @@ import { ChunkyButton } from '../../components/social/ChunkyButton';
 
 export const SHOP_SEEN_KEY = 'ml_shop_tab_seen_v1';
 const fmt = (n: number) => n.toLocaleString('en-US');
+/** Bright backdrops for the power-up tiles (ice blue, repair orange, boost gold). */
+const POWER_TILE: Record<string, string> = { 'streak-freeze': '#38BDF8', 'streak-repair': '#FB923C', countdown: '#FBBF24' };
+
 const open = (path: string) => { triggerHaptic('light'); router.push(path as any); };
 
 
@@ -115,23 +118,6 @@ export default function ShopScreen() {
           </Rise>
         )}
 
-        <Rise index={1} style={styles.section}>
-          <SectionHead title="Perks" sub="Real help from people who hire." action="How it works" onAction={() => open(`/shop-perk?id=${PERKS[0].id}`)} />
-          <Carousel
-            items={PERKS}
-            keyOf={p => p.id}
-            render={(p, w) => (
-              <PerkCard
-                perk={p}
-                width={w}
-                waitlist={shop.perks[p.id]?.waitlist ?? 0}
-                joined={!!shop.perks[p.id]?.joined}
-                locked={!!p.requires && !requirementProgress(p.requires, shop.stats).met}
-                onJoin={() => { triggerHaptic('success'); void shop.joinWaitlist(p.id); }}
-              />
-            )}
-          />
-        </Rise>
 
         {toClaim.length > 0 && (
           <Rise index={3} style={styles.section}>
@@ -167,8 +153,8 @@ export default function ShopScreen() {
               const tag = p.id === STREAK_FREEZE_ID ? `You have ${freezes}` : p.earned && held > 0 ? `You have ${held}` : null;
               return (
                 <PressScale key={p.id} disabled={!p.live} onPress={() => open(p.route)} style={styles.powerTile} accessibilityLabel={tag ? `${p.name}, ${tag.toLowerCase()}` : p.name}>
-                  <View style={[styles.powerArt, { backgroundColor: p.live ? (isDark ? 'rgba(56,189,248,0.14)' : '#EAF6FE') : COLORS.bg1 }]}>
-                    {p.live && <Sunburst size={220} cx={84} cy={52} color={isDark ? '#7DD3FC' : '#38BDF8'} opacity={0.3} />}
+                  <View style={[styles.powerArt, { backgroundColor: p.live ? POWER_TILE[p.icon] : COLORS.bg1 }]}>
+                    {p.live && <Sunburst size={220} cx={84} cy={52} color="#FFFFFF" opacity={0.34} />}
                     <Float distance={4} phase={p.live ? 0 : 700}><View style={{ opacity: p.live ? 1 : 0.55 }}><ShopIcon id={p.icon} size={64} /></View></Float>
                     {tag && <View style={styles.haveTag}><Text maxFontSizeMultiplier={1.3} style={styles.haveText}>{tag}</Text></View>}
                   </View>
@@ -210,8 +196,8 @@ export default function ShopScreen() {
                 const color = RARITY_COLOR[c.rarity];
                 return (
                   <PressScale key={d.itemId} onPress={() => open(`/shop-item?id=${c.id}&deal=1`)} style={[styles.dealTile, { borderColor: color + '66' }]} accessibilityLabel={`${c.name}, deal`}>
-                    <View style={[styles.dealArt, { backgroundColor: color + (isDark ? '1F' : '14') }]}>
-                      <Sunburst size={240} cx={82} cy={62} color={color} opacity={0.28} />
+                    <View style={[styles.dealArt, { backgroundColor: RARITY_TILE[c.rarity] }]}>
+                      <Sunburst size={240} cx={82} cy={62} color="#FFFFFF" opacity={0.34} />
                       <Float distance={3} phase={(c.id.length % 5) * 300}><ItemArt item={c} size={112} tint="transparent" /></Float>
                       <View style={styles.offBadge}><Text maxFontSizeMultiplier={1.3} style={styles.offText}>-30%</Text></View>
                       {c.rarity !== 'common' && <Sheen width={168} every={4200} delay={600} />}
@@ -275,6 +261,24 @@ export default function ShopScreen() {
           </Row>
         </Rise>
 
+        <Rise index={8} style={styles.section}>
+          <SectionHead title="Perks" sub="Real help from people who hire." action="How it works" onAction={() => open(`/shop-perk?id=${PERKS[0].id}`)} />
+          <Carousel
+            items={PERKS}
+            keyOf={p => p.id}
+            render={(p, w) => (
+              <PerkCard
+                perk={p}
+                width={w}
+                waitlist={shop.perks[p.id]?.waitlist ?? 0}
+                joined={!!shop.perks[p.id]?.joined}
+                locked={!!p.requires && !requirementProgress(p.requires, shop.stats).met}
+                onJoin={() => { triggerHaptic('success'); void shop.joinWaitlist(p.id); }}
+              />
+            )}
+          />
+        </Rise>
+
         {earnable.length > 0 && (
           <Rise index={8} style={styles.section}>
             <LinearGradient colors={isDark ? ['#2A1858', '#1B1240'] : ['#5B21B6', '#4C1D95']} style={styles.earnBand}>
@@ -333,7 +337,7 @@ function PromoCard({ feature, owned, look }: { feature: Feature; owned: boolean;
   const was = isSet ? bundleFullPrice(feature.bundle) : null;
   const wear = isSet ? Object.fromEntries(feature.bundle.items.map(id => [cosmetic(id)!.slot, id])) : { [feature.item.slot]: feature.item.id };
   const path = isSet ? `/shop-item?bundle=${feature.bundle.id}` : `/shop-item?id=${feature.item.id}`;
-  const leo = Math.min(250, W * 0.72);
+  const leo = Math.min(232, W * 0.64);
   const leoX = W - 8 - leo * 0.83;
   const leoTop = H - 14 - leo * 0.955;
   const t = SCENES.promo;
@@ -448,7 +452,7 @@ function CollectionCard({ collection, width, owned }: { collection: Collection; 
           <View style={styles.collMeter}><View style={[styles.collFill, { width: `${Math.max(4, (have / Math.max(1, drawn.length)) * 100)}%` }]} /></View>
           <Text maxFontSizeMultiplier={1.3} style={styles.collOwned}>{drawn.length ? `${have} of ${drawn.length} collected` : 'Being drawn'}</Text>
         </View>
-        <ChunkyButton label="See set" onPress={() => open(`/shop-collection?id=${collection.id}`)} height={42} tone="plain" style={{ width: 110 }} haptic />
+        <ChunkyButton label="See set" onPress={() => open(`/shop-collection?id=${collection.id}`)} height={42} style={{ width: 110 }} haptic />
       </View>
     </PressScale>
   );
@@ -470,7 +474,7 @@ const styles = StyleSheet.create({
 
   promo: { borderRadius: 26, borderBottomWidth: 5, borderColor: '#2B1670' },
   promoClip: { ...StyleSheet.absoluteFillObject, borderRadius: 26, overflow: 'hidden', backgroundColor: '#0A0E2C' },
-  promoText: { position: 'absolute', left: 18, top: 18, bottom: 18, width: '47%' },
+  promoText: { position: 'absolute', left: 18, top: 18, bottom: 18, width: '44%' },
   promoKicker: { flexDirection: 'row', alignItems: 'center', gap: 5, alignSelf: 'flex-start', paddingHorizontal: 9, height: 24, borderRadius: 12, backgroundColor: 'rgba(253,230,138,0.16)', borderWidth: 1, borderColor: 'rgba(253,230,138,0.4)' },
   promoKickerText: { fontSize: 11.5, fontWeight: '900', color: '#FDE68A', fontVariant: ['tabular-nums'] },
   promoTitle: { fontSize: 25, lineHeight: 28, fontWeight: '900', color: '#FFFFFF', marginTop: 10, letterSpacing: -0.4, textShadowColor: 'rgba(30,16,70,0.55)', textShadowOffset: { width: 0, height: 1 }, textShadowRadius: 6 },
