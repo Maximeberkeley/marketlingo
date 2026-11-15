@@ -56,6 +56,7 @@ import { useRepairOffer } from '../../hooks/useRepairOffer';
 import { useShop } from '../../hooks/useShop';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { goalReminder, goalReminderKey } from '../../lib/shopGoal';
+import { OPENING_GIFT, giftKey, giftOpen } from '../../lib/shopGift';
 import { cosmetic, priceOf } from '../../lib/shopCatalog';
 import { XPSheet } from '../../components/shop/XPSheet';
 import { trackEvent } from '../../lib/analytics';
@@ -483,6 +484,29 @@ function HomeScreenContent() {
   const shop = useShop();
   const [xpSheetOpen, setXpSheetOpen] = useState(false);
   const pillXP = shop.available ? shop.balance.balance : (xpData?.total_xp || 0);
+  // The shop opening gift: claimed once when they open the app inside its window, then Leo says so.
+  useEffect(() => {
+    if (!shop.available || !shop.ready || !user || !giftOpen(localDateString())) return;
+    let alive = true;
+    void (async () => {
+      try { if ((await AsyncStorage.getItem(giftKey(user.id))) === 'done') return; } catch { /* ask the server */ }
+      const r = await shop.claimGift(OPENING_GIFT.id);
+      if (!alive || !r.ok) return;
+      try { await AsyncStorage.setItem(giftKey(user.id), 'done'); } catch { /* the server keeps it to one claim */ }
+      if (!r.claimed) return;
+      trackEvent('shop_gift_claimed', { gift: OPENING_GIFT.id, amount: r.amount });
+      leoPopups.enqueue({
+        category: 'achievement',
+        title: `The shop is open: ${r.amount.toLocaleString('en-US')} XP on us`,
+        body: `The shop is open! ${r.amount.toLocaleString('en-US')} XP on me.`,
+        actionLabel: 'Open the shop',
+        onAction: () => router.push('/(tabs)/shop' as any),
+        duration: 9000,
+      });
+    })();
+    return () => { alive = false; };
+  }, [shop.available, shop.ready, user?.id]);
+
   // The item they're saving for: one small Leo reminder a day, never a card on Home.
   const goalId = shop.available && shop.ready ? shop.goal : null;
   useEffect(() => {

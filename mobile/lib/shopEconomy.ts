@@ -10,10 +10,12 @@ import { Bundle, CROWN_ID, Cosmetic, DEFAULT_HAT, MAX_FREEZES_HELD, Requirements
 export interface Balance { earned: number; spent: number; balance: number }
 
 /** XP to spend: earned minus spent, never below zero. */
-export function spendable(earned: number, spent: number): Balance {
+/** Spendable XP: earned plus gifts (the shop opening gift) minus spent. Gifts never count as XP earned. */
+export function spendable(earned: number, spent: number, gifted = 0): Balance {
   const e = Math.max(0, Math.floor(earned || 0));
   const s = Math.max(0, Math.floor(spent || 0));
-  return { earned: e, spent: s, balance: Math.max(0, e - s) };
+  const g = Math.max(0, Math.floor(gifted || 0));
+  return { earned: e, spent: s, balance: Math.max(0, e + g - s) };
 }
 
 // ── Milestones (read XP earned, never the balance) ───────────────────────────

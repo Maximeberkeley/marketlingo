@@ -3,7 +3,8 @@ import { ActivityIndicator, Animated, Pressable, StyleSheet, Text, View } from "
 import { COLORS } from "../../lib/constants";
 import { triggerHaptic } from "../../lib/haptics";
 const TONES = {
-  accent: { face: COLORS.accent, lip: COLORS.courseCoinLip, text: "#FFFFFF" },
+  // accentFill: the strong purple in both themes (dark mode's lighter accent made white labels hard to read).
+  accent: { face: COLORS.accentFill, lip: COLORS.accentFill === COLORS.accent ? COLORS.courseCoinLip : "#6D28D9", text: "#FFFFFF" },
   streak: { face: COLORS.streak, lip: "#C2410C", text: "#FFFFFF" },
   success: { face: COLORS.success, lip: "#15803D", text: "#FFFFFF" },
   plain: { face: COLORS.bg2, lip: COLORS.courseMutedLip, text: COLORS.textPrimary, border: COLORS.border },

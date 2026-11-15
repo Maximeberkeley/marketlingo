@@ -116,6 +116,8 @@ export default function StreakRepairScreen() {
               {short > 0 ? `${fmt(short)} XP to go` : `${fmt(shop.balance.balance)} XP now, ${fmt(shop.balance.balance - STREAK_REPAIR_PRICE)} after`}
             </Text>
           </>
+        ) : status?.reason === 'unavailable' ? (
+          <ChunkyButton label="Try again" onPress={() => { setStatus(null); void check(); }} height={52} />
         ) : (
           <ChunkyButton label="Get a Streak Freeze" onPress={() => router.replace('/shop-freeze' as any)} height={52} />
         )}

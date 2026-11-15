@@ -1,8 +1,9 @@
 import { CROWN_ID, DEFAULT_HAT, MAX_FREEZES_HELD, SLOT_ORDER, priceOf } from "./shopCatalog";
-function spendable(earned, spent) {
+function spendable(earned, spent, gifted = 0) {
   const e = Math.max(0, Math.floor(earned || 0));
   const s = Math.max(0, Math.floor(spent || 0));
-  return { earned: e, spent: s, balance: Math.max(0, e - s) };
+  const g = Math.max(0, Math.floor(gifted || 0));
+  return { earned: e, spent: s, balance: Math.max(0, e + g - s) };
 }
 const MILESTONES = [1e3, 2500, 5e3, 1e4, 25e3, 5e4, 1e5];
 function milestoneProgress(earned) {
