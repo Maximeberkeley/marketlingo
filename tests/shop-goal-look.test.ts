@@ -1,5 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { readFileSync } from 'fs';
+import { goalReminder } from '../mobile/lib/shopGoal';
+import type { Cosmetic } from '../mobile/lib/shopCatalog';
 
 const read = (p: string) => readFileSync(p, 'utf8');
 
@@ -17,9 +19,17 @@ describe('shop goal', () => {
   it('is pinned only on single, buyable, drawn items not owned yet', () => {
     expect(read('mobile/app/shop-item.tsx')).toContain('const canGoal = !bundle && !isLook && !owned && !earnOnly && art && price !== null;');
   });
-  it('shows on Home only once the shop is live, and a goal already owned is cleared', () => {
-    expect(read('mobile/app/(tabs)/home.tsx')).toContain('{shop.available && <GoalCard />}');
+  it('is a small Leo reminder at most once a day, never a card on Home, and a goal already owned is cleared', () => {
+    const home = read('mobile/app/(tabs)/home.tsx');
+    expect(home).not.toContain('GoalCard');
+    expect(home).toContain('if ((await AsyncStorage.getItem(goalReminderKey(user.id))) === today) return;');
     expect(read('mobile/hooks/useShop.ts')).toContain("if (!id || !cosmetic(id) || (owned[id]?.qty ?? 0) > 0) return null;");
+  });
+  it('says what is left, points at the lesson until it is done, and says when the goal is covered', () => {
+    const item = { id: 'tuxedo', name: 'Tuxedo' } as Cosmetic;
+    expect(goalReminder(item, 4000, 250, false)).toMatchObject({ title: 'Tuxedo: 3,750 XP to go', action: 'lesson', ready: false });
+    expect(goalReminder(item, 4000, 250, true)).toMatchObject({ action: 'item', ready: false });
+    expect(goalReminder(item, 4000, 4000, false)).toMatchObject({ title: 'Tuxedo is yours to claim', action: 'item', ready: true });
   });
 });
 

@@ -39,6 +39,8 @@ export interface LeoPopupMessage {
   onAction?: () => void;
   /** Auto-dismiss delay in ms (default 5000) */
   duration?: number;
+  /** A one-line reminder pill (title + a small action), no Leo and no card: for gentle nudges like a shop goal. */
+  compact?: { icon: string; color: string };
 }
 
 interface LeoPopupProps {
@@ -99,6 +101,28 @@ export function LeoPopup({ message, onDismiss }: LeoPopupProps) {
 
   const config = CATEGORY_CONFIG[message.category];
 
+  if (message.compact) {
+    const act = () => {
+      if (dismissTimer.current) clearTimeout(dismissTimer.current);
+      message.onAction?.();
+      animateOut();
+    };
+    return (
+      <Animated.View style={[styles.container, { transform: [{ translateY }], opacity }]}>
+        <TouchableOpacity activeOpacity={0.9} onPress={act} style={styles.pill} accessibilityRole="button" accessibilityLabel={`${message.title}. ${message.actionLabel ?? ''}`}>
+          <View style={[styles.pillIcon, { backgroundColor: message.compact.color }]}>
+            <Feather name={message.compact.icon as any} size={14} color="#FFFFFF" />
+          </View>
+          <Text style={styles.pillText} numberOfLines={1}>{message.title}</Text>
+          {message.actionLabel && <Text style={[styles.pillAction, { color: message.compact.color }]}>{message.actionLabel}</Text>}
+          <TouchableOpacity onPress={animateOut} hitSlop={{ top: 12, right: 12, bottom: 12, left: 12 }} accessibilityLabel="Dismiss">
+            <Feather name="x" size={15} color={COLORS.textMuted} />
+          </TouchableOpacity>
+        </TouchableOpacity>
+      </Animated.View>
+    );
+  }
+
   return (
     <Animated.View
       style={[
@@ -154,6 +178,28 @@ export function LeoPopup({ message, onDismiss }: LeoPopupProps) {
 }
 
 const styles = StyleSheet.create({
+  pill: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    alignSelf: 'center',
+    maxWidth: 560,
+    height: 46,
+    paddingLeft: 8,
+    paddingRight: 14,
+    borderRadius: 23,
+    backgroundColor: COLORS.bg2,
+    borderWidth: 1,
+    borderColor: COLORS.border,
+    shadowColor: COLORS.cardShadow,
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.18,
+    shadowRadius: 14,
+    elevation: 8,
+  },
+  pillIcon: { width: 30, height: 30, borderRadius: 15, alignItems: 'center', justifyContent: 'center' },
+  pillText: { flexShrink: 1, fontSize: 14, fontWeight: '800', color: COLORS.textPrimary },
+  pillAction: { fontSize: 13, fontWeight: '900' },
   container: {
     position: 'absolute',
     top: 54,
