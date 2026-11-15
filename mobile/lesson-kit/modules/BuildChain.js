@@ -59,7 +59,7 @@ function BuildChain({ exercise, phase, onChange }) {
         style: styles.arrow
       }
     ));
-  })), /* @__PURE__ */ React.createElement(Animated.View, { style: [styles.bank, { transform: [{ translateX }] }] }, bank.map(({ label, i }) => {
+  })), wrongs > 0 && /* @__PURE__ */ React.createElement(Text, { style: styles.slips, accessibilityLiveRegion: "polite" }, phase === "feedback" || complete ? `Right chain, but ${wrongs === 1 ? "1 tap was" : `${wrongs} taps were`} out of order. It only counts with no wrong taps.` : `That step comes later. ${wrongs === 1 ? "1 wrong tap" : `${wrongs} wrong taps`} so far.`), /* @__PURE__ */ React.createElement(Animated.View, { style: [styles.bank, { transform: [{ translateX }] }] }, bank.map(({ label, i }) => {
     const spent = used.includes(i);
     return /* @__PURE__ */ React.createElement(
       TouchableOpacity,
@@ -109,6 +109,7 @@ const styles = StyleSheet.create({
   slotText: { flex: 1, minWidth: 0, flexShrink: 1, fontSize: tokens.font.caption + 2, fontWeight: "600", color: tokens.color.textMuted },
   slotTextFilled: { color: tokens.color.text, fontWeight: "800" },
   arrow: { alignSelf: "center", marginVertical: 0 },
+  slips: { marginTop: tokens.space.sm, fontSize: tokens.font.caption + 1, fontWeight: "700", color: tokens.color.incorrectDark },
   bank: {
     flexDirection: "row",
     flexWrap: "wrap",
