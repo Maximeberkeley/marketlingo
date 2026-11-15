@@ -69,7 +69,14 @@ export type AnalyticsEvent =
   | 'quiz_finished'
   | 'case_started'
   | 'case_finished'
-  | 'lesson_exit';
+  | 'lesson_exit'
+  // Shop (launch Dec 17)
+  | 'shop_view'
+  | 'shop_item_view'
+  | 'shop_purchase'
+  | 'shop_not_enough'
+  | 'shop_goal_set'
+  | 'shop_gift_claimed';
 
 
 interface EventProperties {

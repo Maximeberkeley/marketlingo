@@ -10,6 +10,7 @@ import { useCallback, useEffect, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { supabase } from '../lib/supabase';
 import { log } from '../lib/logger';
+import { trackEvent } from '../lib/analytics';
 import { localDateString } from '../lib/dayMath';
 import { useAuth } from './useAuth';
 import { COSMETICS, Slot, cosmetic, priceOf } from '../lib/shopCatalog';
@@ -100,7 +101,7 @@ async function load(uid: string): Promise<void> {
   if (bal.error && !isMissing(bal.error)) log.warn('[Shop] Balance could not load:', bal.error.message);
   const earnedFallback = ((xp.data ?? []) as { total_xp: number | null }[]).reduce((sum, r) => sum + (Number(r.total_xp) || 0), 0);
   const b = Array.isArray(bal.data) ? bal.data[0] : bal.data;
-  const balance = available && b ? spendable(Number(b.earned) || 0, Number(b.spent) || 0) : spendable(earnedFallback, 0);
+  const balance = available && b ? spendable(Number(b.earned) || 0, Number(b.spent) || 0, Number((b as { gifted?: number }).gifted) || 0) : spendable(earnedFallback, 0);
 
   const owned: Record<string, OwnedItem> = {};
   for (const r of (inv.data ?? []) as { item_id: string; qty: number; source: string; seen_at: string | null }[]) {
@@ -194,6 +195,7 @@ export function useShop() {
     if (error) return { ok: false, error: isMissing(error) ? 'unavailable' : error.message };
     const r = data as { ok: boolean; error?: string; requirement?: string; balance?: number };
     if (!r?.ok) return { ok: false, error: r?.error || 'failed', requirement: r?.requirement };
+    trackEvent('shop_purchase', { item: itemId, deal: !!opts.dealDate, balance_before: state.balance.balance, balance_after: Number(r.balance) || 0 });
     await refreshShop(user.id);
     return { ok: true, balance: Number(r.balance) || state.balance.balance };
   }, [user]);
@@ -280,6 +282,7 @@ export function useShop() {
   /** Pins the item the learner is saving for (null clears it). Saved on this phone at once and on the server when it can. */
   const setGoal = useCallback(async (itemId: string | null): Promise<void> => {
     if (!user) return;
+    trackEvent('shop_goal_set', { item: itemId ?? state.goal, set: !!itemId });
     emit({ goal: itemId });
     try {
       if (itemId) await AsyncStorage.setItem(goalKey(user.id), itemId);
@@ -291,8 +294,18 @@ export function useShop() {
     if (error && !isMissing(error)) log.warn('[Shop] Goal could not save:', error.message);
   }, [user]);
 
+  /** Claims a gift (the shop opening gift) once; the server decides the window. `claimed` is true only the first time. */
+  const claimGift = useCallback(async (giftId: string): Promise<{ ok: true; claimed: boolean; amount: number } | { ok: false; error: string }> => {
+    const { data, error } = await supabase.rpc('shop_claim_gift', { p_gift: giftId });
+    if (error) return { ok: false, error: isMissing(error) ? 'unavailable' : error.message };
+    const r = (data ?? {}) as { ok?: boolean; claimed?: boolean; amount?: number; error?: string };
+    if (!r.ok) return { ok: false, error: r.error ?? 'unavailable' };
+    if (r.claimed && user) await load(user.id);
+    return { ok: true, claimed: !!r.claimed, amount: Number(r.amount) || 0 };
+  }, [user]);
+
   return {
-    ...snap, refresh, purchase, equip, joinWaitlist, checkRewards, markSeen, startDoubleXp, repairStatus, repairStreak, setGoal,
+    ...snap, refresh, purchase, equip, joinWaitlist, checkRewards, markSeen, startDoubleXp, repairStatus, repairStreak, setGoal, claimGift,
     owns: (id: string) => ownsItem(snap, id),
   };
 }

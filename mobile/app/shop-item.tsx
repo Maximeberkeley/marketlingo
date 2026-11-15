@@ -5,6 +5,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Feather } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import Svg, { Polygon, Rect } from 'react-native-svg';
+import { trackEvent } from '../lib/analytics';
 import { COLORS } from '../lib/constants';
 import { triggerHaptic } from '../lib/haptics';
 import { playSound } from '../lib/sounds';
@@ -42,7 +43,11 @@ export default function ShopItemScreen() {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(!!params.claimed);
-  const [short, setShort] = useState(false);
+  const [short, setShortOpen] = useState(false);
+  useEffect(() => {
+    if (parts.length) trackEvent('shop_item_view', { item: bundle?.id ?? item?.id ?? 'look', kind: bundle ? 'bundle' : isLook ? 'look' : 'item', deal: !!params.deal, pieces: parts.length });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   if (!parts.length) {
     return (
@@ -72,6 +77,10 @@ export default function ShopItemScreen() {
   const deal = !bundle && !isLook && params.deal ? todaysPrice(shop, lead.id).deal : null;
   // A look costs only the pieces not owned yet.
   const toBuy = isLook ? parts.filter(p => !shop.owns(p.id)) : parts;
+  const setShort = (open: boolean) => {
+    if (open) trackEvent('shop_not_enough', { item: bundle?.id ?? (isLook ? 'look' : lead.id), short: Math.max(0, (price ?? 0) - shop.balance.balance) });
+    setShortOpen(open);
+  };
   const full = bundle ? bundleFullPrice(bundle) : isLook ? toBuy.reduce((sum, p) => sum + (priceOf(p) ?? 0), 0) : priceOf(lead);
   const price = bundle ? bundle.price : deal ? deal.dealPrice : full;
   const block = owned ? 'owned' : buyBlock({ price, balance: shop.balance.balance, hasArt: art, earnOnly, comingSoon: !shop.available && shop.ready });

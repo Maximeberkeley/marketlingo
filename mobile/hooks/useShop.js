@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { supabase } from "../lib/supabase";
 import { log } from "../lib/logger";
+import { trackEvent } from "../lib/analytics";
 import { localDateString } from "../lib/dayMath";
 import { useAuth } from "./useAuth";
 import { COSMETICS, cosmetic, priceOf } from "../lib/shopCatalog";
@@ -64,7 +65,7 @@ async function load(uid) {
   if (bal.error && !isMissing(bal.error)) log.warn("[Shop] Balance could not load:", bal.error.message);
   const earnedFallback = (xp.data ?? []).reduce((sum, r) => sum + (Number(r.total_xp) || 0), 0);
   const b = Array.isArray(bal.data) ? bal.data[0] : bal.data;
-  const balance = available && b ? spendable(Number(b.earned) || 0, Number(b.spent) || 0) : spendable(earnedFallback, 0);
+  const balance = available && b ? spendable(Number(b.earned) || 0, Number(b.spent) || 0, Number(b.gifted) || 0) : spendable(earnedFallback, 0);
   const owned = {};
   for (const r of inv.data ?? []) {
     owned[r.item_id] = { qty: Number(r.qty) || 0, source: r.source, seenAt: r.seen_at };
@@ -156,6 +157,7 @@ function useShop() {
     if (error) return { ok: false, error: isMissing(error) ? "unavailable" : error.message };
     const r = data;
     if (!r?.ok) return { ok: false, error: r?.error || "failed", requirement: r?.requirement };
+    trackEvent("shop_purchase", { item: itemId, deal: !!opts.dealDate, balance_before: state.balance.balance, balance_after: Number(r.balance) || 0 });
     await refreshShop(user.id);
     return { ok: true, balance: Number(r.balance) || state.balance.balance };
   }, [user]);
@@ -229,6 +231,7 @@ function useShop() {
   }, [user]);
   const setGoal = useCallback(async (itemId) => {
     if (!user) return;
+    trackEvent("shop_goal_set", { item: itemId ?? state.goal, set: !!itemId });
     emit({ goal: itemId });
     try {
       if (itemId) await AsyncStorage.setItem(goalKey(user.id), itemId);
@@ -237,6 +240,14 @@ function useShop() {
     }
     const { error } = itemId ? await supabase.from("user_shop_goal").upsert({ user_id: user.id, item_id: itemId, set_at: (/* @__PURE__ */ new Date()).toISOString() }, { onConflict: "user_id" }) : await supabase.from("user_shop_goal").delete().eq("user_id", user.id);
     if (error && !isMissing(error)) log.warn("[Shop] Goal could not save:", error.message);
+  }, [user]);
+  const claimGift = useCallback(async (giftId) => {
+    const { data, error } = await supabase.rpc("shop_claim_gift", { p_gift: giftId });
+    if (error) return { ok: false, error: isMissing(error) ? "unavailable" : error.message };
+    const r = data ?? {};
+    if (!r.ok) return { ok: false, error: r.error ?? "unavailable" };
+    if (r.claimed && user) await load(user.id);
+    return { ok: true, claimed: !!r.claimed, amount: Number(r.amount) || 0 };
   }, [user]);
   return {
     ...snap,
@@ -250,6 +261,7 @@ function useShop() {
     repairStatus,
     repairStreak,
     setGoal,
+    claimGift,
     owns: (id) => ownsItem(snap, id)
   };
 }

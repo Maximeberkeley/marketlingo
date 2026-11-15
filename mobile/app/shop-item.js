@@ -5,6 +5,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Feather } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import Svg, { Polygon, Rect } from "react-native-svg";
+import { trackEvent } from "../lib/analytics";
 import { COLORS } from "../lib/constants";
 import { triggerHaptic } from "../lib/haptics";
 import { playSound } from "../lib/sounds";
@@ -44,7 +45,10 @@ function ShopItemScreen() {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(!!params.claimed);
-  const [short, setShort] = useState(false);
+  const [short, setShortOpen] = useState(false);
+  useEffect(() => {
+    if (parts.length) trackEvent("shop_item_view", { item: bundle?.id ?? item?.id ?? "look", kind: bundle ? "bundle" : isLook ? "look" : "item", deal: !!params.deal, pieces: parts.length });
+  }, []);
   if (!parts.length) {
     return /* @__PURE__ */ React.createElement(View, { style: [styles.root, styles.center] }, /* @__PURE__ */ React.createElement(Text, { maxFontSizeMultiplier: 1.3, style: styles.name }, "That item is gone"), /* @__PURE__ */ React.createElement(Text, { maxFontSizeMultiplier: 1.3, style: styles.link, onPress: () => router.back() }, "Back to the Shop"));
   }
@@ -65,6 +69,10 @@ function ShopItemScreen() {
   const earnAction = weeklyGoal ? { label: "Go to the Weekly Case", path: "/weekly-case" } : { label: "Do today's lesson", path: "/(tabs)/home" };
   const deal = !bundle && !isLook && params.deal ? todaysPrice(shop, lead.id).deal : null;
   const toBuy = isLook ? parts.filter((p) => !shop.owns(p.id)) : parts;
+  const setShort = (open) => {
+    if (open) trackEvent("shop_not_enough", { item: bundle?.id ?? (isLook ? "look" : lead.id), short: Math.max(0, (price ?? 0) - shop.balance.balance) });
+    setShortOpen(open);
+  };
   const full = bundle ? bundleFullPrice(bundle) : isLook ? toBuy.reduce((sum, p) => sum + (priceOf(p) ?? 0), 0) : priceOf(lead);
   const price = bundle ? bundle.price : deal ? deal.dealPrice : full;
   const block = owned ? "owned" : buyBlock({ price, balance: shop.balance.balance, hasArt: art, earnOnly, comingSoon: !shop.available && shop.ready });

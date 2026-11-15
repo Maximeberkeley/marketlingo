@@ -59,7 +59,7 @@ export const REPAIR_COPY: Record<Exclude<RepairReason, 'eligible'>, string> = {
   too_late: 'Repair works for 48 hours after a streak breaks. This one is past that.',
   too_short: `Repair is for streaks of ${REPAIR_MIN_STREAK} days or more.`,
   used_recently: `One repair every ${REPAIR_COOLDOWN_DAYS} days.`,
-  unavailable: 'Streak Repair is not ready yet. Check back soon.',
+  unavailable: 'We could not check your streak just now. Try again in a moment.',
 };
 
 export function repairFromJson(raw: unknown): RepairStatus {

@@ -5,6 +5,7 @@ import { router, useFocusEffect } from "expo-router";
 import { Feather } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { trackEvent } from "../../lib/analytics";
 import { COLORS } from "../../lib/constants";
 import { isDark } from "../../lib/theme";
 import { triggerHaptic } from "../../lib/haptics";
@@ -53,6 +54,7 @@ function ShopScreen() {
   const [refreshing, setRefreshing] = useState(false);
   useFocusEffect(useCallback(() => {
     setFocused(true);
+    trackEvent("shop_view", { balance: shop.balance.balance });
     AsyncStorage.setItem(SHOP_SEEN_KEY, "1").catch(() => {
     });
     void shop.refresh().then(() => shop.checkRewards());
