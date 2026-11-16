@@ -4,7 +4,7 @@ import { execFileSync } from 'node:child_process';
 import { tmpdir } from 'os';
 import { join } from 'path';
 
-// Hand-written lessons (days 6-30 for the newer industries, 31-60 for ai), built from scripts/lessons/<market>/
+// Hand-written lessons (days 6-30 for the newer industries, 31-60 for ai and aerospace), built from scripts/lessons/<market>/
 // into one migration each.
 const MARKETS: { market: string; migration: string; first?: number; last?: number }[] = [
   { market: 'spacetech', migration: 'drizzle/migrations/0028_spacetech_handwritten_days_6_30.sql' },
@@ -18,6 +18,7 @@ const MARKETS: { market: string; migration: string; first?: number; last?: numbe
   { market: 'robotics', migration: 'drizzle/migrations/0036_robotics_handwritten_days_6_30.sql' },
   { market: 'web3', migration: 'drizzle/migrations/0037_web3_handwritten_days_6_30.sql' },
   { market: 'ai', migration: 'drizzle/migrations/0070_ai_handwritten_days_31_60.sql', first: 31, last: 60 },
+  { market: 'aerospace', migration: 'drizzle/migrations/0074_aerospace_handwritten_days_31_60.sql', first: 31, last: 60 },
 ];
 const GOALS = ['career', 'invest', 'build_startup', 'curiosity'];
 let python = true;

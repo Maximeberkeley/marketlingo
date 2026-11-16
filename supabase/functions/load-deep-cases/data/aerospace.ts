@@ -13489,6 +13489,14235 @@ const rows: unknown[] = [
    "handwritten-v1",
    "src:f98f214a4aa7"
   ]
+ },
+ {
+  "id": "17e6dfd4-f117-5d4f-9d07-475701e850f3",
+  "market_id": "aerospace",
+  "day": 31,
+  "slot": 1,
+  "content": {
+   "id": "aerospace-d31-c1",
+   "title": "One order, both makers",
+   "lessonTitle": "Two sellers, one market",
+   "slot": 1,
+   "type": "apply",
+   "brief": {
+    "headline": "In February 2023, Air India ordered 470 jets in one go. It split them: 250 from Airbus and 220 from Boeing.",
+    "kicker": "Apply day 31: in a duopoly, even a record order goes to the same two.",
+    "fullText": "The Airbus share was 210 A320neo single-aisle jets and 40 A350 widebodies. The Boeing share was 190 737 MAX, 20 787s and 10 777Xs, with options for 70 more.\n\nAt list prices, the 220 firm Boeing jets were worth about $34 billion, though airlines usually negotiate steep discounts. Counting 25 leased Airbus jets, the 495-plane total topped the previous record of 460, set by American Airlines.\n\nFor an order of this size, there were two places to go.",
+    "sources": [
+     {
+      "url": "https://www.npr.org/2023/02/14/1156796351/air-india-boeing-airbus-orders",
+      "label": "NPR, Air India orders a record 470 Boeing and Airbus aircraft, Feb 2023"
+     },
+     {
+      "url": "https://www.economicshelp.org/blog/glossary/duopoly/",
+      "label": "Economics Help, Duopoly"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "sortSignal",
+    "prompt": "Which maker supplied each part of the order?",
+    "buckets": [
+     "Airbus",
+     "Boeing"
+    ],
+    "items": [
+     {
+      "text": "210 A320neo single-aisle jets",
+      "bucket": 0
+     },
+     {
+      "text": "40 A350 widebodies",
+      "bucket": 0
+     },
+     {
+      "text": "190 737 MAX jets",
+      "bucket": 1
+     },
+     {
+      "text": "20 787 Dreamliners",
+      "bucket": 1
+     },
+     {
+      "text": "10 777X widebodies",
+      "bucket": 1
+     }
+    ],
+    "explanation": "Air India took single-aisle jets and widebodies from both makers."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "Air India split 470 firm jets. How many came from Boeing?",
+    "min": 0,
+    "max": 400,
+    "value": 220,
+    "unit": "jets",
+    "explanation": "220 from Boeing and 250 from Airbus."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "An interviewer asks why Air India split its 470-jet order between two makers.",
+      "prompt": "What's the strongest answer?",
+      "options": [
+       "Airbus could not build any widebodies",
+       "Regulators make airlines split orders",
+       "Two sellers compete, and each fits a need"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Airbus supplied 40 A350 widebodies in this very order.",
+       "The split was the airline's choice, not a rule.",
+       "Air India took single-aisle jets and widebodies from both."
+      ],
+      "explanation": "With two sellers, a big buyer can take part of its order from each."
+     },
+     "proReasoning": "Explain a split order through the duopoly: two sellers, each winning part of a big deal.",
+     "commonMistake": "Reading a split order as a sign that one maker failed.",
+     "mentalModel": "Two sellers, two shares.",
+     "sources": [
+      {
+       "url": "https://www.npr.org/2023/02/14/1156796351/air-india-boeing-airbus-orders",
+       "label": "NPR, Air India orders a record 470 Boeing and Airbus aircraft, Feb 2023"
+      },
+      {
+       "url": "https://www.economicshelp.org/blog/glossary/duopoly/",
+       "label": "Economics Help, Duopoly"
+      }
+     ]
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Air India's Boeing jets were worth about $34 billion at list prices.",
+      "prompt": "How do you treat that figure?",
+      "options": [
+       "As a ceiling, since discounts are steep",
+       "As cash Boeing collects on signing",
+       "As profit Boeing books this year"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "NPR noted that airlines usually negotiate steep discounts.",
+       "Buyers pay in steps, with the balance at delivery.",
+       "Revenue arrives with deliveries, and costs come off first."
+      ],
+      "explanation": "List value overstates what the seller will actually collect."
+     },
+     "proReasoning": "Investors discount headline order values. List prices are a starting point, not revenue.",
+     "commonMistake": "Adding list values of big orders straight into revenue forecasts.",
+     "mentalModel": "List value is a ceiling.",
+     "sources": [
+      {
+       "url": "https://www.npr.org/2023/02/14/1156796351/air-india-boeing-airbus-orders",
+       "label": "NPR, Air India orders a record 470 Boeing and Airbus aircraft, Feb 2023"
+      },
+      {
+       "url": "https://bclplaw.com/en-US/insights/pdp-financing-in-aviation.html",
+       "label": "BCLP, PDP financing in aviation"
+      },
+      {
+       "url": "https://www.khaleejtimes.com/business/tariffs-could-lift-boeing-and-airbus-plane-prices-even-higher-2",
+       "label": "AFP via Khaleej Times, Tariffs could lift Boeing and Airbus plane prices, Apr 2025"
+      }
+     ]
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You sell cabin parts. Air India just ordered jets from both Airbus and Boeing.",
+      "prompt": "How do you plan your sales?",
+      "options": [
+       "Wait for a third jet maker to rise",
+       "Get qualified on both makers' jets",
+       "Pick one maker and ignore the other"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Embraer and COMAC deliver far fewer jets.",
+       "Air India will fly both, so both platforms count.",
+       "You would miss about half of a record order."
+      ],
+      "explanation": "When big buyers split orders, a supplier needs a place on both jets."
+     },
+     "proReasoning": "Suppliers in a duopoly aim to sit on both makers' jets, so a split order is still a full win.",
+     "commonMistake": "Betting the company on one maker winning every order.",
+     "mentalModel": "Be on both jets.",
+     "sources": [
+      {
+       "url": "https://www.npr.org/2023/02/14/1156796351/air-india-boeing-airbus-orders",
+       "label": "NPR, Air India orders a record 470 Boeing and Airbus aircraft, Feb 2023"
+      },
+      {
+       "url": "https://aviacionaldia.com/en/2026/01/embraer-delivered-244-aircraft-in-2025.html",
+       "label": "Aviación al Día, Embraer delivered 244 aircraft in 2025, Jan 2026"
+      }
+     ]
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend asks why airlines do not just buy every jet from the cheapest maker.",
+      "prompt": "What's the fairer view?",
+      "options": [
+       "Airlines always buy from one maker only",
+       "Only national airlines buy new jets",
+       "Big airlines often buy from both makers"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Air India split its record order between both.",
+       "Lessors and private airlines order new jets too.",
+       "Air India took 250 Airbus and 220 Boeing jets in one deal."
+      ],
+      "explanation": "With only two sellers, big fleets often end up with jets from each."
+     },
+     "proReasoning": "Notice that the biggest orders are often split. It keeps both sellers competing.",
+     "commonMistake": "Assuming an airline must stay loyal to one maker.",
+     "mentalModel": "Big buyers split.",
+     "sources": [
+      {
+       "url": "https://www.npr.org/2023/02/14/1156796351/air-india-boeing-airbus-orders",
+       "label": "NPR, Air India orders a record 470 Boeing and Airbus aircraft, Feb 2023"
+      }
+     ]
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:8b1006709be8"
+  ]
+ },
+ {
+  "id": "54963ca2-d41c-5e25-bdfc-cfee97cae20c",
+  "market_id": "aerospace",
+  "day": 31,
+  "slot": 2,
+  "content": {
+   "id": "aerospace-d31-c2",
+   "title": "Four names, very different sizes",
+   "lessonTitle": "Two sellers, one market",
+   "slot": 2,
+   "type": "connect",
+   "brief": {
+    "headline": "Day 1 named four OEMs: Airbus, Boeing, Embraer and COMAC. In 2025, Embraer delivered 78 commercial jets, COMAC 15 C919s, and Boeing alone 600.",
+    "kicker": "Connect day 1 and day 31: four OEMs, but only two dominate.",
+    "fullText": "On day 1 you met the OEM, the company whose name the plane carries. Four names came up: Airbus, Boeing, Embraer and COMAC.\n\nDay 31 showed they are not equals. In 2025, Boeing delivered 600 jets and Airbus delivered more. Embraer delivered 78 commercial jets, and COMAC delivered 15 C919s against a plan of 75.\n\nOne layer down, the map is more shared. The C919 flies on the LEAP-1C, and CFM is the maker of the LEAP engine, which also powers many Airbus jets.",
+    "sources": [
+     {
+      "url": "https://www.faa.gov/newsroom/how-it-works-aircraft-certification",
+      "label": "FAA, How aircraft certification works"
+     },
+     {
+      "url": "https://investors.boeing.com/investors/news/press-release-details/2026/Boeing-Reports-Fourth-Quarter-Results/default.aspx",
+      "label": "Boeing, fourth quarter 2025 results, Jan 2026"
+     },
+     {
+      "url": "https://aviacionaldia.com/en/2026/01/embraer-delivered-244-aircraft-in-2025.html",
+      "label": "Aviación al Día, Embraer delivered 244 aircraft in 2025, Jan 2026"
+     },
+     {
+      "url": "https://www.scmp.com/economy/china-economy/article/3341030/maker-chinas-c919-jet-set-pick-production-pace-after-delay-sources",
+      "label": "South China Morning Post, C919 maker set to pick up pace, Jan 2026"
+     },
+     {
+      "url": "https://www.freemalaysiatoday.com/category/business/2025/05/29/us-suspends-engine-sales-to-chinese-planemaker-comac",
+      "label": "Reuters via Free Malaysia Today, US suspends engine sales to COMAC, May 2025"
+     },
+     {
+      "url": "https://leehamnews.com/2025/07/31/airbus-1h2025-results-a-solid-first-half-except-for-60-gliders/",
+      "label": "Leeham News, Airbus first half 2025 and 60 gliders"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "multipleChoice",
+    "prompt": "What does the C919 share with many Airbus jets?",
+    "options": [
+     "A type certificate",
+     "An engine maker, CFM",
+     "A final assembly line"
+    ],
+    "correctIndex": 1,
+    "explanation": "The C919 uses the LEAP-1C. CFM makes the LEAP family, which also powers Airbus jets."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "In 2025, Boeing delivered 600 jets and Embraer 78 commercial jets. About how many times more did Boeing deliver?",
+    "min": 0,
+    "max": 20,
+    "value": 8,
+    "unit": "times",
+    "explanation": "600 divided by 78 is about 7.7, so roughly 8 times."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "An interviewer asks you to name the main airliner OEMs and how they compare.",
+      "prompt": "What's the best answer?",
+      "options": [
+       "Four OEMs, with Airbus and Boeing far ahead",
+       "Two OEMs, since the others are suppliers",
+       "Four OEMs of roughly equal size"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Embraer delivered 78 jets and COMAC 15 in 2025.",
+       "Embraer and COMAC put their own names on their jets.",
+       "Boeing alone delivered 600 jets in 2025."
+      ],
+      "explanation": "Name all four, then say how far apart they are."
+     },
+     "proReasoning": "Pair the list of OEMs with their scale. It shows you know the market, not just the names.",
+     "commonMistake": "Listing the four OEMs as if they were equals.",
+     "mentalModel": "Names, then scale.",
+     "sources": [
+      {
+       "url": "https://aviacionaldia.com/en/2026/01/embraer-delivered-244-aircraft-in-2025.html",
+       "label": "Aviación al Día, Embraer delivered 244 aircraft in 2025, Jan 2026"
+      },
+      {
+       "url": "https://www.scmp.com/economy/china-economy/article/3341030/maker-chinas-c919-jet-set-pick-production-pace-after-delay-sources",
+       "label": "South China Morning Post, C919 maker set to pick up pace, Jan 2026"
+      },
+      {
+       "url": "https://investors.boeing.com/investors/news/press-release-details/2026/Boeing-Reports-Fourth-Quarter-Results/default.aspx",
+       "label": "Boeing, fourth quarter 2025 results, Jan 2026"
+      }
+     ]
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A fund wants exposure to airliner output without betting on one OEM's fortunes.",
+      "prompt": "Where could it look one layer down?",
+      "options": [
+       "Only airport retail chains near hubs",
+       "Engine makers serving several OEMs",
+       "Only the smallest OEM, COMAC"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Airport shops do not track jet output.",
+       "LEAP engines fly on both Airbus jets and the C919.",
+       "COMAC delivered 15 jets in 2025."
+      ],
+      "explanation": "A supplier to several OEMs rides total output rather than one maker's share."
+     },
+     "proReasoning": "Investors who cannot pick between OEMs often look at the suppliers both of them use.",
+     "commonMistake": "Thinking the only way to own airliner growth is to own an OEM.",
+     "mentalModel": "Own the shared layer.",
+     "sources": [
+      {
+       "url": "https://www.freemalaysiatoday.com/category/business/2025/05/29/us-suspends-engine-sales-to-chinese-planemaker-comac",
+       "label": "Reuters via Free Malaysia Today, US suspends engine sales to COMAC, May 2025"
+      },
+      {
+       "url": "https://leehamnews.com/2025/07/31/airbus-1h2025-results-a-solid-first-half-except-for-60-gliders/",
+       "label": "Leeham News, Airbus first half 2025 and 60 gliders"
+      }
+     ]
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You are building a cockpit tool and must choose the first OEM to approach.",
+      "prompt": "Which fact matters most?",
+      "options": [
+       "Which OEM has the newest logo",
+       "Which OEM is closest to your office",
+       "Where the volume is: Airbus and Boeing"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Branding says nothing about how many jets ship.",
+       "Distance matters less than volume.",
+       "Boeing delivered 600 jets in 2025, and COMAC 15."
+      ],
+      "explanation": "Start where the jets are built in numbers."
+     },
+     "proReasoning": "Founders size each OEM by deliveries before choosing where to spend scarce sales time.",
+     "commonMistake": "Choosing a first customer for convenience rather than volume.",
+     "mentalModel": "Follow the volume.",
+     "sources": [
+      {
+       "url": "https://investors.boeing.com/investors/news/press-release-details/2026/Boeing-Reports-Fourth-Quarter-Results/default.aspx",
+       "label": "Boeing, fourth quarter 2025 results, Jan 2026"
+      },
+      {
+       "url": "https://www.scmp.com/economy/china-economy/article/3341030/maker-chinas-c919-jet-set-pick-production-pace-after-delay-sources",
+       "label": "South China Morning Post, C919 maker set to pick up pace, Jan 2026"
+      }
+     ]
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend says COMAC already rivals Airbus and Boeing.",
+      "prompt": "What's the fairer view?",
+      "options": [
+       "It is far smaller, for now",
+       "It is already the biggest",
+       "It builds no jets at all"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "COMAC delivered 15 C919s in 2025, against a plan of 75.",
+       "Boeing alone delivered 600 jets that year.",
+       "COMAC delivered 15 C919s in 2025."
+      ],
+      "explanation": "COMAC builds jets, but at a small fraction of the leaders' pace."
+     },
+     "proReasoning": "Compare new players by deliveries. It cuts through headlines about rivalry.",
+     "commonMistake": "Treating any new jet maker as an equal rival on day one.",
+     "mentalModel": "Count deliveries.",
+     "sources": [
+      {
+       "url": "https://www.scmp.com/economy/china-economy/article/3341030/maker-chinas-c919-jet-set-pick-production-pace-after-delay-sources",
+       "label": "South China Morning Post, C919 maker set to pick up pace, Jan 2026"
+      },
+      {
+       "url": "https://investors.boeing.com/investors/news/press-release-details/2026/Boeing-Reports-Fourth-Quarter-Results/default.aspx",
+       "label": "Boeing, fourth quarter 2025 results, Jan 2026"
+      }
+     ]
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:0b37d46c6bee"
+  ]
+ },
+ {
+  "id": "cf009270-13e9-58b7-8662-6a3f9d0a25d0",
+  "market_id": "aerospace",
+  "day": 31,
+  "slot": 3,
+  "content": {
+   "id": "aerospace-d31-c3",
+   "title": "Picking a single-aisle supplier",
+   "lessonTitle": "Two sellers, one market",
+   "slot": 3,
+   "type": "decide",
+   "brief": {
+    "headline": "You run an airline that needs 50 single-aisle jets. Airbus and Boeing are the only realistic bidders.",
+    "kicker": "Decide: use day 31 to make the two sellers compete.",
+    "fullText": "Day 31 showed a market with two real sellers. In 2025, Airbus delivered 607 A320 family jets and Boeing 447 737s. Boeing still won more orders than Airbus that year.\n\nBoth are raising output. Airbus plans 70 to 75 A320 family jets a month by the end of 2027, then 75. Boeing is working toward a stable 47 737s a month.\n\nYour question is how to use having two bidders.",
+    "sources": [
+     {
+      "url": "https://www.airbus.com/en/newsroom/press-releases/2026-01-airbus-reports-793-commercial-aircraft-deliveries-in-2025",
+      "label": "Airbus, 2025 deliveries"
+     },
+     {
+      "url": "https://www.sec.gov/Archives/edgar/data/12927/000162828026004357/ba-20251231.htm",
+      "label": "Boeing annual report (10-K), fiscal 2025"
+     },
+     {
+      "url": "https://www.thenationalnews.com/business/aviation/2026/01/13/boeing-beat-airbus-for-jet-orders-and-hit-seven-year-delivery-high-in-2025",
+      "label": "AP via The National, Boeing beat Airbus for jet orders in 2025, Jan 2026"
+     },
+     {
+      "url": "https://www.airbus.com/en/newsroom/press-releases/2026-10-airbus-reports-nine-month-9m-2026-results",
+      "label": "Airbus, nine-month 2026 results, Oct 2026"
+     },
+     {
+      "url": "https://boeing.mediaroom.com/2026-10-27-Boeing-Reports-Third-Quarter-Results",
+      "label": "Boeing, third quarter 2026 results, Oct 2026"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "faceOff",
+    "prompt": "Which maker delivered more single-aisle jets in 2025?",
+    "left": {
+     "name": "Airbus A320 family",
+     "note": "607 delivered"
+    },
+    "right": {
+     "name": "Boeing 737",
+     "note": "447 delivered"
+    },
+    "correctIndex": 0,
+    "explanation": "Airbus led single-aisle deliveries, even in a year Boeing won more orders."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "Boeing is working toward a stable rate of how many 737s a month?",
+    "min": 0,
+    "max": 80,
+    "value": 47,
+    "unit": "jets",
+    "explanation": "Boeing is progressing toward a stabilized 47 a month."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your CEO asks how to get the best price on 50 single-aisle jets.",
+      "prompt": "What do you propose?",
+      "options": [
+       "Order from the maker with more orders",
+       "Run a real contest between both makers",
+       "Ask one maker for its list price"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Order counts say little about your own price.",
+       "Boeing says its rivalry with Airbus brings intense price pressure.",
+       "List prices are close to fiction, and few pay them."
+      ],
+      "explanation": "Two bidders who each fear losing give you the best terms."
+     },
+     "proReasoning": "Buyers in a duopoly keep both sellers in the race until the end.",
+     "commonMistake": "Negotiating with one maker as if it were the only option.",
+     "mentalModel": "Keep both in the race.",
+     "sources": [
+      {
+       "url": "https://www.sec.gov/Archives/edgar/data/12927/000162828026004357/ba-20251231.htm",
+       "label": "Boeing annual report (10-K), fiscal 2025"
+      },
+      {
+       "url": "https://www.khaleejtimes.com/business/tariffs-could-lift-boeing-and-airbus-plane-prices-even-higher-2",
+       "label": "AFP via Khaleej Times, Tariffs could lift Boeing and Airbus plane prices, Apr 2025"
+      }
+     ]
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You hold shares in an airline about to order 50 jets.",
+      "prompt": "What sign of a good deal do you look for?",
+      "options": [
+       "The airline paid near list price",
+       "The airline chose the newest model",
+       "Both makers bid hard for the order"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "List prices are seldom paid and say little.",
+       "A new model can carry delay risk, as the 777X showed.",
+       "Two eager bidders push the price down."
+      ],
+      "explanation": "A contested order usually means a better price for the buyer."
+     },
+     "proReasoning": "Investors ask whether a fleet deal was truly contested. That is where the discount comes from.",
+     "commonMistake": "Judging a fleet deal by the model chosen rather than the terms.",
+     "mentalModel": "Contested means cheaper.",
+     "sources": [
+      {
+       "url": "https://www.sec.gov/Archives/edgar/data/12927/000162828026004357/ba-20251231.htm",
+       "label": "Boeing annual report (10-K), fiscal 2025"
+      },
+      {
+       "url": "https://www.khaleejtimes.com/business/tariffs-could-lift-boeing-and-airbus-plane-prices-even-higher-2",
+       "label": "AFP via Khaleej Times, Tariffs could lift Boeing and Airbus plane prices, Apr 2025"
+      },
+      {
+       "url": "https://www.flightglobal.com/airframers/boeing-removed-33-777x-orders-from-backlog-amid-certification-delays/165307.article",
+       "label": "FlightGlobal, Boeing removed 33 777X orders from backlog, Nov 2025"
+      }
+     ]
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You sell seats to airlines. Your client is choosing between A320neo and 737 MAX.",
+      "prompt": "How do you prepare?",
+      "options": [
+       "Get your seat approved for both jets",
+       "Back only the jet you like best",
+       "Wait until the airline signs, then start"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "You win whichever jet the airline picks.",
+       "If the other jet wins, you are out.",
+       "Approvals take time, so late starts lose."
+      ],
+      "explanation": "In a duopoly, a supplier ready for both jets cannot lose the platform bet."
+     },
+     "proReasoning": "Suppliers remove platform risk by being ready on both jets before the airline decides.",
+     "commonMistake": "Waiting for the jet decision before starting approval work.",
+     "mentalModel": "Ready for either.",
+     "sources": [
+      {
+       "url": "https://www.airbus.com/en/newsroom/press-releases/2026-01-airbus-reports-793-commercial-aircraft-deliveries-in-2025",
+       "label": "Airbus, 2025 deliveries"
+      },
+      {
+       "url": "https://www.sec.gov/Archives/edgar/data/12927/000162828026004357/ba-20251231.htm",
+       "label": "Boeing annual report (10-K), fiscal 2025"
+      }
+     ]
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend asks why one airline flies only Airbus and another only Boeing.",
+      "prompt": "What's the best answer?",
+      "options": [
+       "The makers split the world by region",
+       "Each picked one of two sellers for its fleet",
+       "Laws assign each airline a single maker"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Boeing and Airbus compete for the same buyers.",
+       "With two sellers, fleets end up with one or both.",
+       "Airlines choose, as Air India did with both."
+      ],
+      "explanation": "With two sellers, an airline's fleet reflects which one it picked, or both."
+     },
+     "proReasoning": "Read a fleet as a record of past contests between the same two sellers.",
+     "commonMistake": "Thinking airlines are assigned a maker.",
+     "mentalModel": "A fleet is a choice.",
+     "sources": [
+      {
+       "url": "https://www.economicshelp.org/blog/glossary/duopoly/",
+       "label": "Economics Help, Duopoly"
+      },
+      {
+       "url": "https://www.npr.org/2023/02/14/1156796351/air-india-boeing-airbus-orders",
+       "label": "NPR, Air India orders a record 470 Boeing and Airbus aircraft, Feb 2023"
+      }
+     ]
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:53ddf93f2833"
+  ]
+ },
+ {
+  "id": "6d87d8a2-0e02-5155-9b46-2c09a57b97a7",
+  "market_id": "aerospace",
+  "day": 32,
+  "slot": 1,
+  "content": {
+   "id": "aerospace-d32-c1",
+   "title": "Profit without the cash",
+   "lessonTitle": "A record backlog that loses money",
+   "slot": 1,
+   "type": "apply",
+   "brief": {
+    "headline": "In the first nine months of 2026, Airbus earned €4.5 billion of adjusted operating profit. Its free cash flow was minus €1.1 billion.",
+    "kicker": "Apply day 32: profit and cash arrive at different times.",
+    "fullText": "Airbus delivered 547 commercial aircraft by the end of September, against a full-year target of about 870. Revenues rose 7% to €50.6 billion.\n\nThe cash shortfall mainly reflected working capital, including inventory built up for a delivery schedule weighted toward the end of the year. Airbus was building planes it would hand over in the final months, and the balance of each price is paid on delivery.\n\nA plane maker can report a profit and still burn cash while it builds ahead.",
+    "sources": [
+     {
+      "url": "https://www.airbus.com/en/newsroom/press-releases/2026-10-airbus-reports-nine-month-9m-2026-results",
+      "label": "Airbus, nine-month 2026 results, Oct 2026"
+     },
+     {
+      "url": "https://aerospaceglobalnews.com/news/airbus-results-nine-months-2026/",
+      "label": "Aerospace Global News, Airbus nine-month 2026 results, Oct 2026"
+     },
+     {
+      "url": "https://bclplaw.com/en-US/insights/pdp-financing-in-aviation.html",
+      "label": "BCLP, PDP financing in aviation"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "buildChain",
+    "prompt": "Put the cash cycle in order.",
+    "steps": [
+     "Airbus builds jets for late-year delivery",
+     "Inventory piles up",
+     "Free cash flow turns negative",
+     "Jets are handed over to customers",
+     "The balance of the price comes in"
+    ],
+    "explanation": "Cash goes out during the build and comes back at handover. Timing, not losses, made the gap."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "Airbus delivered 547 jets by September and aimed for about 870. How many were left for the last quarter?",
+    "min": 0,
+    "max": 800,
+    "value": 323,
+    "unit": "jets",
+    "explanation": "870 minus 547 is about 323, a heavy final quarter."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your manager asks why Airbus burned cash in a profitable nine months.",
+      "prompt": "What's the best answer?",
+      "options": [
+       "Inventory built up ahead of late deliveries",
+       "Airlines stopped paying for their jets",
+       "Airbus cut prices below its costs"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Airbus cited inventory for a back-end-loaded schedule.",
+       "Nothing in the results points to that.",
+       "Airbus earned €4.5 billion of adjusted profit."
+      ],
+      "explanation": "Planes built but not yet delivered tie up cash."
+     },
+     "proReasoning": "Separate profit from cash timing when you explain a plane maker's results.",
+     "commonMistake": "Reading negative free cash flow as a sign of losses.",
+     "mentalModel": "Built is not delivered.",
+     "sources": [
+      {
+       "url": "https://www.airbus.com/en/newsroom/press-releases/2026-10-airbus-reports-nine-month-9m-2026-results",
+       "label": "Airbus, nine-month 2026 results, Oct 2026"
+      },
+      {
+       "url": "https://aerospaceglobalnews.com/news/airbus-results-nine-months-2026/",
+       "label": "Aerospace Global News, Airbus nine-month 2026 results, Oct 2026"
+      }
+     ]
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A colleague compares plane makers by profit alone.",
+      "prompt": "What else do you check?",
+      "options": [
+       "Only the share price trend",
+       "Free cash flow and inventory",
+       "Only the order backlog"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Price trends do not explain the cash gap.",
+       "Airbus had profit and negative free cash flow in 2026.",
+       "A backlog does not show when cash arrives."
+      ],
+      "explanation": "Cash shows whether deliveries are keeping up with the build."
+     },
+     "proReasoning": "Investors read profit and cash together. A gap between them says something about deliveries.",
+     "commonMistake": "Ignoring cash flow because the profit line looks fine.",
+     "mentalModel": "Profit and cash, together.",
+     "sources": [
+      {
+       "url": "https://www.airbus.com/en/newsroom/press-releases/2026-10-airbus-reports-nine-month-9m-2026-results",
+       "label": "Airbus, nine-month 2026 results, Oct 2026"
+      }
+     ]
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You supply parts to Airbus, which is building up inventory before year-end deliveries.",
+      "prompt": "What do you expect from Airbus?",
+      "options": [
+       "A pause in all orders until January",
+       "Payment in advance for every part",
+       "Pressure to deliver parts on time"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Airbus is ramping toward about 870 jets.",
+       "Airbus itself was short of cash in this period.",
+       "Late-year deliveries need parts before then."
+      ],
+      "explanation": "A back-loaded year makes every late part costly for the OEM."
+     },
+     "proReasoning": "Suppliers watch an OEM's delivery curve. A back-loaded year raises the stakes of every late part.",
+     "commonMistake": "Expecting an OEM short of cash to prepay its suppliers.",
+     "mentalModel": "Late year, high stakes.",
+     "sources": [
+      {
+       "url": "https://www.airbus.com/en/newsroom/press-releases/2026-10-airbus-reports-nine-month-9m-2026-results",
+       "label": "Airbus, nine-month 2026 results, Oct 2026"
+      },
+      {
+       "url": "https://aerospaceglobalnews.com/news/airbus-results-nine-months-2026/",
+       "label": "Aerospace Global News, Airbus nine-month 2026 results, Oct 2026"
+      }
+     ]
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend sees that Airbus reported a profit but lost cash, and thinks it is a mistake.",
+      "prompt": "What's the best answer?",
+      "options": [
+       "Cash waits for handover; profit does not",
+       "Airbus made a basic accounting error",
+       "Airbus lost money on every jet it sold"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Inventory for late deliveries tied up cash.",
+       "Airbus explained the gap with working capital.",
+       "Its adjusted profit was €4.5 billion."
+      ],
+      "explanation": "Profit and cash can point in different directions for months."
+     },
+     "proReasoning": "Know that profit and cash run on different clocks, especially in long builds.",
+     "commonMistake": "Assuming profit and cash always move together.",
+     "mentalModel": "Two clocks.",
+     "sources": [
+      {
+       "url": "https://www.airbus.com/en/newsroom/press-releases/2026-10-airbus-reports-nine-month-9m-2026-results",
+       "label": "Airbus, nine-month 2026 results, Oct 2026"
+      },
+      {
+       "url": "https://aerospaceglobalnews.com/news/airbus-results-nine-months-2026/",
+       "label": "Aerospace Global News, Airbus nine-month 2026 results, Oct 2026"
+      }
+     ]
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:0a8d97be6efa"
+  ]
+ },
+ {
+  "id": "cda40bd2-bcc9-5d76-9730-984f8860256a",
+  "market_id": "aerospace",
+  "day": 32,
+  "slot": 2,
+  "content": {
+   "id": "aerospace-d32-c2",
+   "title": "Cash before wings",
+   "lessonTitle": "A record backlog that loses money",
+   "slot": 2,
+   "type": "connect",
+   "brief": {
+    "headline": "Boeing's advances and progress billings rose from $59.4 billion to $67.5 billion in the first nine months of 2026.",
+    "kicker": "Connect day 2 and day 32: buyers pay in steps, before delivery.",
+    "fullText": "On day 2 you saw that buyers pay in steps: installments during the build, the balance on delivery. The early installments are called pre-delivery payments.\n\nOn day 32 you saw them on a balance sheet. Boeing carried $67.5 billion of advances and progress billings at September 30, 2026, up from $59.4 billion at the end of 2025. Over those nine months, that line added $8.1 billion to operating cash flow.\n\nIn the third quarter, Boeing's free cash flow was $464 million, while its airplane unit lost $697 million.",
+    "sources": [
+     {
+      "url": "https://bclplaw.com/en-US/insights/pdp-financing-in-aviation.html",
+      "label": "BCLP, PDP financing in aviation"
+     },
+     {
+      "url": "https://boeing.mediaroom.com/2026-10-27-Boeing-Reports-Third-Quarter-Results",
+      "label": "Boeing, third quarter 2026 results, Oct 2026"
+     },
+     {
+      "url": "https://investors.boeing.com/investors/news/press-release-details/2026/Boeing-Reports-Fourth-Quarter-Results/default.aspx",
+      "label": "Boeing, fourth quarter 2025 results, Jan 2026"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "spotFake",
+    "prompt": "One of these is false. Tap it.",
+    "statements": [
+     "Buyers pay part of the price before delivery.",
+     "Advances rose by about $8 billion in nine months.",
+     "Boeing receives no cash until a jet is delivered."
+    ],
+    "fakeIndex": 2,
+    "explanation": "Pre-delivery payments arrive during the build. Boeing held $67.5 billion of advances and progress billings."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "Advances went from $59.4 billion to $67.5 billion. By about how many billions did they rise?",
+    "min": 0,
+    "max": 20,
+    "value": 8,
+    "unit": "B",
+    "explanation": "About $8.1 billion in nine months."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A finance interviewer asks what advances on Boeing's balance sheet represent.",
+      "prompt": "What's the best answer?",
+      "options": [
+       "Profit Boeing has already booked",
+       "Cash customers paid before delivery",
+       "Loans Boeing took from its banks"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Advances are owed back in jets still to be built.",
+       "Pre-delivery payments come in during the build.",
+       "Advances come from customers, not banks."
+      ],
+      "explanation": "Advances are customer cash for work Boeing still has to deliver."
+     },
+     "proReasoning": "Explain advances as customer money held against future deliveries.",
+     "commonMistake": "Calling customer advances profit.",
+     "mentalModel": "Cash now, jets later.",
+     "sources": [
+      {
+       "url": "https://bclplaw.com/en-US/insights/pdp-financing-in-aviation.html",
+       "label": "BCLP, PDP financing in aviation"
+      },
+      {
+       "url": "https://www.sec.gov/Archives/edgar/data/12927/000162828026004357/ba-20251231.htm",
+       "label": "Boeing annual report (10-K), fiscal 2025"
+      }
+     ]
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Boeing's free cash flow was positive while its airplane unit lost money.",
+      "prompt": "What do you check?",
+      "options": [
+       "Whether the backlog grew in dollars",
+       "How many options airlines signed",
+       "How much cash came from customer advances"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Backlog growth is not cash in hand.",
+       "Options are not even counted in backlog.",
+       "Advances added $8.1 billion of cash in nine months."
+      ],
+      "explanation": "Customer prepayments can lift cash while the operations still lose money."
+     },
+     "proReasoning": "Investors separate cash from operations and cash from customer prepayments.",
+     "commonMistake": "Treating prepayment-driven cash flow as proof of a healthy business.",
+     "mentalModel": "Find the source of cash.",
+     "sources": [
+      {
+       "url": "https://boeing.mediaroom.com/2026-10-27-Boeing-Reports-Third-Quarter-Results",
+       "label": "Boeing, third quarter 2026 results, Oct 2026"
+      },
+      {
+       "url": "https://www.sec.gov/Archives/edgar/data/12927/000162828026004357/ba-20251231.htm",
+       "label": "Boeing annual report (10-K), fiscal 2025"
+      }
+     ]
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You run a small aircraft startup with early customer orders.",
+      "prompt": "How can pre-delivery payments help you?",
+      "options": [
+       "They fund the build before handover",
+       "They replace the need for approvals",
+       "They let you skip a production line"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Installments come in during the build.",
+       "Certification is still required.",
+       "You still need a factory to build the jets."
+      ],
+      "explanation": "Pre-delivery payments turn orders into cash before the first delivery."
+     },
+     "proReasoning": "Founders structure orders with deposits and installments, as big OEMs do.",
+     "commonMistake": "Taking orders with no money down.",
+     "mentalModel": "Orders should carry cash.",
+     "sources": [
+      {
+       "url": "https://bclplaw.com/en-US/insights/pdp-financing-in-aviation.html",
+       "label": "BCLP, PDP financing in aviation"
+      }
+     ]
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend asks how Boeing can lose money on planes yet have cash coming in.",
+      "prompt": "What's the best answer?",
+      "options": [
+       "Governments pay for every jet",
+       "Customers pay ahead, before delivery",
+       "Boeing sells its factories each year"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Airlines and lessors pay for commercial jets.",
+       "Advances reached $67.5 billion by September 2026.",
+       "Nothing in the results shows that."
+      ],
+      "explanation": "Prepayments bring cash in years before the jets are delivered."
+     },
+     "proReasoning": "See that a buyer's cash can arrive years before the product.",
+     "commonMistake": "Assuming money only moves on delivery day.",
+     "mentalModel": "Paid before built.",
+     "sources": [
+      {
+       "url": "https://boeing.mediaroom.com/2026-10-27-Boeing-Reports-Third-Quarter-Results",
+       "label": "Boeing, third quarter 2026 results, Oct 2026"
+      },
+      {
+       "url": "https://bclplaw.com/en-US/insights/pdp-financing-in-aviation.html",
+       "label": "BCLP, PDP financing in aviation"
+      }
+     ]
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:3e9da664feb7"
+  ]
+ },
+ {
+  "id": "cd12e1bd-05e9-5090-a888-dc8c44735703",
+  "market_id": "aerospace",
+  "day": 32,
+  "slot": 3,
+  "content": {
+   "id": "aerospace-d32-c3",
+   "title": "Late jets, and who pays",
+   "lessonTitle": "A record backlog that loses money",
+   "slot": 3,
+   "type": "decide",
+   "brief": {
+    "headline": "Boeing paid 737 MAX customers $0.9 billion in concessions in 2024 and $0.2 billion in 2025. You run an airline whose new jets are late.",
+    "kicker": "Decide: use day 32 to negotiate when delivery dates slip.",
+    "fullText": "Day 32 showed that jets are sold at fixed prices with escalation clauses, agreed long before delivery. Pricing can also be adjusted when deliveries are delayed.\n\nBoeing disclosed concessions paid to 737 MAX customers of $0.9 billion in 2024 and $0.2 billion in 2025. It also says it faces intense pressure on pricing.\n\nYou are owed jets that are late. What do you ask for?",
+    "sources": [
+     {
+      "url": "https://www.sec.gov/Archives/edgar/data/12927/000162828026004357/ba-20251231.htm",
+      "label": "Boeing annual report (10-K), fiscal 2025"
+     },
+     {
+      "url": "https://www.khaleejtimes.com/business/tariffs-could-lift-boeing-and-airbus-plane-prices-even-higher-2",
+      "label": "AFP via Khaleej Times, Tariffs could lift Boeing and Airbus plane prices, Apr 2025"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "sortSignal",
+    "prompt": "Which way does each payment move money?",
+    "buckets": [
+     "Toward the airline",
+     "Toward the maker"
+    ],
+    "items": [
+     {
+      "text": "Concessions for late jets",
+      "bucket": 0
+     },
+     {
+      "text": "A price cut for a delayed delivery",
+      "bucket": 0
+     },
+     {
+      "text": "Escalation as inflation rises",
+      "bucket": 1
+     },
+     {
+      "text": "Pre-delivery payments during the build",
+      "bucket": 1
+     },
+     {
+      "text": "The balance paid at handover",
+      "bucket": 1
+     }
+    ],
+    "explanation": "Delays move money back to the airline. Escalation and payments move it to the maker."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "How much did Boeing pay 737 MAX customers in concessions in 2024, in millions?",
+    "min": 0,
+    "max": 2000,
+    "value": 900,
+    "unit": "M",
+    "explanation": "$0.9 billion in 2024, falling to $0.2 billion in 2025."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You negotiate for the airline. Boeing says your jets will arrive a year late.",
+      "prompt": "What do you push for?",
+      "options": [
+       "Boeing's old list price from years ago",
+       "Cancelling to wait for a new maker",
+       "Concessions or price relief for the delay"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "List prices are not what anyone pays.",
+       "Only Airbus is a real alternative, with its own waits.",
+       "Boeing paid $0.9 billion in MAX concessions in 2024."
+      ],
+      "explanation": "Delays have a price, and makers pay it in concessions."
+     },
+     "proReasoning": "Buyers turn delays into concessions, credits or better terms on later jets.",
+     "commonMistake": "Accepting a delay without asking for anything in return.",
+     "mentalModel": "Delay has a price.",
+     "sources": [
+      {
+       "url": "https://www.sec.gov/Archives/edgar/data/12927/000162828026004357/ba-20251231.htm",
+       "label": "Boeing annual report (10-K), fiscal 2025"
+      },
+      {
+       "url": "https://www.khaleejtimes.com/business/tariffs-could-lift-boeing-and-airbus-plane-prices-even-higher-2",
+       "label": "AFP via Khaleej Times, Tariffs could lift Boeing and Airbus plane prices, Apr 2025"
+      },
+      {
+       "url": "https://www.airbus.com/en/newsroom/press-releases/2026-10-airbus-reports-nine-month-9m-2026-results",
+       "label": "Airbus, nine-month 2026 results, Oct 2026"
+      }
+     ]
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You analyze Boeing. Its MAX concessions fell from $0.9 billion to $0.2 billion.",
+      "prompt": "What might that signal?",
+      "options": [
+       "Fewer late jets to pay customers for",
+       "Airlines stopped caring about delays",
+       "Boeing raised its list prices sharply"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Boeing delivered 600 jets in 2025, its most since 2018.",
+       "Airlines still negotiate hard for late jets.",
+       "List prices say little about what airlines really pay."
+      ],
+      "explanation": "Falling concessions fit a year with more on-time deliveries."
+     },
+     "proReasoning": "Investors read concessions as a cost of delay that should fall as deliveries recover.",
+     "commonMistake": "Ignoring concessions when judging a recovery.",
+     "mentalModel": "Concessions track delays.",
+     "sources": [
+      {
+       "url": "https://www.sec.gov/Archives/edgar/data/12927/000162828026004357/ba-20251231.htm",
+       "label": "Boeing annual report (10-K), fiscal 2025"
+      },
+      {
+       "url": "https://investors.boeing.com/investors/news/press-release-details/2026/Boeing-Reports-Fourth-Quarter-Results/default.aspx",
+       "label": "Boeing, fourth quarter 2025 results, Jan 2026"
+      },
+      {
+       "url": "https://www.khaleejtimes.com/business/tariffs-could-lift-boeing-and-airbus-plane-prices-even-higher-2",
+       "label": "AFP via Khaleej Times, Tariffs could lift Boeing and Airbus plane prices, Apr 2025"
+      }
+     ]
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You build software that predicts jet delivery delays.",
+      "prompt": "Who is your best first buyer?",
+      "options": [
+       "Tourism boards in large cities",
+       "Airlines negotiating late-jet relief",
+       "Passengers booking their holidays"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Tourism boards do not buy aircraft.",
+       "MAX concessions were worth $0.9 billion in 2024 alone.",
+       "Passengers do not negotiate jet deliveries."
+      ],
+      "explanation": "The buyer who can turn a forecast into concessions will pay for it."
+     },
+     "proReasoning": "Founders sell to whoever turns the insight into money, here the airline's fleet team.",
+     "commonMistake": "Selling a fleet tool to people who never negotiate with OEMs.",
+     "mentalModel": "Sell to the negotiator.",
+     "sources": [
+      {
+       "url": "https://www.sec.gov/Archives/edgar/data/12927/000162828026004357/ba-20251231.htm",
+       "label": "Boeing annual report (10-K), fiscal 2025"
+      }
+     ]
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend asks what an airline gets when its new jets are late.",
+      "prompt": "What's the best answer?",
+      "options": [
+       "Nothing at all, since the price is fixed",
+       "A free extra jet, every single time",
+       "Often money or price relief from the maker"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Pricing can be adjusted when deliveries slip.",
+       "Concessions are negotiated, not a set gift.",
+       "Boeing paid MAX customers $0.2 billion in 2025."
+      ],
+      "explanation": "A fixed price can still move when the maker misses its dates."
+     },
+     "proReasoning": "Know that delays cost the maker real money, not only reputation.",
+     "commonMistake": "Thinking a fixed price can never change.",
+     "mentalModel": "Late jets cost the maker.",
+     "sources": [
+      {
+       "url": "https://www.sec.gov/Archives/edgar/data/12927/000162828026004357/ba-20251231.htm",
+       "label": "Boeing annual report (10-K), fiscal 2025"
+      },
+      {
+       "url": "https://www.khaleejtimes.com/business/tariffs-could-lift-boeing-and-airbus-plane-prices-even-higher-2",
+       "label": "AFP via Khaleej Times, Tariffs could lift Boeing and Airbus plane prices, Apr 2025"
+      }
+     ]
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:834a718d42a1"
+  ]
+ },
+ {
+  "id": "bad4de64-32d0-5351-9109-fb5b76f601d9",
+  "market_id": "aerospace",
+  "day": 33,
+  "slot": 1,
+  "content": {
+   "id": "aerospace-d33-c1",
+   "title": "The deal Boeing walked away from",
+   "lessonTitle": "How the third seller vanished",
+   "slot": 1,
+   "type": "apply",
+   "brief": {
+    "headline": "In April 2020, Boeing ended a $4.2 billion deal to buy 80% of Embraer's commercial jet unit. Embraer called the termination wrongful.",
+    "kicker": "Apply day 33: Boeing's version of the CSeries move fell apart.",
+    "fullText": "Boeing announced the terms in July 2018, after Airbus had agreed to take control of Bombardier's CSeries. The deal would have put Embraer's commercial jets under Boeing's control.\n\nThe agreement expired in April 2020, and Boeing ended it, saying Embraer had not satisfied its conditions. Embraer vowed to pursue all remedies.\n\nIn September 2024, arbitration closed with a $150 million award to Embraer. It had sought about $300 million.",
+    "sources": [
+     {
+      "url": "https://www.cnbc.com/2020/04/25/boeing-terminates-joint-venture-agreement-with-brazils-embraer.html",
+      "label": "CNBC, Boeing terminates Embraer deal, Apr 2020"
+     },
+     {
+      "url": "https://www.cnbc.com/2017/10/16/airbus-teams-up-with-bombardier-on-c-series-program.html",
+      "label": "CNBC, Airbus teams up with Bombardier on C Series, Oct 2017"
+     },
+     {
+      "url": "https://www.tipranks.com/news/the-fly/embraer-award-from-boeing-disappointing-but-reaction-overdone-says-bofa",
+      "label": "The Fly via TipRanks, Embraer award from Boeing, Sep 2024"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "buildChain",
+    "prompt": "Put the events in order.",
+    "steps": [
+     "Airbus agrees to take the CSeries",
+     "Boeing announces the Embraer terms",
+     "The agreement expires in April 2020",
+     "Boeing ends the deal",
+     "Arbitration awards Embraer $150 million"
+    ],
+    "explanation": "Boeing moved after Airbus, then walked away. Arbitration settled the cost four years later."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "Arbitration awarded Embraer how many millions of dollars?",
+    "min": 0,
+    "max": 400,
+    "value": 150,
+    "unit": "M",
+    "explanation": "$150 million, about half the $300 million it sought."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "An interviewer asks why Boeing wanted Embraer's commercial jets in 2018.",
+      "prompt": "What's the best answer?",
+      "options": [
+       "To gain an engine maker",
+       "To answer Airbus taking the CSeries",
+       "To leave the airliner business"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Embraer's commercial unit builds jets.",
+       "Airbus had just agreed to take a smaller-jet rival.",
+       "The deal would have added airliners, not removed them."
+      ],
+      "explanation": "Each duopolist moved to control the next seller down."
+     },
+     "proReasoning": "Explain the Embraer deal as Boeing's answer to Airbus and the CSeries.",
+     "commonMistake": "Describing the two deals as unrelated.",
+     "mentalModel": "Move and countermove.",
+     "sources": [
+      {
+       "url": "https://www.cnbc.com/2020/04/25/boeing-terminates-joint-venture-agreement-with-brazils-embraer.html",
+       "label": "CNBC, Boeing terminates Embraer deal, Apr 2020"
+      },
+      {
+       "url": "https://www.cnbc.com/2017/10/16/airbus-teams-up-with-bombardier-on-c-series-program.html",
+       "label": "CNBC, Airbus teams up with Bombardier on C Series, Oct 2017"
+      }
+     ]
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You valued Embraer assuming the Boeing deal would close.",
+      "prompt": "What lesson do you take?",
+      "options": [
+       "Assume signed deals always close",
+       "Ignore arbitration outcomes",
+       "Price the risk that a deal fails"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "This one expired and was ended.",
+       "Arbitration brought $150 million, half of the claim.",
+       "Boeing walked away after nearly two years."
+      ],
+      "explanation": "A signed deal is a probability, not a certainty."
+     },
+     "proReasoning": "Investors weight pending deals by the chance they close.",
+     "commonMistake": "Valuing a company as if a pending deal were already done.",
+     "mentalModel": "Deals are odds.",
+     "sources": [
+      {
+       "url": "https://www.cnbc.com/2020/04/25/boeing-terminates-joint-venture-agreement-with-brazils-embraer.html",
+       "label": "CNBC, Boeing terminates Embraer deal, Apr 2020"
+      },
+      {
+       "url": "https://www.tipranks.com/news/the-fly/embraer-award-from-boeing-disappointing-but-reaction-overdone-says-bofa",
+       "label": "The Fly via TipRanks, Embraer award from Boeing, Sep 2024"
+      }
+     ]
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A giant offers to buy your aircraft program, with closing two years away.",
+      "prompt": "How do you protect yourself?",
+      "options": [
+       "Keep a plan to run on your own",
+       "Stop all sales until it closes",
+       "Let your best staff leave early"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Embraer had to carry on alone when Boeing left.",
+       "Customers will not wait two years.",
+       "You will need them if the deal fails."
+      ],
+      "explanation": "Run the business as if the deal might not happen."
+     },
+     "proReasoning": "Founders keep selling and hiring during a long deal, in case it collapses.",
+     "commonMistake": "Freezing the company while waiting for a buyer.",
+     "mentalModel": "Plan for both outcomes.",
+     "sources": [
+      {
+       "url": "https://www.cnbc.com/2020/04/25/boeing-terminates-joint-venture-agreement-with-brazils-embraer.html",
+       "label": "CNBC, Boeing terminates Embraer deal, Apr 2020"
+      },
+      {
+       "url": "https://aviacionaldia.com/en/2026/01/embraer-delivered-244-aircraft-in-2025.html",
+       "label": "Aviación al Día, Embraer delivered 244 aircraft in 2025, Jan 2026"
+      }
+     ]
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend thinks Embraer is part of Boeing.",
+      "prompt": "What's the fairer view?",
+      "options": [
+       "Airbus owns Embraer now",
+       "Boeing ended that deal in 2020",
+       "Boeing bought it fully in 2018"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Airbus took the CSeries, not Embraer.",
+       "Embraer kept building its own jets, 78 in 2025.",
+       "Only the terms were announced in 2018."
+      ],
+      "explanation": "The deal was announced but never completed."
+     },
+     "proReasoning": "Check whether a famous deal actually closed before repeating it.",
+     "commonMistake": "Treating an announced deal as a done one.",
+     "mentalModel": "Announced is not closed.",
+     "sources": [
+      {
+       "url": "https://www.cnbc.com/2020/04/25/boeing-terminates-joint-venture-agreement-with-brazils-embraer.html",
+       "label": "CNBC, Boeing terminates Embraer deal, Apr 2020"
+      },
+      {
+       "url": "https://aviacionaldia.com/en/2026/01/embraer-delivered-244-aircraft-in-2025.html",
+       "label": "Aviación al Día, Embraer delivered 244 aircraft in 2025, Jan 2026"
+      }
+     ]
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:a9c29cca6323"
+  ]
+ },
+ {
+  "id": "0c9c32a7-67c2-509d-ba41-ccf3ba4ffeb7",
+  "market_id": "aerospace",
+  "day": 33,
+  "slot": 2,
+  "content": {
+   "id": "aerospace-d33-c2",
+   "title": "Losing the third option",
+   "lessonTitle": "How the third seller vanished",
+   "slot": 2,
+   "type": "connect",
+   "brief": {
+    "headline": "NASA paid two companies to build crew spacecraft, so one failure would not strand it. Airlines had a third small-jet seller in the CSeries, until it came under Airbus.",
+    "kicker": "Connect day 15 and day 33: a buyer's power comes from its options.",
+    "fullText": "On day 15 you saw NASA keep two crew providers on purpose. When Starliner struggled, Crew Dragon kept astronauts flying, and NASA did not pay Boeing's overruns.\n\nOn day 33 you saw the airline market lose a seller. The CSeries, a 110 to 130 seat jet from Bombardier, came under Airbus control in 2017 and now flies as the A220. Boeing's attempt to take Embraer's jets ended in 2020.\n\nFor airlines, a seller absorbed into the duopoly is one fewer option at the table.",
+    "sources": [
+     {
+      "url": "https://spacepolicyonline.com/news/boeings-starliner-losses-reach-2-billion/",
+      "label": "SpacePolicyOnline, Starliner losses reach $2 billion, Feb 2025"
+     },
+     {
+      "url": "https://www.dailydispatch.co.za/news/2025-03-18-nasa-astronauts-head-home-on-spacex-capsule-after-drawn-out-space-station-stay/",
+      "label": "Reuters via Daily Dispatch, astronauts head home on SpaceX, Mar 2025"
+     },
+     {
+      "url": "https://www.cnbc.com/2017/10/16/airbus-teams-up-with-bombardier-on-c-series-program.html",
+      "label": "CNBC, Airbus teams up with Bombardier on C Series, Oct 2017"
+     },
+     {
+      "url": "https://www.cnbc.com/2020/04/25/boeing-terminates-joint-venture-agreement-with-brazils-embraer.html",
+      "label": "CNBC, Boeing terminates Embraer deal, Apr 2020"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "faceOff",
+    "prompt": "Which buyer kept more options open?",
+    "left": {
+     "name": "NASA, buying crew rides",
+     "note": "Two funded providers"
+    },
+    "right": {
+     "name": "Airlines buying 110 to 130 seat jets",
+     "note": "CSeries now under Airbus"
+    },
+    "correctIndex": 0,
+    "explanation": "NASA built in a second option. Airlines saw an independent option folded into Airbus."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "The CSeries seated from 110 up to how many passengers?",
+    "min": 0,
+    "max": 200,
+    "value": 130,
+    "unit": "seats",
+    "explanation": "110 to 130 seats, the size Delta ordered 75 of."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "An interviewer asks how airlines keep bargaining power with only two big jet makers.",
+      "prompt": "What's the best answer?",
+      "options": [
+       "Sign long deals with one maker",
+       "Wait for a third maker to appear",
+       "Run real contests between both"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "That gives up your only alternative.",
+       "Rivals like the CSeries were absorbed.",
+       "Boeing reports intense price pressure from the rivalry."
+      ],
+      "explanation": "With two sellers left, keeping both in play is the buyer's main lever."
+     },
+     "proReasoning": "Tie buyer power to the number of real options, then say how to keep both alive.",
+     "commonMistake": "Assuming a third seller will arrive to restore competition.",
+     "mentalModel": "Options are power.",
+     "sources": [
+      {
+       "url": "https://www.sec.gov/Archives/edgar/data/12927/000162828026004357/ba-20251231.htm",
+       "label": "Boeing annual report (10-K), fiscal 2025"
+      },
+      {
+       "url": "https://www.cnbc.com/2017/10/16/airbus-teams-up-with-bombardier-on-c-series-program.html",
+       "label": "CNBC, Airbus teams up with Bombardier on C Series, Oct 2017"
+      }
+     ]
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A new jet maker wins orders from big airlines.",
+      "prompt": "What risk do you weigh first?",
+      "options": [
+       "It gets absorbed or blocked by a giant",
+       "It grows too fast for its managers",
+       "Airlines refuse to fly any new jets"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "The CSeries ended up inside Airbus after duty threats.",
+       "Growth was not the CSeries problem.",
+       "Delta had ordered 75 CSeries jets."
+      ],
+      "explanation": "A challenger's biggest risk is the response of the two giants."
+     },
+     "proReasoning": "Investors in a challenger price in how the incumbents will respond.",
+     "commonMistake": "Valuing a challenger as if the giants will stand still.",
+     "mentalModel": "Expect a response.",
+     "sources": [
+      {
+       "url": "https://www.cnbc.com/2017/10/16/airbus-teams-up-with-bombardier-on-c-series-program.html",
+       "label": "CNBC, Airbus teams up with Bombardier on C Series, Oct 2017"
+      },
+      {
+       "url": "https://avweb.com/news/boeing-loses-case-against-bombardier/",
+       "label": "AVweb, Boeing loses case against Bombardier, Jan 2018"
+      }
+     ]
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You build a regional jet. A giant offers a partnership that would keep your jet alive.",
+      "prompt": "What do you weigh?",
+      "options": [
+       "Whether the press will approve",
+       "Survival now against control later",
+       "Only the size of the cash payment"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Press coverage does not build jets.",
+       "Bombardier kept its jet flying but gave Airbus control.",
+       "Airbus paid no cash for its CSeries stake."
+      ],
+      "explanation": "The CSeries survived as the A220, under someone else's name."
+     },
+     "proReasoning": "Founders weigh what a partner brings, such as plants and reach, against the control they give up.",
+     "commonMistake": "Judging a partnership only by the cash on the table.",
+     "mentalModel": "Survival has a price.",
+     "sources": [
+      {
+       "url": "https://www.cnbc.com/2017/10/16/airbus-teams-up-with-bombardier-on-c-series-program.html",
+       "label": "CNBC, Airbus teams up with Bombardier on C Series, Oct 2017"
+      },
+      {
+       "url": "https://www.cnbc.com/2020/04/25/boeing-terminates-joint-venture-agreement-with-brazils-embraer.html",
+       "label": "CNBC, Boeing terminates Embraer deal, Apr 2020"
+      }
+     ]
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend asks why NASA paid two companies for one job.",
+      "prompt": "What's the link to airlines?",
+      "options": [
+       "Two sellers always cost the buyer less",
+       "NASA was ordered to do it by law",
+       "Two sellers keep a buyer from being stuck"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "NASA paid two companies to do one job.",
+       "NASA chose two providers to keep a backup.",
+       "Crew Dragon flew while Starliner struggled."
+      ],
+      "explanation": "Airlines face the same logic, now with two jet makers left."
+     },
+     "proReasoning": "Spot the same buyer logic in space and in airlines: a backup is power.",
+     "commonMistake": "Seeing a second supplier only as extra cost.",
+     "mentalModel": "A backup is power.",
+     "sources": [
+      {
+       "url": "https://spacepolicyonline.com/news/boeings-starliner-losses-reach-2-billion/",
+       "label": "SpacePolicyOnline, Starliner losses reach $2 billion, Feb 2025"
+      },
+      {
+       "url": "https://www.dailydispatch.co.za/news/2025-03-18-nasa-astronauts-head-home-on-spacex-capsule-after-drawn-out-space-station-stay/",
+       "label": "Reuters via Daily Dispatch, astronauts head home on SpaceX, Mar 2025"
+      }
+     ]
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:bbf57f2ce73a"
+  ]
+ },
+ {
+  "id": "d58db911-5723-5e10-9b0d-d80b74c1b452",
+  "market_id": "aerospace",
+  "day": 33,
+  "slot": 3,
+  "content": {
+   "id": "aerospace-d33-c3",
+   "title": "Two bids on the table",
+   "lessonTitle": "How the third seller vanished",
+   "slot": 3,
+   "type": "decide",
+   "brief": {
+    "headline": "You run a mid-size airline replacing 30 single-aisle jets. Airbus and Boeing both want the order.",
+    "kicker": "Decide: use day 33 to work the rivalry, knowing there are only two.",
+    "fullText": "Day 33 showed where power sits in this market. Boeing describes Airbus as an aggressive competitor intent on gaining share, and says the market brings intense pressure on pricing.\n\nBut there are only two sellers. The CSeries ended up inside Airbus, and Boeing's Embraer deal collapsed. List prices are close to fiction, so the real price comes from the contest.\n\nYou want the best price without losing your place in line.",
+    "sources": [
+     {
+      "url": "https://www.sec.gov/Archives/edgar/data/12927/000162828026004357/ba-20251231.htm",
+      "label": "Boeing annual report (10-K), fiscal 2025"
+     },
+     {
+      "url": "https://www.cnbc.com/2017/10/16/airbus-teams-up-with-bombardier-on-c-series-program.html",
+      "label": "CNBC, Airbus teams up with Bombardier on C Series, Oct 2017"
+     },
+     {
+      "url": "https://www.cnbc.com/2020/04/25/boeing-terminates-joint-venture-agreement-with-brazils-embraer.html",
+      "label": "CNBC, Boeing terminates Embraer deal, Apr 2020"
+     },
+     {
+      "url": "https://www.khaleejtimes.com/business/tariffs-could-lift-boeing-and-airbus-plane-prices-even-higher-2",
+      "label": "AFP via Khaleej Times, Tariffs could lift Boeing and Airbus plane prices, Apr 2025"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "multipleChoice",
+    "prompt": "Where does an airline's bargaining power come from here?",
+    "options": [
+     "Each maker believing it could lose",
+     "Asking each maker for its list price",
+     "Promising both makers the order"
+    ],
+    "correctIndex": 0,
+    "explanation": "A seller cuts its price when it fears the other will win."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "What duty did US Commerce propose on the CSeries, in percent?",
+    "min": 0,
+    "max": 500,
+    "value": 292,
+    "unit": "%",
+    "explanation": "292%, enough to keep the jet out of the US. It pushed Bombardier toward Airbus."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your CEO asks how to run the jet competition.",
+      "prompt": "What do you recommend?",
+      "options": [
+       "Keep both bids alive until the end",
+       "Pick a favorite early to save time",
+       "Let the makers set the timeline"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "A live rival keeps each bid sharp.",
+       "The other maker stops competing on price.",
+       "The seller then controls the pace."
+      ],
+      "explanation": "The contest is your only lever, so keep it running."
+     },
+     "proReasoning": "Fleet teams keep both makers bidding until the final round.",
+     "commonMistake": "Signaling a favorite before the price is settled.",
+     "mentalModel": "Keep the contest live.",
+     "sources": [
+      {
+       "url": "https://www.sec.gov/Archives/edgar/data/12927/000162828026004357/ba-20251231.htm",
+       "label": "Boeing annual report (10-K), fiscal 2025"
+      }
+     ]
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You hold airline shares. Management signed with one maker after short talks.",
+      "prompt": "What do you ask?",
+      "options": [
+       "Which seats the CEO prefers",
+       "Whether the rival maker really bid",
+       "Whether the jets are painted yet"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Personal taste is not a pricing lever.",
+       "Without a real rival bid, the price is likely weaker.",
+       "Paint has nothing to do with price."
+      ],
+      "explanation": "A deal without a contest probably left money on the table."
+     },
+     "proReasoning": "Investors ask whether a fleet order was contested before trusting its price.",
+     "commonMistake": "Assuming every fleet deal got the market price.",
+     "mentalModel": "No contest, no discount.",
+     "sources": [
+      {
+       "url": "https://www.sec.gov/Archives/edgar/data/12927/000162828026004357/ba-20251231.htm",
+       "label": "Boeing annual report (10-K), fiscal 2025"
+      },
+      {
+       "url": "https://www.khaleejtimes.com/business/tariffs-could-lift-boeing-and-airbus-plane-prices-even-higher-2",
+       "label": "AFP via Khaleej Times, Tariffs could lift Boeing and Airbus plane prices, Apr 2025"
+      }
+     ]
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You sell cabin software, and the airline has not chosen its jet yet.",
+      "prompt": "What do you do?",
+      "options": [
+       "Wait for the decision, then build",
+       "Lobby the airline to pick one",
+       "Make the product work on both jets"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "You lose months you could have used.",
+       "Picking the jet is not your role.",
+       "You win whichever way the airline goes."
+      ],
+      "explanation": "With only two possible jets, supporting both is affordable insurance."
+     },
+     "proReasoning": "Suppliers support both jets so the airline's choice never knocks them out.",
+     "commonMistake": "Tying your product to the jet you hope wins.",
+     "mentalModel": "Two jets, both ready.",
+     "sources": [
+      {
+       "url": "https://www.economicshelp.org/blog/glossary/duopoly/",
+       "label": "Economics Help, Duopoly"
+      }
+     ]
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend asks why airlines make such a show of their jet competitions.",
+      "prompt": "What's the best answer?",
+      "options": [
+       "A visible contest keeps both bids sharp",
+       "Airlines like to impress passengers",
+       "The law requires a public tender"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Boeing reports intense price pressure from the rivalry.",
+       "Few passengers know who bid.",
+       "Private airlines run their own process."
+      ],
+      "explanation": "Making the rivalry public reminds each maker it can lose."
+     },
+     "proReasoning": "Read a public jet contest as a negotiating move.",
+     "commonMistake": "Taking order publicity at face value.",
+     "mentalModel": "The show is a lever.",
+     "sources": [
+      {
+       "url": "https://www.sec.gov/Archives/edgar/data/12927/000162828026004357/ba-20251231.htm",
+       "label": "Boeing annual report (10-K), fiscal 2025"
+      }
+     ]
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:cdab7c8faeee"
+  ]
+ },
+ {
+  "id": "741b43e4-3dd2-5e20-b085-510b648b9a44",
+  "market_id": "aerospace",
+  "day": 34,
+  "slot": 1,
+  "content": {
+   "id": "aerospace-d34-c1",
+   "title": "33 orders out of the backlog",
+   "lessonTitle": "Unfilled orders versus backlog",
+   "slot": 1,
+   "type": "apply",
+   "brief": {
+    "headline": "In November 2025, Boeing moved 33 777X orders into its bucket for deals unlikely to close. That cut the jet's backlog to 473.",
+    "kicker": "Apply day 34: an order can stay on the books but leave the backlog.",
+    "fullText": "The move came as the 777X's first delivery slipped another year, to 2027. Boeing judged these orders unlikely to close, so they no longer counted in its backlog.\n\nBoeing's annual report says its ASC 606 adjustments in 2025 mainly involved the 777X and 787. It weighs whether customers are committed, whether they can pay, and sanctions or geopolitical events.\n\nA delay changes how much of an order book a company can count.",
+    "sources": [
+     {
+      "url": "https://www.flightglobal.com/airframers/boeing-removed-33-777x-orders-from-backlog-amid-certification-delays/165307.article",
+      "label": "FlightGlobal, Boeing removed 33 777X orders from backlog, Nov 2025"
+     },
+     {
+      "url": "https://www.sec.gov/Archives/edgar/data/12927/000162828026004357/ba-20251231.htm",
+      "label": "Boeing annual report (10-K), fiscal 2025"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "sortSignal",
+    "prompt": "Is it counted in the ASC 606 backlog?",
+    "buckets": [
+     "Counted",
+     "Not counted"
+    ],
+    "items": [
+     {
+      "text": "A firm 777X order from a solid buyer",
+      "bucket": 0
+     },
+     {
+      "text": "A firm 787 order paid on schedule",
+      "bucket": 0
+     },
+     {
+      "text": "One of the 33 moved 777X orders",
+      "bucket": 1
+     },
+     {
+      "text": "A purchase option on a 777X",
+      "bucket": 1
+     },
+     {
+      "text": "An announced order not yet firm",
+      "bucket": 1
+     }
+    ],
+    "explanation": "Backlog keeps firm orders likely to close. Doubtful orders, options and announcements stay out."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "After the move, how many 777Xs were left in backlog?",
+    "min": 0,
+    "max": 800,
+    "value": 473,
+    "unit": "jets",
+    "explanation": "473, after 33 orders were moved out."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your manager asks why the 777X backlog fell even though no one cancelled.",
+      "prompt": "What's the best answer?",
+      "options": [
+       "Boeing delivered 33 777Xs ahead of plan",
+       "Airbus took over all 33 of those orders",
+       "Orders unlikely to close were moved out"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "The first 777X delivery slipped to 2027.",
+       "Orders do not move between makers this way.",
+       "FlightGlobal reported 33 orders moved to that bucket."
+      ],
+      "explanation": "Under ASC 606, doubt is enough to take an order out of backlog."
+     },
+     "proReasoning": "Explain backlog changes by source: deliveries, cancellations or accounting adjustments.",
+     "commonMistake": "Assuming every drop in backlog is a cancellation.",
+     "mentalModel": "Name the cause.",
+     "sources": [
+      {
+       "url": "https://www.flightglobal.com/airframers/boeing-removed-33-777x-orders-from-backlog-amid-certification-delays/165307.article",
+       "label": "FlightGlobal, Boeing removed 33 777X orders from backlog, Nov 2025"
+      },
+      {
+       "url": "https://www.sec.gov/Archives/edgar/data/12927/000162828026004357/ba-20251231.htm",
+       "label": "Boeing annual report (10-K), fiscal 2025"
+      }
+     ]
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You model 777X revenue for the next five years.",
+      "prompt": "Which count do you start from?",
+      "options": [
+       "The 473 jets left in backlog",
+       "Every order ever announced",
+       "All orders plus all options"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "That count leaves out deals unlikely to close.",
+       "Announced orders are not firm.",
+       "Options are not counted in backlog."
+      ],
+      "explanation": "Start from the cautious count, then test the doubtful orders separately."
+     },
+     "proReasoning": "Investors build revenue from the adjusted backlog and treat the rest as upside.",
+     "commonMistake": "Counting doubtful orders as future revenue.",
+     "mentalModel": "Start cautious.",
+     "sources": [
+      {
+       "url": "https://www.flightglobal.com/airframers/boeing-removed-33-777x-orders-from-backlog-amid-certification-delays/165307.article",
+       "label": "FlightGlobal, Boeing removed 33 777X orders from backlog, Nov 2025"
+      },
+      {
+       "url": "https://www.sec.gov/Archives/edgar/data/12927/000162828026004357/ba-20251231.htm",
+       "label": "Boeing annual report (10-K), fiscal 2025"
+      }
+     ]
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You supply 777X cabin parts and planned on the full order book.",
+      "prompt": "What do you adjust?",
+      "options": [
+       "Stop all 777X work at once",
+       "Plan on backlog, not every order",
+       "Build for all orders anyway"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "473 jets still sat in backlog.",
+       "33 orders were judged unlikely to close.",
+       "You risk stock that no one takes."
+      ],
+      "explanation": "Match production to the orders most likely to be delivered."
+     },
+     "proReasoning": "Suppliers plan on the OEM's adjusted backlog, not its headline orders.",
+     "commonMistake": "Building to orders the OEM itself doubts.",
+     "mentalModel": "Build to backlog.",
+     "sources": [
+      {
+       "url": "https://www.flightglobal.com/airframers/boeing-removed-33-777x-orders-from-backlog-amid-certification-delays/165307.article",
+       "label": "FlightGlobal, Boeing removed 33 777X orders from backlog, Nov 2025"
+      }
+     ]
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend asks how an order can be signed yet not counted.",
+      "prompt": "What's the best answer?",
+      "options": [
+       "The airline forgot to pay a fee",
+       "The order was for another jet",
+       "The maker doubts it will close"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Doubt about payment is one factor, not a missed fee.",
+       "These were 777X orders all along.",
+       "Boeing moved 33 such 777X orders in November 2025."
+      ],
+      "explanation": "Accounting rules ask whether an order is likely to become a delivery."
+     },
+     "proReasoning": "Know that orders carry different levels of certainty.",
+     "commonMistake": "Treating every signed order as a sure sale.",
+     "mentalModel": "Signed is not certain.",
+     "sources": [
+      {
+       "url": "https://www.flightglobal.com/airframers/boeing-removed-33-777x-orders-from-backlog-amid-certification-delays/165307.article",
+       "label": "FlightGlobal, Boeing removed 33 777X orders from backlog, Nov 2025"
+      },
+      {
+       "url": "https://www.sec.gov/Archives/edgar/data/12927/000162828026004357/ba-20251231.htm",
+       "label": "Boeing annual report (10-K), fiscal 2025"
+      }
+     ]
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:2a45632313ea"
+  ]
+ },
+ {
+  "id": "509afd3d-cb04-501c-a988-dad483c5c3a5",
+  "market_id": "aerospace",
+  "day": 34,
+  "slot": 2,
+  "content": {
+   "id": "aerospace-d34-c2",
+   "title": "Two orders for every delivery",
+   "lessonTitle": "Unfilled orders versus backlog",
+   "slot": 2,
+   "type": "connect",
+   "brief": {
+    "headline": "From January to September 2026, Airbus booked 1,105 net orders and delivered 547 jets. Its backlog reached 9,310.",
+    "kicker": "Connect day 4 and day 34: book-to-bill, using net orders.",
+    "fullText": "On day 4 you met book-to-bill: new orders divided by deliveries. Above 1, the backlog grows.\n\nOn day 34 you saw why the order count matters. Gross orders count every new sale, and net orders subtract cancellations. Airbus booked 1,174 gross orders and 1,105 net in the first nine months of 2026.\n\nDivide 1,105 by 547 and book-to-bill comes to about 2. Airbus took in about two planes for every one it handed over.",
+    "sources": [
+     {
+      "url": "https://www.airbus.com/en/newsroom/press-releases/2026-10-airbus-reports-nine-month-9m-2026-results",
+      "label": "Airbus, nine-month 2026 results, Oct 2026"
+     },
+     {
+      "url": "https://www.airbus.com/en/newsroom/press-releases/2026-01-airbus-reports-793-commercial-aircraft-deliveries-in-2025",
+      "label": "Airbus, 2025 deliveries"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "buildChain",
+    "prompt": "Work out Airbus book-to-bill.",
+    "steps": [
+     "Start with 1,174 gross orders",
+     "Subtract cancellations to get 1,105 net",
+     "Divide by 547 deliveries",
+     "Book-to-bill comes to about 2",
+     "The backlog grows to 9,310"
+    ],
+    "explanation": "Use net orders, so cancelled sales do not inflate the ratio."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "How many cancellations separate 1,174 gross orders from 1,105 net?",
+    "min": 0,
+    "max": 200,
+    "value": 69,
+    "unit": "jets",
+    "explanation": "1,174 minus 1,105 is 69."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "An interviewer asks how strong Airbus demand looked in 2026.",
+      "prompt": "What's the best answer?",
+      "options": [
+       "Book-to-bill near 2, on net orders",
+       "Gross orders of 1,174, nothing more",
+       "The share price on results day"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "1,105 net against 547 deliveries is about 2.",
+       "Gross ignores cancellations.",
+       "Share prices move for many reasons."
+      ],
+      "explanation": "Book-to-bill on net orders is the cleanest demand signal."
+     },
+     "proReasoning": "Quote book-to-bill on net orders, with the numbers behind it.",
+     "commonMistake": "Quoting gross orders as if none were cancelled.",
+     "mentalModel": "Net over deliveries.",
+     "sources": [
+      {
+       "url": "https://www.airbus.com/en/newsroom/press-releases/2026-10-airbus-reports-nine-month-9m-2026-results",
+       "label": "Airbus, nine-month 2026 results, Oct 2026"
+      }
+     ]
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Airbus reports a book-to-bill near 2.",
+      "prompt": "What do you check next?",
+      "options": [
+       "Whether the logo changed",
+       "Whether deliveries can keep pace",
+       "Whether gross orders were higher"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Branding does not change the ratio.",
+       "Free cash flow was negative while jets waited.",
+       "Gross only adds back cancelled orders."
+      ],
+      "explanation": "Orders pile up fast. Cash depends on turning them into deliveries."
+     },
+     "proReasoning": "Investors pair a high book-to-bill with the delivery rate, since cash comes at handover.",
+     "commonMistake": "Celebrating orders without checking deliveries.",
+     "mentalModel": "Orders, then deliveries.",
+     "sources": [
+      {
+       "url": "https://www.airbus.com/en/newsroom/press-releases/2026-10-airbus-reports-nine-month-9m-2026-results",
+       "label": "Airbus, nine-month 2026 results, Oct 2026"
+      }
+     ]
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You sell to Airbus suppliers. Its backlog grew to 9,310.",
+      "prompt": "What does that tell you?",
+      "options": [
+       "Orders will dry up next quarter",
+       "Airbus will cut output soon",
+       "Demand for parts will last years"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Book-to-bill near 2 says the opposite.",
+       "Airbus plans to raise output, not cut it.",
+       "Airbus aims for 75 A320 family jets a month."
+      ],
+      "explanation": "A growing backlog and rising rates mean long, steady demand."
+     },
+     "proReasoning": "Founders use backlog and rate plans to size how long demand will last.",
+     "commonMistake": "Treating one quarter's orders as the whole story.",
+     "mentalModel": "Backlog sets the horizon.",
+     "sources": [
+      {
+       "url": "https://www.airbus.com/en/newsroom/press-releases/2026-10-airbus-reports-nine-month-9m-2026-results",
+       "label": "Airbus, nine-month 2026 results, Oct 2026"
+      }
+     ]
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend asks how Airbus can have a record order book while delivering hundreds.",
+      "prompt": "What's the best answer?",
+      "options": [
+       "It sells about two for each delivery",
+       "It counts every order twice over",
+       "It stopped delivering jets in 2026"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "1,105 net orders against 547 deliveries.",
+       "Net orders count each sale once, minus cancellations.",
+       "It delivered 547 jets by September."
+      ],
+      "explanation": "When orders outrun deliveries, the backlog keeps growing."
+     },
+     "proReasoning": "Picture the backlog as a tank: orders fill it, deliveries drain it.",
+     "commonMistake": "Thinking deliveries alone set the size of the order book.",
+     "mentalModel": "In faster than out.",
+     "sources": [
+      {
+       "url": "https://www.airbus.com/en/newsroom/press-releases/2026-10-airbus-reports-nine-month-9m-2026-results",
+       "label": "Airbus, nine-month 2026 results, Oct 2026"
+      }
+     ]
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:97d82cc8e8d0"
+  ]
+ },
+ {
+  "id": "b24a832b-27a9-50f9-8155-aaf848e3f5e4",
+  "market_id": "aerospace",
+  "day": 34,
+  "slot": 3,
+  "content": {
+   "id": "aerospace-d34-c3",
+   "title": "Which backlog to trust",
+   "lessonTitle": "Unfilled orders versus backlog",
+   "slot": 3,
+   "type": "decide",
+   "brief": {
+    "headline": "You are an analyst comparing plane makers' order books. Boeing lists 6,720 unfilled orders and a backlog of 6,130.",
+    "kicker": "Decide: use day 34 to pick the right count for each question.",
+    "fullText": "Day 34 showed two counts of the same order book. Unfilled orders include every firm order not yet delivered. The ASC 606 backlog leaves out orders where commitment or payment is in doubt.\n\nAt the end of 2025, the gap at Boeing was 590 airplanes. Cancellations that year totaled $11.1 billion, and the adjustments mainly involved the 777X and 787.\n\nYour job is to use the right count for each question you are asked.",
+    "sources": [
+     {
+      "url": "https://www.enca.com/business/boeing-annual-orders-top-airbus-first-time-2018",
+      "label": "AFP via eNCA, Boeing annual orders top Airbus, Jan 2026"
+     },
+     {
+      "url": "https://www.sec.gov/Archives/edgar/data/12927/000162828026004357/ba-20251231.htm",
+      "label": "Boeing annual report (10-K), fiscal 2025"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "faceOff",
+    "prompt": "Which count is better for forecasting revenue?",
+    "left": {
+     "name": "ASC 606 backlog",
+     "note": "6,130 airplanes at the end of 2025"
+    },
+    "right": {
+     "name": "Unfilled orders",
+     "note": "6,720 airplanes at the end of 2025"
+    },
+    "correctIndex": 0,
+    "explanation": "The backlog leaves out orders unlikely to close, so it is the safer base."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "Boeing's 2025 order cancellations totaled about how many billions of dollars?",
+    "min": 0,
+    "max": 30,
+    "value": 11,
+    "unit": "B",
+    "explanation": "About $11.1 billion, mainly 777X, 737 and 787 orders."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your boss asks for one number on Boeing demand for a slide.",
+      "prompt": "Which do you give?",
+      "options": [
+       "Announced orders, with options",
+       "Backlog, with unfilled orders noted",
+       "Unfilled orders, the bigger figure"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Options and announcements are not firm.",
+       "You show the cautious count and the gap.",
+       "The bigger number hides 590 doubtful jets."
+      ],
+      "explanation": "Lead with the cautious count and show the gap."
+     },
+     "proReasoning": "Give the adjusted figure and footnote the larger one, so no one is misled.",
+     "commonMistake": "Picking the bigger number because it looks better.",
+     "mentalModel": "Cautious first, gap noted.",
+     "sources": [
+      {
+       "url": "https://www.enca.com/business/boeing-annual-orders-top-airbus-first-time-2018",
+       "label": "AFP via eNCA, Boeing annual orders top Airbus, Jan 2026"
+      },
+      {
+       "url": "https://www.sec.gov/Archives/edgar/data/12927/000162828026004357/ba-20251231.htm",
+       "label": "Boeing annual report (10-K), fiscal 2025"
+      }
+     ]
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Two analysts quote Boeing demand 590 jets apart.",
+      "prompt": "What do you conclude?",
+      "options": [
+       "One of them made a simple typo",
+       "Boeing restated its past deliveries",
+       "One uses unfilled orders, one backlog"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "The gap matches the two official counts.",
+       "Deliveries are not the issue here.",
+       "6,720 against 6,130 is exactly that gap."
+      ],
+      "explanation": "Check which count each one uses before comparing."
+     },
+     "proReasoning": "Investors reconcile numbers by definition before arguing about them.",
+     "commonMistake": "Assuming one side is simply wrong.",
+     "mentalModel": "Check the definition.",
+     "sources": [
+      {
+       "url": "https://www.enca.com/business/boeing-annual-orders-top-airbus-first-time-2018",
+       "label": "AFP via eNCA, Boeing annual orders top Airbus, Jan 2026"
+      }
+     ]
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You plan production of a part used only on the 787.",
+      "prompt": "Which demand figure do you plan on?",
+      "options": [
+       "Firm orders in backlog",
+       "All announced orders",
+       "Every jet airlines want"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Backlog drops orders unlikely to close.",
+       "Announced orders can fall through.",
+       "Wishes are not orders."
+      ],
+      "explanation": "The 787 was one of the jets most affected by adjustments, so use the cautious count."
+     },
+     "proReasoning": "Suppliers plan on adjusted backlog for jets with many doubtful orders.",
+     "commonMistake": "Planning on announcements that may never firm up.",
+     "mentalModel": "Plan on what counts.",
+     "sources": [
+      {
+       "url": "https://www.sec.gov/Archives/edgar/data/12927/000162828026004357/ba-20251231.htm",
+       "label": "Boeing annual report (10-K), fiscal 2025"
+      }
+     ]
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend sees two different Boeing order numbers in the news.",
+      "prompt": "What's the best answer?",
+      "options": [
+       "Boeing updates them hour by hour",
+       "Both are right; one drops doubtful orders",
+       "One newspaper printed the wrong figure"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "They change with orders, deliveries and adjustments.",
+       "6,720 unfilled and 6,130 backlog are both official.",
+       "Both figures came from Boeing."
+      ],
+      "explanation": "Two honest counts can differ because they measure different things."
+     },
+     "proReasoning": "When two numbers clash, ask what each one counts.",
+     "commonMistake": "Assuming one figure must be an error.",
+     "mentalModel": "Different counts, both true.",
+     "sources": [
+      {
+       "url": "https://www.enca.com/business/boeing-annual-orders-top-airbus-first-time-2018",
+       "label": "AFP via eNCA, Boeing annual orders top Airbus, Jan 2026"
+      }
+     ]
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:36fd444968a1"
+  ]
+ },
+ {
+  "id": "ce0b2430-12c0-5714-8b98-0c16b13a5eda",
+  "market_id": "aerospace",
+  "day": 35,
+  "slot": 1,
+  "content": {
+   "id": "aerospace-d35-c1",
+   "title": "Zero tariffs, restored",
+   "lessonTitle": "The longest fight at the WTO",
+   "slot": 1,
+   "type": "apply",
+   "brief": {
+    "headline": "In September 2025, the US confirmed zero tariffs on aircraft and parts from the EU, backdated to September 1. The exemption came from a US-EU framework agreed that August.",
+    "kicker": "Apply day 35: trade rules can switch a cost on or off.",
+    "fullText": "The US and EU announced a trade agreement on July 28, 2025, and agreed a framework on August 21. On September 25, US guidance confirmed that EU aircraft and parts would enter tariff-free, for goods entered on or after September 1.\n\nThe deal restores the zero-for-zero approach of the 1979 Civil Aircraft Agreement. Swiss aircraft and parts were left out, because Switzerland is not in the EU.\n\nImporters still have to document origin and eligibility.",
+    "sources": [
+     {
+      "url": "https://www.gtlaw.com/ar/insights/2025/10/us-eu-trade-deal-restores-zero-tariffs-on-aircraft-and-aircraft-parts",
+      "label": "Greenberg Traurig, US-EU trade deal restores zero tariffs on aircraft and parts, Oct 2025"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "spotFake",
+    "prompt": "One of these is false. Tap it.",
+    "statements": [
+     "The exemption covers goods entered from September 1, 2025.",
+     "Swiss aircraft parts were covered by the deal.",
+     "The deal restores the 1979 zero-for-zero approach."
+    ],
+    "fakeIndex": 1,
+    "explanation": "Switzerland is not in the EU, so its aircraft and parts were left out."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "How many days after the July 28 announcement did the US publish its guidance on September 25?",
+    "min": 0,
+    "max": 150,
+    "value": 59,
+    "unit": "days",
+    "explanation": "Three days left in July, 31 in August and 25 in September: 59 days."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You work in trade compliance for a US airline importing Airbus jets built in the EU.",
+      "prompt": "What do you make sure of?",
+      "options": [
+       "Origin papers prove EU eligibility",
+       "The jets are painted before export",
+       "Each jet gets a new type certificate"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Importers must document origin and eligibility.",
+       "Paint has nothing to do with tariffs.",
+       "Tariff rules do not touch the type design."
+      ],
+      "explanation": "The zero rate depends on proving where the goods come from."
+     },
+     "proReasoning": "Compliance teams secure the paperwork that makes a zero tariff apply.",
+     "commonMistake": "Assuming the exemption applies without proof.",
+     "mentalModel": "No papers, no zero.",
+     "sources": [
+      {
+       "url": "https://www.gtlaw.com/ar/insights/2025/10/us-eu-trade-deal-restores-zero-tariffs-on-aircraft-and-aircraft-parts",
+       "label": "Greenberg Traurig, US-EU trade deal restores zero tariffs on aircraft and parts, Oct 2025"
+      }
+     ]
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You track a US airline that takes EU-built Airbus jets.",
+      "prompt": "What did the September 2025 guidance change?",
+      "options": [
+       "It set a 10% tariff on EU jets",
+       "It removed tariffs on EU aircraft",
+       "It banned EU jets from US airlines"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "That was the 2019 tariff on large civil aircraft.",
+       "Zero tariffs applied from September 1, 2025.",
+       "Nothing in the deal limits EU jets."
+      ],
+      "explanation": "A tariff cost on imported jets was switched off."
+     },
+     "proReasoning": "Investors watch trade rules as a direct line in an airline's fleet costs.",
+     "commonMistake": "Leaving trade policy out of fleet cost estimates.",
+     "mentalModel": "Tariffs are fleet costs.",
+     "sources": [
+      {
+       "url": "https://www.gtlaw.com/ar/insights/2025/10/us-eu-trade-deal-restores-zero-tariffs-on-aircraft-and-aircraft-parts",
+       "label": "Greenberg Traurig, US-EU trade deal restores zero tariffs on aircraft and parts, Oct 2025"
+      },
+      {
+       "url": "https://ustr.gov/about-us/policy-offices/press-office/press-releases/2019/october/us-wins-75-billion-award-airbus/",
+       "label": "USTR, US wins $7.5 billion award in Airbus case, Oct 2019"
+      }
+     ]
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You make aircraft parts in Switzerland and sell to US plane makers.",
+      "prompt": "What should you check?",
+      "options": [
+       "Nothing, since all of Europe is covered",
+       "Only your EU customers' paperwork",
+       "Whether US tariffs still apply to you"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Switzerland is not in the EU, so it was excluded.",
+       "Customs checks your own goods' origin.",
+       "Swiss goods were left out of the exemption."
+      ],
+      "explanation": "The deal covers EU goods. Swiss parts need their own answer."
+     },
+     "proReasoning": "Founders check trade deals by origin, not by region.",
+     "commonMistake": "Assuming a European location means EU treatment.",
+     "mentalModel": "Origin decides.",
+     "sources": [
+      {
+       "url": "https://www.gtlaw.com/ar/insights/2025/10/us-eu-trade-deal-restores-zero-tariffs-on-aircraft-and-aircraft-parts",
+       "label": "Greenberg Traurig, US-EU trade deal restores zero tariffs on aircraft and parts, Oct 2025"
+      }
+     ]
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend asks why a 1979 agreement mattered in 2025.",
+      "prompt": "What's the best answer?",
+      "options": [
+       "Its zero-tariff idea returned for jets",
+       "It was the year Airbus was founded",
+       "It ended the WTO dispute for good"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "The 2025 deal restored its zero-for-zero approach.",
+       "The 1979 agreement is about civil aircraft trade.",
+       "The dispute is paused, not settled."
+      ],
+      "explanation": "An old rule came back to set the cost of trading jets."
+     },
+     "proReasoning": "Notice how old trade rules keep shaping today's jet prices.",
+     "commonMistake": "Thinking trade rules for aircraft are new.",
+     "mentalModel": "Old rules, new deals.",
+     "sources": [
+      {
+       "url": "https://www.gtlaw.com/ar/insights/2025/10/us-eu-trade-deal-restores-zero-tariffs-on-aircraft-and-aircraft-parts",
+       "label": "Greenberg Traurig, US-EU trade deal restores zero tariffs on aircraft and parts, Oct 2025"
+      },
+      {
+       "url": "https://www.boe.es/doue/2026/1549/L00001-00002.pdf",
+       "label": "Official Journal of the EU, Implementing Regulation (EU) 2026/1549, Jul 2026"
+      }
+     ]
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:6b1fecb74893"
+  ]
+ },
+ {
+  "id": "14db3bfc-fbe0-57bc-b73e-589124c0f02e",
+  "market_id": "aerospace",
+  "day": 35,
+  "slot": 2,
+  "content": {
+   "id": "aerospace-d35-c2",
+   "title": "Two kinds of trade fight",
+   "lessonTitle": "The longest fight at the WTO",
+   "slot": 2,
+   "type": "connect",
+   "brief": {
+    "headline": "In 2017, Boeing used US trade law against Bombardier, and Commerce proposed 292% duties. For nearly 17 years, the US and EU fought over Airbus and Boeing aid at the WTO.",
+    "kicker": "Connect day 33 and day 35: trade law is a weapon in this duopoly.",
+    "fullText": "On day 33 you saw Boeing file a trade complaint against the CSeries. Commerce proposed 292% duties, but the US International Trade Commission voted unanimously against Boeing in January 2018.\n\nOn day 35 you saw the bigger fight. The WTO let the US target $7.5 billion of EU goods a year and the EU target $4 billion of US goods. Both sides suspended those tariffs in 2021.\n\nIn both cases, trade rules were used to raise a rival's costs.",
+    "sources": [
+     {
+      "url": "https://avweb.com/news/boeing-loses-case-against-bombardier/",
+      "label": "AVweb, Boeing loses case against Bombardier, Jan 2018"
+     },
+     {
+      "url": "https://www.cnbc.com/2017/10/16/airbus-teams-up-with-bombardier-on-c-series-program.html",
+      "label": "CNBC, Airbus teams up with Bombardier on C Series, Oct 2017"
+     },
+     {
+      "url": "https://ustr.gov/about-us/policy-offices/press-office/press-releases/2019/october/us-wins-75-billion-award-airbus/",
+      "label": "USTR, US wins $7.5 billion award in Airbus case, Oct 2019"
+     },
+     {
+      "url": "https://www.eeas.europa.eu/delegations/united-states-america/boeing-subsidy-case-world-trade-organization-confirms-eu-right-retaliate-against-4-billion-us_und_en",
+      "label": "EU Delegation to the US, WTO confirms EU right to retaliate in Boeing case, Oct 2020"
+     },
+     {
+      "url": "https://www.rappler.com/business/united-states-european-union-truce-aircraft-subsidy-conflict-june-15-2021",
+      "label": "Reuters via Rappler, US and EU truce in aircraft subsidy conflict, Jun 2021"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "sortSignal",
+    "prompt": "Which fight was it part of?",
+    "buckets": [
+     "CSeries case",
+     "WTO dispute"
+    ],
+    "items": [
+     {
+      "text": "292% duties proposed by Commerce",
+      "bucket": 0
+     },
+     {
+      "text": "A unanimous trade commission vote",
+      "bucket": 0
+     },
+     {
+      "text": "An Airbus assembly line in Alabama",
+      "bucket": 0
+     },
+     {
+      "text": "A $7.5 billion award to the US",
+      "bucket": 1
+     },
+     {
+      "text": "A Washington State tax program",
+      "bucket": 1
+     }
+    ],
+    "explanation": "One was a US trade case against a challenger. The other was a fight between governments at the WTO."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "The WTO let the US target how many billions of dollars of EU goods a year?",
+    "min": 0,
+    "max": 20,
+    "value": 7.5,
+    "unit": "B",
+    "explanation": "$7.5 billion a year, which the US called the largest award in WTO history."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "An interviewer asks how trade law shapes Airbus and Boeing.",
+      "prompt": "What's the best answer?",
+      "options": [
+       "It has never touched airliners",
+       "Both sides use it to raise rivals' costs",
+       "It only matters for defense exports"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "In 2019 the US set 10% tariffs on large civil aircraft.",
+       "The CSeries duties and the WTO tariffs both show it.",
+       "Both cases were about civil jets."
+      ],
+      "explanation": "Trade law is part of how this duopoly competes."
+     },
+     "proReasoning": "Use both cases to show that trade law is a competitive tool, not a side issue.",
+     "commonMistake": "Treating trade disputes as separate from competition.",
+     "mentalModel": "Trade law is a tool.",
+     "sources": [
+      {
+       "url": "https://avweb.com/news/boeing-loses-case-against-bombardier/",
+       "label": "AVweb, Boeing loses case against Bombardier, Jan 2018"
+      },
+      {
+       "url": "https://ustr.gov/about-us/policy-offices/press-office/press-releases/2019/october/us-wins-75-billion-award-airbus/",
+       "label": "USTR, US wins $7.5 billion award in Airbus case, Oct 2019"
+      }
+     ]
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A trade complaint threatens a new jet with huge US duties.",
+      "prompt": "What do you weigh?",
+      "options": [
+       "Proposed duties always take effect",
+       "Trade complaints never matter",
+       "Duties can be overturned or avoided"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "The ITC rejected Boeing's case.",
+       "This one still pushed Bombardier toward Airbus.",
+       "The ITC ruled against Boeing, and Airbus offered Alabama assembly."
+      ],
+      "explanation": "A proposed duty is a threat with uncertain odds, but it can still change the outcome."
+     },
+     "proReasoning": "Investors treat proposed duties as a risk with odds, and watch how the target responds.",
+     "commonMistake": "Assuming a proposed duty is final.",
+     "mentalModel": "Proposed is not final.",
+     "sources": [
+      {
+       "url": "https://avweb.com/news/boeing-loses-case-against-bombardier/",
+       "label": "AVweb, Boeing loses case against Bombardier, Jan 2018"
+      },
+      {
+       "url": "https://www.cnbc.com/2017/10/16/airbus-teams-up-with-bombardier-on-c-series-program.html",
+       "label": "CNBC, Airbus teams up with Bombardier on C Series, Oct 2017"
+      }
+     ]
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You plan to sell a new aircraft in the US against an incumbent.",
+      "prompt": "What do you prepare for?",
+      "options": [
+       "A trade complaint from the incumbent",
+       "A warm welcome from the incumbent",
+       "No scrutiny of your pricing at all"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Boeing filed one against the CSeries.",
+       "Boeing accused Bombardier of absurdly low prices.",
+       "Pricing was the heart of the complaint."
+      ],
+      "explanation": "Low launch prices invite a trade fight. Prepare the defense early."
+     },
+     "proReasoning": "Founders entering against an incumbent budget for legal and trade defense.",
+     "commonMistake": "Assuming a strong product will be left alone.",
+     "mentalModel": "Expect a fight.",
+     "sources": [
+      {
+       "url": "https://www.cnbc.com/2017/10/16/airbus-teams-up-with-bombardier-on-c-series-program.html",
+       "label": "CNBC, Airbus teams up with Bombardier on C Series, Oct 2017"
+      },
+      {
+       "url": "https://avweb.com/news/boeing-loses-case-against-bombardier/",
+       "label": "AVweb, Boeing loses case against Bombardier, Jan 2018"
+      }
+     ]
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend asks if plane makers really fight through trade law.",
+      "prompt": "What's the best answer?",
+      "options": [
+       "Only in courts in China",
+       "Yes, in trade cases and at the WTO",
+       "No, they only compete on design"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "These cases ran in the US and at the WTO.",
+       "The CSeries case and the WTO dispute both happened.",
+       "They also fight with trade law."
+      ],
+      "explanation": "The rivalry runs through trade bodies as well as showrooms."
+     },
+     "proReasoning": "See that big industrial rivalries often move into trade law.",
+     "commonMistake": "Thinking competition only happens on product.",
+     "mentalModel": "Rivals litigate too.",
+     "sources": [
+      {
+       "url": "https://avweb.com/news/boeing-loses-case-against-bombardier/",
+       "label": "AVweb, Boeing loses case against Bombardier, Jan 2018"
+      },
+      {
+       "url": "https://www.rappler.com/business/united-states-european-union-truce-aircraft-subsidy-conflict-june-15-2021",
+       "label": "Reuters via Rappler, US and EU truce in aircraft subsidy conflict, Jun 2021"
+      }
+     ]
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:ec522f8aa9fa"
+  ]
+ },
+ {
+  "id": "afe718af-b10e-5d03-9ff8-1506b6b4bc2f",
+  "market_id": "aerospace",
+  "day": 35,
+  "slot": 3,
+  "content": {
+   "id": "aerospace-d35-c3",
+   "title": "If the pause ends",
+   "lessonTitle": "The longest fight at the WTO",
+   "slot": 3,
+   "type": "decide",
+   "brief": {
+    "headline": "You plan fleet costs at a US airline taking EU-built jets. The EU has extended its tariff pause with no end date, but the dispute is not settled.",
+    "kicker": "Decide: use day 35 to plan for a rule that is paused, not gone.",
+    "fullText": "Day 35 showed how the WTO fight ended in a pause. In 2019, the US set 10% tariffs on large civil aircraft from the EU. Both sides suspended their tariffs in 2021 for five years.\n\nIn July 2026, the EU extended its suspension past July 10 with no end date, noting that the US had not reimposed its measures. Separately, a 2025 US-EU framework restored zero tariffs on EU aircraft and parts from September 1, 2025.\n\nYou have to plan deliveries for the next five years.",
+    "sources": [
+     {
+      "url": "https://ustr.gov/about-us/policy-offices/press-office/press-releases/2019/october/us-wins-75-billion-award-airbus/",
+      "label": "USTR, US wins $7.5 billion award in Airbus case, Oct 2019"
+     },
+     {
+      "url": "https://www.rappler.com/business/united-states-european-union-truce-aircraft-subsidy-conflict-june-15-2021",
+      "label": "Reuters via Rappler, US and EU truce in aircraft subsidy conflict, Jun 2021"
+     },
+     {
+      "url": "https://www.boe.es/doue/2026/1549/L00001-00002.pdf",
+      "label": "Official Journal of the EU, Implementing Regulation (EU) 2026/1549, Jul 2026"
+     },
+     {
+      "url": "https://www.gtlaw.com/ar/insights/2025/10/us-eu-trade-deal-restores-zero-tariffs-on-aircraft-and-aircraft-parts",
+      "label": "Greenberg Traurig, US-EU trade deal restores zero tariffs on aircraft and parts, Oct 2025"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "multipleChoice",
+    "prompt": "What is the status of the aircraft subsidy tariffs?",
+    "options": [
+     "In force at 25% on aircraft",
+     "Suspended, and they could return",
+     "Cancelled forever by the WTO"
+    ],
+    "correctIndex": 1,
+    "explanation": "They were suspended in 2021, and the EU extended the pause in 2026."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "What tariff did the US set on large civil aircraft from the EU in 2019, in percent?",
+    "min": 0,
+    "max": 40,
+    "value": 10,
+    "unit": "%",
+    "explanation": "10% on large civil aircraft, and 25% on farm and other goods."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your CFO asks whether to budget for aircraft tariffs.",
+      "prompt": "What do you advise?",
+      "options": [
+       "Assume tariffs return next month",
+       "Ignore them, since the dispute is over",
+       "Model it as a scenario, not the base case"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Nothing points to an imminent return.",
+       "The dispute is paused, not settled.",
+       "Tariffs are paused and zero today, but could return."
+      ],
+      "explanation": "A paused risk belongs in a scenario, sized and dated."
+     },
+     "proReasoning": "Finance teams keep paused risks in a scenario with a clear trigger.",
+     "commonMistake": "Dropping a risk because it is paused today.",
+     "mentalModel": "Paused risks stay modeled.",
+     "sources": [
+      {
+       "url": "https://www.boe.es/doue/2026/1549/L00001-00002.pdf",
+       "label": "Official Journal of the EU, Implementing Regulation (EU) 2026/1549, Jul 2026"
+      },
+      {
+       "url": "https://www.gtlaw.com/ar/insights/2025/10/us-eu-trade-deal-restores-zero-tariffs-on-aircraft-and-aircraft-parts",
+       "label": "Greenberg Traurig, US-EU trade deal restores zero tariffs on aircraft and parts, Oct 2025"
+      }
+     ]
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You hold shares in a US airline with many EU-built jets on order.",
+      "prompt": "Which risk do you track?",
+      "options": [
+       "US-EU trade talks breaking down",
+       "The paint color of the EU jets",
+       "Weather at the delivery center"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "A breakdown could bring aircraft tariffs back.",
+       "Color has no bearing on cost.",
+       "Weather does not set tariffs."
+      ],
+      "explanation": "Trade relations decide whether the zero rate holds."
+     },
+     "proReasoning": "Investors flag trade risk for airlines whose fleets cross the Atlantic.",
+     "commonMistake": "Assuming today's zero rate is permanent.",
+     "mentalModel": "Zero can change.",
+     "sources": [
+      {
+       "url": "https://www.boe.es/doue/2026/1549/L00001-00002.pdf",
+       "label": "Official Journal of the EU, Implementing Regulation (EU) 2026/1549, Jul 2026"
+      },
+      {
+       "url": "https://ustr.gov/about-us/policy-offices/press-office/press-releases/2019/october/us-wins-75-billion-award-airbus/",
+       "label": "USTR, US wins $7.5 billion award in Airbus case, Oct 2019"
+      }
+     ]
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You build a tool that tracks tariff rules for aircraft importers.",
+      "prompt": "Who needs it most?",
+      "options": [
+       "Airports selling duty-free perfume",
+       "Airlines and suppliers importing jets",
+       "Passengers choosing a window seat"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Duty-free shops do not import jets.",
+       "They face tariffs if the rules change.",
+       "Passengers do not import aircraft."
+      ],
+      "explanation": "Sell to whoever pays when a paused tariff comes back."
+     },
+     "proReasoning": "Founders target the buyer who carries the cost when rules change.",
+     "commonMistake": "Building for users who never touch aircraft trade.",
+     "mentalModel": "Sell to the exposed.",
+     "sources": [
+      {
+       "url": "https://www.gtlaw.com/ar/insights/2025/10/us-eu-trade-deal-restores-zero-tariffs-on-aircraft-and-aircraft-parts",
+       "label": "Greenberg Traurig, US-EU trade deal restores zero tariffs on aircraft and parts, Oct 2025"
+      }
+     ]
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend asks if the Airbus and Boeing trade war is over.",
+      "prompt": "What's the best answer?",
+      "options": [
+       "Over, with a winner declared",
+       "Still at full force today",
+       "Paused, with no end date for now"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "The WTO ruled against support for both makers.",
+       "The tariffs are suspended, not applied.",
+       "The EU extended its pause in July 2026."
+      ],
+      "explanation": "A truce, not a peace treaty."
+     },
+     "proReasoning": "Know the difference between a settled dispute and a paused one.",
+     "commonMistake": "Calling a suspension the end of the fight.",
+     "mentalModel": "Truce, not peace.",
+     "sources": [
+      {
+       "url": "https://www.boe.es/doue/2026/1549/L00001-00002.pdf",
+       "label": "Official Journal of the EU, Implementing Regulation (EU) 2026/1549, Jul 2026"
+      },
+      {
+       "url": "https://www.eeas.europa.eu/delegations/united-states-america/boeing-subsidy-case-world-trade-organization-confirms-eu-right-retaliate-against-4-billion-us_und_en",
+       "label": "EU Delegation to the US, WTO confirms EU right to retaliate in Boeing case, Oct 2020"
+      }
+     ]
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:1dec49532366"
+  ]
+ },
+ {
+  "id": "d57c936a-ae44-5c73-9654-1b1f5e8724ed",
+  "market_id": "aerospace",
+  "day": 36,
+  "slot": 1,
+  "content": {
+   "id": "aerospace-d36-c1",
+   "title": "Europe flies the C919",
+   "lessonTitle": "Can a third maker break in?",
+   "slot": 1,
+   "type": "apply",
+   "brief": {
+    "headline": "By July 2026, European test pilots had flown the C919 through stalls and spins in China. They found no major hardware risk, but approval was still years away.",
+    "kicker": "Apply day 36: a challenger needs approval in every market it sells to.",
+    "fullText": "EASA test pilots flew evaluation flights at Shanghai in January 2026. The C919 is in the third of four stages of EASA's process. The last stage is a full compliance review and formal approval.\n\nEASA's chief has said European validation could take three to six years, and one French outlet put likely approval between 2028 and 2031. COMAC had hoped for 2025.\n\nBy July 2026, 37 C919s had been delivered, all to Chinese airlines.",
+    "sources": [
+     {
+      "url": "https://www.air-journal.fr/2026-07-27-c919-les-pilotes-dessai-europeens-ne-relevent-aucun-risque-materiel-majeur-5276552.html",
+      "label": "Air Journal, C919: European test pilots find no major hardware risk, Jul 2026"
+     },
+     {
+      "url": "https://aviationa2z.com/index.php/2026/01/17/easa-pilots-flies-c919-for-certification-test/",
+      "label": "Aviation A2Z, EASA pilots fly the C919, Jan 2026"
+     },
+     {
+      "url": "https://avitrader.com/2025/04/29/easa-comacs-c919-certification-could-take-up-to-six-years/",
+      "label": "AviTrader, EASA says C919 certification could take up to six years, Apr 2025"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "buildChain",
+    "prompt": "Put the C919 approval path in order.",
+    "steps": [
+     "China certifies the C919 in 2022",
+     "Service starts in China in 2023",
+     "EASA pilots fly it in Shanghai in 2026",
+     "EASA reviews compliance and findings",
+     "Formal European approval"
+    ],
+    "explanation": "A home certificate opens the home market. Each new market needs its own approval."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "How many C919s had been delivered by July 2026?",
+    "min": 0,
+    "max": 100,
+    "value": 37,
+    "unit": "jets",
+    "explanation": "37, all to Chinese airlines."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "An interviewer asks when the C919 could fly for European airlines.",
+      "prompt": "What's the best answer?",
+      "options": [
+       "Never, since Europe has banned it",
+       "Not before EASA approval, years away",
+       "Already, since China certified it"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "EASA is actively validating it.",
+       "EASA said three to six years, from 2025.",
+       "A Chinese certificate does not cover Europe."
+      ],
+      "explanation": "Each regulator must approve the jet before its airlines can fly it."
+     },
+     "proReasoning": "Tie a challenger's market access to the approvals it still needs.",
+     "commonMistake": "Assuming one country's certificate works everywhere.",
+     "mentalModel": "One approval per market.",
+     "sources": [
+      {
+       "url": "https://avitrader.com/2025/04/29/easa-comacs-c919-certification-could-take-up-to-six-years/",
+       "label": "AviTrader, EASA says C919 certification could take up to six years, Apr 2025"
+      },
+      {
+       "url": "https://www.air-journal.fr/2026-07-27-c919-les-pilotes-dessai-europeens-ne-relevent-aucun-risque-materiel-majeur-5276552.html",
+       "label": "Air Journal, C919: European test pilots find no major hardware risk, Jul 2026"
+      }
+     ]
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "COMAC says it will sell C919s around the world.",
+      "prompt": "Which milestone do you watch?",
+      "options": [
+       "Its count of Chinese orders only",
+       "The C919's cabin colors",
+       "EASA and other foreign approvals"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Domestic orders do not open foreign markets.",
+       "Cabin design does not open markets.",
+       "Without them, it stays a domestic jet."
+      ],
+      "explanation": "Foreign approvals turn a domestic jet into a global rival."
+     },
+     "proReasoning": "Investors date a challenger's global story by its foreign approvals.",
+     "commonMistake": "Taking global sales plans at face value before approval.",
+     "mentalModel": "Approval opens markets.",
+     "sources": [
+      {
+       "url": "https://www.air-journal.fr/2026-07-27-c919-les-pilotes-dessai-europeens-ne-relevent-aucun-risque-materiel-majeur-5276552.html",
+       "label": "Air Journal, C919: European test pilots find no major hardware risk, Jul 2026"
+      },
+      {
+       "url": "https://avitrader.com/2025/04/29/easa-comacs-c919-certification-could-take-up-to-six-years/",
+       "label": "AviTrader, EASA says C919 certification could take up to six years, Apr 2025"
+      }
+     ]
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You build pilot training software and see the C919 growing.",
+      "prompt": "How do you time a European launch?",
+      "options": [
+       "Follow the EASA timeline before investing",
+       "Launch in Europe right away, this year",
+       "Write off Europe for good, never return"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Approval is the gate, likely years away.",
+       "European airlines cannot fly it yet.",
+       "EASA's chief expects COMAC to succeed."
+      ],
+      "explanation": "Time the launch to the approval, not to the headlines."
+     },
+     "proReasoning": "Founders time market entry to the regulator's calendar.",
+     "commonMistake": "Investing in a market before the product can legally fly there.",
+     "mentalModel": "Follow the approval.",
+     "sources": [
+      {
+       "url": "https://avitrader.com/2025/04/29/easa-comacs-c919-certification-could-take-up-to-six-years/",
+       "label": "AviTrader, EASA says C919 certification could take up to six years, Apr 2025"
+      },
+      {
+       "url": "https://www.air-journal.fr/2026-07-27-c919-les-pilotes-dessai-europeens-ne-relevent-aucun-risque-materiel-majeur-5276552.html",
+       "label": "Air Journal, C919: European test pilots find no major hardware risk, Jul 2026"
+      }
+     ]
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend saw that European pilots flew a Chinese jet.",
+      "prompt": "What was going on?",
+      "options": [
+       "It was a pilot exchange for fun",
+       "EASA was testing it for approval",
+       "A European airline had bought it"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "These were formal certification flights.",
+       "EASA pilots ran evaluation flights in China.",
+       "All 37 delivered went to Chinese airlines."
+      ],
+      "explanation": "Europe checks a foreign jet itself before its airlines can use it."
+     },
+     "proReasoning": "Know that regulators test foreign jets themselves.",
+     "commonMistake": "Thinking approval in one country is automatic elsewhere.",
+     "mentalModel": "Each regulator checks.",
+     "sources": [
+      {
+       "url": "https://aviationa2z.com/index.php/2026/01/17/easa-pilots-flies-c919-for-certification-test/",
+       "label": "Aviation A2Z, EASA pilots fly the C919, Jan 2026"
+      },
+      {
+       "url": "https://www.air-journal.fr/2026-07-27-c919-les-pilotes-dessai-europeens-ne-relevent-aucun-risque-materiel-majeur-5276552.html",
+       "label": "Air Journal, C919: European test pilots find no major hardware risk, Jul 2026"
+      }
+     ]
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:840157327dc9"
+  ]
+ },
+ {
+  "id": "7d14729f-3699-5a71-8f63-98282fe05f52",
+  "market_id": "aerospace",
+  "day": 36,
+  "slot": 2,
+  "content": {
+   "id": "aerospace-d36-c2",
+   "title": "Waiting on the same engines",
+   "lessonTitle": "Can a third maker break in?",
+   "slot": 2,
+   "type": "connect",
+   "brief": {
+    "headline": "At mid-2025, about 60 Airbus jets sat waiting for engines, mostly from CFM. COMAC delivered just 15 C919s that year, and credited more engines arriving late in the year.",
+    "kicker": "Connect day 28 and day 36: the challenger waits on the same engines.",
+    "fullText": "On day 28 you saw about 60 finished Airbus jets parked without engines at mid-2025. CFM, maker of the LEAP engine, accounted for most of the shortfall.\n\nOn day 36 you saw COMAC deliver 15 C919s against a plan of 75. The C919 flies on the LEAP-1C from GE Aerospace and Safran. A COMAC manager credited more engines and parts arriving in late 2025, and eight of the 15 came in November and December.\n\nThe slowest supplier sets the delivery count, for leaders and challengers alike.",
+    "sources": [
+     {
+      "url": "https://leehamnews.com/2025/07/31/airbus-1h2025-results-a-solid-first-half-except-for-60-gliders/",
+      "label": "Leeham News, Airbus first half 2025 and 60 gliders"
+     },
+     {
+      "url": "https://www.scmp.com/economy/china-economy/article/3341030/maker-chinas-c919-jet-set-pick-production-pace-after-delay-sources",
+      "label": "South China Morning Post, C919 maker set to pick up pace, Jan 2026"
+     },
+     {
+      "url": "https://www.freemalaysiatoday.com/category/business/2025/05/29/us-suspends-engine-sales-to-chinese-planemaker-comac",
+      "label": "Reuters via Free Malaysia Today, US suspends engine sales to COMAC, May 2025"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "sortSignal",
+    "prompt": "Airbus at mid-2025, or COMAC in 2025?",
+    "buckets": [
+     "Airbus",
+     "COMAC"
+    ],
+    "items": [
+     {
+      "text": "About 60 jets parked without engines",
+      "bucket": 0
+     },
+     {
+      "text": "CFM behind most of the shortfall",
+      "bucket": 0
+     },
+     {
+      "text": "15 jets delivered against 75 planned",
+      "bucket": 1
+     },
+     {
+      "text": "Eight deliveries in the last two months",
+      "bucket": 1
+     },
+     {
+      "text": "Flies on the LEAP-1C",
+      "bucket": 1
+     }
+    ],
+    "explanation": "Different makers, same constraint: engines."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "COMAC delivered 15 C919s in 2025. How many came in November and December?",
+    "min": 0,
+    "max": 20,
+    "value": 8,
+    "unit": "jets",
+    "explanation": "Eight, as more engines and parts arrived."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "An interviewer asks what limits COMAC's C919 output.",
+      "prompt": "What's the best answer?",
+      "options": [
+       "Too little demand from airlines",
+       "A ban on flying it in China",
+       "Engines and parts from suppliers"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "COMAC aimed for 75; supply, not demand, held it back.",
+       "The C919 has flown in China since 2023.",
+       "COMAC credited more engines for its late pickup."
+      ],
+      "explanation": "Like Airbus, COMAC is paced by its suppliers."
+     },
+     "proReasoning": "Name the shared bottleneck. It shows you see the supply chain, not just the brand.",
+     "commonMistake": "Blaming a challenger's slow output only on inexperience.",
+     "mentalModel": "Find the bottleneck.",
+     "sources": [
+      {
+       "url": "https://www.scmp.com/economy/china-economy/article/3341030/maker-chinas-c919-jet-set-pick-production-pace-after-delay-sources",
+       "label": "South China Morning Post, C919 maker set to pick up pace, Jan 2026"
+      },
+      {
+       "url": "https://www.freemalaysiatoday.com/category/business/2025/05/29/us-suspends-engine-sales-to-chinese-planemaker-comac",
+       "label": "Reuters via Free Malaysia Today, US suspends engine sales to COMAC, May 2025"
+      }
+     ]
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "COMAC targets 28 or more C919s in 2026.",
+      "prompt": "What do you track to test that?",
+      "options": [
+       "Engine deliveries to COMAC",
+       "COMAC's press releases on orders",
+       "The C919's seat count"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Engines set the pace, as late 2025 showed.",
+       "Orders do not build planes.",
+       "Seats do not limit output."
+      ],
+      "explanation": "Follow the scarce input to forecast output."
+     },
+     "proReasoning": "Investors forecast output from the scarcest input.",
+     "commonMistake": "Forecasting deliveries from orders alone.",
+     "mentalModel": "Track the scarce input.",
+     "sources": [
+      {
+       "url": "https://www.scmp.com/economy/china-economy/article/3341030/maker-chinas-c919-jet-set-pick-production-pace-after-delay-sources",
+       "label": "South China Morning Post, C919 maker set to pick up pace, Jan 2026"
+      }
+     ]
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You see both Airbus and COMAC waiting on LEAP engines.",
+      "prompt": "Where is the opening?",
+      "options": [
+       "Cheaper paint for airframes",
+       "Faster engine parts or repair",
+       "A new airline loyalty app"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Paint is not holding jets back.",
+       "Engines are the shared bottleneck.",
+       "That does not get more jets delivered."
+      ],
+      "explanation": "A fix for the shared bottleneck sells to both leaders and challengers."
+     },
+     "proReasoning": "Founders aim at the constraint that every maker shares.",
+     "commonMistake": "Building for a problem that is not holding deliveries back.",
+     "mentalModel": "Fix the shared constraint.",
+     "sources": [
+      {
+       "url": "https://leehamnews.com/2025/07/31/airbus-1h2025-results-a-solid-first-half-except-for-60-gliders/",
+       "label": "Leeham News, Airbus first half 2025 and 60 gliders"
+      },
+      {
+       "url": "https://www.scmp.com/economy/china-economy/article/3341030/maker-chinas-c919-jet-set-pick-production-pace-after-delay-sources",
+       "label": "South China Morning Post, C919 maker set to pick up pace, Jan 2026"
+      }
+     ]
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend thinks COMAC is slow only because it is new at building jets.",
+      "prompt": "What's the fuller view?",
+      "options": [
+       "It is slow only by choice",
+       "It has more engines than it needs",
+       "It also waits on engines, like Airbus"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "COMAC planned 75 and managed 15.",
+       "More engines arriving is what sped it up.",
+       "Airbus had about 60 jets waiting for engines too."
+      ],
+      "explanation": "Leaders and challengers share the same engine bottleneck."
+     },
+     "proReasoning": "Look for shared causes before blaming one company.",
+     "commonMistake": "Explaining a delay by the company alone.",
+     "mentalModel": "Shared causes first.",
+     "sources": [
+      {
+       "url": "https://leehamnews.com/2025/07/31/airbus-1h2025-results-a-solid-first-half-except-for-60-gliders/",
+       "label": "Leeham News, Airbus first half 2025 and 60 gliders"
+      },
+      {
+       "url": "https://www.scmp.com/economy/china-economy/article/3341030/maker-chinas-c919-jet-set-pick-production-pace-after-delay-sources",
+       "label": "South China Morning Post, C919 maker set to pick up pace, Jan 2026"
+      }
+     ]
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:e818f9c1badf"
+  ]
+ },
+ {
+  "id": "06a2b3bd-24c0-5666-adc0-5aa4529d2f68",
+  "market_id": "aerospace",
+  "day": 36,
+  "slot": 3,
+  "content": {
+   "id": "aerospace-d36-c3",
+   "title": "A slot or a challenger?",
+   "lessonTitle": "Can a third maker break in?",
+   "slot": 3,
+   "type": "decide",
+   "brief": {
+    "headline": "You run an airline outside China that needs 20 single-aisle jets by 2029. Airbus and Boeing are booked for years, and COMAC is ramping up slowly.",
+    "kicker": "Decide: use day 36 to weigh a challenger against a long wait.",
+    "fullText": "Day 36 showed where the duopoly strains. At the end of September 2026, Airbus had 9,310 jets on order and Boeing over 6,300. Airbus aimed to deliver about 870 jets in 2026.\n\nCOMAC delivered 15 C919s in 2025 against a plan of 75 and aimed for 28 or more in 2026. To fly for you, the C919 needs your regulator's approval, and EASA put its own timeline at three to six years from 2025.\n\nYou have to decide where to place your order.",
+    "sources": [
+     {
+      "url": "https://www.airbus.com/en/newsroom/press-releases/2026-10-airbus-reports-nine-month-9m-2026-results",
+      "label": "Airbus, nine-month 2026 results, Oct 2026"
+     },
+     {
+      "url": "https://boeing.mediaroom.com/2026-10-27-Boeing-Reports-Third-Quarter-Results",
+      "label": "Boeing, third quarter 2026 results, Oct 2026"
+     },
+     {
+      "url": "https://www.scmp.com/economy/china-economy/article/3341030/maker-chinas-c919-jet-set-pick-production-pace-after-delay-sources",
+      "label": "South China Morning Post, C919 maker set to pick up pace, Jan 2026"
+     },
+     {
+      "url": "https://avitrader.com/2025/04/29/easa-comacs-c919-certification-could-take-up-to-six-years/",
+      "label": "AviTrader, EASA says C919 certification could take up to six years, Apr 2025"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "faceOff",
+    "prompt": "Which order carries more approval risk for you?",
+    "left": {
+     "name": "A C919 order",
+     "note": "Still awaiting EASA validation"
+    },
+    "right": {
+     "name": "An A320neo or 737 MAX order",
+     "note": "Certified, but delivery slots are years out"
+    },
+    "correctIndex": 0,
+    "explanation": "The duopoly jets carry waiting risk. The C919 carries approval risk on top."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "COMAC aimed for at least how many C919 deliveries in 2026?",
+    "min": 0,
+    "max": 80,
+    "value": 28,
+    "unit": "jets",
+    "explanation": "28 or more, against Airbus aiming for about 870 jets."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your CEO asks for a recommendation on the 20 jets.",
+      "prompt": "What do you recommend?",
+      "options": [
+       "Secure duopoly slots and watch COMAC",
+       "Bet the whole fleet on the C919 now",
+       "Wait for a new maker to appear"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "You get certified jets and keep an option open.",
+       "Approval and output are still uncertain.",
+       "COMAC is the only challenger, and it is slow."
+      ],
+      "explanation": "Lock in what is certain, and keep the challenger as a later option."
+     },
+     "proReasoning": "Recommend the certain path first, with a clear trigger to revisit the challenger.",
+     "commonMistake": "Betting the fleet on a jet your regulator has not approved.",
+     "mentalModel": "Certain first, option second.",
+     "sources": [
+      {
+       "url": "https://www.airbus.com/en/newsroom/press-releases/2026-10-airbus-reports-nine-month-9m-2026-results",
+       "label": "Airbus, nine-month 2026 results, Oct 2026"
+      },
+      {
+       "url": "https://avitrader.com/2025/04/29/easa-comacs-c919-certification-could-take-up-to-six-years/",
+       "label": "AviTrader, EASA says C919 certification could take up to six years, Apr 2025"
+      }
+     ]
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "An airline you cover orders C919s to grow outside China.",
+      "prompt": "What risk do you flag?",
+      "options": [
+       "Jets arriving ahead of plan",
+       "Approval and delivery delays",
+       "Too many engines arriving"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Its record runs the other way.",
+       "COMAC delivered 15 of 75 in 2025, and approvals lag.",
+       "Engines were a constraint, not a glut."
+      ],
+      "explanation": "A challenger order adds two risks: approval and output."
+     },
+     "proReasoning": "Investors haircut growth plans that rely on unapproved, slow-ramping jets.",
+     "commonMistake": "Modeling challenger jets as if they arrive on time.",
+     "mentalModel": "Two risks, not one.",
+     "sources": [
+      {
+       "url": "https://www.scmp.com/economy/china-economy/article/3341030/maker-chinas-c919-jet-set-pick-production-pace-after-delay-sources",
+       "label": "South China Morning Post, C919 maker set to pick up pace, Jan 2026"
+      },
+      {
+       "url": "https://avitrader.com/2025/04/29/easa-comacs-c919-certification-could-take-up-to-six-years/",
+       "label": "AviTrader, EASA says C919 certification could take up to six years, Apr 2025"
+      }
+     ]
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You run a startup that leases out used single-aisle jets.",
+      "prompt": "What does the long wait for new jets mean for you?",
+      "options": [
+       "Demand for used jets will vanish",
+       "New jets are easy to get, so exit",
+       "Airlines need jets you can supply now"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Long waits push airlines toward available jets.",
+       "Both leaders are booked for years.",
+       "With 9,310 Airbus jets on order, waits are long."
+      ],
+      "explanation": "When new jets are scarce, available ones are worth more."
+     },
+     "proReasoning": "Founders turn the duopoly's waiting list into demand for whatever can fly now.",
+     "commonMistake": "Ignoring how long waits for new jets lift demand for available ones.",
+     "mentalModel": "Scarcity is demand.",
+     "sources": [
+      {
+       "url": "https://www.airbus.com/en/newsroom/press-releases/2026-10-airbus-reports-nine-month-9m-2026-results",
+       "label": "Airbus, nine-month 2026 results, Oct 2026"
+      },
+      {
+       "url": "https://boeing.mediaroom.com/2026-10-27-Boeing-Reports-Third-Quarter-Results",
+       "label": "Boeing, third quarter 2026 results, Oct 2026"
+      }
+     ]
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend asks why airlines do not just buy more Chinese jets.",
+      "prompt": "What's the best answer?",
+      "options": [
+       "Output is small and approvals lag abroad",
+       "Chinese jets cannot fly at all",
+       "Airlines are banned from buying them"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "15 delivered in 2025, and EASA needs years.",
+       "The C919 has carried passengers since 2023.",
+       "The issue is approval, not a ban."
+      ],
+      "explanation": "Small output and missing approvals keep the C919 mostly at home."
+     },
+     "proReasoning": "Explain a challenger's limits with numbers: output and approvals.",
+     "commonMistake": "Explaining it with politics alone.",
+     "mentalModel": "Output and approvals.",
+     "sources": [
+      {
+       "url": "https://www.scmp.com/economy/china-economy/article/3341030/maker-chinas-c919-jet-set-pick-production-pace-after-delay-sources",
+       "label": "South China Morning Post, C919 maker set to pick up pace, Jan 2026"
+      },
+      {
+       "url": "https://avitrader.com/2025/04/29/easa-comacs-c919-certification-could-take-up-to-six-years/",
+       "label": "AviTrader, EASA says C919 certification could take up to six years, Apr 2025"
+      }
+     ]
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:57a6ab8bac55"
+  ]
+ },
+ {
+  "id": "ba1b48bf-08c7-52e4-afd6-c31f6d1ad13e",
+  "market_id": "aerospace",
+  "day": 37,
+  "slot": 1,
+  "content": {
+   "id": "aerospace-d37-c1",
+   "title": "Suites with doors, one aisle",
+   "lessonTitle": "One aisle or two",
+   "slot": 1,
+   "type": "apply",
+   "brief": {
+    "headline": "American Airlines took its first A321XLR in October 2025. It has lie-flat suites, can fly about 5,400 miles and seats 155 people along a single aisle.",
+    "kicker": "Apply day 37: premium seats and range do not make a widebody.",
+    "fullText": "American planned to fly the jet first from New York to Los Angeles in December 2025, then seasonal New York to Edinburgh flights from March 8, 2026. Business Insider said it can fly up to 11 hours nonstop.\n\nIts business class has Flagship Suites with privacy doors. The doors stayed locked for months, until the FAA approved them in July 2026.\n\nNone of that changes the type. The A321XLR has one aisle, so it is a narrow-body.",
+    "sources": [
+     {
+      "url": "https://www.yahoo.com/news/articles/americans-airbus-a321xlr-finally-crossing-185205781.html",
+      "label": "Business Insider via Yahoo News, American's A321XLR is finally crossing the Atlantic, Oct 2025"
+     },
+     {
+      "url": "https://aviationa2z.com/index.php/2026/07/20/faa-clears-american-airlines-a321xlr-suite-doors-but-theres-a-catch/",
+      "label": "Aviation A2Z, FAA clears American A321XLR suite doors, Jul 2026"
+     },
+     {
+      "url": "https://planefyi.com/guides/aircraft-comparison/narrow-vs-widebody/",
+      "label": "PlaneFYI, Narrow-body vs wide-body: what's the difference?"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "sortSignal",
+    "prompt": "Does it tell you a jet is a widebody?",
+    "buckets": [
+     "Points to widebody",
+     "Tells you nothing"
+    ],
+    "items": [
+     {
+      "text": "A second aisle in the cabin",
+      "bucket": 0
+     },
+     {
+      "text": "Seven to ten seats across in economy",
+      "bucket": 0
+     },
+     {
+      "text": "Up to 11 hours of range",
+      "bucket": 1
+     },
+     {
+      "text": "Lie-flat suites with doors",
+      "bucket": 1
+     },
+     {
+      "text": "Flights to Edinburgh",
+      "bucket": 1
+     }
+    ],
+    "explanation": "Aisles and seats across mark a widebody. Range and premium suites now fly on narrow-bodies too, as the XLR shows."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "The A321XLR can fly about 5,400 miles. Up to how many hours nonstop is that?",
+    "min": 0,
+    "max": 20,
+    "value": 11,
+    "unit": "hours",
+    "explanation": "Up to 11 hours, per Business Insider. That is long haul in a single-aisle jet."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You interview for a fleet planning role at American. They ask how you would classify the A321XLR.",
+      "prompt": "What's your answer?",
+      "options": [
+       "A small widebody, since it flies 11 hours",
+       "A regional jet, since it seats only 155",
+       "A long-range narrow-body: one aisle"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Range does not make a jet a widebody.",
+       "Seat count alone does not set the type.",
+       "Right: the aisle count sets the type."
+      ],
+      "explanation": "One aisle makes it a narrow-body, however far it flies or however plush its suites."
+     },
+     "proReasoning": "Strong candidates define the type by the cabin layout, then explain what the range adds. That shows they will not mix up type and mission.",
+     "commonMistake": "Calling any long-haul jet a widebody.",
+     "mentalModel": "Aisles define the type."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A report counts American's A321XLRs as widebody capacity on Atlantic routes.",
+      "prompt": "What's the problem?",
+      "options": [
+       "They are narrow-bodies on long routes",
+       "Nothing, since they cross the Atlantic",
+       "They should count only as cargo jets"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Mixing types hides how fleets are really shifting.",
+       "Crossing an ocean does not make a jet a widebody.",
+       "They are passenger jets with 155 seats."
+      ],
+      "explanation": "Long-range narrow-bodies are their own group. Count them by aisles to see how fleets change."
+     },
+     "proReasoning": "Investors keep categories clean, because the narrow-body share of long haul is exactly what is changing.",
+     "commonMistake": "Letting range decide which bucket a jet goes in.",
+     "mentalModel": "Count by aisles, then by mission."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You sell lie-flat seats sized for twin-aisle cabins. American's A321XLR has suites in a single-aisle cabin.",
+      "prompt": "What does that tell you?",
+      "options": [
+       "Suites with doors are never certified",
+       "Single-aisle cabins now buy premium seats",
+       "Premium seats belong only on widebodies"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "The FAA approved its suite doors in July 2026.",
+       "A new set of buyers needs seats sized for one aisle.",
+       "The XLR already flies lie-flat suites."
+      ],
+      "explanation": "Premium long haul now happens in one aisle. That is a market for seats built to fit it."
+     },
+     "proReasoning": "Founders follow where the cabin goes. Lie-flat seats now fly in single-aisle jets, which need different sizes.",
+     "commonMistake": "Assuming premium seats sell only to widebody operators.",
+     "mentalModel": "Follow the cabin, not the label."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You book New York to Edinburgh on American and see lie-flat suites. A friend says it must be a big widebody.",
+      "prompt": "Who's right?",
+      "options": [
+       "Your friend, since it crosses the ocean",
+       "Neither, since suites mean a private jet",
+       "You, if you count one aisle on board"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Range does not make a jet a widebody.",
+       "It is an airliner with 155 seats.",
+       "The A321XLR has one aisle, so it is a narrow-body."
+      ],
+      "explanation": "Count the aisles. One aisle means a narrow-body, even with suites and an ocean below."
+     },
+     "proReasoning": "A quick check beats a guess: look down the cabin and count the aisles.",
+     "commonMistake": "Judging the type by the route or the seats.",
+     "mentalModel": "Count the aisles."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:caa5f998af51"
+  ]
+ },
+ {
+  "id": "c40012f6-3451-52e5-9704-eb816bbf61c3",
+  "market_id": "aerospace",
+  "day": 37,
+  "slot": 2,
+  "content": {
+   "id": "aerospace-d37-c2",
+   "title": "A backlog with one aisle",
+   "lessonTitle": "One aisle or two",
+   "slot": 2,
+   "type": "connect",
+   "brief": {
+    "headline": "On day 4, Airbus ended 2025 with a record backlog of 8,754 aircraft. Only 1,124 of them were widebodies.",
+    "kicker": "Connect day 4 and day 37: the backlog is mostly single-aisle.",
+    "fullText": "Day 4 read a plane maker through three numbers: backlog, deliveries and book-to-bill. Backlog is demand already signed, and Airbus's reached a record 8,754 aircraft.\n\nDay 37 splits it by aisle. Airbus counted 1,124 widebodies in that backlog, about 13%. The rest are A220 and A320 family jets, and Airbus calls the A220 single-aisle too.\n\nAirbus's 20-year forecast points the same way: some 34,250 single-aisle jets against 9,170 widebodies.",
+    "sources": [
+     {
+      "url": "https://www.airbus.com/en/newsroom/press-releases/2026-01-airbus-reports-793-commercial-aircraft-deliveries-in-2025",
+      "label": "Airbus, 2025 deliveries"
+     },
+     {
+      "url": "https://www.airbus.com/sites/g/files/jlcbta136/files/2024-10/Airbus-A220-Facts-and-Figures-October-2024.pdf",
+      "label": "Airbus, A220 facts and figures, Oct 2024"
+     },
+     {
+      "url": "https://www.airbus.com/en/newsroom/press-releases/2025-06-airbus-global-market-forecast-2025-people-and-commerce-driving-air-traffic-growth",
+      "label": "Airbus, Global Market Forecast 2025, Jun 2025"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "multipleChoice",
+    "prompt": "About what share of Airbus's year-end 2025 backlog was widebodies?",
+    "options": [
+     "About three in four",
+     "About one in eight",
+     "About half"
+    ],
+    "correctIndex": 1,
+    "explanation": "1,124 of 8,754 is about 13%, roughly one jet in eight."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "Of the 8,754 jets in the backlog, 1,124 were widebodies. About how many thousand were not?",
+    "min": 0,
+    "max": 10,
+    "value": 7.6,
+    "unit": "K",
+    "explanation": "8,754 minus 1,124 is 7,630, about 7.6 thousand."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "An interviewer at an Airbus supplier asks where most of the signed demand sits.",
+      "prompt": "What's your best answer?",
+      "options": [
+       "In single-aisle jets, about 7 in 8",
+       "In widebodies, since they cost more",
+       "Split evenly across the families"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Right: only 1,124 of 8,754 were widebodies.",
+       "Price per jet is not the same as volume.",
+       "The split is far from even."
+      ],
+      "explanation": "Signed demand is mostly single-aisle. That is where supplier volume comes from."
+     },
+     "proReasoning": "Strong candidates know where the units are, not just the famous jets. One clean ratio from the backlog lands well.",
+     "commonMistake": "Equating the biggest jet with the biggest business.",
+     "mentalModel": "Volume lives in one aisle."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You compare two Airbus suppliers. One sells only to single-aisle lines, the other only to widebodies.",
+      "prompt": "Which has more signed units ahead of it?",
+      "options": [
+       "Both about the same",
+       "The single-aisle supplier",
+       "The widebody-only supplier"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "The gap is nearly seven to one.",
+       "About 7,630 backlog jets are not widebodies.",
+       "Widebodies were 1,124 of the backlog."
+      ],
+      "explanation": "Units follow the backlog. Revenue per set differs, so check both units and price."
+     },
+     "proReasoning": "Investors start with units, then price per set. The backlog tells you how many sets are already signed.",
+     "commonMistake": "Valuing a supplier on famous programs instead of volumes.",
+     "mentalModel": "Units first, then price."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your cabin part fits single-aisle or twin-aisle jets, not both. You can certify one version first.",
+      "prompt": "Which do you certify first?",
+      "options": [
+       "Twin-aisle, for the bigger cabins",
+       "Whichever has the newest design",
+       "Single-aisle, where most jets are"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Fewer jets means fewer chances to sell.",
+       "Age does not tell you how many jets you can reach.",
+       "About 7 in 8 of Airbus's backlog jets are not widebodies."
+      ],
+      "explanation": "Most signed jets have one aisle. Start where the most planes will be built."
+     },
+     "proReasoning": "Founders pick the market with the most units for a first certification, since each approval takes time.",
+     "commonMistake": "Starting with the most glamorous jet.",
+     "mentalModel": "Go where the units are."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend guesses that most jets Airbus has left to build are big twin-aisle planes.",
+      "prompt": "What's the reality?",
+      "options": [
+       "Mostly single-aisle jets",
+       "Mostly twin-aisle widebodies",
+       "About half and half"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Only 1,124 of 8,754 were widebodies.",
+       "Widebodies were about one in eight.",
+       "The split is far from even."
+      ],
+      "explanation": "The jets you board most often have one aisle, and so do most jets still to come."
+     },
+     "proReasoning": "Headlines feature big jets, but the order book is mostly single-aisle.",
+     "commonMistake": "Assuming the famous jets are the common ones.",
+     "mentalModel": "Count the backlog, not headlines."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:ec3c925970e9"
+  ]
+ },
+ {
+  "id": "f98ba551-0423-5790-b7ce-eb34a511e9ee",
+  "market_id": "aerospace",
+  "day": 37,
+  "slot": 3,
+  "content": {
+   "id": "aerospace-d37-c3",
+   "title": "A long route for a single-aisle airline",
+   "lessonTitle": "One aisle or two",
+   "slot": 3,
+   "type": "decide",
+   "brief": {
+    "headline": "You run an airline that flies only A320 family jets. A new route across the Atlantic would sell about 170 seats a day.",
+    "kicker": "Decide whether long range needs a second aisle.",
+    "fullText": "In December 2024, the FAA added an A321XLR model to the A320 family's type certificate data sheet. Iberia flies its XLRs with 182 seats from Madrid to Boston.\n\nA widebody would add a second aircraft family. Airbus pitches commonality across its A320, A330 and A350 families, with crews holding multi type ratings.\n\nRange no longer forces the choice. The question is how many seats the route can fill.",
+    "sources": [
+     {
+      "url": "https://dosunos.aviacionline.com/airbus-a321xlr-key-certification-details-and-future-u-s-launch-plans",
+      "label": "Aviacionline, A321XLR certification details and US launch plans"
+     },
+     {
+      "url": "https://aviacionaldia.com/en/2025/11/iberia-strengthens-its-leadership-in-long-haul-with-a321xlr-a-year-of-efficiency-and-transatlantic-expansion.html",
+      "label": "Aviación al Día, Iberia and a year of the A321XLR, Nov 2025"
+     },
+     {
+      "url": "https://www.airbus.com/en/newsroom/press-releases/2025-06-airbus-global-market-forecast-2025-people-and-commerce-driving-air-traffic-growth",
+      "label": "Airbus, Global Market Forecast 2025, Jun 2025"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "faceOff",
+    "prompt": "Which fits a route selling about 170 seats a day?",
+    "left": {
+     "name": "A321XLR",
+     "note": "One aisle, 182 seats at Iberia"
+    },
+    "right": {
+     "name": "A 270-seat widebody",
+     "note": "United's 2019 average seats per widebody flight"
+    },
+    "correctIndex": 0,
+    "explanation": "The XLR seats about what the route sells. A 270-seat jet would fly about 100 seats empty each trip."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "Iberia's XLR has 182 seats and the route sells 170. About what load factor is that, in percent?",
+    "min": 0,
+    "max": 100,
+    "value": 93,
+    "unit": "%",
+    "explanation": "170 divided by 182 is about 93%. On a 270-seat jet it would be about 63%."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your CEO asks whether the airline needs widebodies to go long haul.",
+      "prompt": "What do you answer?",
+      "options": [
+       "Yes, one-aisle jets cannot cross oceans",
+       "No, an A320 family XLR can fly it",
+       "Yes, long haul always needs two aisles"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "The XLR crosses the Atlantic today.",
+       "Iberia flies Madrid to Boston on one.",
+       "Aisles no longer limit range."
+      ],
+      "explanation": "Range and aisles are separate questions now. Demand decides the size."
+     },
+     "proReasoning": "Strong planners separate the type question from the range question. They size the plane to the seats the route sells.",
+     "commonMistake": "Equating long haul with widebodies.",
+     "mentalModel": "Range is not the reason for a second aisle."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "The airline plans to add a widebody fleet for this one transatlantic route.",
+      "prompt": "What do you question first?",
+      "options": [
+       "Whether the route is long enough",
+       "Whether widebodies look more premium",
+       "Why a second family for one route"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "XLRs already fly the Atlantic.",
+       "Looks do not fill 270 seats.",
+       "An XLR in the same family could fly it."
+      ],
+      "explanation": "Ask what the second family buys that an XLR in the current family cannot."
+     },
+     "proReasoning": "Investors ask what each new fleet type buys the airline. A second family must earn its place.",
+     "commonMistake": "Accepting a new aircraft family for a single route.",
+     "mentalModel": "Make each fleet type earn its place."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You build crew scheduling software. A client is adding A321XLRs to its A320 fleet.",
+      "prompt": "What should your product handle?",
+      "options": [
+       "Long-haul duties on a single-aisle type",
+       "Only short-haul A320 rotations",
+       "Widebody crews, since it is long haul"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Its A320 family jets will now fly ocean routes.",
+       "The XLR flies to Boston and beyond.",
+       "The XLR has one aisle and sits in the A320 family."
+      ],
+      "explanation": "Long haul now happens in A320 family jets. Tools built for short rotations need to stretch."
+     },
+     "proReasoning": "Founders follow fleet changes into product. XLRs put long flights into fleets planned for short ones.",
+     "commonMistake": "Assuming long haul still means widebody crews only.",
+     "mentalModel": "Long haul, single aisle."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your favourite budget airline flies only A320 family jets. It announces a route across the Atlantic.",
+      "prompt": "Can it fly that route without a widebody?",
+      "options": [
+       "Only with a stop in Iceland",
+       "Yes, with an A321XLR",
+       "No, oceans need two aisles"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "The XLR flies Madrid to Boston nonstop.",
+       "Iberia flies one from Madrid to Boston.",
+       "Aisles have nothing to do with range."
+      ],
+      "explanation": "The A321XLR is an A320 family jet that crosses the Atlantic."
+     },
+     "proReasoning": "Knowing the XLR exists explains a lot of new routes.",
+     "commonMistake": "Thinking only widebodies cross oceans.",
+     "mentalModel": "One aisle can cross an ocean."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:b9d5f9b87305"
+  ]
+ },
+ {
+  "id": "f03c6e27-9c2f-50ee-8128-1a14a8c86ca7",
+  "market_id": "aerospace",
+  "day": 38,
+  "slot": 1,
+  "content": {
+   "id": "aerospace-d38-c1",
+   "title": "Who pays when fuel jumps",
+   "lessonTitle": "Fuel by the trip, fares by the seat",
+   "slot": 1,
+   "type": "apply",
+   "brief": {
+    "headline": "In spring 2026, jet fuel surged. Air France-KLM added €50 to long-haul round trips, and Cathay Pacific raised fuel surcharges by 34% from April 1.",
+    "kicker": "Apply day 38: seats pay for a cost that comes by the trip.",
+    "fullText": "A Reuters roundup in April 2026 listed how airlines responded. Delta cut planned capacity by about 3.5 percentage points. SAS cancelled 1,000 flights in April. United said it would cut unprofitable flights over the next two quarters.\n\nTwo levers show up again and again: charge each seat more, or fly fewer trips. Fuel comes with every trip, so cancelling a weak flight saves its whole fuel bill.\n\nIn June, IATA put the year's fuel bill at $350 billion.",
+    "sources": [
+     {
+      "url": "https://www.omanobserver.om/ampArticle/1187584",
+      "label": "Reuters factbox via Oman Observer, what airlines are doing as fuel costs surge, Apr 2026"
+     },
+     {
+      "url": "https://www.iata.org/en/pressroom/2026-releases/06-07-middle-east-disruptions-high-fuel-prices-halve-airline-industry-profitability/",
+      "label": "IATA, Middle East disruptions and high fuel prices halve airline profitability, Jun 2026"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "sortSignal",
+    "prompt": "Is it a seat lever or a trip lever?",
+    "buckets": [
+     "Charge each seat more",
+     "Fly fewer trips"
+    ],
+    "items": [
+     {
+      "text": "Air France-KLM adds €50 per round trip",
+      "bucket": 0
+     },
+     {
+      "text": "Cathay's 34% surcharge rise",
+      "bucket": 0
+     },
+     {
+      "text": "SAS cancels 1,000 April flights",
+      "bucket": 1
+     },
+     {
+      "text": "United cuts unprofitable flights",
+      "bucket": 1
+     },
+     {
+      "text": "Delta trims planned capacity",
+      "bucket": 1
+     }
+    ],
+    "explanation": "Surcharges raise revenue per seat. Cancellations remove whole trips and their fuel."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "Fuel went from $252 billion in 2025 to an expected $350 billion in 2026. About what percent rise is that?",
+    "min": 0,
+    "max": 100,
+    "value": 39,
+    "unit": "%",
+    "explanation": "About 39%, which IATA called nearly 40%."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You are a revenue analyst at a long-haul airline in April 2026. Fuel is up sharply.",
+      "prompt": "What do you propose first?",
+      "options": [
+       "A surcharge per seat, priced by distance",
+       "Cut every long-haul route at once",
+       "Wait for fuel to fall before acting"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Air India moved to a distance-based grid in 2026.",
+       "Cutting all long haul throws away profitable flights too.",
+       "Every week of waiting pays the higher bill."
+      ],
+      "explanation": "Longer trips burn more fuel, so a charge that rises with distance matches the cost to the seat."
+     },
+     "proReasoning": "Analysts tie the price to the cost driver. A charge that grows with distance follows the fuel.",
+     "commonMistake": "Treating every fuel response as a route cut.",
+     "mentalModel": "Price the cost where it falls."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Two airlines face the same fuel shock. One hedged much of its fuel; the other did not.",
+      "prompt": "Which is better placed this year?",
+      "options": [
+       "No difference, since fuel is fuel",
+       "The one that hedged much of its fuel",
+       "The one with no hedges at all"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Hedges change what an airline pays in the near term.",
+       "IAG held fares because much of its fuel was hedged.",
+       "It pays the higher price on every trip."
+      ],
+      "explanation": "Hedges buy time. easyJet expected higher fares once its hedges ran out."
+     },
+     "proReasoning": "Investors check hedge cover and when it expires. A hedge delays the hit rather than removing it.",
+     "commonMistake": "Assuming every airline feels a fuel spike at once.",
+     "mentalModel": "Hedges delay, not delete.",
+     "sources": [
+      {
+       "url": "https://www.omanobserver.om/ampArticle/1187584",
+       "label": "Reuters factbox via Oman Observer, what airlines are doing as fuel costs surge, Apr 2026"
+      }
+     ]
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You sell software that predicts which flights will fly mostly empty. It is April 2026.",
+      "prompt": "Who is your most urgent buyer?",
+      "options": [
+       "Airports planning new terminal gates",
+       "Lessors ordering more new aircraft",
+       "Airlines deciding which flights to cut"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Gates are not the fuel problem.",
+       "Lessors do not choose which flights to fly.",
+       "United and SAS were cutting weak flights."
+      ],
+      "explanation": "When fuel jumps, airlines hunt for trips that do not pay. Tools that find them sell."
+     },
+     "proReasoning": "Founders time their pitch to the pain. In a fuel spike, empty trips are the pain.",
+     "commonMistake": "Pitching growth tools in a cost crisis.",
+     "mentalModel": "Sell to the pain of the moment."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your long-haul fare on Air France rises by €50 in spring 2026.",
+      "prompt": "Why?",
+      "options": [
+       "Fuel soared, and each seat carries it",
+       "A new meal course in economy",
+       "A doubled airport tax that spring"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Air France-KLM raised long-haul fares by €50 per round trip.",
+       "The rise was tied to fuel, not meals.",
+       "The cause was jet fuel prices."
+      ],
+      "explanation": "Airlines pass part of a per-trip cost onto each seat."
+     },
+     "proReasoning": "Fares follow fuel. When jet fuel spikes, surcharges follow.",
+     "commonMistake": "Blaming the airline for padding the price.",
+     "mentalModel": "Fuel shows up in fares."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:b8774fac75af"
+  ]
+ },
+ {
+  "id": "8d351ec7-efdc-57a6-8514-719648a8bb22",
+  "market_id": "aerospace",
+  "day": 38,
+  "slot": 2,
+  "content": {
+   "id": "aerospace-d38-c2",
+   "title": "New jets stuck, fuel savings lost",
+   "lessonTitle": "Fuel by the trip, fares by the seat",
+   "slot": 2,
+   "type": "connect",
+   "brief": {
+    "headline": "On day 28, about 60 finished Airbus jets sat waiting for engines. In June 2026, IATA said the lack of new aircraft had halted fuel efficiency gains in 2024 and 2025, for the first time in history.",
+    "kicker": "Connect day 28 and day 38: missing jets raise the fuel bill.",
+    "fullText": "Day 28 showed engine shortages leaving about 60 A320 family airframes parked at mid-2025. A jet that does not arrive cannot replace an older one.\n\nDay 38 showed why that hurts now. IATA expects fuel to be 31.4% of operating costs in 2026, and says the older fleets airlines are operating need more maintenance.\n\nThe backlog reached 18,100 aircraft in May 2026, IATA said, up from 17,000 in 2024.",
+    "sources": [
+     {
+      "url": "https://leehamnews.com/2025/07/31/airbus-1h2025-results-a-solid-first-half-except-for-60-gliders/",
+      "label": "Leeham News, Airbus first half 2025 and 60 gliders"
+     },
+     {
+      "url": "https://www.iata.org/en/pressroom/2026-releases/06-07-middle-east-disruptions-high-fuel-prices-halve-airline-industry-profitability/",
+      "label": "IATA, Middle East disruptions and high fuel prices halve airline profitability, Jun 2026"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "buildChain",
+    "prompt": "Follow the chain from engines to costs.",
+    "steps": [
+     "Engine makers fall behind",
+     "Finished jets wait without engines",
+     "Older jets keep flying longer",
+     "Fuel efficiency gains stall",
+     "A fuel spike costs airlines more"
+    ],
+    "explanation": "Late engines delay new jets, so older ones fly on. When fuel jumps, that costs more."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "IATA said the backlog reached about how many thousand aircraft in May 2026?",
+    "min": 0,
+    "max": 30,
+    "value": 18,
+    "unit": "K",
+    "explanation": "About 18,100, up from 17,000 in 2024."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You interview in airline fleet planning. They ask what late deliveries cost, besides lost growth.",
+      "prompt": "What's your answer?",
+      "options": [
+       "Lower fares from extra capacity",
+       "Higher fuel and upkeep on older jets",
+       "Nothing, old jets are already paid for"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Delays cut capacity; they do not add it.",
+       "IATA ties the shortfall to stalled fuel gains and upkeep.",
+       "Owned jets still burn fuel and need more maintenance."
+      ],
+      "explanation": "A late new jet means more time flying the old one, with its fuel and maintenance."
+     },
+     "proReasoning": "Planners count the cost of the jet they keep, not just the one that is late.",
+     "commonMistake": "Seeing a late delivery only as missed growth.",
+     "mentalModel": "A late jet extends an old one."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "An airline says late deliveries hurt its growth but not its costs.",
+      "prompt": "What do you check?",
+      "options": [
+       "How its brand scores with travelers",
+       "How many airport lounges it runs",
+       "Fuel and upkeep costs on older jets"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Brand does not move the fuel bill.",
+       "Lounges are not where delays cost money.",
+       "IATA says older fleets need more maintenance."
+      ],
+      "explanation": "Delays show up in unit costs, through fuel and upkeep on the jets that stay."
+     },
+     "proReasoning": "Investors look for delay costs in the fuel and maintenance lines, not only in capacity.",
+     "commonMistake": "Taking the airline at its word on costs.",
+     "mentalModel": "Delays hide in unit costs."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You make tools that cut fuel burn on older jets. New deliveries keep slipping.",
+      "prompt": "How do you pitch?",
+      "options": [
+       "Old jets will fly longer than planned",
+       "New jets will arrive any month now",
+       "Fuel will soon get cheap again"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "IATA says the lack of new jets stalled efficiency gains.",
+       "The backlog grew to 18,100 by May 2026.",
+       "IATA expected fuel near $152 a barrel in 2026."
+      ],
+      "explanation": "Delays keep old jets flying longer. That is the window for fixes that cut their fuel."
+     },
+     "proReasoning": "Founders sell into the gap the factories leave. Older jets flying longer need lower fuel burn.",
+     "commonMistake": "Building only for the newest aircraft.",
+     "mentalModel": "Sell to the fleet that is flying."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your plane looks older than you expected for a flight in 2026.",
+      "prompt": "What is the likely reason?",
+      "options": [
+       "Older jets now burn far less fuel",
+       "New jets are late, so old ones fly on",
+       "Travelers prefer the older cabins"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "New jets are the efficient ones.",
+       "The backlog hit 18,100 jets in May 2026.",
+       "Nothing suggests travelers asked for this."
+      ],
+      "explanation": "Late deliveries keep older aircraft in service."
+     },
+     "proReasoning": "Connect what you see to supply. Late deliveries keep old jets flying.",
+     "commonMistake": "Thinking airlines keep old jets only by choice.",
+     "mentalModel": "Late jets, older fleets."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:7383339ff88f"
+  ]
+ },
+ {
+  "id": "671fb277-5a19-549d-9d5f-c9171bf675d7",
+  "market_id": "aerospace",
+  "day": 38,
+  "slot": 3,
+  "content": {
+   "id": "aerospace-d38-c3",
+   "title": "Which flights to cut",
+   "lessonTitle": "Fuel by the trip, fares by the seat",
+   "slot": 3,
+   "type": "decide",
+   "brief": {
+    "headline": "You run network planning at an airline during the 2026 fuel shock. You must cut 5% of trips, and you fly both narrow-bodies and widebodies.",
+    "kicker": "Decide where cuts save the most fuel and lose the least revenue.",
+    "fullText": "Day 38's facts: IATA expects fuel to reach 31.4% of operating costs in 2026, and airlines to keep about $4.50 per passenger.\n\nIn 2019, a United widebody burned 1,971 gallons of fuel per block hour, against 875 for a large narrow-body. A widebody trip with many empty seats burns a lot of fuel for little revenue.\n\nA full flight already pays its way. A thin one on a big jet may not.",
+    "sources": [
+     {
+      "url": "https://www.iata.org/en/pressroom/2026-releases/06-07-middle-east-disruptions-high-fuel-prices-halve-airline-industry-profitability/",
+      "label": "IATA, Middle East disruptions and high fuel prices halve airline profitability, Jun 2026"
+     },
+     {
+      "url": "https://web.mit.edu/airlinedata/www/2020%2012%20Month%20Documents/Aircraft%20and%20Related/Carrier%20Detail%20Block%20Hour/United%20Airlines%20Aircraft%20Operating%20Statistics-%20Cost%20Per%20Block%20Hour%20%28Unadjusted%29.htm",
+      "label": "MIT Airline Data Project, United Airlines cost per block hour by fleet, 2019-2020"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "spotFake",
+    "prompt": "One of these is false. Tap it.",
+    "statements": [
+     "A United widebody burned over twice the fuel per hour in 2019.",
+     "IATA expected fuel to be 31.4% of 2026 costs.",
+     "Cutting a full flight saves the most money."
+    ],
+    "fakeIndex": 2,
+    "explanation": "A full flight pays its way. Cut trips that fly with many empty seats."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "A widebody burns 1,971 gallons an hour and a narrow-body 875. About what percent more does the widebody burn?",
+    "min": 0,
+    "max": 300,
+    "value": 125,
+    "unit": "%",
+    "explanation": "About 125% more, a bit over twice as much per hour."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your vice president asks which flights to cut first to save fuel.",
+      "prompt": "What's your rule?",
+      "options": [
+       "The shortest flights, whatever the load",
+       "Any flight with a full cabin",
+       "Big jets on routes with many empty seats"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Short full flights may still earn well.",
+       "Full cabins already pay for their trip.",
+       "They burn the most fuel per paying passenger."
+      ],
+      "explanation": "Cut where fuel per paying passenger is highest."
+     },
+     "proReasoning": "Good planners rank flights by profit per trip, not by distance or habit.",
+     "commonMistake": "Cutting by route length alone.",
+     "mentalModel": "Cut the emptiest big jets first."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "An airline cuts 5% of trips but keeps every half-empty widebody route for prestige.",
+      "prompt": "How do you read it?",
+      "options": [
+       "It kept its costliest empty seats",
+       "It made the cuts in the right places",
+       "Prestige routes always earn the most"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Empty seats on big jets cost the most to fly.",
+       "Cuts elsewhere save less fuel per seat.",
+       "A half-empty route is not earning the most."
+      ],
+      "explanation": "The right cuts target fuel spent on empty seats."
+     },
+     "proReasoning": "Investors judge cuts by where they fall. A 5% cut saves more fuel when it hits the emptiest big jets.",
+     "commonMistake": "Counting the size of the cut but not its target.",
+     "mentalModel": "Judge where cuts land."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "An airline asks for a tool to choose which 5% of flights to cut.",
+      "prompt": "Which data matters most?",
+      "options": [
+       "Lounge visits by route",
+       "Fuel per trip against seats sold",
+       "Crew seniority on each route"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Lounge use does not show trip profit.",
+       "It pairs the per-trip cost with per-seat revenue.",
+       "Seniority does not show which trips lose money."
+      ],
+      "explanation": "Join cost per trip with revenue per seat, and the weak flights show up."
+     },
+     "proReasoning": "Founders pick the data that matches how the money moves: per trip and per seat.",
+     "commonMistake": "Building on data that does not touch fuel or fares.",
+     "mentalModel": "Trip cost meets seat revenue."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your airline cancels one daily widebody flight but keeps the narrow-body one on the same route.",
+      "prompt": "Why that one?",
+      "options": [
+       "Widebodies are unsafe in a fuel shock",
+       "Narrow-bodies do not use jet fuel",
+       "The big jet flew with many empty seats"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Safety had nothing to do with it.",
+       "Both burn jet fuel; the big one burns more.",
+       "Empty seats on a big jet burn the most fuel."
+      ],
+      "explanation": "Cutting the emptiest big trip saves the most fuel for the least lost revenue."
+     },
+     "proReasoning": "Airlines cut where fuel buys the fewest paying passengers.",
+     "commonMistake": "Assuming cuts are random.",
+     "mentalModel": "Fuel per paying seat decides."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:1c61a9c634f8"
+  ]
+ },
+ {
+  "id": "92c42964-9220-5097-943a-830d620efa10",
+  "market_id": "aerospace",
+  "day": 39,
+  "slot": 1,
+  "content": {
+   "id": "aerospace-d39-c1",
+   "title": "Waiting for the 777-9",
+   "lessonTitle": "When only one engine fits",
+   "slot": 1,
+   "type": "apply",
+   "brief": {
+    "headline": "In November 2023, Emirates ordered 90 more Boeing 777X jets. In July 2026, it expected its first 777-9 in the second quarter of 2027. \"We should have had them in April 2020,\" its president said.",
+    "kicker": "Apply day 39: a buyer with few options has to wait.",
+    "fullText": "The 777X flies only with the GE9X, which Boeing picked in 2013. Emirates' other large twin option, the Airbus A350-1000, flies only with the Rolls-Royce Trent XWB, and Emirates has held off ordering it over engine durability.\n\nAt Farnborough in July 2026, Tim Clark called the 2027 timing a bit of a stretch and said that at some point Emirates would have to draw a line in the sand. The FAA told Reuters it expected to certify the plane late in 2026 or early in 2027.\n\nWith few alternatives, the buyer's main power is its voice and its next order.",
+    "sources": [
+     {
+      "url": "https://tribune.com.pk/story/2446489/emirates-holds-off-on-airbus-a350-order-in-engine-rift",
+      "label": "Reuters via Express Tribune, Emirates holds off on Airbus A350 order in engine rift, Nov 2023"
+     },
+     {
+      "url": "https://www.thenationalnews.com/business/aviation/2026/07/21/emirates-airline-boss-uses-farnborough-to-air-industry-frustrations-over-jets-and-engines/",
+      "label": "Reuters via The National, Emirates boss airs frustrations over jets and engines, Jul 2026"
+     },
+     {
+      "url": "https://flightglobal.com/boeing-selects-ge9x-to-exclusively-power-the-777x/109104.article",
+      "label": "FlightGlobal, Boeing selects GE9X to exclusively power the 777X, Mar 2013"
+     },
+     {
+      "url": "https://www.rolls-royce.com/media/our-stories/discover/2020/trent-xwb-in-focus-poweroftrent.aspx",
+      "label": "Rolls-Royce, Trent XWB in focus, Aug 2020"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "multipleChoice",
+    "prompt": "Why can Emirates not take its 777X order to another engine maker?",
+    "options": [
+     "Rolls-Royce refused to sell to Emirates",
+     "Boeing picked the GE9X as its only engine",
+     "Emirates owns shares in GE Aerospace"
+    ],
+    "correctIndex": 1,
+    "explanation": "The 777X has one engine. The buyer can wait, push or buy a different plane."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "Emirates expected the 777-9 in April 2020 and now expects it in 2027. About how many years late is that?",
+    "min": 0,
+    "max": 12,
+    "value": 7,
+    "unit": "years",
+    "explanation": "About seven years, from April 2020 to the second quarter of 2027."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You join Emirates fleet planning in 2026. The 777-9 is years late and the A350-1000 engine is in dispute.",
+      "prompt": "What is your priority?",
+      "options": [
+       "Plan on the 777-9 arriving early",
+       "Keep the current fleet flying longer",
+       "Cancel every 777X order right away"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Clark called 2027 a bit of a stretch.",
+       "The current fleet is what flies until 2027.",
+       "With few options, cancelling leaves a gap."
+      ],
+      "explanation": "When the new jet is late and alternatives are thin, the fleet you have must last."
+     },
+     "proReasoning": "Planners protect what flies today while they wait. Late jets mean longer lives for current ones.",
+     "commonMistake": "Building plans on the latest promised date.",
+     "mentalModel": "Plan on the fleet you have."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Emirates' 777-9s are about seven years late. You hold GE Aerospace shares.",
+      "prompt": "What does the exclusive engine deal mean for GE?",
+      "options": [
+       "Rolls-Royce wins share on late jets",
+       "Delays move the engines to Airbus",
+       "Every 777X delivered carries GE9X engines"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Rolls-Royce has no engine on the 777X.",
+       "The GE9X was designed for the 777X family.",
+       "Boeing picked the GE9X to exclusively power the 777X."
+      ],
+      "explanation": "Delays push GE's revenue later, but the exclusive position keeps it."
+     },
+     "proReasoning": "Investors separate timing from position. A delay moves revenue, while exclusivity decides who gets it.",
+     "commonMistake": "Treating a delay as lost market share.",
+     "mentalModel": "Delay moves timing, not position."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your company leases out used widebodies. Emirates is still waiting for its 777-9s.",
+      "prompt": "What do you expect?",
+      "options": [
+       "Demand for jets that can fill the gap",
+       "Falling demand for used widebodies",
+       "Airlines cutting all long-haul flying"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Late new jets mean current ones must fly longer.",
+       "Delays make existing widebodies more needed.",
+       "Airlines are waiting, not quitting long haul."
+      ],
+      "explanation": "When the new plane is late, older ones fill in."
+     },
+     "proReasoning": "Founders look for who gains from a delay. Owners of jets that can stand in are first in line.",
+     "commonMistake": "Assuming a delay hurts everyone in the chain.",
+     "mentalModel": "Delays create stand-in demand."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You read that Emirates expected its new jets in 2020 and now expects them in 2027.",
+      "prompt": "Why not just buy another plane?",
+      "options": [
+       "Emirates needs no extra seats at all",
+       "Its alternatives have engine issues too",
+       "Airlines are never allowed to switch"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Emirates ordered 90 more 777X jets in 2023.",
+       "Emirates held off the A350-1000 over its engine.",
+       "Switching is possible, but the choices are few."
+      ],
+      "explanation": "The newest big twins each fly with one engine maker. Choice is thin."
+     },
+     "proReasoning": "The fewer the alternatives, the longer a buyer waits.",
+     "commonMistake": "Thinking a giant airline can always buy elsewhere.",
+     "mentalModel": "Few options, long waits."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:2a2c8e9f69e6"
+  ]
+ },
+ {
+  "id": "70dcaa19-3247-5a9c-a5b5-414ca65cd463",
+  "market_id": "aerospace",
+  "day": 39,
+  "slot": 2,
+  "content": {
+   "id": "aerospace-d39-c2",
+   "title": "Locked in by the engine you chose",
+   "lessonTitle": "When only one engine fits",
+   "slot": 2,
+   "type": "connect",
+   "brief": {
+    "headline": "On day 6, a flaw in metal powder sent 600 to 700 Pratt & Whitney engines in for inspection, grounding hundreds of A320neos. Their airlines had picked Pratt over CFM when they ordered.",
+    "kicker": "Connect day 6 and day 39: the engine is chosen once.",
+    "fullText": "Day 3 showed that A320neo buyers can play two engine makers against each other. That power is at its peak at the order. After delivery, the airline lives with its choice.\n\nDay 6 showed what that means when the engine has a problem. RTX expected an average of 350 jets grounded a year through 2026, and repairs first expected to take 60 days grew to as long as 300.\n\nDay 39 adds the widebody view. On the A350 and 777X there is no choice at all.",
+    "sources": [
+     {
+      "url": "https://gazette.com/?p=1137908",
+      "label": "Reuters via The Gazette, RTX engine issue, Sept 2023"
+     },
+     {
+      "url": "https://planefyi.com/guides/aircraft-comparison/a320neo-vs-737max/",
+      "label": "PlaneFYI, A320neo vs 737 MAX"
+     },
+     {
+      "url": "https://www.rolls-royce.com/media/our-stories/discover/2020/trent-xwb-in-focus-poweroftrent.aspx",
+      "label": "Rolls-Royce, Trent XWB in focus, Aug 2020"
+     },
+     {
+      "url": "https://flightglobal.com/boeing-selects-ge9x-to-exclusively-power-the-777x/109104.article",
+      "label": "FlightGlobal, Boeing selects GE9X to exclusively power the 777X, Mar 2013"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "faceOff",
+    "prompt": "When does an A320neo buyer have the most power over its engine maker?",
+    "left": {
+     "name": "At the order",
+     "note": "It can still pick CFM or Pratt"
+    },
+    "right": {
+     "name": "After delivery",
+     "note": "The engines are already on the wing"
+    },
+    "correctIndex": 0,
+    "explanation": "Choice is power. Once the engines are fitted, the buyer has to live with them."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "RTX expected about how many jets grounded on average each year through 2026?",
+    "min": 0,
+    "max": 800,
+    "value": 350,
+    "unit": "jets",
+    "explanation": "About 350 a year, with as many as 650 idle in the first half of 2024."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You negotiate engines for an A320neo order. Your boss asks when you have the most bargaining power.",
+      "prompt": "What's your answer?",
+      "options": [
+       "After delivery, once we know them",
+       "At the first engine overhaul",
+       "Now, before we pick CFM or Pratt"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "After delivery, switching is no longer simple.",
+       "By then the engine choice is long made.",
+       "Two makers compete only until you choose."
+      ],
+      "explanation": "Use the competition while it exists. Write durability and support terms into the order."
+     },
+     "proReasoning": "Strong negotiators lock in support terms while both makers still want the deal.",
+     "commonMistake": "Saving the hard questions for after delivery.",
+     "mentalModel": "Negotiate while there is a choice."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Two airlines fly A320neos. One chose CFM engines and the other chose Pratt.",
+      "prompt": "Which one did the powder flaw hit?",
+      "options": [
+       "Grounded jets at the Pratt operator",
+       "Grounded jets at both airlines",
+       "Grounded jets at the CFM operator"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "The flaw was in Pratt geared turbofan parts.",
+       "The CFM engines were not part of it.",
+       "The inspections covered Pratt engines."
+      ],
+      "explanation": "One engine choice, made years before, decided which airline grounded jets."
+     },
+     "proReasoning": "Investors check the engine mix in a fleet, because one maker's flaw can ground one airline and spare its rival.",
+     "commonMistake": "Treating all A320neo fleets as the same risk.",
+     "mentalModel": "Know the engine mix."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You lease spare engines. One widebody type has only one engine, and that engine has a durability problem.",
+      "prompt": "Where is your service most needed?",
+      "options": [
+       "Fleets of brand new jets only",
+       "Fleets whose only engine has a problem",
+       "Fleets that can switch engine makers"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "New jets still need spares when engines fail.",
+       "With no second engine, spares are the main buffer.",
+       "They can move the next order to the other maker."
+      ],
+      "explanation": "Where there is no second engine, spare engines are the fix."
+     },
+     "proReasoning": "Founders look for buyers with no other way out. Single-engine fleets with problems are that buyer.",
+     "commonMistake": "Targeting fleets that can simply switch makers.",
+     "mentalModel": "Serve the locked-in."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your A320neo flight is cancelled because the plane is waiting for its engine.",
+      "prompt": "Why not fit another brand of engine?",
+      "options": [
+       "Engines from other makers are illegal",
+       "The airline forgot to ask for a spare",
+       "Its engine choice was made at the order"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "The A320neo offers two makers, chosen at the order.",
+       "Spares help, but the choice was already made.",
+       "Its jets were delivered with that engine type."
+      ],
+      "explanation": "The engine is chosen when the plane is ordered, and switching later is not simple."
+     },
+     "proReasoning": "The engine brand is picked years before you fly.",
+     "commonMistake": "Thinking engines are swapped like tires.",
+     "mentalModel": "Chosen once, flown for years."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:bf51b5177757"
+  ]
+ },
+ {
+  "id": "52421fdf-afc0-5cb9-a8bf-e749dcf15e36",
+  "market_id": "aerospace",
+  "day": 39,
+  "slot": 3,
+  "content": {
+   "id": "aerospace-d39-c3",
+   "title": "Choosing an engine for twenty 787s",
+   "lessonTitle": "When only one engine fits",
+   "slot": 3,
+   "type": "decide",
+   "brief": {
+    "headline": "You run fleet purchasing at an airline ordering 20 Boeing 787s. Your current 787s fly with Trent 1000 engines, and both engine makers want the deal.",
+    "kicker": "Decide how to use a choice of two engines.",
+    "fullText": "The 787 offers the GEnx-1B or the Rolls-Royce Trent 1000. After Trent 1000 problems, most airlines chose GE for later orders, and British Airways switched its future 787 orders to the GEnx.\n\nIn 2019, Air New Zealand ordered 787-10s with GE engines after durability problems with the Trent 1000. The deal was worth $2.7 billion at list prices, before an undisclosed discount.\n\nThe A350 and 777X give buyers no such choice.",
+    "sources": [
+     {
+      "url": "https://airwaysmag.com/new-post/boeing-787-engine-genx-vs-trent-1000",
+      "label": "Airways, Boeing 787 engines: GEnx vs Trent 1000, Mar 2025"
+     },
+     {
+      "url": "https://www.airlineratings.com/articles/air-new-zealand-opts-for-ge-over-rolls-for-787-buy",
+      "label": "AirlineRatings, Air New Zealand opts for GE over Rolls for 787 buy, May 2019"
+     },
+     {
+      "url": "https://www.rolls-royce.com/media/our-stories/discover/2020/trent-xwb-in-focus-poweroftrent.aspx",
+      "label": "Rolls-Royce, Trent XWB in focus, Aug 2020"
+     },
+     {
+      "url": "https://flightglobal.com/boeing-selects-ge9x-to-exclusively-power-the-777x/109104.article",
+      "label": "FlightGlobal, Boeing selects GE9X to exclusively power the 777X, Mar 2013"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "spotFake",
+    "prompt": "One of these is false. Tap it.",
+    "statements": [
+     "The 787 offers GE and Rolls-Royce engines.",
+     "Air New Zealand chose GE for its 2019 787 order.",
+     "The A350 can be ordered with GE engines."
+    ],
+    "fakeIndex": 2,
+    "explanation": "The Trent XWB is the exclusive engine on the A350."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "Air New Zealand ordered 8 firm 787-10s in 2019. Options could take the total to how many?",
+    "min": 0,
+    "max": 50,
+    "value": 20,
+    "unit": "jets",
+    "explanation": "Up to 20, with the right to swap for 787-9s."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your finance chief asks why you invited GE to bid when the fleet runs Rolls-Royce today.",
+      "prompt": "What's your answer?",
+      "options": [
+       "A real rival bid improves our position",
+       "GE engines are always the cheaper ones",
+       "Rolls-Royce asked us to invite them"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Two makers competing is the buyer's power.",
+       "Price depends on the deal, not the brand.",
+       "Rolls-Royce gains nothing from a rival bid."
+      ],
+      "explanation": "The second engine is your one lever on a 787. Use it."
+     },
+     "proReasoning": "A credible second bid gives a buyer something to negotiate with, even if it stays with the incumbent.",
+     "commonMistake": "Re-ordering the incumbent engine without testing the rival.",
+     "mentalModel": "Make both makers compete."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "An airline moves its next 787s from Rolls-Royce engines to GE.",
+      "prompt": "What does Rolls-Royce lose?",
+      "options": [
+       "Only the sale price of the engines",
+       "Decades of service work on those jets",
+       "Nothing, it already sold engines"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "The service tail is worth more than the sale.",
+       "Engine makers earn on parts and service for decades.",
+       "Those engines were for earlier jets."
+      ],
+      "explanation": "An engine order brings decades of service. Losing it costs more than the sale."
+     },
+     "proReasoning": "Investors count the service tail behind each engine order, since engine makers earn much of their profit there.",
+     "commonMistake": "Valuing a lost engine order at its sale price only.",
+     "mentalModel": "Count the service tail.",
+     "sources": [
+      {
+       "url": "https://www.janushenderson.com/hub/article/anatomy-of-a-good-company-safran",
+       "label": "Janus Henderson on Safran"
+      }
+     ]
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You run an engine repair startup. Airlines are moving new 787 orders from one maker to the other.",
+      "prompt": "How do you plan capacity?",
+      "options": [
+       "Focus only on the engine losing orders",
+       "Ignore order trends entirely",
+       "Build skills for the engine winning orders"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Old engines need repairs, but new work shrinks.",
+       "Order trends set your future work.",
+       "Most later 787 orders went to the GEnx."
+      ],
+      "explanation": "Repair demand follows the installed engines. Watch where new orders go."
+     },
+     "proReasoning": "Founders plan for where engines will be in ten years, not where they are today.",
+     "commonMistake": "Building only for the engine losing orders.",
+     "mentalModel": "Follow the order book."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Two 787s at the gate look the same, but one has GE engines and one Rolls-Royce.",
+      "prompt": "Why can airlines pick?",
+      "options": [
+       "Boeing offers two engines on the 787",
+       "Airlines build their own engines",
+       "Every jet offers two engine makers"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "The 787 comes with the GEnx-1B or Trent 1000.",
+       "Airlines buy engines; they do not build them.",
+       "The A350 and 777X each have one engine only."
+      ],
+      "explanation": "Some jets offer a choice of engine, others only one."
+     },
+     "proReasoning": "Engine choice is part of the order on some jets.",
+     "commonMistake": "Assuming every plane has one engine brand.",
+     "mentalModel": "Some planes, two engines."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:b6baf165550f"
+  ]
+ },
+ {
+  "id": "653e86db-52af-55a3-8a89-9154634c8746",
+  "market_id": "aerospace",
+  "day": 40,
+  "slot": 1,
+  "content": {
+   "id": "aerospace-d40-c1",
+   "title": "Iberia's 40% fuel claim",
+   "lessonTitle": "Cost per seat, per kilometer",
+   "slot": 1,
+   "type": "apply",
+   "brief": {
+    "headline": "Iberia says its 182-seat A321XLR saves up to 40% of fuel compared with wide-body models. It had five in service by November 2025, with three more to come.",
+    "kicker": "Apply day 40: a saving per trip is not a saving per seat.",
+    "fullText": "Iberia flew its first XLR from Madrid to Boston on November 14, 2024. It went on to double Boston and San Juan to two daily flights, make Washington year-round, and open Recife and Fortaleza in Brazil.\n\nIberia's figure does not say per seat. If it compares whole flights, the per-seat saving depends on how many seats each plane carries.\n\nThat is why planners divide by seats and distance before they compare.",
+    "sources": [
+     {
+      "url": "https://aviacionaldia.com/en/2025/11/iberia-strengthens-its-leadership-in-long-haul-with-a321xlr-a-year-of-efficiency-and-transatlantic-expansion.html",
+      "label": "Aviación al Día, Iberia and a year of the A321XLR, Nov 2025"
+     },
+     {
+      "url": "https://www.boeing.com/resources/boeingdotcom/company/about_bca/pdf/startup-glossary.pdf",
+      "label": "Boeing Commercial Airplanes, airline industry glossary"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "multipleChoice",
+    "prompt": "A jet burns 40% less fuel per trip but has 30% fewer seats. Its saving per seat is:",
+    "options": [
+     "Smaller than 40%",
+     "Exactly 40%",
+     "Larger than 40%"
+    ],
+    "correctIndex": 0,
+    "explanation": "Per seat it burns 0.6 divided by 0.7, about 86% as much. That is a 14% saving, not 40%."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "Fuel per trip falls 40% and seats fall 30%. About what percent is saved per seat?",
+    "min": 0,
+    "max": 50,
+    "value": 14,
+    "unit": "%",
+    "explanation": "0.6 divided by 0.7 is about 0.86, so about 14% less fuel per seat."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "In an interview, you hear the XLR saves 40% of fuel against a widebody. They ask what you'd check.",
+      "prompt": "What do you ask first?",
+      "options": [
+       "Which paint scheme was used?",
+       "Who flew the test flight?",
+       "Is that per trip or per seat?"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Paint does not change the comparison.",
+       "The pilot does not change the math.",
+       "Per trip and per seat can differ widely."
+      ],
+      "explanation": "Divide by seats before you compare. The unit decides what the number means."
+     },
+     "proReasoning": "Strong candidates ask for the unit before they react to a percentage.",
+     "commonMistake": "Repeating a percentage without its unit.",
+     "mentalModel": "Per trip or per seat?"
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "An airline says a new jet cuts fuel 40% against its widebody, and its stock jumps.",
+      "prompt": "What's your next question?",
+      "options": [
+       "How many seats each jet carries",
+       "Whether the CEO likes the jet",
+       "What color the new cabins are"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Seat counts turn a trip saving into a seat saving.",
+       "Opinions do not change unit costs.",
+       "Cabin color does not move CASK."
+      ],
+      "explanation": "Unit cost drives margins. Check seats and distance before cheering."
+     },
+     "proReasoning": "Investors convert headline savings into unit cost terms before they believe them.",
+     "commonMistake": "Buying the headline percentage.",
+     "mentalModel": "Convert to CASK."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your startup claims a 10% fuel saving for a cabin product. An airline asks how you measured it.",
+      "prompt": "How do you present it?",
+      "options": [
+       "As a share of the total ticket price",
+       "Per trip and per seat, on the same route",
+       "Only the best flight you measured"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Fuel is a cost, not a share of fares.",
+       "Airlines plan in trip cost and seat cost.",
+       "A best case will not survive their review."
+      ],
+      "explanation": "Speak the airline's units: per trip and per seat, at a stated distance."
+     },
+     "proReasoning": "Founders who report savings per trip and per seat sound like they understand airline planning.",
+     "commonMistake": "Reporting one flattering number.",
+     "mentalModel": "Use their units."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You fly a 182-seat Iberia XLR to Boston. A friend says it is greener than any widebody.",
+      "prompt": "Is that certain?",
+      "options": [
+       "Yes, smaller always means greener",
+       "No, smaller planes burn more",
+       "Not without dividing by seats"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "It depends on fuel per seat, not size.",
+       "It burns much less per trip, per Iberia.",
+       "Fuel per seat is the fair comparison."
+      ],
+      "explanation": "Compare fuel per seat over the same distance."
+     },
+     "proReasoning": "The fair test is fuel per seat on the same route.",
+     "commonMistake": "Judging by plane size alone.",
+     "mentalModel": "Per seat, per distance."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:621c021c3fd6"
+  ]
+ },
+ {
+  "id": "4b08929a-fb30-55ef-9ddb-5cd8a416251d",
+  "market_id": "aerospace",
+  "day": 40,
+  "slot": 2,
+  "content": {
+   "id": "aerospace-d40-c2",
+   "title": "Seat prices, then and now",
+   "lessonTitle": "Cost per seat, per kilometer",
+   "slot": 2,
+   "type": "connect",
+   "brief": {
+    "headline": "On day 16, NASA's inspector general put a Crew Dragon seat at about $55 million and a Starliner seat at about $90 million. Day 40 makes the same move: divide the trip by the seats.",
+    "kicker": "Connect day 16 and day 40: compare units, not totals.",
+    "fullText": "Day 16 compared spacecraft by price per seat, not by the price of a flight. That made two very different contracts comparable.\n\nDay 40 does the same for airliners. In 2019, a United widebody cost $8,038 per block hour and a large narrow-body $4,379. Divided by 270 and 170 seats, that is about $30 and $26 per seat each hour.\n\nAirlines then divide by distance too. That gives cost per available seat kilometer, or CASK.",
+    "sources": [
+     {
+      "url": "https://www.space.com/spacex-boeing-commercial-crew-seat-prices.html",
+      "label": "Space.com, NASA's per-seat prices, Nov 2019"
+     },
+     {
+      "url": "https://web.mit.edu/airlinedata/www/2020%2012%20Month%20Documents/Aircraft%20and%20Related/Carrier%20Detail%20Block%20Hour/United%20Airlines%20Aircraft%20Operating%20Statistics-%20Cost%20Per%20Block%20Hour%20%28Unadjusted%29.htm",
+      "label": "MIT Airline Data Project, United Airlines cost per block hour by fleet, 2019-2020"
+     },
+     {
+      "url": "https://www.boeing.com/resources/boeingdotcom/company/about_bca/pdf/startup-glossary.pdf",
+      "label": "Boeing Commercial Airplanes, airline industry glossary"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "sortSignal",
+    "prompt": "Whole vehicle or per seat?",
+    "buckets": [
+     "Whole vehicle",
+     "Per seat"
+    ],
+    "items": [
+     {
+      "text": "Cost per block hour of one jet",
+      "bucket": 0
+     },
+     {
+      "text": "Price of a whole spaceflight",
+      "bucket": 0
+     },
+     {
+      "text": "Price per crew seat",
+      "bucket": 1
+     },
+     {
+      "text": "Cost per seat each hour",
+      "bucket": 1
+     },
+     {
+      "text": "Cost per seat kilometer",
+      "bucket": 1
+     }
+    ],
+    "explanation": "Totals hide size. Per-seat numbers make different vehicles comparable."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "A large narrow-body cost $4,379 per block hour with 170 seats. About how many dollars per seat each hour?",
+    "min": 0,
+    "max": 60,
+    "value": 26,
+    "unit": "dollars",
+    "explanation": "4,379 divided by 170 is about 26. The widebody was about 30."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You present two aircraft to a planning team using cost per hour only.",
+      "prompt": "What does the team ask next?",
+      "options": [
+       "What is it per seat and kilometer?",
+       "What does each one cost to paint?",
+       "Who designed each of the cockpits?"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Planners compare CASK, not hourly totals.",
+       "Paint is not how fleets are compared.",
+       "Design history does not set unit cost."
+      ],
+      "explanation": "A total per hour hides seats and distance. Unit cost makes planes comparable."
+     },
+     "proReasoning": "Planners and analysts present unit costs first, then explain the totals behind them.",
+     "commonMistake": "Comparing aircraft on hourly totals.",
+     "mentalModel": "Units before totals."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A report says a widebody costs nearly twice as much per hour to fly as a narrow-body.",
+      "prompt": "What do you conclude?",
+      "options": [
+       "Airlines should retire their widebodies",
+       "Nothing yet, until it is divided by seats",
+       "The widebody is twice as costly per seat"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Per seat, the gap is far smaller.",
+       "Per seat, United's 2019 gap was about $30 to $26.",
+       "The seat count closes most of the gap."
+      ],
+      "explanation": "Hourly cost is a total. Per seat, United's gap in 2019 was much smaller."
+     },
+     "proReasoning": "Investors refuse to compare totals across different sizes, the way NASA's auditor compared seats.",
+     "commonMistake": "Reading total cost as unit cost.",
+     "mentalModel": "Divide first."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You price a charter for sports teams on either a 170-seat or a 270-seat jet.",
+      "prompt": "How do you quote?",
+      "options": [
+       "Always the bigger jet, it looks better",
+       "The same flat price for either jet",
+       "By seat, then pick the jet that fills"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Empty seats raise the cost per traveler.",
+       "Their costs per hour differ a lot.",
+       "Per-seat cost depends on filling the seats."
+      ],
+      "explanation": "Match the jet to the group size, then quote per seat."
+     },
+     "proReasoning": "Founders quote in the unit the buyer cares about and pick the asset that fills.",
+     "commonMistake": "Choosing the biggest jet by default.",
+     "mentalModel": "Fill the seats you fly."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You hear that a Crew Dragon seat cost about $55 million.",
+      "prompt": "Why quote a seat, not a launch?",
+      "options": [
+       "It makes different rides comparable",
+       "Launch prices are always kept secret",
+       "Seats get sold at public auctions"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Per-seat prices let NASA compare two capsules.",
+       "The inspector general estimated the prices.",
+       "They were contract prices, not auctions."
+      ],
+      "explanation": "Unit prices make different vehicles comparable, in space and in airliners."
+     },
+     "proReasoning": "Per-seat numbers put different vehicles on one scale.",
+     "commonMistake": "Comparing total prices of different-sized vehicles.",
+     "mentalModel": "One seat, one unit."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:2cf4bfe8e0d9"
+  ]
+ },
+ {
+  "id": "2b6d1d5a-1fe1-503d-a3c9-b00b485ade3d",
+  "market_id": "aerospace",
+  "day": 40,
+  "slot": 3,
+  "content": {
+   "id": "aerospace-d40-c3",
+   "title": "Two jets, one thin route",
+   "lessonTitle": "Cost per seat, per kilometer",
+   "slot": 3,
+   "type": "decide",
+   "brief": {
+    "headline": "You run route planning at an airline. A new long route should sell about 150 seats a day, and you can fly a 182-seat narrow-body or a 270-seat widebody.",
+    "kicker": "Decide with trip cost and seat cost side by side.",
+    "fullText": "Airbus says the A321XLR has roughly half the trip cost of modern widebodies. Iberia flies it with 182 seats.\n\nIn 2019, United's widebodies averaged 270 seats per departure. Per seat each hour, they cost about $30, against $26 for its large narrow-bodies.\n\nA low seat cost only pays off when the seats sell. With 150 passengers, the narrow-body is about 82% full and the widebody about 56%.",
+    "sources": [
+     {
+      "url": "https://www.aircraft.airbus.com/en/newsroom/press-releases/2024-07-airbus-a321xlr-receives-easa-type-certification",
+      "label": "Airbus, A321XLR receives EASA type certification, Jul 2024"
+     },
+     {
+      "url": "https://aviacionaldia.com/en/2025/11/iberia-strengthens-its-leadership-in-long-haul-with-a321xlr-a-year-of-efficiency-and-transatlantic-expansion.html",
+      "label": "Aviación al Día, Iberia and a year of the A321XLR, Nov 2025"
+     },
+     {
+      "url": "https://web.mit.edu/airlinedata/www/2020%2012%20Month%20Documents/Aircraft%20and%20Related/Carrier%20Detail%20Block%20Hour/United%20Airlines%20Aircraft%20Operating%20Statistics-%20Cost%20Per%20Block%20Hour%20%28Unadjusted%29.htm",
+      "label": "MIT Airline Data Project, United Airlines cost per block hour by fleet, 2019-2020"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "faceOff",
+    "prompt": "Which jet fits 150 passengers a day better?",
+    "left": {
+     "name": "182-seat narrow-body",
+     "note": "About 82% full"
+    },
+    "right": {
+     "name": "270-seat widebody",
+     "note": "About 56% full"
+    },
+    "correctIndex": 0,
+    "explanation": "The narrow-body flies fuller, at roughly half the trip cost by Airbus figures."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "150 passengers on a 270-seat widebody fill about what percent of its seats?",
+    "min": 0,
+    "max": 100,
+    "value": 56,
+    "unit": "%",
+    "explanation": "150 divided by 270 is about 56%. The narrow-body would be about 82% full."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your director asks for one sentence on the jet choice.",
+      "prompt": "What do you say?",
+      "options": [
+       "Either: they cost the same per trip",
+       "Narrow-body: lower trip cost, fuller cabin",
+       "Widebody: more seats means more profit"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Airbus says the XLR costs about half per trip.",
+       "At 150 passengers, trip cost decides.",
+       "Unsold seats add cost, not profit."
+      ],
+      "explanation": "Seat cost helps only when the seats sell."
+     },
+     "proReasoning": "Planners pair the two numbers: trip cost for risk, seat cost for efficiency.",
+     "commonMistake": "Choosing the bigger jet for its seat count alone.",
+     "mentalModel": "Trip cost first on thin routes."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "The airline picks the widebody for this route, citing its seat count.",
+      "prompt": "What worries you?",
+      "options": [
+       "The widebody flies too fast",
+       "Too many passengers will book",
+       "About 120 seats fly empty each trip"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Speed is not the issue here.",
+       "Demand is the limit, not excess.",
+       "270 minus 150 leaves 120 unsold seats."
+      ],
+      "explanation": "A seat cost advantage disappears when seats go unsold."
+     },
+     "proReasoning": "Investors check the load factor behind every unit cost claim.",
+     "commonMistake": "Accepting seat cost without asking who fills the seats.",
+     "mentalModel": "Seat cost needs full seats."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You sell a demand forecasting tool to airlines picking jets for new routes.",
+      "prompt": "Which output matters most to this choice?",
+      "options": [
+       "Seats per day the route will sell",
+       "Average age of the passengers",
+       "The weather on the launch date"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Seats sold decide which jet fills.",
+       "Age does not pick the jet.",
+       "One day of weather does not set demand."
+      ],
+      "explanation": "The jet choice hinges on daily seats sold."
+     },
+     "proReasoning": "Founders build the number the decision turns on.",
+     "commonMistake": "Selling forecasts that do not touch the decision.",
+     "mentalModel": "Forecast the seats."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your new long route is flown by a single-aisle jet.",
+      "prompt": "Why not a widebody?",
+      "options": [
+       "Single-aisle jets cost less per seat",
+       "It would fly with many empty seats",
+       "Widebodies cannot fly long routes"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Per seat, it depends on load and distance.",
+       "150 passengers would fill about 56% of it.",
+       "Widebodies fly the longest routes of all."
+      ],
+      "explanation": "The plane is sized to the demand."
+     },
+     "proReasoning": "Airlines fit the plane to the passengers they expect.",
+     "commonMistake": "Thinking long routes always need big jets.",
+     "mentalModel": "Size to demand."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:060414119887"
+  ]
+ },
+ {
+  "id": "b7fab5f9-f86e-5d10-a9c3-dd6b1ad1e742",
+  "market_id": "aerospace",
+  "day": 41,
+  "slot": 1,
+  "content": {
+   "id": "aerospace-d41-c1",
+   "title": "An approved engine, an airline still waiting",
+   "lessonTitle": "Sixty minutes from an airport",
+   "slot": 1,
+   "type": "apply",
+   "brief": {
+    "headline": "In December 2025, Cabo Verde Airlines won ETOPS 120 approval after a 737 MAX 8 test flight to Recife. Its engine type had held ETOPS 180 approval since 2017, but the airline needed its own.",
+    "kicker": "Apply day 41: the aircraft and the airline are approved separately.",
+    "fullText": "The airline had gone almost two years without long-haul flights and had to win back its own approval, aeroTELEGRAPH reported. The test flight on November 25, 2025 checked fuel planning, navigation over long stretches of water and engine-failure procedures.\n\nETOPS 120 lets a twin fly up to 120 minutes from an adequate airport on one engine. The airline planned flights to Brazil and the United States.\n\nThe LEAP-1B engine won ETOPS 180 from the FAA and EASA in June 2017. That was not enough on its own.",
+    "sources": [
+     {
+      "url": "https://newsaero.info/airlines/cabo-verde-airlines-secures-etops-certification-paving-way-for-transatlantic-relaunch?true=9441",
+      "label": "NewsAero, Cabo Verde Airlines secures ETOPS certification, Dec 2025"
+     },
+     {
+      "url": "https://www.aerotelegraph.com/ticker/cabo-verde-airlines-erreicht-wichtigen-meilenstein-fuer-neustart-der-langstrecken/45lsyzh",
+      "label": "aeroTELEGRAPH, Cabo Verde Airlines ETOPS test flight, Dec 2025"
+     },
+     {
+      "url": "https://diariodonordeste.verdesmares.com.br/opiniao/colunistas/igor-pires/cabo-verde-airlines-conquista-certificacao-e-retoma-negociacoes-com-o-ceara-1.3719051",
+      "label": "Diário do Nordeste, Cabo Verde Airlines wins ETOPS 120 certification, Dec 2025"
+     },
+     {
+      "url": "https://www.faa.gov/documentlibrary/media/advisory_circular/120-42b.pdf",
+      "label": "FAA, AC 120-42B, Extended Operations (ETOPS and Polar Operations)"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "buildChain",
+    "prompt": "Put Cabo Verde's path in order.",
+    "steps": [
+     "The LEAP-1B wins ETOPS 180 approval",
+     "Long-haul flying stops for almost two years",
+     "A 737 MAX 8 flies an ETOPS test to Recife",
+     "The airline wins ETOPS 120 approval"
+    ],
+    "explanation": "June 2017, a long pause, November 2025, then December 2025."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "Cabo Verde Airlines won approval to fly up to how many minutes from an adequate airport?",
+    "min": 0,
+    "max": 300,
+    "value": 120,
+    "unit": "minutes",
+    "explanation": "ETOPS 120, enough for its routes to Brazil and the United States."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You join an airline's operations team as it plans its first ocean route on 737 MAX jets.",
+      "prompt": "What must happen before tickets go on sale?",
+      "options": [
+       "The airline must win its own ETOPS approval",
+       "Nothing, the engine is already approved",
+       "The jets need a new type certificate"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Cabo Verde needed its own approval despite approved engines.",
+       "Engine approval alone is not enough.",
+       "The type is already certified."
+      ],
+      "explanation": "Operators earn ETOPS on their own, through procedures and a demonstration."
+     },
+     "proReasoning": "Strong operations hires know the airline's approval is separate and plan the demonstration early.",
+     "commonMistake": "Assuming the manufacturer's approval covers the airline.",
+     "mentalModel": "Plane approval plus airline approval."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A small airline announces US routes before it has its own ETOPS approval.",
+      "prompt": "How do you treat the launch date?",
+      "options": [
+       "As irrelevant to its revenue",
+       "As uncertain until approval arrives",
+       "As certain, since the jets are approved"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "New routes drive new revenue.",
+       "The route cannot fly without the airline's approval.",
+       "Jet approval does not cover the airline."
+      ],
+      "explanation": "Approval is a gate. Revenue waits behind it."
+     },
+     "proReasoning": "Investors mark regulatory gates on every launch plan and discount dates that sit behind them.",
+     "commonMistake": "Treating announced routes as already flying.",
+     "mentalModel": "No approval, no route."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You build training software for airline dispatchers. Small airlines are restarting ocean routes.",
+      "prompt": "What feature matters most?",
+      "options": [
+       "Catalog tools for duty-free sales",
+       "Color themes for cabin seat maps",
+       "Drills for ETOPS fuel and diversions"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Sales tools do not win ETOPS approval.",
+       "Cosmetics do not help approval.",
+       "Cabo Verde's test checked fuel planning and diversions."
+      ],
+      "explanation": "Approval tests procedures. Tools that drill them help airlines pass."
+     },
+     "proReasoning": "Founders build for the test the customer must pass.",
+     "commonMistake": "Building features no regulator asks about.",
+     "mentalModel": "Build for the approval."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your airline flies a modern twin jet but cannot yet fly to the US.",
+      "prompt": "What could be missing?",
+      "options": [
+       "The airline's own ETOPS approval",
+       "A third engine fitted to the jet",
+       "A paint job approved for the US"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "The airline needs its own approval.",
+       "Twins cross oceans with ETOPS.",
+       "Paint has nothing to do with it."
+      ],
+      "explanation": "The plane can be approved while the airline is not yet."
+     },
+     "proReasoning": "Approval belongs to both the plane and the operator.",
+     "commonMistake": "Thinking a jet's approval covers whoever flies it.",
+     "mentalModel": "Two approvals."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:70abd6edf2fe"
+  ]
+ },
+ {
+  "id": "2b402f8e-3482-5beb-9b45-17b2c6bf9c31",
+  "market_id": "aerospace",
+  "day": 41,
+  "slot": 2,
+  "content": {
+   "id": "aerospace-d41-c2",
+   "title": "Layers of approval, again",
+   "lessonTitle": "Sixty minutes from an airport",
+   "slot": 2,
+   "type": "connect",
+   "brief": {
+    "headline": "On day 7, every airliner needed three approvals: its design, its factory and the plane itself. Day 41 adds one more layer for long routes: ETOPS, for the airplane and engine and for the airline.",
+    "kicker": "Connect day 7 and day 41: approvals stack.",
+    "fullText": "Day 7 laid out certification: a type certificate for the design, production approval for the factory, and an airworthiness certificate for each plane.\n\nETOPS sits on top. FAA guidance requires the airplane and engine combination to be approved for ETOPS, and the airline to be approved too. Without it, US rules keep a twin within 60 minutes of an adequate airport.\n\nThe A350-900 came with 180 minutes in its basic specification, with 300 and 370 as options.",
+    "sources": [
+     {
+      "url": "https://www.evtol.news/news/coming-to-terms-airworthiness-certification",
+      "label": "Vertical Flight Society, Coming to terms: airworthiness certification"
+     },
+     {
+      "url": "https://www.faa.gov/documentlibrary/media/advisory_circular/120-42b.pdf",
+      "label": "FAA, AC 120-42B, Extended Operations (ETOPS and Polar Operations)"
+     },
+     {
+      "url": "https://www.law.cornell.edu/cfr/text/14/121.161",
+      "label": "14 CFR 121.161, Airplane limitations: type of route"
+     },
+     {
+      "url": "https://aviationtoday.com/2014/10/16/easa-certifies-a350-xwb-for-up-to-370-minute-etops",
+      "label": "Avionics Today, EASA certifies A350 XWB for up to 370 minute ETOPS, Oct 2014"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "sortSignal",
+    "prompt": "Which approval covers it?",
+    "buckets": [
+     "Type certificate",
+     "Airworthiness cert.",
+     "ETOPS"
+    ],
+    "items": [
+     {
+      "text": "Approves the aircraft design",
+      "bucket": 0
+     },
+     {
+      "text": "Issued for one specific plane",
+      "bucket": 1
+     },
+     {
+      "text": "Flying over 60 minutes from an airport",
+      "bucket": 2
+     },
+     {
+      "text": "Granted to the airline too",
+      "bucket": 2
+     }
+    ],
+    "explanation": "Design, each plane, then long routes. ETOPS also needs the airline approved."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "The A350-900 came with how many ETOPS minutes in its basic specification?",
+    "min": 0,
+    "max": 400,
+    "value": 180,
+    "unit": "minutes",
+    "explanation": "180 minutes as standard, with 300 or 370 as options."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "An interviewer asks what approvals a new twin airliner needs before it flies an ocean route.",
+      "prompt": "Which list is complete?",
+      "options": [
+       "Just the plane's own certificate",
+       "Design, factory, plane, and ETOPS",
+       "Design and factory only"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "The design and factory come first.",
+       "That covers all the layers.",
+       "Each plane and the long route also need approval."
+      ],
+      "explanation": "Approvals stack: design, production, each plane, then ETOPS for long routes."
+     },
+     "proReasoning": "Strong candidates list the layers in order and say who holds each one.",
+     "commonMistake": "Stopping at the type certificate.",
+     "mentalModel": "Approvals stack."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A new twin-engine jet wins its type certificate. A launch airline plans ocean routes the next month.",
+      "prompt": "What's the risk?",
+      "options": [
+       "The design approval may be undone",
+       "There is no risk left at all",
+       "ETOPS approvals may not be ready"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "The design approval is already done.",
+       "Long routes still need ETOPS.",
+       "Plane ETOPS and airline ETOPS must both be in place."
+      ],
+      "explanation": "A type certificate does not grant ETOPS. Check both layers."
+     },
+     "proReasoning": "Investors track each approval layer separately, since any one can hold back revenue.",
+     "commonMistake": "Treating the type certificate as the last gate.",
+     "mentalModel": "Check every layer."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You design a new twin-engine aircraft for routes across water.",
+      "prompt": "When do you plan for ETOPS?",
+      "options": [
+       "From the start of the design",
+       "After the first delivery",
+       "Only if an airline asks for it"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "The A350 had 370-minute ETOPS before entering service.",
+       "Late ETOPS work limits early routes.",
+       "Ocean routes far from airports all need it."
+      ],
+      "explanation": "ETOPS is part of the plane's approval. Plan for it from day one."
+     },
+     "proReasoning": "Founders plan every approval layer up front, since each takes time.",
+     "commonMistake": "Treating ETOPS as paperwork for later.",
+     "mentalModel": "Plan the layers early."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You wonder why a two-engine jet is allowed over the Pacific.",
+      "prompt": "Which approval allows it?",
+      "options": [
+       "Its production approval",
+       "ETOPS for the plane and the airline",
+       "Its airworthiness certificate alone"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "That covers the factory.",
+       "ETOPS covers routes far from airports.",
+       "That certifies the plane, not the route."
+      ],
+      "explanation": "Long routes need ETOPS on top of the usual certificates."
+     },
+     "proReasoning": "Ocean flights need an extra layer of approval.",
+     "commonMistake": "Thinking a certified plane can fly anywhere.",
+     "mentalModel": "Long routes need ETOPS."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:93cd587a7502"
+  ]
+ },
+ {
+  "id": "a669eb10-d23e-5711-b780-699e97f7922a",
+  "market_id": "aerospace",
+  "day": 41,
+  "slot": 3,
+  "content": {
+   "id": "aerospace-d41-c3",
+   "title": "Planning the first ocean route",
+   "lessonTitle": "Sixty minutes from an airport",
+   "slot": 3,
+   "type": "decide",
+   "brief": {
+    "headline": "You run a new airline with twin-engine jets. In six months you want to start a route that passes 150 minutes from the nearest adequate airport.",
+    "kicker": "Decide how to get an ETOPS route flying on time.",
+    "fullText": "Day 41's rules: US rules keep a twin within 60 minutes of an adequate airport unless it is approved for ETOPS. The airplane and engine and the airline each need approval.\n\nFAA guidance groups twin-engine ETOPS up to 120 minutes, up to 180 and beyond. Historically, 120-minute ETOPS required 12 months of in-service experience, and accelerated approval lets an airline start without it.\n\nA route 150 minutes out needs approval beyond 120 minutes.",
+    "sources": [
+     {
+      "url": "https://www.law.cornell.edu/cfr/text/14/121.161",
+      "label": "14 CFR 121.161, Airplane limitations: type of route"
+     },
+     {
+      "url": "https://www.faa.gov/documentlibrary/media/advisory_circular/120-42b.pdf",
+      "label": "FAA, AC 120-42B, Extended Operations (ETOPS and Polar Operations)"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "multipleChoice",
+    "prompt": "A route passes 150 minutes from the nearest adequate airport. Which band does it need?",
+    "options": [
+     "No ETOPS band at all",
+     "The band up to 180 minutes",
+     "The band up to 120 minutes"
+    ],
+    "correctIndex": 1,
+    "explanation": "150 minutes is beyond 120, so it needs the band up to 180."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "How many minutes beyond the 60-minute baseline is a point 150 minutes out?",
+    "min": 0,
+    "max": 200,
+    "value": 90,
+    "unit": "minutes",
+    "explanation": "90 minutes beyond the baseline, which is why the route needs ETOPS."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your CEO wants tickets on sale next week for the 150-minute route.",
+      "prompt": "What do you advise?",
+      "options": [
+       "Sell now, since approval is a formality",
+       "Sell now and route it to stay near land",
+       "Sell only once ETOPS approval is in hand"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Approval takes procedures and a demonstration.",
+       "The route passes 150 minutes out by design.",
+       "The airline cannot fly the route without it."
+      ],
+      "explanation": "Approval gates the route. Sell once the gate is open."
+     },
+     "proReasoning": "Strong operators put approvals before sales, so customers are never stranded.",
+     "commonMistake": "Selling a route the airline cannot yet legally fly.",
+     "mentalModel": "Approval before tickets."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "The airline's plan assumes ETOPS approval in three months, with no demonstration flight planned yet.",
+      "prompt": "How do you rate the plan?",
+      "options": [
+       "Risky, since the approval work has not begun",
+       "Safe, since such approvals are routine",
+       "Irrelevant to the overall business case"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Cabo Verde flew its demonstration before approval.",
+       "Approval takes procedures, checks and a test.",
+       "The route is the business case."
+      ],
+      "explanation": "A route plan without a started approval path is a hope, not a schedule."
+     },
+     "proReasoning": "Investors ask where each approval stands, not when the company hopes to have it.",
+     "commonMistake": "Accepting an approval date with no path behind it.",
+     "mentalModel": "Ask where the approval stands.",
+     "sources": [
+      {
+       "url": "https://www.aerotelegraph.com/ticker/cabo-verde-airlines-erreicht-wichtigen-meilenstein-fuer-neustart-der-langstrecken/45lsyzh",
+       "label": "aeroTELEGRAPH, Cabo Verde Airlines ETOPS test flight, Dec 2025"
+      },
+      {
+       "url": "https://newsaero.info/airlines/cabo-verde-airlines-secures-etops-certification-paving-way-for-transatlantic-relaunch?true=9441",
+       "label": "NewsAero, Cabo Verde Airlines secures ETOPS certification, Dec 2025"
+      }
+     ]
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You consult for new airlines on getting their first ETOPS approval.",
+      "prompt": "What do you offer first?",
+      "options": [
+       "A loyalty program built for the route",
+       "Procedures and a demonstration flight plan",
+       "A fresh livery design for the jets"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Loyalty points do not win approval.",
+       "That is what regulators test before approving.",
+       "Paint does not win approval."
+      ],
+      "explanation": "The approval path is the bottleneck for a new long-haul airline."
+     },
+     "proReasoning": "Founders sell the step that gates the customer's revenue.",
+     "commonMistake": "Selling extras before the gate is open.",
+     "mentalModel": "Sell the gate."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "An airline announces an ocean route but says it starts once approvals arrive.",
+      "prompt": "What approval is likely missing?",
+      "options": [
+       "A permit to sell tickets online",
+       "A sign-off on the onboard menu",
+       "ETOPS for flying far from airports"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "That is not an aviation approval.",
+       "That is not an aviation approval either.",
+       "Routes far from airports need ETOPS."
+      ],
+      "explanation": "Routes far from land wait on ETOPS."
+     },
+     "proReasoning": "Long routes often wait on approvals you never see.",
+     "commonMistake": "Assuming a new route can start any day.",
+     "mentalModel": "Long routes wait on ETOPS."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:4abeb7385a5a"
+  ]
+ },
+ {
+  "id": "d7c063f3-2b2a-5ad8-a2cd-7fffc33bf295",
+  "market_id": "aerospace",
+  "day": 42,
+  "slot": 1,
+  "content": {
+   "id": "aerospace-d42-c1",
+   "title": "Indianapolis gets a link to Europe",
+   "lessonTitle": "The narrow-body that finds routes",
+   "slot": 1,
+   "type": "apply",
+   "brief": {
+    "headline": "On May 3, 2025, Aer Lingus started flying Dublin to Indianapolis with an A321XLR. It gave the city its only nonstop link to Europe, four times a week, with 184 seats.",
+    "kicker": "Apply day 42: a narrow-body opens a market nobody served.",
+    "fullText": "The Flying Engineer reported that Aer Lingus uses the single-aisle XLR to open North American cities that would not support a widebody. A widebody such as the A330 would have to fill considerably more seats on each flight.\n\nThe jet has 16 lie-flat business seats and 168 in economy. When the route was announced in October 2024, RTÉ called it the only direct route between Indianapolis and Europe.\n\nOn day 42, 68% of long-haul narrow-body flying since 2005 went to routes nobody served.",
+    "sources": [
+     {
+      "url": "https://theflyingengineer.com/aer-lingus-launches-flights-from-dublin-to-indianapolis/",
+      "label": "The Flying Engineer, Aer Lingus launches Dublin to Indianapolis, May 2025"
+     },
+     {
+      "url": "https://www.rte.ie/news/business/2024/1021/1476614-new-aer-lingus-route-to-indianapolis",
+      "label": "RTÉ, New Aer Lingus route to Indianapolis, Oct 2024"
+     },
+     {
+      "url": "https://weekly.visualapproach.io/p/long-haul-narrowbodies-will-probably-not-replace-widebodies",
+      "label": "Aviation's Week in Charts, Long-haul narrowbodies will (probably) not replace widebodies, May 2026"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "spotFake",
+    "prompt": "One of these is false. Tap it.",
+    "statements": [
+     "The route started on May 3, 2025.",
+     "It replaced an earlier Aer Lingus widebody flight.",
+     "Its jets carry 184 seats."
+    ],
+    "fakeIndex": 1,
+    "explanation": "It gave the city its only nonstop to Europe. That is a new market, not a replacement."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "Of the 184 seats, about what percent are lie-flat business seats?",
+    "min": 0,
+    "max": 40,
+    "value": 9,
+    "unit": "%",
+    "explanation": "16 of 184 is about 9%."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You interview at Aer Lingus. They ask why Indianapolis got an XLR, not an A330.",
+      "prompt": "What's your answer?",
+      "options": [
+       "Widebodies cannot land in Indiana",
+       "The market fills a narrow-body, not an A330",
+       "The A330 lacks range for Indianapolis"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Airport size was not the reason given.",
+       "An A330 would have to fill far more seats per flight.",
+       "Range was not the issue."
+      ],
+      "explanation": "The XLR makes the route work at a size the market can fill."
+     },
+     "proReasoning": "Strong candidates tie aircraft choice to demand, not to range alone.",
+     "commonMistake": "Explaining the choice by range.",
+     "mentalModel": "Size to the market."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You track Aer Lingus's XLR routes. Indianapolis does well for two years.",
+      "prompt": "What might come next?",
+      "options": [
+       "The route closing for being too busy",
+       "Nothing, routes never change aircraft",
+       "Up-gauging, possibly to a widebody"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Strong demand does not close routes.",
+       "Planes change as demand changes.",
+       "About 35% of such routes later became widebody routes."
+      ],
+      "explanation": "Route finders that succeed often hand over to bigger jets."
+     },
+     "proReasoning": "Investors read route finders as early signals of later widebody demand.",
+     "commonMistake": "Assuming a narrow-body route stays narrow-body forever.",
+     "mentalModel": "Success up-gauges."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You lead air service development for a mid-sized US city with no nonstop to Europe.",
+      "prompt": "What pitch fits an airline best?",
+      "options": [
+       "Proof the route could fill a narrow-body",
+       "A promise to fill a 400-seat jumbo",
+       "Free billboards across the airport"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "XLRs open cities that would not support a widebody.",
+       "Promises without proof win no route.",
+       "Ads do not prove demand."
+      ],
+      "explanation": "Pitch the size the market can fill. XLRs make that size work."
+     },
+     "proReasoning": "City teams and founders win routes by matching demand to the right jet.",
+     "commonMistake": "Promising widebody demand you cannot show.",
+     "mentalModel": "Pitch the right size."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your city just got its first nonstop to Europe, on a single-aisle jet.",
+      "prompt": "Why now?",
+      "options": [
+       "Widebodies were banned at the airport",
+       "Long-range narrow-bodies fit thin markets",
+       "Fuel became cheap enough in 2025"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Nothing like that happened.",
+       "The XLR made Indianapolis to Dublin work.",
+       "The jet, not fuel, made the difference."
+      ],
+      "explanation": "New jets make thin long routes work."
+     },
+     "proReasoning": "A new kind of jet can create routes that never existed.",
+     "commonMistake": "Assuming new routes come only from bigger demand.",
+     "mentalModel": "New jets, new routes."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:4b135de1164c"
+  ]
+ },
+ {
+  "id": "e8a4cddc-8ba6-5b78-a475-a38bd3e048e3",
+  "market_id": "aerospace",
+  "day": 42,
+  "slot": 2,
+  "content": {
+   "id": "aerospace-d42-c2",
+   "title": "ETOPS opened the Atlantic to one aisle",
+   "lessonTitle": "The narrow-body that finds routes",
+   "slot": 2,
+   "type": "connect",
+   "brief": {
+    "headline": "In October 2018, the A321LR was certified with ETOPS 180, able to fly up to 4,000 nm with 206 passengers. In January 2019, Canada gave the A220 ETOPS 180, naming London to New York among its routes.",
+    "kicker": "Connect day 41 and day 42: ETOPS lets narrow-bodies cross oceans.",
+    "fullText": "Day 41 showed that a twin needs ETOPS to fly more than 60 minutes from an adequate airport. Ocean routes that pass far from airports need it.\n\nThe A321LR won ETOPS 180 from EASA and the FAA in 2018, with up to three extra fuel tanks. Transport Canada approved the A220 for 180 minutes in January 2019.\n\nDay 42 is the result: about 56,500 transatlantic narrow-body flights scheduled for 2025, up 50% from 2019.",
+    "sources": [
+     {
+      "url": "https://airlinegeeks.com/2018/10/02/airbus-a321lr-obtains-easa-and-faa-approval/",
+      "label": "AirlineGeeks, Airbus A321LR obtains EASA and FAA approval, Oct 2018"
+     },
+     {
+      "url": "https://www.airlineratings.com/news/a220-receives-180-minute-etops-approval",
+      "label": "AirlineRatings, A220 receives 180-minute ETOPS approval, Jan 2019"
+     },
+     {
+      "url": "https://www.law.cornell.edu/cfr/text/14/121.161",
+      "label": "14 CFR 121.161, Airplane limitations: type of route"
+     },
+     {
+      "url": "https://www.yahoo.com/news/planes-changing-people-fly-across-113001589.html",
+      "label": "Business Insider via Yahoo News, New planes are changing how people fly across the Atlantic, 2025"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "buildChain",
+    "prompt": "Put the narrow-body Atlantic story in order.",
+    "steps": [
+     "The A321LR wins ETOPS 180",
+     "Canada gives the A220 ETOPS 180",
+     "Iberia flies an A321XLR to Boston",
+     "Cirium counts 56,500 Atlantic narrow-body flights"
+    ],
+    "explanation": "October 2018, January 2019, November 2024, then the 2025 schedule."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "The A321LR was certified to fly up to how many thousand nautical miles with 206 passengers?",
+    "min": 0,
+    "max": 10,
+    "value": 4,
+    "unit": "K",
+    "explanation": "4,000 nm, carrying up to three extra fuel tanks."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "An interviewer asks what made long-haul narrow-bodies possible, besides range.",
+      "prompt": "What's your answer?",
+      "options": [
+       "A rule change allowing one-aisle long haul",
+       "Bigger windows in modern cabins",
+       "ETOPS approval for twins far from land"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "ETOPS governs twins, whatever their aisles.",
+       "Windows do not open routes.",
+       "ETOPS 180 let the A321LR and A220 cross oceans."
+      ],
+      "explanation": "Range is needed but not enough. ETOPS approval opens the ocean."
+     },
+     "proReasoning": "Strong candidates pair the technology with the rule that lets it be used.",
+     "commonMistake": "Explaining new routes by range alone.",
+     "mentalModel": "Range plus ETOPS."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A narrow-body type has transatlantic range on paper but no ETOPS approval yet.",
+      "prompt": "How do you value its long-haul market?",
+      "options": [
+       "Limited until it wins ETOPS",
+       "Equal to its approved rivals",
+       "Larger, since it is the newest"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Without ETOPS, it cannot fly far from airports.",
+       "Approved rivals can fly the routes today.",
+       "New does not mean approved."
+      ],
+      "explanation": "Market access follows approval, not paper range."
+     },
+     "proReasoning": "Investors discount capabilities that still wait on approval.",
+     "commonMistake": "Valuing paper range as if it were approved.",
+     "mentalModel": "Approval opens the market."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You plan a new airline flying single-aisle twins across the Atlantic.",
+      "prompt": "What is on your critical path?",
+      "options": [
+       "Four-engine jets for safety",
+       "ETOPS approval for your airline",
+       "A widebody for backup flights"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Twins with ETOPS already fly these routes.",
+       "Your airline needs its own ETOPS approval.",
+       "A widebody is not needed to cross."
+      ],
+      "explanation": "The aircraft is approved. Your airline must be too."
+     },
+     "proReasoning": "Founders map the approvals before the routes.",
+     "commonMistake": "Assuming an ETOPS-capable jet makes the airline ready.",
+     "mentalModel": "Approval first."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You fly London to New York on a single-aisle jet with two engines.",
+      "prompt": "What made that allowed?",
+      "options": [
+       "A special exemption for that one route",
+       "Nothing, any jet may fly anywhere",
+       "ETOPS approval to fly far from airports"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "ETOPS is the standard approval, not a one-off.",
+       "US rules cap twins at 60 minutes without ETOPS.",
+       "ETOPS lets twins fly far from airports."
+      ],
+      "explanation": "ETOPS is why a two-engine single-aisle jet can cross an ocean."
+     },
+     "proReasoning": "Every ocean crossing on two engines rests on ETOPS.",
+     "commonMistake": "Thinking any certified jet can fly any route.",
+     "mentalModel": "Two engines, approved for distance."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:740e75876504"
+  ]
+ },
+ {
+  "id": "4af9ea5d-918a-56c0-958d-a3f1f7de129d",
+  "market_id": "aerospace",
+  "day": 42,
+  "slot": 3,
+  "content": {
+   "id": "aerospace-d42-c3",
+   "title": "The route that outgrew its jet",
+   "lessonTitle": "The narrow-body that finds routes",
+   "slot": 3,
+   "type": "decide",
+   "brief": {
+    "headline": "You run network planning. Your A321XLR route to a city nobody served before now sells out most days, with 184 seats.",
+    "kicker": "Decide what happens when a route finder succeeds.",
+    "fullText": "Day 42's facts: since 2005, 68% of long-haul narrow-body flying went to routes nobody served, 24% added flights alongside widebodies and only 8% replaced them.\n\nAbout 35% of the routes these narrow-bodies found later became widebody routes. The analyst expects the A321LR and XLR to follow a similar path.\n\nYou can add a second daily XLR, move to a widebody, or keep things as they are.",
+    "sources": [
+     {
+      "url": "https://weekly.visualapproach.io/p/long-haul-narrowbodies-will-probably-not-replace-widebodies",
+      "label": "Aviation's Week in Charts, Long-haul narrowbodies will (probably) not replace widebodies, May 2026"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "multipleChoice",
+    "prompt": "About what share of routes found by long-haul narrow-bodies later moved to widebodies?",
+    "options": [
+     "About 35%",
+     "About 8%",
+     "About 68%"
+    ],
+    "correctIndex": 0,
+    "explanation": "35%. The 8% is the share that replaced widebodies, and 68% went to unserved routes."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "Since 2005, what percent of long-haul narrow-body flying added flights next to widebodies?",
+    "min": 0,
+    "max": 60,
+    "value": 24,
+    "unit": "%",
+    "explanation": "Just under a quarter, 24%."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your boss asks for options now that the XLR route sells out.",
+      "prompt": "Which framing is best?",
+      "options": [
+       "Weigh a second XLR against a widebody",
+       "Keep it as is, since it is sold out",
+       "Drop it before the demand fades"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Both are paths successful routes take.",
+       "Sold-out flights turn passengers away.",
+       "Demand is growing, not fading."
+      ],
+      "explanation": "A sold-out route finder is a growth decision: more trips or a bigger jet."
+     },
+     "proReasoning": "Planners compare more frequency with a bigger plane, using trip cost and seat cost.",
+     "commonMistake": "Leaving a sold-out route untouched.",
+     "mentalModel": "Grow the winners."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Several airlines report that their XLR routes are selling out.",
+      "prompt": "What does it suggest for widebody demand?",
+      "options": [
+       "It is unrelated to XLR results",
+       "It may rise as winners up-gauge",
+       "It will fall as XLRs replace them"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Route finders often hand off to widebodies.",
+       "About 35% of such routes became widebody routes.",
+       "Only 8% of such flying replaced widebodies."
+      ],
+      "explanation": "Narrow-body route finders can feed later widebody demand."
+     },
+     "proReasoning": "Investors read narrow-body success as a possible early signal for widebodies.",
+     "commonMistake": "Assuming XLRs only take flying away from widebodies.",
+     "mentalModel": "Route finders feed widebodies."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You build route analytics. An airline wants to know when an XLR route is ready for a widebody.",
+      "prompt": "What do you measure?",
+      "options": [
+       "Number of business seats on board",
+       "Average length of passenger names",
+       "Passengers turned away each day"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "The seat mix is set by the airline.",
+       "Names say nothing about demand.",
+       "Demand beyond 184 seats is the signal."
+      ],
+      "explanation": "Turned-away demand shows when a bigger jet would fill."
+     },
+     "proReasoning": "Founders measure the number that triggers the decision.",
+     "commonMistake": "Tracking load factor only, which stops at 100%.",
+     "mentalModel": "Measure the demand you turn away."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "The single-aisle flight you took last year to a new city now uses a widebody.",
+      "prompt": "What's the likely story?",
+      "options": [
+       "The route grew and moved up a size",
+       "The single-aisle jet was banned",
+       "Widebodies became mandatory there"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "About 35% of such routes moved to widebodies.",
+       "No ban was involved.",
+       "No rule requires widebodies."
+      ],
+      "explanation": "Successful route finders often graduate to bigger jets."
+     },
+     "proReasoning": "New routes often start small and grow into bigger planes.",
+     "commonMistake": "Thinking the first plane on a route is permanent.",
+     "mentalModel": "Start small, grow big."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:a325b7563382"
+  ]
+ },
+ {
+  "id": "87c6c541-5510-500a-b5b5-cf1b9aa8ff21",
+  "market_id": "aerospace",
+  "day": 43,
+  "slot": 1,
+  "content": {
+   "id": "aerospace-d43-c1",
+   "title": "The heavy check giant",
+   "lessonTitle": "Who keeps the fleet flying",
+   "slot": 1,
+   "type": "apply",
+   "brief": {
+    "headline": "On September 28, 2026, AAR agreed to buy 65% of MRO Holdings at a $4.0 billion enterprise value. MRO Holdings does heavy airframe maintenance, with 115 lines of capacity.",
+    "kicker": "Apply day 43: base maintenance is a business of its own.",
+    "fullText": "MRO Holdings has about 10,000 staff at five facilities in El Salvador, Mexico, Colombia and the United States. About 90% of its revenue comes from US customers. It expects about $1.0 billion of sales in 2026, with an adjusted EBITDA margin of about 27%.\n\nAAR says the deal creates the largest heavy maintenance MRO in the world, with combined capacity near 3,000 aircraft a year. Its chief executive called heavy maintenance \"a foundational element\" of its aftermarket platform. AAR expects the deal to close by February 2027, subject to regulatory approvals.\n\nHeavy checks are base maintenance: deeper, less frequent work that needs big facilities and specialist staff. Many airlines outsource it, and that is the market MRO Holdings serves.",
+    "sources": [
+     {
+      "url": "https://www.baincapital.com/news/aar-accelerates-its-aftermarket-platform-strategy-agreeing-acquire-controlling-interest-mro",
+      "label": "AAR and Bain Capital, AAR to acquire a controlling interest in MRO Holdings, Sep 2026"
+     },
+     {
+      "url": "https://skybrary.aero/articles/aircraft-maintenance",
+      "label": "SKYbrary, Aircraft maintenance"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "sortSignal",
+    "prompt": "Is each task line or base maintenance?",
+    "buckets": [
+     "Line",
+     "Base"
+    ],
+    "items": [
+     {
+      "text": "A preflight check before departure",
+      "bucket": 0
+     },
+     {
+      "text": "Fixing a fault between two flights",
+      "bucket": 0
+     },
+     {
+      "text": "A heavy airframe check",
+      "bucket": 1
+     },
+     {
+      "text": "Inspecting the airframe for corrosion and fatigue",
+      "bucket": 1
+     }
+    ],
+    "explanation": "Line work keeps the jet flying day to day. Heavy checks for corrosion and fatigue are base work, the kind MRO Holdings sells."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "About 90% of about $1.0 billion in expected 2026 sales comes from US customers. About how many million dollars is that?",
+    "min": 0,
+    "max": 1200,
+    "value": 900,
+    "unit": "M",
+    "explanation": "About $900 million. MRO Holdings sells most of its heavy checks to US airlines from sites across the Americas."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You interview at AAR the week the MRO Holdings deal is announced.",
+      "prompt": "How do you describe what AAR just bought?",
+      "options": [
+       "A new engine design team",
+       "A fleet of aircraft to lease out",
+       "Heavy airframe maintenance capacity"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "MRO Holdings maintains airframes; it does not design engines.",
+       "AAR bought a maintenance firm, not aircraft.",
+       "MRO Holdings runs 115 lines of airframe maintenance capacity."
+      ],
+      "explanation": "MRO Holdings sells base maintenance: deep airframe checks in big facilities."
+     },
+     "proReasoning": "Name the segment precisely. Heavy airframe maintenance is base work, a different market from line or engine MRO.",
+     "commonMistake": "Calling every MRO deal an engine deal.",
+     "mentalModel": "Name the segment, then the scale."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You hold AAR shares. The deal adds more than $1 billion of revenue at a higher margin than AAR earns today.",
+      "prompt": "What do you check first?",
+      "options": [
+       "Whether demand for outsourced heavy checks lasts",
+       "Whether AAR plans to start building engines",
+       "Whether jet fuel prices will fall next year"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "The margin rests on airlines sending heavy checks out.",
+       "AAR is buying a maintenance firm, not an engine maker.",
+       "Fuel prices are not what drives this business."
+      ],
+      "explanation": "MRO Holdings sells heavy maintenance that airlines outsource. Its value depends on that work staying in demand."
+     },
+     "proReasoning": "Investors tie an MRO deal to the demand it depends on, here heavy checks that airlines outsource.",
+     "commonMistake": "Buying the margin without asking what keeps it there.",
+     "mentalModel": "Margin follows outsourced demand."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You build scheduling software for maintenance hangars. The combined AAR will handle near 3,000 aircraft a year.",
+      "prompt": "Who is your best first buyer?",
+      "options": [
+       "Engine designers at an OEM",
+       "Heavy check providers like AAR",
+       "Passengers booking flights"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Engine design is not hangar work.",
+       "Heavy checks run in big facilities at large scale.",
+       "Passengers never see a hangar schedule."
+      ],
+      "explanation": "Base maintenance happens in big facilities, at the scale AAR is building."
+     },
+     "proReasoning": "Founders sell to the segment their product serves: here, base maintenance providers.",
+     "commonMistake": "Pitching a hangar tool to every corner of aviation at once.",
+     "mentalModel": "Sell where the work happens."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend asks where planes go for their big checkups.",
+      "prompt": "What's the plain answer?",
+      "options": [
+       "The gate, between two of their flights",
+       "The factory that first built them",
+       "Specialist shops with big facilities"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Gate work is limited line maintenance.",
+       "MRO Holdings is a maintenance firm, not a plane maker.",
+       "Heavy checks need big facilities, often at outside firms."
+      ],
+      "explanation": "Deep checks are base maintenance, and many airlines send them to firms like MRO Holdings."
+     },
+     "proReasoning": "Big checkups are base maintenance, done less often in big facilities, often by outside firms.",
+     "commonMistake": "Thinking every repair happens at the gate.",
+     "mentalModel": "Gate fixes are line work; big checks are base."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:33a90ff84433"
+  ]
+ },
+ {
+  "id": "7a13875e-49c3-5fff-8111-070bfe7c8ba5",
+  "market_id": "aerospace",
+  "day": 43,
+  "slot": 2,
+  "content": {
+   "id": "aerospace-d43-c2",
+   "title": "The airline shop that sells to rivals",
+   "lessonTitle": "Who keeps the fleet flying",
+   "slot": 2,
+   "type": "connect",
+   "brief": {
+    "headline": "On day 1, Lufthansa Technik was one of the names for MRO. In 2025 it earned 8.049 billion euros, and three quarters came from customers outside the Lufthansa Group.",
+    "kicker": "Connect day 1 and day 43: airline shops sell MRO to others.",
+    "fullText": "Day 1 showed that airlines, engine makers and independent shops all do MRO, the work that keeps a plane flying after delivery. Lufthansa Technik belongs to an airline group, yet most of its work is for other customers.\n\nIn 2025 its revenue rose 12% to 8.049 billion euros, and it signed new contracts worth 8.8 billion euros. Its adjusted EBIT margin fell to 7.5% from 8.5%, as US tariffs, rising material costs and a weaker dollar weighed.\n\nIt plans to invest more than 2 billion euros over five years, including a new engine facility in Calgary aimed at new-generation engines. Day 43 showed engines are the largest MRO segment, and that is where it is adding capacity.",
+    "sources": [
+     {
+      "url": "https://newsroom.lufthansa-technik.com/lufthansa-technik-lays-the-foundation-for-future-investments-worth-billions/",
+      "label": "Lufthansa Technik, 2025 financial figures, Mar 2026"
+     },
+     {
+      "url": "https://www.oliverwyman.com/our-expertise/insights/2026/apr/aviation-mro-labor-and-material-supply-chain-paradigm.html",
+      "label": "Oliver Wyman, The new MRO supply paradigm, Apr 2026"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "spotFake",
+    "prompt": "One of these is false. Tap it.",
+    "statements": [
+     "Lufthansa Technik earned 8.049 billion euros in 2025.",
+     "Three quarters of its revenue came from outside its group.",
+     "It maintains only Lufthansa Group aircraft."
+    ],
+    "fakeIndex": 2,
+    "explanation": "Three quarters of its revenue comes from customers outside the Lufthansa Group. It is an MRO business in its own right."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "About 75% of 8.049 billion euros came from outside customers. About how many billion euros is that?",
+    "min": 0,
+    "max": 10,
+    "value": 6,
+    "unit": "B",
+    "explanation": "About 6 billion euros of work for airlines and operators outside the group."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "An interviewer asks why an airline group keeps an MRO arm that mostly serves other airlines.",
+      "prompt": "What's your best answer?",
+      "options": [
+       "Outside work makes it a business of its own",
+       "Rival airlines are required to use it by law",
+       "It exists only to fix its parent's own jets"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Three quarters of its revenue comes from outside customers.",
+       "No law forces airlines to use it.",
+       "Most of its revenue comes from outside the group."
+      ],
+      "explanation": "Lufthansa Technik earns most of its revenue from outside customers. It competes in the MRO market like any shop."
+     },
+     "proReasoning": "Explain that airline MRO arms compete for outside work. Lufthansa Technik earns three quarters of its revenue that way.",
+     "commonMistake": "Assuming an airline shop only serves its parent.",
+     "mentalModel": "Airline shops sell to the market."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You compare Lufthansa Technik with independent MRO firms.",
+      "prompt": "Which number shows it competes in the open market?",
+      "options": [
+       "The number of its hangars",
+       "Its 75% share of outside revenue",
+       "The size of Lufthansa's own fleet"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Hangars measure capacity, not who pays.",
+       "Most of its revenue is won from outside customers.",
+       "The parent fleet says little about outside sales."
+      ],
+      "explanation": "Outside revenue share shows how much of the business is won in open competition."
+     },
+     "proReasoning": "Investors check how much of an airline MRO arm is outside revenue. It shows whether the shop can win work on its own.",
+     "commonMistake": "Treating an airline MRO arm as a cost center of its parent.",
+     "mentalModel": "Count the outside revenue."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You sell maintenance software. Lufthansa Technik serves many airlines, not just its parent.",
+      "prompt": "Why is it a strong first customer?",
+      "options": [
+       "It works only for its parent airline",
+       "It has no outside customers",
+       "It serves many airlines at once"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Most of its revenue comes from outside the group.",
+       "Outside customers bring three quarters of its revenue.",
+       "Customers with 11,000 aircraft already use its digital services."
+      ],
+      "explanation": "A shop that serves many airlines puts your tool in front of many fleets at once."
+     },
+     "proReasoning": "Founders look for customers that reach many others. A large MRO serving many airlines does that.",
+     "commonMistake": "Selling airline by airline when one shop already serves many of them.",
+     "mentalModel": "One shop, many fleets."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend is surprised that an airline group would repair other airlines' planes.",
+      "prompt": "What's a fair reply?",
+      "options": [
+       "Its repair arm sells to many airlines",
+       "It happens only in emergencies",
+       "Airlines never share repair shops"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Lufthansa Technik earns most of its revenue that way.",
+       "Outside work is three quarters of its revenue, not a rare event.",
+       "Many airlines already use the same shop."
+      ],
+      "explanation": "Repair is a business. Lufthansa Technik earns three quarters of its revenue from outside customers."
+     },
+     "proReasoning": "Maintenance is a market, and some of its biggest shops belong to airline groups.",
+     "commonMistake": "Assuming rivals never buy from each other.",
+     "mentalModel": "Rivals can be customers."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:38ac4cd54ce5"
+  ]
+ },
+ {
+  "id": "d6ddd0b9-3da8-5cc4-96c5-a7091f64a3d4",
+  "market_id": "aerospace",
+  "day": 43,
+  "slot": 3,
+  "content": {
+   "id": "aerospace-d43-c3",
+   "title": "Keep the hangar or send it out",
+   "lessonTitle": "Who keeps the fleet flying",
+   "slot": 3,
+   "type": "decide",
+   "brief": {
+    "headline": "You run maintenance at a mid-size airline. Your hangar needs costly upgrades, and the board asks whether to keep heavy checks in-house or send them out.",
+    "kicker": "Decide which maintenance work to keep in-house.",
+    "fullText": "Line maintenance is the limited work done while a jet stays in service: daily checks, fluid top-ups, quick fixes. Base maintenance is everything else, deeper and less frequent. Heavy work needs big facilities, specialised equipment and staff, and many operators outsource it to MROs.\n\nIn Oliver Wyman's early 2025 forecast, airframe work was a $22.8 billion segment and line work $14.6 billion. Outside shops keep growing: AAR says its deal for MRO Holdings will create the largest heavy maintenance MRO in the world.\n\nLine work, by definition, happens where your jets operate every day.",
+    "sources": [
+     {
+      "url": "https://skybrary.aero/articles/aircraft-maintenance",
+      "label": "SKYbrary, Aircraft maintenance"
+     },
+     {
+      "url": "https://assets.noviams.com/novi-file-uploads/atec/ARSA-OW-2025FleetAndMROMarketReport-ExecSum-03162025.pdf",
+      "label": "ARSA and Oliver Wyman, 2025 fleet and MRO market report, executive summary, Mar 2025"
+     },
+     {
+      "url": "https://www.baincapital.com/news/aar-accelerates-its-aftermarket-platform-strategy-agreeing-acquire-controlling-interest-mro",
+      "label": "AAR and Bain Capital, AAR to acquire a controlling interest in MRO Holdings, Sep 2026"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "multipleChoice",
+    "prompt": "Which work do many airlines send to outside MROs?",
+    "options": [
+     "Daily preflight checks",
+     "Fluid top-ups between flights",
+     "Heavy base maintenance"
+    ],
+    "correctIndex": 2,
+    "explanation": "Heavy work needs big facilities, equipment and specialist staff, so many operators outsource it. Line work stays where the jets fly."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "Airframe work was forecast at $22.8 billion, line work at $14.6 billion. How many billion dollars apart?",
+    "min": 0,
+    "max": 20,
+    "value": 8,
+    "unit": "B",
+    "explanation": "About $8.2 billion bigger. Deep airframe work is a larger market than daily line work."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You are the airline's maintenance director. The board wants a clear recommendation.",
+      "prompt": "What do you propose?",
+      "options": [
+       "Build a bigger hangar for every task",
+       "Keep line work, put heavy checks out to bid",
+       "Outsource the daily gate checks first"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Big facilities cost a lot for work done less often.",
+       "Line work must stay where jets fly; heavy checks suit specialists.",
+       "Daily checks happen at your own gates, every day."
+      ],
+      "explanation": "Line work belongs where your jets operate. Heavy checks need costly facilities that outside MROs already run."
+     },
+     "proReasoning": "Split the work by segment. Keep what must happen on the line, and test the market for heavy checks.",
+     "commonMistake": "Treating all maintenance as one decision.",
+     "mentalModel": "Decide segment by segment."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You are an investor in the airline. Management plans a big hangar upgrade.",
+      "prompt": "What should management show you first?",
+      "options": [
+       "How many airport gates the airline now uses",
+       "A new paint scheme planned for the fleet",
+       "Heavy check cost in-house versus outside bids"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Gates say nothing about heavy check costs.",
+       "Paint does not answer the maintenance question.",
+       "That comparison shows whether the upgrade pays."
+      ],
+      "explanation": "Outside MROs offer heavy checks at scale. The upgrade only makes sense if in-house work beats their bids."
+     },
+     "proReasoning": "Investors want spending compared with the outside option before capital goes into hangars.",
+     "commonMistake": "Approving a hangar upgrade without pricing the outsourced alternative.",
+     "mentalModel": "Compare against the market."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You are a founder pitching to this airline while it weighs the choice.",
+      "prompt": "What product fits the moment?",
+      "options": [
+       "A tool to compare heavy check bids",
+       "A new seat design for the cabin",
+       "A passenger loyalty app"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "It helps with the decision the board faces now.",
+       "Seats do not answer the maintenance question.",
+       "Loyalty apps sit far from the hangar."
+      ],
+      "explanation": "An airline deciding whether to outsource needs help comparing offers. That is a concrete, timely need."
+     },
+     "proReasoning": "Founders time their pitch to a decision the buyer must make now.",
+     "commonMistake": "Pitching a product unrelated to the problem on the table.",
+     "mentalModel": "Sell into the live decision."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend asks why airlines send some repairs to other companies.",
+      "prompt": "What's the plain answer?",
+      "options": [
+       "Outside shops fly the planes too",
+       "Big checks need costly specialist facilities",
+       "Airlines are not allowed to fix planes"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Maintenance firms fix planes; airlines fly them.",
+       "Heavy work needs big facilities, equipment and staff.",
+       "Airlines do plenty of their own line work."
+      ],
+      "explanation": "Daily checks stay with the airline. Deep checks often go to specialists with the facilities for them."
+     },
+     "proReasoning": "Airlines keep daily work close and often outsource the deep, costly checks.",
+     "commonMistake": "Thinking outsourcing means the airline cannot do any maintenance.",
+     "mentalModel": "Daily work close, deep work out."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:a3ad5bc4f8c0"
+  ]
+ },
+ {
+  "id": "bf9edfc1-1efa-58d6-8eca-0a1fd5d9479f",
+  "market_id": "aerospace",
+  "day": 44,
+  "slot": 1,
+  "content": {
+   "id": "aerospace-d44-c1",
+   "title": "Safran's hourly engine boom",
+   "lessonTitle": "Paid by the flying hour",
+   "slot": 1,
+   "type": "apply",
+   "brief": {
+    "headline": "In 2025, Safran's services revenue grew 30% in dollar terms. It said the main driver was LEAP aftermarket work under rate per flight hour contracts.",
+    "kicker": "Apply day 44: hourly deals turn flying into revenue.",
+    "fullText": "Safran owns half of CFM, which makes the LEAP. Its Propulsion revenue reached 15.668 billion euros in 2025. Services made up 64.6% of it, or 10.122 billion euros, and new equipment 35.4%.\n\nSpare parts sales rose 17.6% in dollar terms, and services 30.0%. Safran said aftermarket activities trended strongly above initial expectations. It also delivered a record 1,802 LEAP engines, up 28%.\n\nUnder a rate per flight hour contract, the airline pays for each hour its engines fly. As the LEAP fleet grows, those payments grow with it.",
+    "sources": [
+     {
+      "url": "https://www.safran-group.com/pressroom/safran-reports-excellent-financial-performance-2025-and-raises-its-2028-ambitions-2026-02-13",
+      "label": "Safran, full year 2025 results, Feb 2026"
+     },
+     {
+      "url": "https://www.iata.org/en/pressroom/2026-releases/2026-01-20-01/",
+      "label": "IATA, IATA and CFM renew agreement on engine maintenance competition, Jan 2026"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "buildChain",
+    "prompt": "Follow how LEAP deliveries become Safran service revenue.",
+    "steps": [
+     "CFM delivers LEAP engines to airlines",
+     "Airlines sign rate per flight hour contracts",
+     "The growing fleet flies more hours",
+     "Hourly payments lift services revenue"
+    ],
+    "explanation": "Each delivered LEAP can carry an hourly contract. More engines flying more hours means more service revenue."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "Services were 64.6% of 15.668 billion euros in Propulsion revenue. About how many billion euros is that?",
+    "min": 0,
+    "max": 16,
+    "value": 10,
+    "unit": "B",
+    "explanation": "About 10.1 billion euros. Services brought in nearly two thirds of Propulsion revenue."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You interview for an aftermarket role at Safran.",
+      "prompt": "What drove its 30% services growth in 2025?",
+      "options": [
+       "LEAP work under hourly contracts",
+       "Higher prices for new engines",
+       "A shrinking fleet of engines"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Safran named LEAP hourly contracts as the main driver.",
+       "New equipment was only about a third of revenue.",
+       "The fleet grew; Safran delivered a record 1,802 LEAPs."
+      ],
+      "explanation": "Safran said LEAP aftermarket work under rate per flight hour contracts drove most of the growth."
+     },
+     "proReasoning": "Name the mechanism behind the number: more LEAPs flying under hourly contracts.",
+     "commonMistake": "Crediting aftermarket growth to new engine sales.",
+     "mentalModel": "Growth follows the fleet in service."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Safran's spare parts grew 17.6% and its services 30.0% in 2025.",
+      "prompt": "What do you watch to judge whether it lasts?",
+      "options": [
+       "The size of share buybacks",
+       "LEAP flying hours and shop visits",
+       "The list price of a new LEAP"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Buybacks do not create service revenue.",
+       "Hourly contracts pay as the fleet flies and visits shops.",
+       "New engine prices drive the smaller equipment line."
+      ],
+      "explanation": "Hourly revenue grows with hours flown. Track the LEAP fleet in service, not the order book alone."
+     },
+     "proReasoning": "Investors track the drivers of hourly revenue: fleet size, hours flown and shop visits.",
+     "commonMistake": "Judging an aftermarket business by new engine orders.",
+     "mentalModel": "Track hours flown."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You make engine health monitoring tools. Safran earns per flight hour on many LEAP engines.",
+      "prompt": "Which pitch fits that model?",
+      "options": [
+       "We help you sell more new engines",
+       "We help raise hourly rates",
+       "We keep engines on wing longer"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "New engine sales are not where hourly profit comes from.",
+       "Rates are set in contracts, not by your tool.",
+       "Under hourly deals, makers are rewarded for engines kept on wing."
+      ],
+      "explanation": "An hourly deal rewards the maker when engines stay on wing. Sell time on wing."
+     },
+     "proReasoning": "Match the pitch to how the buyer earns. Under hourly deals, fewer shop visits mean more profit.",
+     "commonMistake": "Pitching features that do not touch the buyer's revenue model.",
+     "mentalModel": "Sell what the contract rewards.",
+     "sources": [
+      {
+       "url": "https://www.rolls-royce.com/media/our-stories/discover/2017/totalcare.aspx",
+       "label": "Rolls-Royce, TotalCare"
+      }
+     ]
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend thinks engine makers earn mostly from selling new engines.",
+      "prompt": "What does Safran show?",
+      "options": [
+       "Services were most of its engine revenue",
+       "New engines were 90% of its revenue",
+       "It sells no services at all"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Services were 64.6% of Propulsion revenue in 2025.",
+       "New equipment was about 35% of Propulsion revenue.",
+       "Services were its biggest Propulsion revenue line."
+      ],
+      "explanation": "Nearly two thirds of Safran Propulsion revenue came from services in 2025."
+     },
+     "proReasoning": "Engine makers earn most of their engine revenue after the sale, from parts and service.",
+     "commonMistake": "Thinking the engine sale is where the money is.",
+     "mentalModel": "The money comes after delivery."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:2b010b4b4090"
+  ]
+ },
+ {
+  "id": "a51cd2a7-b525-5c3e-b676-0d9036de63aa",
+  "market_id": "aerospace",
+  "day": 44,
+  "slot": 2,
+  "content": {
+   "id": "aerospace-d44-c2",
+   "title": "Sold at breakeven, paid for decades",
+   "lessonTitle": "Paid by the flying hour",
+   "slot": 2,
+   "type": "connect",
+   "brief": {
+    "headline": "On day 2, you saw CFM sell new engines at a loss or breakeven. In 2025, services were 75% of GE Aerospace's commercial engine revenue.",
+    "kicker": "Connect day 2 and day 44: the engine sale buys the installed base.",
+    "fullText": "Janus Henderson wrote that CFM, the GE and Safran joint venture, sells new engines at a loss or breakeven. It profits over the engine's 20 to 25 year service life, and makers capture a large share of parts and service for the first two shop visits.\n\nGE Aerospace's 2025 annual report shows where that leads. Its Commercial Engines and Services unit earned $25.0 billion from services and $8.3 billion from equipment. GE's long service agreements generally run 10 to 25 years, and it serves an installed base of about 50,000 commercial engines.\n\nThe cheap engine wins the installed base. The installed base pays for years.",
+    "sources": [
+     {
+      "url": "https://www.janushenderson.com/hub/article/anatomy-of-a-good-company-safran",
+      "label": "Janus Henderson on Safran"
+     },
+     {
+      "url": "https://www.geaerospace.com/sites/default/files/geaerospace_10k_01292026.pdf",
+      "label": "GE Aerospace, 2025 annual report on Form 10-K, Jan 2026"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "faceOff",
+    "prompt": "Which brought GE's commercial engine unit more revenue in 2025?",
+    "left": {
+     "name": "New equipment",
+     "note": "Engines sold for new aircraft"
+    },
+    "right": {
+     "name": "Services",
+     "note": "Shop visits, spare parts and contracts"
+    },
+    "correctIndex": 1,
+    "explanation": "Services brought in $25.0 billion against $8.3 billion for equipment, about three times as much."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "Services earned $25.0 billion and equipment $8.3 billion. About how many times bigger were services?",
+    "min": 0,
+    "max": 8,
+    "value": 3,
+    "unit": "x",
+    "explanation": "About three times bigger. The engine sale opens the door; services pay the bills."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "An interviewer asks why GE would sell engines with thin margins.",
+      "prompt": "How do you explain it?",
+      "options": [
+       "GE earns almost nothing on its service work",
+       "Each engine brings years of service revenue",
+       "Engine prices are capped by aviation law"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Services are its largest revenue line.",
+       "Services were 75% of its commercial engine revenue.",
+       "No law sets engine prices."
+      ],
+      "explanation": "The engine sale builds the installed base, and the installed base pays for service over many years."
+     },
+     "proReasoning": "Explain the razor and blade logic with a number: services were 75% of the unit revenue.",
+     "commonMistake": "Judging an engine maker only on the margin of new engines.",
+     "mentalModel": "Sale first, service for years."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You value an engine maker that just won a big new engine order.",
+      "prompt": "Where does most of the value of that order sit?",
+      "options": [
+       "In the engine sale price alone",
+       "In the paint on the nacelle",
+       "In decades of parts and service"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "New engines can sell at a loss or breakeven.",
+       "Paint is not where engine makers earn.",
+       "CFM profits over the engine life of 20 to 25 years."
+      ],
+      "explanation": "The order seeds an installed base that earns over the life of the engine."
+     },
+     "proReasoning": "Investors value an engine order by the service stream it creates, not the sale alone.",
+     "commonMistake": "Valuing an engine win at its sale price.",
+     "mentalModel": "Value the installed base."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You want to sell a cheaper repair to airlines flying young engines.",
+      "prompt": "What hurdle do you expect?",
+      "options": [
+       "Makers hold most early shop visit work",
+       "Young engines never need repairs",
+       "Airlines are barred from buying repairs"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Makers capture much of the first two shop visits.",
+       "Every engine needs regular servicing.",
+       "Airlines buy repairs all the time."
+      ],
+      "explanation": "Makers capture a large share of service for the first two shop visits, so early work is hard to win."
+     },
+     "proReasoning": "Founders map where the maker is strongest. Early shop visits are its home ground.",
+     "commonMistake": "Targeting the work the maker holds most tightly first.",
+     "mentalModel": "Know where the maker is strong."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend asks how a company can sell jet engines at breakeven and still do well.",
+      "prompt": "What's the plain answer?",
+      "options": [
+       "It does not really do well at all",
+       "It earns on service for years after",
+       "It earns a cut of airline ticket sales"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Its commercial engine unit took in $33.3 billion in 2025.",
+       "GE earned $25.0 billion from services in 2025.",
+       "Engine makers do not sell plane tickets."
+      ],
+      "explanation": "Engines need servicing for decades. That service is where makers earn most."
+     },
+     "proReasoning": "Engine makers trade a thin sale for many years of service income.",
+     "commonMistake": "Thinking the sale is the whole business.",
+     "mentalModel": "Cheap engine, long service."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:41a306f29ccc"
+  ]
+ },
+ {
+  "id": "6e497169-0415-5056-aed6-dc5ae0b66fb1",
+  "market_id": "aerospace",
+  "day": 44,
+  "slot": 3,
+  "content": {
+   "id": "aerospace-d44-c3",
+   "title": "Hourly deal or pay as you go",
+   "lessonTitle": "Paid by the flying hour",
+   "slot": 3,
+   "type": "decide",
+   "brief": {
+    "headline": "You run a regional airline taking delivery of new jets. The engine maker offers a fixed rate per flight hour. Your finance team prefers to pay for each shop visit as it comes.",
+    "kicker": "Decide how to pay for engine maintenance.",
+    "fullText": "Under a deal like Rolls-Royce's TotalCare, the airline pays a fixed dollar amount per flying hour, and management of the maintenance risks passes to the maker. Rolls-Royce says it is only rewarded for engines that perform, and that TotalCare extends intervals between overhauls by around 25%.\n\nGE sells services three ways: spare parts deals, time and material contracts and long service agreements. Its long agreements generally run 10 to 25 years, with payment generally based on use, such as per hour.\n\nShop visits on narrowbody engines now often take 180 to 200 days or more.",
+    "sources": [
+     {
+      "url": "https://www.rolls-royce.com/media/our-stories/discover/2017/totalcare.aspx",
+      "label": "Rolls-Royce, TotalCare"
+     },
+     {
+      "url": "https://www.geaerospace.com/sites/default/files/geaerospace_10k_01292026.pdf",
+      "label": "GE Aerospace, 2025 annual report on Form 10-K, Jan 2026"
+     },
+     {
+      "url": "https://www.oliverwyman.com/our-expertise/insights/2026/apr/aviation-mro-labor-and-material-supply-chain-paradigm.html",
+      "label": "Oliver Wyman, The new MRO supply paradigm, Apr 2026"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "sortSignal",
+    "prompt": "Which plan does each describe?",
+    "buckets": [
+     "Hourly deal",
+     "Pay per visit"
+    ],
+    "items": [
+     {
+      "text": "A fixed price for each flying hour",
+      "bucket": 0
+     },
+     {
+      "text": "The maker manages maintenance risk",
+      "bucket": 0
+     },
+     {
+      "text": "You pay for each shop visit",
+      "bucket": 1
+     },
+     {
+      "text": "A surprise repair bill lands on you",
+      "bucket": 1
+     }
+    ],
+    "explanation": "An hourly deal moves risk to the maker for a known rate. Paying per visit keeps the risk, and the surprises, with you."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "TotalCare stretches overhaul intervals by around 25%, says Rolls-Royce. A 4-year interval becomes about how many years?",
+    "min": 0,
+    "max": 8,
+    "value": 5,
+    "unit": "years",
+    "explanation": "About 5 years. Fewer overhauls is how the maker profits under a fixed hourly rate."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You are the airline's head of engineering, asked for a recommendation.",
+      "prompt": "What do you recommend for a new engine type?",
+      "options": [
+       "Pay per visit, with no cover at all",
+       "No service plan until something fails",
+       "The hourly deal, with risk on the maker"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "A long shop visit bill would land on you in full.",
+       "Engines need regular servicing to stay airworthy.",
+       "You trade lumpy bills for a known rate and shift the risk."
+      ],
+      "explanation": "With a new engine type and no shop of your own, a fixed hourly rate moves the maintenance risk to the maker."
+     },
+     "proReasoning": "Engineering leads weigh who carries the risk. On a new type, letting the maker carry it is often the safer call.",
+     "commonMistake": "Choosing the plan with the lowest first bill and ignoring the risk.",
+     "mentalModel": "Price the risk, not just the rate."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You analyze the engine maker's side of these hourly deals.",
+      "prompt": "What decides whether they are profitable for the maker?",
+      "options": [
+       "How long engines stay on wing",
+       "How many airlines visit its website",
+       "The color of its engine covers"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "The maker is only rewarded for engines that perform.",
+       "Website traffic does not pay for overhauls.",
+       "Covers do not change maintenance cost."
+      ],
+      "explanation": "Under a fixed hourly rate, the maker pays for shop visits. Durability decides its margin."
+     },
+     "proReasoning": "Investors read hourly service deals as a bet on durability. Engines that stay on wing longer earn more.",
+     "commonMistake": "Treating hourly revenue as risk free for the maker.",
+     "mentalModel": "Durability sets the margin."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You are a founder with a tool that predicts engine part wear.",
+      "prompt": "Who gains most from your tool here?",
+      "options": [
+       "The airport parking operator",
+       "The maker carrying the hourly risk",
+       "The passenger in seat 12C"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Parking has nothing to do with engines.",
+       "It pays for shop visits, so earlier warnings save it money.",
+       "Passengers do not pay for engine overhauls."
+      ],
+      "explanation": "Whoever carries maintenance risk values tools that cut shop visits. Under an hourly deal, that is the maker."
+     },
+     "proReasoning": "Founders sell to whoever carries the risk the product reduces.",
+     "commonMistake": "Selling to the party that does not pay when the engine fails.",
+     "mentalModel": "Sell to the risk holder."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend asks why an airline would pay for engine hours instead of repairs.",
+      "prompt": "What's the plain answer?",
+      "options": [
+       "Every regulator in the world requires it",
+       "Engine repairs are always free anyway",
+       "Known costs, with the risk on the maker"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Regulators do not require hourly deals.",
+       "Shop visits are costly and can take months.",
+       "A fixed hourly rate moves the maintenance risk to the maker."
+      ],
+      "explanation": "Paying by the hour turns uncertain repair bills into a steady cost."
+     },
+     "proReasoning": "Hourly deals swap surprise repair bills for a predictable cost.",
+     "commonMistake": "Thinking hourly deals are about paying more.",
+     "mentalModel": "Known cost, shifted risk."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:a75b3ea63c20"
+  ]
+ },
+ {
+  "id": "73439ad3-93e1-59d3-8019-b0bd95ea50e4",
+  "market_id": "aerospace",
+  "day": 45,
+  "slot": 1,
+  "content": {
+   "id": "aerospace-d45-c1",
+   "title": "The turboprop parts probe",
+   "lessonTitle": "Who controls the engine shop",
+   "slot": 1,
+   "type": "apply",
+   "brief": {
+    "headline": "In August 2026, the European Commission closed a probe into Pratt & Whitney Canada after it changed its contracts. The concern was access to used engine cores for independent parts suppliers.",
+    "kicker": "Apply day 45: control of used parts shapes the repair market.",
+    "fullText": "The Commission called the company the main supplier of turboprop engines in the European Economic Area. It looked at whether it limited access to used engine cores, which suppliers of used parts take apart to rebuild spare parts stocks. It also looked at access to the certification that confirms a reused part is airworthy, and at limits on shops in its network.\n\nThe company removed the restrictions and clarified that its shops are free to buy used parts from other suppliers. The changes cover its PT6 and PW100 turboprop engines, not its larger jet engines. The Commission stressed that closing the case is not a finding that the conduct complied with EU rules.\n\nIn September, IATA welcomed the change and said fair access, competition and customer choice should apply across the entire engine aftermarket.",
+    "sources": [
+     {
+      "url": "https://www.brusselstimes.com/eu-affairs/2282259/eu-watchdog-ends-probe-into-aviation-giants-parts-contracts-after-key-changes/",
+      "label": "Brussels Times, EU watchdog ends probe into aviation giant's parts contracts, Aug 2026"
+     },
+     {
+      "url": "https://www.iata.org/en/pressroom/2026-releases/09-09-pratt-whitney-canada-step-improved-engine-aftermarket/",
+      "label": "IATA, Pratt & Whitney Canada's contract changes a step towards an improved engine aftermarket, Sep 2026"
+     },
+     {
+      "url": "https://www.bnnbloomberg.ca/business/international/2026/09/14/global-airlines-urge-more-competition-on-used-jet-engine-parts/",
+      "label": "Reuters via BNN Bloomberg, global airlines urge more competition on used jet engine parts, Sep 2026"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "multipleChoice",
+    "prompt": "What did the Commission look at?",
+    "options": [
+     "Ticket prices on short turboprop routes",
+     "Access to used engine cores and certification",
+     "The fuel burn of its newest turboprop engines"
+    ],
+    "correctIndex": 1,
+    "explanation": "It looked at whether independent suppliers could get used engine cores and the certification that makes reused parts airworthy."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "IATA counted $3.1 billion of extra maintenance and $2.6 billion of extra engine leasing costs. Total, in billions?",
+    "min": 0,
+    "max": 10,
+    "value": 5.7,
+    "unit": "B",
+    "explanation": "$5.7 billion, the cost IATA puts on aftermarket problems in 2025."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You work in aftermarket sales at an engine maker.",
+      "prompt": "What lesson does this probe hold for your team?",
+      "options": [
+       "Used parts are banned in Europe",
+       "Restricting used parts can draw regulators",
+       "Contract terms never matter to regulators"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "The change made used parts easier to supply.",
+       "The Commission examined exactly those contract limits.",
+       "The probe was about contract terms."
+      ],
+      "explanation": "Contract limits on used cores and certification drew a competition probe. Aftermarket terms carry legal risk."
+     },
+     "proReasoning": "Aftermarket teams know that terms limiting rivals can draw competition regulators.",
+     "commonMistake": "Treating aftermarket contract terms as purely commercial.",
+     "mentalModel": "Restrictive terms carry legal risk."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You own shares in a supplier of used turboprop parts.",
+      "prompt": "What does the change mean for it?",
+      "options": [
+       "A new EU ban on selling used parts",
+       "No change at all for used parts",
+       "Easier access to engine cores to strip"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Used parts remain legal once certified.",
+       "The contracts were changed for used parts.",
+       "Network shops may now sell cores and certification services."
+      ],
+      "explanation": "Independent suppliers can now more easily obtain cores and certification, the inputs they need."
+     },
+     "proReasoning": "Investors watch rule changes that open inputs to independent suppliers.",
+     "commonMistake": "Missing that access to inputs, not demand, was the limit.",
+     "mentalModel": "Access to inputs sets the ceiling."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You plan a startup that restores used turboprop parts.",
+      "prompt": "What just became easier?",
+      "options": [
+       "Buying cores and getting parts certified",
+       "Selling new engines straight to airlines",
+       "Skipping part certification entirely"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Network shops may now sell you cores and certification help.",
+       "You restore parts; you do not build engines.",
+       "Reused parts still need certification to fly."
+      ],
+      "explanation": "The two inputs a parts restorer needs, cores and certification, are now easier to get."
+     },
+     "proReasoning": "Founders spot when a regulator opens a closed input. That is when a new supplier can start.",
+     "commonMistake": "Assuming certification can be skipped for used parts.",
+     "mentalModel": "Open inputs open markets."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend asks why regulators care about old engine parts.",
+      "prompt": "What's the plain answer?",
+      "options": [
+       "Regulators like to collect old engines",
+       "Used parts compete with costly new ones",
+       "Old parts are banned from ever flying"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "The probe was about competition, not collecting.",
+       "Restored parts can be sold against new ones once certified.",
+       "Certified used parts can fly."
+      ],
+      "explanation": "Certified used parts give airlines a cheaper option. Blocking them limits competition."
+     },
+     "proReasoning": "Used parts are a real alternative to new ones, so access to them matters to prices.",
+     "commonMistake": "Thinking used parts are unsafe by definition.",
+     "mentalModel": "Used parts are competition."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:c0962fedf599"
+  ]
+ },
+ {
+  "id": "4dc26d94-645b-5538-bae0-30e0ca1a95cd",
+  "market_id": "aerospace",
+  "day": 45,
+  "slot": 2,
+  "content": {
+   "id": "aerospace-d45-c2",
+   "title": "Approved, and allowed to fit",
+   "lessonTitle": "Who controls the engine shop",
+   "slot": 2,
+   "type": "connect",
+   "brief": {
+    "headline": "On day 29, you saw that a PMA lets a second company make approved replacement parts. Under its IATA deal, CFM judges warranty claims by root cause, not by whether non-CFM parts were fitted.",
+    "kicker": "Connect day 29 and day 45: approval and access go together.",
+    "fullText": "A Parts Manufacturer Approval is a combined design and production approval for modification and replacement parts. It allows a maker to produce and sell them for installation on certified aircraft.\n\nApproval is one gate. Access is the other: an approved part is hard to use if fitting it puts the warranty or the manuals at risk. The CFM agreement addresses both for CFM engines. Shops can use CFM manuals and repair instructions even when an engine contains non-CFM parts or repairs, and warranty depends on the cause of a problem.\n\nIATA wants every maker of engines, airframes and components to adopt the same principles.",
+    "sources": [
+     {
+      "url": "https://www.faa.gov/aircraft/air_cert/design_approvals/pma",
+      "label": "FAA, Parts Manufacturer Approval"
+     },
+     {
+      "url": "https://www.iata.org/en/pressroom/2026-releases/2026-01-20-01/",
+      "label": "IATA, IATA and CFM renew agreement on engine maintenance competition, Jan 2026"
+     },
+     {
+      "url": "https://www.iata.org/en/pressroom/2026-releases/06-24-urgent-action-needed-to-ease-engine-mro-bottlenecks/",
+      "label": "IATA, Urgent action needed to ease engine MRO bottlenecks, Jun 2026"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "buildChain",
+    "prompt": "Follow how an alternative part reaches a CFM engine.",
+    "steps": [
+     "A rival maker designs a replacement part",
+     "The FAA grants a Parts Manufacturer Approval",
+     "A shop fits it, using CFM manuals",
+     "Any warranty claim is judged by root cause"
+    ],
+    "explanation": "The FAA approval makes the part legal. The CFM terms make it usable without losing manuals or warranty."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "The CFM agreement was first signed in 2019 and now runs to February 2033. About how many years is that in all?",
+    "min": 0,
+    "max": 20,
+    "value": 14,
+    "unit": "years",
+    "explanation": "About 14 years of written open aftermarket terms for CFM engines."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You manage parts buying for an airline flying CFM engines. A PMA part costs less than the original.",
+      "prompt": "What do you confirm before buying?",
+      "options": [
+       "Only that the price is clearly lower",
+       "That the part has never been tested at all",
+       "FAA approval, and that warranty terms allow it"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "A cheap part is useless until it is approved to fit.",
+       "Approval requires the part to meet standards.",
+       "The part must be approved, and CFM judges warranty by root cause."
+      ],
+      "explanation": "An alternative part needs FAA approval to be legal, and warranty terms decide whether it is worth fitting."
+     },
+     "proReasoning": "Parts buyers check both gates: regulatory approval and the maker terms that govern warranty and manuals.",
+     "commonMistake": "Buying on price alone without checking approval and warranty.",
+     "mentalModel": "Approved and allowed."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You follow a company that makes PMA engine parts.",
+      "prompt": "Why does the CFM deal matter to it?",
+      "options": [
+       "Airlines can fit its parts and keep warranty",
+       "It bans PMA parts from all CFM engines",
+       "It fixes the prices that PMA makers charge"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Warranty turns on root cause, not whose part was fitted.",
+       "The deal supports approved alternative parts.",
+       "The deal does not set PMA prices."
+      ],
+      "explanation": "Warranty fear can keep approved parts off engines. The CFM terms remove it for CFM fleets."
+     },
+     "proReasoning": "Investors see that maker terms, not just FAA approval, decide how far alternative parts can sell.",
+     "commonMistake": "Assuming approval alone guarantees demand.",
+     "mentalModel": "Terms decide demand."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You plan to make PMA parts for engines from makers without an open aftermarket deal.",
+      "prompt": "What risk do you test first?",
+      "options": [
+       "Whether airlines like lower prices",
+       "Whether airlines fear losing warranty",
+       "Whether the FAA allows PMA at all"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Lower prices appeal; the question is the risk.",
+       "Without open terms, warranty fear can block your sales.",
+       "The FAA grants PMA approvals for replacement parts."
+      ],
+      "explanation": "Approval makes your part legal. Without open warranty terms, airlines may still hesitate to fit it."
+     },
+     "proReasoning": "Founders test the buyer fear that blocks adoption, not just the regulatory path.",
+     "commonMistake": "Planning only for approval and ignoring warranty terms.",
+     "mentalModel": "Test the blocker, not the obvious."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend asks if a plane can use parts not made by the original maker.",
+      "prompt": "What's the plain answer?",
+      "options": [
+       "Never, only original parts fly",
+       "Yes, any part that fits will do",
+       "Yes, if the FAA approves them"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Approved replacement parts fly every day.",
+       "A part needs approval, not just a fit.",
+       "A PMA covers the design and production of replacement parts."
+      ],
+      "explanation": "Other companies can make replacement parts once the FAA approves them."
+     },
+     "proReasoning": "Replacement parts from other makers fly legally once approved by the FAA.",
+     "commonMistake": "Thinking any part that fits is allowed.",
+     "mentalModel": "Approved, not just fitted."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:1ad4af2bf7ae"
+  ]
+ },
+ {
+  "id": "f7ace7ea-ff14-5c0a-b760-6c48d277bec8",
+  "market_id": "aerospace",
+  "day": 45,
+  "slot": 3,
+  "content": {
+   "id": "aerospace-d45-c3",
+   "title": "Write the parts price into the deal",
+   "lessonTitle": "Who controls the engine shop",
+   "slot": 3,
+   "type": "decide",
+   "brief": {
+    "headline": "You negotiate engines for an airline ordering new single-aisle jets. IATA urges buyers to lock in predictable spare parts prices when they sign.",
+    "kicker": "Decide what to lock in before you sign.",
+    "fullText": "IATA's 2026 study on single-aisle engine MRO gives four recommendations. One is to secure long-term spare parts access: put predictable spare parts pricing provisions into aircraft and engine purchase deals, with protections the airline can assign to the MRO provider it chooses.\n\nThe reason is control. Makers capture a large share of parts and service for an engine's first two shop visits, and independent shops need parts, repair information and tools that makers control.\n\nBefore it signs, the airline can still choose another engine or another deal.",
+    "sources": [
+     {
+      "url": "https://www.iata.org/en/pressroom/2026-releases/06-24-urgent-action-needed-to-ease-engine-mro-bottlenecks/",
+      "label": "IATA, Urgent action needed to ease engine MRO bottlenecks, Jun 2026"
+     },
+     {
+      "url": "https://www.janushenderson.com/hub/article/anatomy-of-a-good-company-safran",
+      "label": "Janus Henderson on Safran"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "faceOff",
+    "prompt": "When does the airline have more bargaining power over parts prices?",
+    "left": {
+     "name": "At the engine order",
+     "note": "It can still pick another deal"
+    },
+    "right": {
+     "name": "At the third shop visit",
+     "note": "The engines are already on its jets"
+    },
+    "correctIndex": 0,
+    "explanation": "Before signing, the airline can walk away. That is why IATA wants parts pricing written in at purchase."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "LEAP had six Premier MRO providers and over a dozen other licensed shops. At least how many shops is that?",
+    "min": 0,
+    "max": 50,
+    "value": 19,
+    "unit": "shops",
+    "explanation": "At least 19: six Premier providers plus at least 13 others. Assignable protections let any of them use your terms."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You lead the airline's engine negotiation team.",
+      "prompt": "What do you add to the purchase contract?",
+      "options": [
+       "Parts pricing terms you can assign to any shop",
+       "A bigger discount on the engine only",
+       "Nothing about parts until they are needed"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "IATA recommends exactly that protection.",
+       "A cheap engine can come with costly parts later.",
+       "By then you have less bargaining power."
+      ],
+      "explanation": "Write parts pricing in while you can still walk away, and make it work with the shop you choose."
+     },
+     "proReasoning": "Negotiators lock in aftermarket terms at the order, while the buyer still has a choice.",
+     "commonMistake": "Focusing only on the engine price and leaving parts open.",
+     "mentalModel": "Negotiate the life, not the sale."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You follow an engine maker whose margins rely on spare parts.",
+      "prompt": "What would IATA's push mean for it?",
+      "options": [
+       "No effect on its business",
+       "More pressure on parts pricing",
+       "Higher parts prices for years"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Parts are a large share of maker service revenue.",
+       "Predictable pricing terms limit later price rises.",
+       "The push aims to hold parts prices down."
+      ],
+      "explanation": "If airlines lock in parts pricing at purchase, the maker has less room to raise prices later."
+     },
+     "proReasoning": "Investors watch customer pressure on the most profitable revenue stream.",
+     "commonMistake": "Assuming parts pricing power is permanent.",
+     "mentalModel": "Watch the pressure on margins."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You run a young independent engine shop.",
+      "prompt": "Why does the assignable protection help you?",
+      "options": [
+       "It forces airlines to use the engine maker",
+       "It removes the need for shop licenses",
+       "Airlines can bring their parts terms to you"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "It does the opposite: it widens the choice.",
+       "Shops still need licenses and ratings.",
+       "Terms the airline can assign follow it to its chosen shop."
+      ],
+      "explanation": "If parts terms travel with the airline, an independent shop can compete on equal footing."
+     },
+     "proReasoning": "Founders watch for contract terms that let customers bring their deal to a new supplier.",
+     "commonMistake": "Thinking airline contracts with makers never affect independent shops.",
+     "mentalModel": "Portable terms help newcomers."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend asks why an airline would argue about spare parts before getting its engines.",
+      "prompt": "What's the plain answer?",
+      "options": [
+       "It has the most bargaining power then",
+       "Spare parts are free after delivery",
+       "New engines never need spare parts"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Before signing, it can still pick another deal.",
+       "Parts are a big cost over an engine life.",
+       "Every engine needs parts at shop visits."
+      ],
+      "explanation": "Once the engines are fitted, the airline depends on the maker for parts. It bargains best before."
+     },
+     "proReasoning": "Buyers negotiate long-term costs before they are locked in.",
+     "commonMistake": "Thinking only the purchase price matters.",
+     "mentalModel": "Bargain before you depend."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:bffb4cb011ef"
+  ]
+ },
+ {
+  "id": "31449fcc-0689-596a-9022-b37de09565f9",
+  "market_id": "aerospace",
+  "day": 46,
+  "slot": 1,
+  "content": {
+   "id": "aerospace-d46-c1",
+   "title": "The CFM56 benchmark",
+   "lessonTitle": "Hours, cycles and the shop visit",
+   "slot": 1,
+   "type": "apply",
+   "brief": {
+    "headline": "By the mid-1990s, a CFM56 commonly flew over 12,300 hours and 9,100 flights before its first shop visit. Newer versions passed 14,000 hours and 10,000 flights.",
+    "kicker": "Apply day 46: hours and cycles tell different stories.",
+    "fullText": "LARA magazine reported these figures in 2025, in an article on LEAP engine maintenance. Some CFM56 engines approached 30,000 hours before a major overhaul. CFM marketed the LEAP with the goal of maintenance costs comparable to the CFM56, along with 15 to 20% lower fuel burn.\n\nInstead, the LEAP faced issues causing earlier removals, and lessors adjusted their maintenance reserve assumptions. Aviation Week reported in February 2026 that a LEAP-1A in harsh environments reached its first shop visit after about 1.5 years before a durability kit, and about 4 years after.\n\nThe ratio of hours to flights shows how a fleet is used. Long flights pile up hours; short ones pile up cycles.",
+    "sources": [
+     {
+      "url": "https://www.ajw-group.com/storage/downloads/1751451168_article_lara_-_cfm_leap_engine_maintenance_04.25.pdf",
+      "label": "LARA via AJW Group, CFM LEAP engine maintenance, 2025"
+     },
+     {
+      "url": "https://aviationweek.com/mro/aircraft-propulsion/new-engine-low-reliability-killing-fuel-saving-benefits",
+      "label": "Aviation Week, new engine low reliability killing fuel saving benefits, Feb 2026"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "spotFake",
+    "prompt": "One of these is false. Tap it.",
+    "statements": [
+     "Mid-1990s CFM56s often flew 9,100 flights before a shop visit.",
+     "CFM aimed for LEAP maintenance costs like the CFM56.",
+     "The LEAP has stayed on wing longer than planned."
+    ],
+    "fakeIndex": 2,
+    "explanation": "The LEAP faced issues causing earlier removals, not later ones. Lessors had to adjust their assumptions."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "A CFM56 flew 12,300 hours over 9,100 flights. On average, about how many hours did each flight last?",
+    "min": 0,
+    "max": 4,
+    "value": 1.4,
+    "unit": "hours",
+    "explanation": "12,300 divided by 9,100 is about 1.35 hours: short flights, so cycles add up fast."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "In an engine planning interview, you are asked to compare the LEAP with the CFM56.",
+      "prompt": "Which point shows you know the numbers?",
+      "options": [
+       "The LEAP never needs shop visits",
+       "The CFM56 had no shop visits at all",
+       "The LEAP came off wing earlier than hoped"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Every engine needs shop visits.",
+       "The CFM56 had a first shop visit after thousands of flights.",
+       "Early removals pushed lessors to change reserve assumptions."
+      ],
+      "explanation": "The LEAP promised CFM56-like maintenance costs, but earlier removals changed the math."
+     },
+     "proReasoning": "Compare engines on time to first shop visit, in hours and cycles, not just fuel burn.",
+     "commonMistake": "Judging a new engine on fuel savings alone.",
+     "mentalModel": "Fuel burn and time on wing."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You analyze a lessor with many LEAP-powered jets.",
+      "prompt": "What do you check after reports of early removals?",
+      "options": [
+       "Its maintenance reserve assumptions",
+       "Its office lease terms",
+       "The cabin layouts of its jets"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Lessors adjusted reserves as LEAP costs changed.",
+       "Office leases do not move with engine wear.",
+       "Cabins do not change engine removals."
+      ],
+      "explanation": "Earlier removals raise maintenance costs. Reserve assumptions show whether a lessor has caught up."
+     },
+     "proReasoning": "Investors check whether engine wear assumptions match real removal rates.",
+     "commonMistake": "Trusting assumptions set before the engine had a track record.",
+     "mentalModel": "Assumptions must follow reality."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You build software that tracks engine wear for airlines.",
+      "prompt": "Which measure must it track for each engine?",
+      "options": [
+       "Only the number of passengers",
+       "Both flight hours and cycles",
+       "Only calendar days since delivery"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Passenger counts say little about engine wear.",
+       "Engines wear by both, and the ratio shows how they fly.",
+       "Calendar time misses how hard an engine works."
+      ],
+      "explanation": "Hours and cycles each drive wear. A short-haul engine piles up cycles faster than hours."
+     },
+     "proReasoning": "Founders build on the units maintenance planners already use: hours and cycles.",
+     "commonMistake": "Tracking one clock when wear runs on two.",
+     "mentalModel": "Two clocks, one engine."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend asks how long a jet engine runs before its first big service.",
+      "prompt": "What's a fair answer for the CFM56?",
+      "options": [
+       "About one week of normal flying",
+       "Forever, with no service needed",
+       "Thousands of flights over years"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Engines run far longer than that between visits.",
+       "Every engine eventually needs a shop visit.",
+       "Mid-1990s CFM56s often flew 9,100 flights first."
+      ],
+      "explanation": "A CFM56 often flew over 9,100 flights before its first shop visit."
+     },
+     "proReasoning": "Engines are serviced after thousands of flights, counted in both hours and cycles.",
+     "commonMistake": "Thinking engines need a big service after every trip.",
+     "mentalModel": "Thousands of flights, then the shop."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:992917b2de48"
+  ]
+ },
+ {
+  "id": "296caef5-ee94-51f0-8659-6a407853bf7b",
+  "market_id": "aerospace",
+  "day": 46,
+  "slot": 2,
+  "content": {
+   "id": "aerospace-d46-c2",
+   "title": "From 60 days to half a year",
+   "lessonTitle": "Hours, cycles and the shop visit",
+   "slot": 2,
+   "type": "connect",
+   "brief": {
+    "headline": "On day 6, a Pratt & Whitney engine repair first expected to take 60 days stretched to as long as 300. By 2026, narrowbody engine shop visits often took 180 to 200 days or more.",
+    "kicker": "Connect day 6 and day 46: time off wing is the hidden cost.",
+    "fullText": "In September 2023, RTX said 600 to 700 geared turbofan engines had to come off A320neo jets for inspection. Each repair, first expected to take 60 days, could take up to 300.\n\nThree years later, slow shop visits were no longer one engine's problem. Oliver Wyman's 2026 survey found narrowbody engine turnaround times regularly at 180 to 200 days or more, and more than half of respondents expect no improvement within three years.\n\nWhile an engine is in the shop, the airline needs a spare or flies older jets. IATA counted $2.6 billion of extra engine leasing costs in 2025, because engines spent longer in maintenance.",
+    "sources": [
+     {
+      "url": "https://thesun.my/business/rtx-engine-issue-will-ground-350-planes-a-year-through-2026-MD11479063",
+      "label": "Reuters via The Sun, RTX engine issue will ground 350 planes a year, Sep 2023"
+     },
+     {
+      "url": "https://www.oliverwyman.com/our-expertise/insights/2026/apr/aviation-mro-labor-and-material-supply-chain-paradigm.html",
+      "label": "Oliver Wyman, The new MRO supply paradigm, Apr 2026"
+     },
+     {
+      "url": "https://www.iata.org/en/pressroom/2026-releases/2026-01-20-01/",
+      "label": "IATA, IATA and CFM renew agreement on engine maintenance competition, Jan 2026"
+     },
+     {
+      "url": "https://www.iata.org/en/pressroom/2026-releases/06-24-urgent-action-needed-to-ease-engine-mro-bottlenecks/",
+      "label": "IATA, Urgent action needed to ease engine MRO bottlenecks, Jun 2026"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "multipleChoice",
+    "prompt": "Why did engine leasing costs rise by $2.6 billion in 2025?",
+    "options": [
+     "New engines became cheaper",
+     "Engines spent longer in the shop",
+     "Airlines flew far fewer hours"
+    ],
+    "correctIndex": 1,
+    "explanation": "Engines sitting longer in maintenance forced airlines to lease more spares, adding $2.6 billion."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "A repair expected to take 60 days stretched to 300. How many times longer is that?",
+    "min": 0,
+    "max": 8,
+    "value": 5,
+    "unit": "x",
+    "explanation": "Five times longer. Turnaround time turned a repair into months of lost flying."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You plan engine removals for an airline. A shop quotes 200 days for a visit.",
+      "prompt": "What do you plan around?",
+      "options": [
+       "A spare engine or lease for the whole visit",
+       "The engine back within two weeks",
+       "Flying the jet with one engine missing"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "With visits this long, spare cover keeps the jet flying.",
+       "Narrowbody visits often take 180 to 200 days.",
+       "A jet cannot fly with an engine missing."
+      ],
+      "explanation": "Plan for the real turnaround time. Half a year off wing needs spare cover."
+     },
+     "proReasoning": "Planners build schedules on real turnaround times, not hopeful ones.",
+     "commonMistake": "Assuming an engine comes back on the original estimate.",
+     "mentalModel": "Plan on the real turnaround."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You look at a company that leases spare engines to airlines.",
+      "prompt": "What drives demand for its engines now?",
+      "options": [
+       "Cheaper fuel for airlines",
+       "Long shop visits on airline engines",
+       "Airlines retiring all older jets"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Fuel prices are not the main driver here.",
+       "Engines in the shop longer mean more spares leased.",
+       "Airlines are keeping older jets longer."
+      ],
+      "explanation": "IATA counted $2.6 billion of extra leasing costs from longer shop visits. That is spare engine demand."
+     },
+     "proReasoning": "Investors connect turnaround times to spare engine demand.",
+     "commonMistake": "Missing who profits when engines sit in the shop.",
+     "mentalModel": "Slow shops lift spare demand."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You have a tool that cuts the time engines wait for parts in the shop.",
+      "prompt": "How do you show its value to an airline?",
+      "options": [
+       "In the long list of features it has",
+       "In how modern and sleek its design looks",
+       "In days off wing saved and leases avoided"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Features do not show money saved.",
+       "Looks do not pay for spare engines.",
+       "Each day back saves spare lease cost."
+      ],
+      "explanation": "Long shop visits cost airlines in leases. Show the days you save in dollars."
+     },
+     "proReasoning": "Founders price their value in the buyer's own costs: days off wing and lease bills.",
+     "commonMistake": "Selling features instead of saved days.",
+     "mentalModel": "Days saved are dollars saved."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend asks why an engine repair can take half a year.",
+      "prompt": "What's the plain answer?",
+      "options": [
+       "Shops are full and parts are short",
+       "Mechanics work only on weekends",
+       "Engines repair themselves slowly"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Capacity and supply problems stretch turnaround times.",
+       "Shops are busy all week.",
+       "Engines need people and parts to be repaired."
+      ],
+      "explanation": "Shop capacity and parts shortages have stretched narrowbody engine visits to 180 to 200 days or more."
+     },
+     "proReasoning": "Long repairs come from crowded shops and short supply, not slow work.",
+     "commonMistake": "Blaming one shop for an industry-wide backlog.",
+     "mentalModel": "Capacity and parts set the clock."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:8581396b578e"
+  ]
+ },
+ {
+  "id": "58a93a6e-4c6c-587f-81a7-16522f4ec79c",
+  "market_id": "aerospace",
+  "day": 46,
+  "slot": 3,
+  "content": {
+   "id": "aerospace-d46-c3",
+   "title": "Where to fly the new engines",
+   "lessonTitle": "Hours, cycles and the shop visit",
+   "slot": 3,
+   "type": "decide",
+   "brief": {
+    "headline": "You plan the network for an airline with new LEAP-1A jets. Some routes fly in harsh environments, others in neutral ones, and the durability kit is available.",
+    "kicker": "Decide how wear fits your schedule.",
+    "fullText": "Aviation Week reported that a LEAP-1A in harsh environments reached its first shop visit after about 1.5 years before a durability kit, and about 4 years, or roughly 8,000 cycles, after. In neutral environments, the upgraded engine runs about 17,000 cycles, or eight years.\n\nEngine life-limited parts have a maximum number of flight cycles and must come out at that limit. Every flight counts as a cycle, whatever its length.\n\nNarrowbody engine shop visits now often take 180 to 200 days or more. Each early visit takes an engine away for about half a year.",
+    "sources": [
+     {
+      "url": "https://aviationweek.com/mro/aircraft-propulsion/new-engine-low-reliability-killing-fuel-saving-benefits",
+      "label": "Aviation Week, new engine low reliability killing fuel saving benefits, Feb 2026"
+     },
+     {
+      "url": "https://www.faa.gov/sites/faa.gov/files/2022-11/33.70.pdf",
+      "label": "FAA, 14 CFR 33.70, engine life-limited parts"
+     },
+     {
+      "url": "https://www.oliverwyman.com/our-expertise/insights/2026/apr/aviation-mro-labor-and-material-supply-chain-paradigm.html",
+      "label": "Oliver Wyman, The new MRO supply paradigm, Apr 2026"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "sortSignal",
+    "prompt": "Does each choice bring the first shop visit sooner or later?",
+    "buckets": [
+     "Sooner",
+     "Later"
+    ],
+    "items": [
+     {
+      "text": "Flying in harsh environments",
+      "bucket": 0
+     },
+     {
+      "text": "Skipping the durability kit",
+      "bucket": 0
+     },
+     {
+      "text": "Fitting the durability kit",
+      "bucket": 1
+     },
+     {
+      "text": "Flying in neutral environments",
+      "bucket": 1
+     }
+    ],
+    "explanation": "Harsh environments and no kit bring the shop visit forward. The kit and neutral flying push it back."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "An upgraded LEAP-1A runs about 17,000 cycles in neutral service, 8,000 in harsh. How many thousand cycles apart?",
+    "min": 0,
+    "max": 20,
+    "value": 9,
+    "unit": "K",
+    "explanation": "About 9,000 cycles. Where an engine flies more than doubles or halves its time to the shop."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You are the airline's fleet planner. Engines in harsh service come off wing far sooner.",
+      "prompt": "What do you recommend?",
+      "options": [
+       "Ignore the environment when planning routes",
+       "Fit the kit and rotate engines across routes",
+       "Fly all of the engines in harsh service"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Environment changes time on wing a lot.",
+       "The kit extends time on wing, and rotation spreads the wear.",
+       "That brings every shop visit forward."
+      ],
+      "explanation": "The durability kit stretches time on wing. Planning where engines fly spreads wear and shop visits."
+     },
+     "proReasoning": "Fleet planners treat operating environment as a maintenance cost driver.",
+     "commonMistake": "Assigning engines to routes with no thought for wear.",
+     "mentalModel": "Route choice is a wear choice."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You compare two airlines flying the same LEAP-1A, one mainly in harsh environments.",
+      "prompt": "What do you expect for the harsh-environment airline?",
+      "options": [
+       "Exactly the same engine costs",
+       "No shop visits for a decade",
+       "Higher engine maintenance costs"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Environment changes time on wing sharply.",
+       "Harsh service brings visits within years.",
+       "Its engines reach the shop far sooner."
+      ],
+      "explanation": "The same engine reaches the shop after about 8,000 cycles in harsh service and about 17,000 in neutral."
+     },
+     "proReasoning": "Investors adjust maintenance costs for where an airline flies, not just which engine it uses.",
+     "commonMistake": "Assuming one engine type means one maintenance cost.",
+     "mentalModel": "Same engine, different bills."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You are a founder with a product that cuts engine wear in harsh environments.",
+      "prompt": "Which airlines do you call first?",
+      "options": [
+       "Those flying mostly in harsh environments",
+       "Those flying only in neutral environments",
+       "Those with no LEAP engines in their fleet"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Their engines reach the shop far sooner, so the pain is biggest.",
+       "Their engines already last much longer.",
+       "Your product targets this engine."
+      ],
+      "explanation": "Sell first where the problem hurts most: harsh environments bring shop visits forward."
+     },
+     "proReasoning": "Founders start with the customers who feel the problem most.",
+     "commonMistake": "Selling to customers whose engines already last.",
+     "mentalModel": "Start where the pain peaks."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend asks if the same engine lasts the same everywhere.",
+      "prompt": "What's the plain answer?",
+      "options": [
+       "Only the color of the plane matters",
+       "No, harsh conditions wear it faster",
+       "Yes, engines ignore conditions"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Paint does not change engine wear.",
+       "About 8,000 cycles in harsh service against about 17,000.",
+       "The figures show a large gap."
+      ],
+      "explanation": "The same LEAP-1A lasts about twice as long before its first shop visit in neutral conditions."
+     },
+     "proReasoning": "Where an engine flies changes how fast it wears.",
+     "commonMistake": "Thinking engine life is fixed by design alone.",
+     "mentalModel": "Conditions change wear."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:fc5450618517"
+  ]
+ },
+ {
+  "id": "0a9c091c-70a3-5e13-b53e-3403ef7cc29b",
+  "market_id": "aerospace",
+  "day": 47,
+  "slot": 1,
+  "content": {
+   "id": "aerospace-d47-c1",
+   "title": "Expired glue, a $2.8 million fine",
+   "lessonTitle": "The license to fix a jet",
+   "slot": 1,
+   "type": "apply",
+   "brief": {
+    "headline": "In February 2026, the FAA proposed a $2,839,900 civil penalty against PEMCO World Air Services, a Tampa repair station. It alleged the shop knowingly used expired products on five Frontier Airlines aircraft.",
+    "kicker": "Apply day 47: approved data binds every job.",
+    "fullText": "The FAA said the products included adhesives, epoxies, resins, paints and fiberglass cloth, used between September 2022 and November 2023. It alleged PEMCO did not follow the aircraft's maintenance manual or its own quality control manual when using them. PEMCO had 30 days to respond after receiving the FAA's letter. These are allegations, not findings.\n\nUnder Part 145, a repair station may approve an article for return to service only if the work followed approved technical data or data acceptable to the FAA.",
+    "sources": [
+     {
+      "url": "https://faa.gov/newsroom/faa-proposes-2839900-fine-against-pemco-world-air-services-aircraft-maintenance-violations",
+      "label": "FAA, proposed $2,839,900 fine against PEMCO World Air Services, Feb 2026"
+     },
+     {
+      "url": "https://www.ecfr.gov/current/title-14/chapter-I/subchapter-H/part-145/subpart-E",
+      "label": "eCFR, 14 CFR Part 145 subpart E, repair station operating rules"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "buildChain",
+    "prompt": "Put the FAA's case in order.",
+    "steps": [
+     "PEMCO maintains five Frontier aircraft",
+     "The FAA alleges it used expired products",
+     "It allegedly did not follow its manuals",
+     "The FAA proposes a $2.8 million penalty"
+    ],
+    "explanation": "The case turns on approved data. Using expired materials outside the manual is the alleged breach."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "The proposed penalty was $2,839,900 across five aircraft. About how many thousand dollars per aircraft is that?",
+    "min": 0,
+    "max": 1000,
+    "value": 568,
+    "unit": "K",
+    "explanation": "About $568,000 per aircraft. Skipping approved data is an expensive shortcut."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You are a quality inspector at a repair station. You find an expired resin on the shop floor.",
+      "prompt": "What do you do?",
+      "options": [
+       "Remove it and check where it was used",
+       "Use it up, since it is nearly fine",
+       "Ignore it if the job is late"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "You protect the sign-off and the approved data.",
+       "That is the kind of use the FAA alleged at PEMCO.",
+       "A late job is no excuse for unapproved work."
+      ],
+      "explanation": "Work must follow approved data. Expired materials put every sign-off that used them in question."
+     },
+     "proReasoning": "Quality staff quarantine suspect materials and trace where they went before anything is signed off.",
+     "commonMistake": "Letting schedule pressure override the manual.",
+     "mentalModel": "The manual beats the schedule."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You own shares in a repair station group. A rival just drew a proposed $2.8 million penalty.",
+      "prompt": "What do you ask your company?",
+      "options": [
+       "How many hangars it owns or leases",
+       "How it controls materials and shelf life",
+       "Whether it can raise its prices soon"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Hangar count says little about quality control.",
+       "Material control is what the FAA case is about.",
+       "Pricing does not reduce compliance risk."
+      ],
+      "explanation": "The case shows how material control failures turn into penalties. Ask how yours prevents them."
+     },
+     "proReasoning": "Investors treat quality control as a risk line on the balance sheet.",
+     "commonMistake": "Assuming a rival's enforcement case could never hit your company.",
+     "mentalModel": "Quality control is risk control."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You build software that tracks shelf life for shop materials.",
+      "prompt": "What is your strongest pitch to repair stations?",
+      "options": [
+       "It makes the shop look modern",
+       "It replaces the maintenance manual",
+       "It flags expired stock before use"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Looks do not prevent penalties.",
+       "The manual is approved data; software cannot replace it.",
+       "That targets the failure the FAA alleged at PEMCO."
+      ],
+      "explanation": "A proposed $2.8 million penalty over expired products shows the cost of the problem your tool solves."
+     },
+     "proReasoning": "Founders anchor their pitch on a real, costly failure the product prevents.",
+     "commonMistake": "Claiming a tool can replace approved technical data.",
+     "mentalModel": "Prevent the costly failure."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend asks why glue past its date matters on a plane.",
+      "prompt": "What's the plain answer?",
+      "options": [
+       "Repairs must follow approved manuals",
+       "Old glue smells bad in the cabin",
+       "Planes do not use any glue at all"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "The FAA alleged the shop broke its manuals.",
+       "The issue is approved data, not smell.",
+       "Adhesives and resins are used in repairs."
+      ],
+      "explanation": "Every repair must follow approved data. Expired materials break that rule."
+     },
+     "proReasoning": "Aircraft repairs follow approved data down to the materials used.",
+     "commonMistake": "Thinking small materials do not matter.",
+     "mentalModel": "Approved data covers everything."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:123b976b20f5"
+  ]
+ },
+ {
+  "id": "32fcbe43-2f8b-5772-bf44-68984b45da5b",
+  "market_id": "aerospace",
+  "day": 47,
+  "slot": 2,
+  "content": {
+   "id": "aerospace-d47-c2",
+   "title": "The certificate maintenance keeps alive",
+   "lessonTitle": "The license to fix a jet",
+   "slot": 2,
+   "type": "connect",
+   "brief": {
+    "headline": "On day 7, you saw every airliner get its own airworthiness certificate. That certificate stays valid only while the aircraft is maintained to the rules.",
+    "kicker": "Connect day 7 and day 47: the last approval needs upkeep.",
+    "fullText": "A type certificate approves the design, separate approvals let a factory build it, and a standard airworthiness certificate is issued per tail number. The Vertical Flight Society notes that it can be revoked if the aircraft departs from its approved design or is found unairworthy. Keeping it valid depends on maintenance under the rules, in CFR Parts 21, 43 and 91.\n\nThat is where repair stations come in. A Part 145 station may only do work its ratings cover, and may approve a part for return to service only after work done to approved technical data.\n\nDelivery ends the factory's part. The repair stations take over.",
+    "sources": [
+     {
+      "url": "https://www.evtol.news/news/coming-to-terms-airworthiness-certification",
+      "label": "Vertical Flight Society, Coming to terms: airworthiness certification"
+     },
+     {
+      "url": "https://www.ecfr.gov/current/title-14/chapter-I/subchapter-H/part-145/subpart-E",
+      "label": "eCFR, 14 CFR Part 145 subpart E, repair station operating rules"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "sortSignal",
+    "prompt": "Before delivery, or keeping it flying?",
+    "buckets": [
+     "Before delivery",
+     "After delivery"
+    ],
+    "items": [
+     {
+      "text": "A type certificate for the design",
+      "bucket": 0
+     },
+     {
+      "text": "Approval for the factory to build it",
+      "bucket": 0
+     },
+     {
+      "text": "Return to service after a repair",
+      "bucket": 1
+     },
+     {
+      "text": "Work within a station's ratings",
+      "bucket": 1
+     }
+    ],
+    "explanation": "Design and production approvals come first. After delivery, rated repair stations keep the certificate valid."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "The testing rule covers about 977 foreign repair stations in about 65 countries. About how many per country?",
+    "min": 0,
+    "max": 40,
+    "value": 15,
+    "unit": "stations",
+    "explanation": "About 15 per country. FAA oversight follows US airliners wherever they are maintained."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "An interviewer asks how an airliner stays legal to fly after delivery.",
+      "prompt": "What's your answer?",
+      "options": [
+       "The factory certifies it again every year",
+       "Maintenance to the rules keeps it valid",
+       "Its certificate lasts forever once issued"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "After delivery, maintenance keeps it valid.",
+       "Validity depends on maintenance under the rules.",
+       "It can be revoked if the aircraft is unairworthy."
+      ],
+      "explanation": "The airworthiness certificate stays valid only while the aircraft is maintained to the rules."
+     },
+     "proReasoning": "Link certification to maintenance: the certificate is issued once and kept alive by every sign-off after.",
+     "commonMistake": "Treating certification as a one-time event.",
+     "mentalModel": "Issued once, kept by upkeep."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You assess the value of a used aircraft for a fund.",
+      "prompt": "What do you check besides its age?",
+      "options": [
+       "The airline logo painted on the tail",
+       "How many seats it had when new",
+       "Its maintenance records and sign-offs"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Logos are repainted; records are not.",
+       "Seat count does not prove airworthiness.",
+       "Records show it was kept airworthy to the rules."
+      ],
+      "explanation": "An aircraft is only worth what its records prove. Maintenance to the rules keeps it legal to fly."
+     },
+     "proReasoning": "Investors value aircraft on their maintenance records as much as their age.",
+     "commonMistake": "Valuing an aircraft without checking its records.",
+     "mentalModel": "Records are part of the asset."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You build a digital records tool for repair stations.",
+      "prompt": "Which feature matters most?",
+      "options": [
+       "Proof each job followed approved data",
+       "A dark mode for every screen",
+       "Social sharing of finished repairs"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Sign-off requires work to approved data.",
+       "Nice, but not what the rules ask for.",
+       "Sharing does not prove airworthiness."
+      ],
+      "explanation": "Return to service depends on approved data. A tool that proves it serves the core rule."
+     },
+     "proReasoning": "Founders build first for what the rules require, then for comfort.",
+     "commonMistake": "Leading with features the regulator does not care about.",
+     "mentalModel": "Build for the rule first."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend asks whether a plane certified 20 years ago is still certified today.",
+      "prompt": "What's the plain answer?",
+      "options": [
+       "Yes, whatever condition the plane is in",
+       "Yes, if it has been maintained to the rules",
+       "No, certificates expire after one year"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "It can be revoked if the plane is unairworthy.",
+       "Validity depends on maintenance under the rules.",
+       "It stays valid while maintained properly."
+      ],
+      "explanation": "The certificate stays valid as long as the aircraft is maintained to the rules."
+     },
+     "proReasoning": "An old plane can be fully legal, because maintenance keeps its certificate valid.",
+     "commonMistake": "Thinking old planes are uncertified by default.",
+     "mentalModel": "Upkeep keeps it legal."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:4984d5154808"
+  ]
+ },
+ {
+  "id": "88f9aad1-7d52-5883-969a-375f3ad040f3",
+  "market_id": "aerospace",
+  "day": 47,
+  "slot": 3,
+  "content": {
+   "id": "aerospace-d47-c3",
+   "title": "A used part from across the Atlantic",
+   "lessonTitle": "The license to fix a jet",
+   "slot": 3,
+   "type": "decide",
+   "brief": {
+    "headline": "You run maintenance for an EU airline. A US repair station offers an overhauled used component at a good price, released on an FAA Form 8130-3.",
+    "kicker": "Decide what paperwork you need before you fit it.",
+    "fullText": "Under the EU-US bilateral agreement, EASA accepts used engines and components from a US repair station with a dual release on FAA Form 8130-3. A dual release is not acceptable for rebuilt engines or components.\n\nOn the US side, a Part 145 repair station may only work on articles its ratings cover. In 2026, the FAA proposed a $172,894 fine against a South African repair station for working on three aircraft without the proper ratings.\n\nA good price does not make a part legal to fit.",
+    "sources": [
+     {
+      "url": "https://www.easa.europa.eu/en/the-agency/faqs/bilateral-agreement-basa-related-continuing-airworthiness",
+      "label": "EASA, FAQ on the EU-US bilateral agreement and continuing airworthiness"
+     },
+     {
+      "url": "https://www.ecfr.gov/current/title-14/chapter-I/subchapter-H/part-145/subpart-E",
+      "label": "eCFR, 14 CFR Part 145 subpart E, repair station operating rules"
+     },
+     {
+      "url": "https://www.faa.gov/newsroom/faa-proposes-172894-fine-against-dentec-avionics-aircraft-maintenance-violations",
+      "label": "FAA, proposed $172,894 fine against Dentec Avionics, Mar 2026"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "faceOff",
+    "prompt": "Which used part can your EU airline accept?",
+    "left": {
+     "name": "Released with a dual release",
+     "note": "FAA Form 8130-3 from a US repair station"
+    },
+    "right": {
+     "name": "Released with an FAA-only release",
+     "note": "Same form, without the EASA release"
+    },
+    "correctIndex": 0,
+    "explanation": "EASA accepts used parts from US repair stations with a dual release on Form 8130-3."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "The testing rule costs about $56.1 million over five years for about 977 stations. How many thousand dollars each?",
+    "min": 0,
+    "max": 150,
+    "value": 57,
+    "unit": "K",
+    "explanation": "About $57,000 per station over five years: a real but bounded cost of keeping US work."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You are the airline's quality manager. The part's form has only the FAA release.",
+      "prompt": "What do you do?",
+      "options": [
+       "Fit it, since the FAA released it",
+       "Fit it and sort the paperwork later",
+       "Ask the shop for a dual release first"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "An FAA-only release is not enough for your EU jets.",
+       "Paperwork after fitting breaks the rule.",
+       "EASA accepts used parts with a dual release."
+      ],
+      "explanation": "Under the bilateral agreement, a used part from a US shop needs a dual release for EU acceptance."
+     },
+     "proReasoning": "Quality managers check the release paperwork against their own regulator before a part is fitted.",
+     "commonMistake": "Assuming one regulator's release is enough everywhere.",
+     "mentalModel": "Check the tag before you fit."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You look at a US repair station hoping to win European customers.",
+      "prompt": "What capability matters for that growth?",
+      "options": [
+       "Issuing dual releases under the agreement",
+       "Lower prices than every single rival",
+       "A larger parking lot for staff cars"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "EU airlines accept used parts with a dual release.",
+       "Price alone does not make a part acceptable.",
+       "Parking does not open export markets."
+      ],
+      "explanation": "Without dual releases, a US shop cannot easily sell used parts to EU operators."
+     },
+     "proReasoning": "Investors check whether a shop holds the approvals its target customers need.",
+     "commonMistake": "Valuing export growth without the paperwork that allows it.",
+     "mentalModel": "Approvals open markets."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You run a startup trading used aircraft parts between the US and Europe.",
+      "prompt": "What do you verify for every part you sell to EU buyers?",
+      "options": [
+       "Only the shipping time",
+       "The right release on the form",
+       "Only the price and condition"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Speed does not fix missing paperwork.",
+       "EU buyers need a dual release for used US parts.",
+       "Price and condition do not make it legal."
+      ],
+      "explanation": "A part without the right release is unsellable to EU operators, whatever its price."
+     },
+     "proReasoning": "Parts traders sell paperwork as much as metal.",
+     "commonMistake": "Buying stock without checking it can be released to your buyers.",
+     "mentalModel": "No tag, no sale."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend asks why a repaired part needs two signatures to fly in Europe.",
+      "prompt": "What's the plain answer?",
+      "options": [
+       "Two signatures look more official",
+       "Europe bans all US parts",
+       "Both regulators must accept the release"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "It is a legal requirement, not decoration.",
+       "Used US parts are accepted with a dual release.",
+       "The bilateral agreement sets the release both accept."
+      ],
+      "explanation": "A dual release lets a part repaired under FAA rules meet EASA requirements too."
+     },
+     "proReasoning": "Parts cross borders under agreements that set which paperwork each regulator accepts.",
+     "commonMistake": "Thinking an approval in one country counts everywhere.",
+     "mentalModel": "Each regulator needs its sign-off."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:a7f72c4edf67"
+  ]
+ },
+ {
+  "id": "7e72999c-a8d8-5d06-8008-620d527f6af9",
+  "market_id": "aerospace",
+  "day": 48,
+  "slot": 1,
+  "content": {
+   "id": "aerospace-d48-c1",
+   "title": "Two billion dollars for LEAP shops",
+   "lessonTitle": "The coming wave of shop visits",
+   "slot": 1,
+   "type": "apply",
+   "brief": {
+    "headline": "In July 2026, GE Aerospace and Safran said they would invest more than $2 billion in the LEAP maintenance network over five years. LEAP deliveries had passed 10,000.",
+    "kicker": "Apply day 48: shop capacity must be built years ahead.",
+    "fullText": "GE committed more than $1 billion and Safran more than 1 billion euros, as the LEAP fleet keeps growing. New MRO facilities opened in 2025 in Belgium, India, Mexico and Poland, with more capacity added in 2026.\n\nCFM also added three Premier MRO providers over 18 months: MTU Maintenance Fort Worth, Iberia Maintenance in Madrid and SSAMC in Chengdu. They join Air France Industries KLM Engineering and Maintenance, Delta TechOps, Lufthansa Technik, ST Engineering and StandardAero. Upgrades include a high pressure turbine durability kit that extends time on wing.\n\nIATA expects LEAP shop visits to climb from about 600 to 800 in 2025 to more than 5,000 a year by 2040.",
+    "sources": [
+     {
+      "url": "https://avitrader.com/2026/07/20/cfm-ramps-up-investment-in-global-mro-network/",
+      "label": "AviTrader, CFM ramps up investment in global MRO network, Jul 2026"
+     },
+     {
+      "url": "https://www.iata.org/en/pressroom/2026-releases/06-24-urgent-action-needed-to-ease-engine-mro-bottlenecks/",
+      "label": "IATA, Urgent action needed to ease engine MRO bottlenecks, Jun 2026"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "multipleChoice",
+    "prompt": "Why are GE and Safran adding LEAP shop capacity now?",
+    "options": [
+     "Airlines are retiring their LEAPs",
+     "Shop visits are set to multiply",
+     "LEAP production is ending"
+    ],
+    "correctIndex": 1,
+    "explanation": "More than 10,000 LEAPs are flying, and their shop visits are set to rise into the thousands a year."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "LEAP shop visits go from about 800 in 2025 to more than 5,000 a year by 2040. About how many times more is that?",
+    "min": 0,
+    "max": 10,
+    "value": 6,
+    "unit": "x",
+    "explanation": "About six times more, even from the top of the 2025 range."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You are offered jobs at a CFM56 shop and at a new LEAP Premier MRO provider.",
+      "prompt": "Which points to more growth?",
+      "options": [
+       "Neither, since engine shops are shrinking",
+       "The LEAP shop, where visits will multiply",
+       "The CFM56 shop, whatever the trend says"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Makers are adding shop capacity, not cutting it.",
+       "LEAP visits are set to pass 5,000 a year by 2040.",
+       "The growth in shop visits is on the LEAP."
+      ],
+      "explanation": "The investment and the forecasts both point to LEAP work growing for years."
+     },
+     "proReasoning": "Career moves follow where the shop visit curve is rising.",
+     "commonMistake": "Choosing a role without asking where the work is heading.",
+     "mentalModel": "Follow the visit curve."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You follow a Premier MRO provider newly added to the LEAP network.",
+      "prompt": "What does the status give it?",
+      "options": [
+       "A guaranteed fixed profit every year",
+       "Freedom from FAA repair station rules",
+       "A place in a fast-growing work stream"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Status brings work, not guaranteed profit.",
+       "Shops still work under repair station rules.",
+       "LEAP visits are set to rise into the thousands a year."
+      ],
+      "explanation": "Premier status puts a shop in line for LEAP work as visits multiply."
+     },
+     "proReasoning": "Investors value licenses that place a shop in the path of rising demand.",
+     "commonMistake": "Treating demand access as guaranteed profit.",
+     "mentalModel": "Access, not a guarantee."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You build tooling that speeds engine teardown in the shop.",
+      "prompt": "Who should hear your pitch now?",
+      "options": [
+       "Shops expanding for LEAP work",
+       "Airlines selling their LEAPs",
+       "Engine design offices"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "They are spending to add capacity right now.",
+       "Airlines are adding LEAPs, not selling them off.",
+       "Design offices do not run teardowns."
+      ],
+      "explanation": "Shops are investing to add LEAP capacity. That spending is your opening."
+     },
+     "proReasoning": "Founders sell into budgets that are being spent now.",
+     "commonMistake": "Pitching to buyers who are not investing.",
+     "mentalModel": "Sell into active spending."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend asks why engine makers spend billions on repair shops.",
+      "prompt": "What's the plain answer?",
+      "options": [
+       "Repairs are just a side hobby for them",
+       "Thousands of new engines will need service",
+       "Their engine factories are closing down"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Service is where makers earn most.",
+       "More than 10,000 LEAPs are flying and aging.",
+       "LEAP production keeps going."
+      ],
+      "explanation": "Every delivered engine will come back for service, and the LEAP fleet is large and growing."
+     },
+     "proReasoning": "Repair capacity is built ahead of the wave of engines coming due.",
+     "commonMistake": "Thinking makers only care about building new engines.",
+     "mentalModel": "Build shops before the wave."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:2937db7e4af6"
+  ]
+ },
+ {
+  "id": "0fcdb686-2b26-5ccf-bfd0-6d0b89901ab9",
+  "market_id": "aerospace",
+  "day": 48,
+  "slot": 2,
+  "content": {
+   "id": "aerospace-d48-c2",
+   "title": "Fix the factory, find the shop",
+   "lessonTitle": "The coming wave of shop visits",
+   "slot": 2,
+   "type": "connect",
+   "brief": {
+    "headline": "On day 30, adding rocket motor makers moved the bottleneck down to one chemical supplier. Engines show the same pattern: delivering more of them today sets up a shop visit crunch later.",
+    "kicker": "Connect day 30 and day 48: each fix reveals the next bottleneck.",
+    "fullText": "Anduril's Mississippi factory was expected to make 6,000 tactical motors a year by the end of 2026. Yet every motor still needs ammonium perchlorate, made at scale by just one qualified producer.\n\nIn engines, IATA counted 2,000 new single-aisle engine deliveries in 2024: 1,200 LEAP and 800 GTF. It expects about 3,700 a year from 2030 to 2040. Each of those engines will come back for shop visits. LEAP visits alone are set to rise from about 600 to 800 in 2025 to more than 5,000 a year by 2040.\n\nSolving the delivery bottleneck feeds the maintenance one.",
+    "sources": [
+     {
+      "url": "https://techcrunch.com/2025/08/12/anduril-opens-solid-rocket-motor-factory-amidst-ongoing-chemical-chokepoint/",
+      "label": "TechCrunch, Anduril opens rocket motor factory, Aug 2025"
+     },
+     {
+      "url": "https://www.iata.org/en/pressroom/2026-releases/06-24-urgent-action-needed-to-ease-engine-mro-bottlenecks/",
+      "label": "IATA, Urgent action needed to ease engine MRO bottlenecks, Jun 2026"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "buildChain",
+    "prompt": "Follow how one fix creates the next bottleneck.",
+    "steps": [
+     "Engine makers raise deliveries",
+     "More new engines enter service",
+     "Their shop visits come due years later",
+     "Shop capacity becomes the new limit"
+    ],
+    "explanation": "Like the rocket motor chain, the limit moves rather than vanishes. Here it moves from factories to shops."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "Single-aisle engine deliveries go from 2,000 in 2024 to about 3,700 a year. About how many thousand more a year is that?",
+    "min": 0,
+    "max": 4,
+    "value": 1.7,
+    "unit": "K",
+    "explanation": "About 1,700 more engines a year, each one a future shop visit."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "An interviewer asks where the next aerospace bottleneck will be.",
+      "prompt": "What is a well-argued answer?",
+      "options": [
+       "Nowhere, since supply is now solved",
+       "Passenger demand for more flights",
+       "Engine shops, as deliveries come due"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Every fix so far has exposed a new limit.",
+       "The question is about supply, not demand.",
+       "Rising deliveries turn into rising shop visits."
+      ],
+      "explanation": "More deliveries today mean many more shop visits later. Shops are the next limit."
+     },
+     "proReasoning": "Strong candidates trace a bottleneck forward to the next one, with numbers.",
+     "commonMistake": "Treating a fixed bottleneck as the end of the story.",
+     "mentalModel": "Follow the bottleneck forward."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Engine makers are finally raising deliveries. A fund is excited only about new engine sales.",
+      "prompt": "What do you add to the thesis?",
+      "options": [
+       "The shop visit wave those engines bring",
+       "Nothing; deliveries are the whole story",
+       "A bet that airlines stop flying"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Each delivery is a future shop visit and service revenue.",
+       "Service is where makers earn most of the revenue.",
+       "Deliveries are rising because airlines fly more."
+      ],
+      "explanation": "Today's deliveries create years of shop visits. The aftermarket follows the factory."
+     },
+     "proReasoning": "Investors model the service stream that follows each wave of deliveries.",
+     "commonMistake": "Stopping the model at the delivery date.",
+     "mentalModel": "Deliveries seed the aftermarket."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You are choosing between a factory tool and a shop tool to build.",
+      "prompt": "Which bottleneck grows over the next decade?",
+      "options": [
+       "Passenger check-in lines",
+       "Engine shop visits",
+       "Rocket motor oxidizer"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Not an engine supply question.",
+       "LEAP visits alone rise to over 5,000 a year by 2040.",
+       "A real limit, but a different market."
+      ],
+      "explanation": "Shop visits for new single-aisle engines are set to multiply. That bottleneck is growing."
+     },
+     "proReasoning": "Founders aim at the bottleneck that is growing, not the one being fixed.",
+     "commonMistake": "Building for the bottleneck everyone is already solving.",
+     "mentalModel": "Aim at the growing limit."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend asks why fixing one supply problem does not end the trouble.",
+      "prompt": "What's the plain answer?",
+      "options": [
+       "Problems are always fixed for good",
+       "Nobody tracks supply problems",
+       "The limit moves to the next step"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Each fix so far has exposed a new limit.",
+       "Groups like IATA track them closely.",
+       "Rocket motors and engines both show it."
+      ],
+      "explanation": "Clearing one bottleneck lets more flow through, until it hits the next one."
+     },
+     "proReasoning": "Supply chains rarely end with one fix; the limit moves to the next step.",
+     "commonMistake": "Expecting one fix to solve the whole chain.",
+     "mentalModel": "The limit moves."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:ba43a301bdf1"
+  ]
+ },
+ {
+  "id": "4cf45ed6-6d73-5ac2-ba53-b48ce39b52bc",
+  "market_id": "aerospace",
+  "day": 48,
+  "slot": 3,
+  "content": {
+   "id": "aerospace-d48-c3",
+   "title": "Mechanics or machines",
+   "lessonTitle": "The coming wave of shop visits",
+   "slot": 3,
+   "type": "decide",
+   "brief": {
+    "headline": "You run an engine shop with a full order book for LEAP work. About 41% of certified US mechanics are over 60, and hiring is hard.",
+    "kicker": "Decide how to grow when skilled people are scarce.",
+    "fullText": "Oliver Wyman estimates about 45,000 mechanics will retire in the next decade. In its 2026 survey, two-thirds of respondents said finding technicians and mechanics had become moderately to very challenging. Labor rate inflation has settled at 5.5 to 6.0%, against about 3% before the pandemic.\n\nThe same survey found two-thirds saw AI deliver value as expected or better, yet 58% were stuck at the experimental stage. Half plan AI investment in the next five years, but only a third plan to invest in IT infrastructure.\n\nIATA says capacity alone will not be enough. Parts, used material and engine durability matter too.",
+    "sources": [
+     {
+      "url": "https://oliverwyman.com/our-expertise/insights/2026/feb/global-fleet-and-mro-market-forecast-2026-2036.html",
+      "label": "Oliver Wyman, Global fleet and MRO market forecast 2026-2036, Feb 2026"
+     },
+     {
+      "url": "https://www.oliverwyman.com/our-expertise/insights/2026/apr/aviation-mro-labor-and-material-supply-chain-paradigm.html",
+      "label": "Oliver Wyman, The new MRO supply paradigm, Apr 2026"
+     },
+     {
+      "url": "https://www.iata.org/en/pressroom/2026-releases/06-24-urgent-action-needed-to-ease-engine-mro-bottlenecks/",
+      "label": "IATA, Urgent action needed to ease engine MRO bottlenecks, Jun 2026"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "spotFake",
+    "prompt": "One of these is false. Tap it.",
+    "statements": [
+     "About 41% of certified US mechanics are over 60.",
+     "Most shops have moved AI past the experimental stage.",
+     "Labor rate inflation runs at 5.5 to 6.0%."
+    ],
+    "fakeIndex": 1,
+    "explanation": "58% of respondents were still stuck at the experimental stage of AI."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "Labor rates now rise 5.5 to 6.0% a year, against about 3% before the pandemic. About how many times faster is that?",
+    "min": 0,
+    "max": 5,
+    "value": 2,
+    "unit": "x",
+    "explanation": "About twice as fast. Scarce mechanics are getting more expensive every year."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You are a young engineer deciding whether to train as a certified mechanic.",
+      "prompt": "What does the data say about that path?",
+      "options": [
+       "Demand is strong as many retire",
+       "The field is overcrowded",
+       "Mechanics will not be needed"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "About 45,000 mechanics will retire in the next decade.",
+       "Two-thirds of shops find hiring hard.",
+       "Shop visits are set to multiply."
+      ],
+      "explanation": "Retirements and rising shop visits point to strong demand for certified mechanics."
+     },
+     "proReasoning": "Career choices follow scarcity: skills that are retiring faster than they are replaced.",
+     "commonMistake": "Overlooking hands-on roles in a high-tech industry.",
+     "mentalModel": "Scarce skills pay."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You assess an MRO firm planning fast growth in LEAP work.",
+      "prompt": "What is the biggest risk to its plan?",
+      "options": [
+       "Falling labor costs",
+       "Hiring enough certified mechanics",
+       "Too few engines needing work"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Labor rates are rising 5.5 to 6.0% a year.",
+       "Two-thirds of shops find hiring hard.",
+       "LEAP visits are set to multiply."
+      ],
+      "explanation": "Demand is there. People to do the work are the constraint."
+     },
+     "proReasoning": "Investors test growth plans against the scarcest input, here skilled labor.",
+     "commonMistake": "Assuming demand alone guarantees growth.",
+     "mentalModel": "Test the scarcest input."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You build an AI tool that guides mechanics through inspections.",
+      "prompt": "What should your pilot prove?",
+      "options": [
+       "That the tool looks impressive",
+       "That AI can replace sign-offs",
+       "More work done per mechanic"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Most shops are stuck at experiments already.",
+       "Approved staff must still sign work off.",
+       "Labor is the limit, so output per person is the value."
+      ],
+      "explanation": "With 58% stuck at experiments, a pilot must show real output gains per mechanic."
+     },
+     "proReasoning": "Founders design pilots that move past experiments to a measured gain in the scarce resource.",
+     "commonMistake": "Running another demo that never reaches production.",
+     "mentalModel": "Prove output per person."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend asks why more money alone cannot fix slow engine repairs.",
+      "prompt": "What's the plain answer?",
+      "options": [
+       "Skilled mechanics take years to replace",
+       "Money is never spent on engine shops",
+       "Engines can mostly repair themselves"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Many are near retirement, and hiring is hard.",
+       "Makers are spending billions on shops.",
+       "Repairs need trained people."
+      ],
+      "explanation": "Shops can buy equipment quickly, but certified mechanics are scarce and many are retiring."
+     },
+     "proReasoning": "Some limits are people, not money: certified mechanics take time to train.",
+     "commonMistake": "Thinking any bottleneck can be bought away.",
+     "mentalModel": "People take time."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:4792580321d1"
+  ]
+ },
+ {
+  "id": "fc7e4614-2bee-5939-80e0-8d1ff6b4c224",
+  "market_id": "aerospace",
+  "day": 49,
+  "slot": 1,
+  "content": {
+   "id": "aerospace-d49-c1",
+   "title": "What a failed airline's jets fetched",
+   "lessonTitle": "What a jet is worth later",
+   "slot": 1,
+   "type": "apply",
+   "brief": {
+    "headline": "In September 2026, a US court approved the sale of Spirit's last 27 owned jets for about $668.1 million. They were A320-family jets built between 2015 and 2018.",
+    "kicker": "Apply day 49: market value is what a buyer pays today.",
+    "fullText": "Spirit had stopped flying on May 2, 2026. A company controlled by its noteholders, Save 2026-B, bought 23 of the jets, 10 A320ceos and 13 A321ceos, for about $567.4 million. FTAI Aircraft Leasing bought four A321ceos for about $100.7 million in cash.\n\nAll 27 had V2500 engines. Across the whole sale, that works out to about $24.7 million a jet. A real sale like this shows market value: the most likely price under today's conditions, not a long-run average.",
+    "sources": [
+     {
+      "url": "https://aerospaceglobalnews.com/news/spirit-airlines-final-airbus-aircraft/",
+      "label": "Aerospace Global News, Spirit sells its final 27 Airbus jets, Sep 2026"
+     },
+     {
+      "url": "https://airlinegeeks.com/2026/05/02/spirit-cancels-all-flights-begins-shutdown/",
+      "label": "AirlineGeeks, Spirit cancels all flights, begins shutdown, May 2026"
+     },
+     {
+      "url": "https://www.acumen.aero/blogs/aircraft-valuation-explained-base-value-vs-market-value-",
+      "label": "Acumen Aviation, Aircraft valuation explained: base value vs market value, Apr 2026"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "spotFake",
+    "prompt": "One of these is false. Tap it.",
+    "statements": [
+     "FTAI paid about $100.7 million for four A321ceos.",
+     "The 27 jets were brand-new A320neos.",
+     "All 27 jets had V2500 engines."
+    ],
+    "fakeIndex": 1,
+    "explanation": "They were A320-family ceos built between 2015 and 2018, not new A320neos."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "On average, about how many million dollars did each of the 27 jets fetch?",
+    "min": 0,
+    "max": 60,
+    "value": 25,
+    "unit": "M",
+    "explanation": "$668.1 million across 27 jets is about $24.7 million each."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "In an interview at a leasing firm, you are asked how you would value a 10-year-old A321ceo.",
+      "prompt": "What do you anchor on first?",
+      "options": [
+       "The price the jet cost when it was new",
+       "The airline's brand and its route map",
+       "Recent sales of similar jets, like Spirit's"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "The new price says little about value ten years on.",
+       "The airline does not set what the jet itself is worth.",
+       "Real trades show market value under today's conditions."
+      ],
+      "explanation": "Market value is the most likely price right now. Recent sales of similar jets are the best evidence of it."
+     },
+     "proReasoning": "Start from recent trades of the same type and age, then adjust for condition. Spirit's 27 jets averaged about $24.7 million.",
+     "commonMistake": "Valuing a used jet from its price when new.",
+     "mentalModel": "Recent trades set market value."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You hold notes backed by an airline's owned jets. The airline stops flying.",
+      "prompt": "What decides how much you get back?",
+      "options": [
+       "The airline's profits in past years",
+       "What the jets fetch when they are sold",
+       "The list price of brand-new jets"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Past profits are gone once it stops flying.",
+       "Spirit's noteholders ended up buying 23 of the jets.",
+       "New list prices do not set used prices."
+      ],
+      "explanation": "When the airline fails, the jets are what is left. Their market value sets the recovery."
+     },
+     "proReasoning": "Investors in aircraft-backed debt watch market values, because the jets are the recovery when an airline fails.",
+     "commonMistake": "Judging secured debt by the airline's past profits.",
+     "mentalModel": "The jets are the backstop."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You want to build a tool that values used jets for banks and lessors.",
+      "prompt": "Which data matters most?",
+      "options": [
+       "Real sale prices and jet condition",
+       "Ticket prices on each route",
+       "Social media buzz about airlines"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Trades plus condition are how appraisers work.",
+       "Fares say little about one jet's value.",
+       "Buzz does not price an airframe."
+      ],
+      "explanation": "Values rest on real trades and on maintenance condition. That is the data buyers lack."
+     },
+     "proReasoning": "Founders who gather real trade prices and condition data build what valuers need.",
+     "commonMistake": "Building on data that never touches the jet itself.",
+     "mentalModel": "Trades plus condition."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend thinks a failed airline's planes must be close to worthless.",
+      "prompt": "What's the fairer view?",
+      "options": [
+       "Spirit's last 27 jets sold for $668.1 million",
+       "They are always scrapped right away",
+       "Nobody buys planes from a failed airline"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "About $24.7 million a jet, in 2026.",
+       "These went to new owners, not straight to scrap.",
+       "Noteholders and FTAI bought them."
+      ],
+      "explanation": "The airline failed, but its jets kept their value. Someone else will fly them."
+     },
+     "proReasoning": "An airline can fail while its jets stay valuable. The jets simply find a new owner.",
+     "commonMistake": "Mixing up the airline's value with the value of its jets.",
+     "mentalModel": "The jet outlives the airline."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:17a3633bd3bc"
+  ]
+ },
+ {
+  "id": "05035732-1fde-58bc-acf5-6cadf8cbe369",
+  "market_id": "aerospace",
+  "day": 49,
+  "slot": 2,
+  "content": {
+   "id": "aerospace-d49-c2",
+   "title": "Renting the plane, not its future",
+   "lessonTitle": "What a jet is worth later",
+   "slot": 2,
+   "type": "connect",
+   "brief": {
+    "headline": "On day 2 you saw that more than half the world's airliners are leased. On day 49 you saw why that matters: the owner keeps what each jet will be worth later.",
+    "kicker": "Connect day 2 and day 49: who rents the jet, and who owns its future.",
+    "fullText": "On day 2 you saw that a lessor buys planes and rents them to airlines for years at a time. IATA counted 58% of the fleet as leased at the end of 2023, against about 10% in the 1970s. On day 49 you saw the other side of that deal: under an operating lease, the lessor keeps the risk in the jet's residual value when it comes back.\n\nRyanair owned 620 of its 647 jets at the end of March 2026. Frontier ended 2025 leasing all 176 of its jets, on leases that expire between 2027 and 2037. Ryanair keeps its jets' future value. Frontier's lessors keep theirs.",
+    "sources": [
+     {
+      "url": "https://leehamnews.com/2026/11/11/lessors-playing-increasing-ownership-role-in-global-fleet/",
+      "label": "Leeham News, Lessors playing increasing ownership role in global fleet, Nov 2026"
+     },
+     {
+      "url": "https://brodies.com/insights/aviation-and-space/aviation-finance-what-are-the-key-features-of-an-operating-lease/",
+      "label": "Brodies, Aviation finance: the key features of an operating lease"
+     },
+     {
+      "url": "https://investor.ryanair.com/wp-content/uploads/2026/06/Ryanair-2026-Annual-Report.pdf",
+      "label": "Ryanair, 2026 Annual Report"
+     },
+     {
+      "url": "https://s21.q4cdn.com/257736825/files/doc_financials/2025/q4/Frontier-Airlines-Reports-Fourth-Quarter-2025-Financial-Results.pdf",
+      "label": "Frontier Airlines, fourth quarter 2025 results, Feb 2026"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "faceOff",
+    "prompt": "Who carries the risk that its jets are worth less in 2035?",
+    "left": {
+     "name": "Ryanair",
+     "note": "Owns 620 of its 647 jets"
+    },
+    "right": {
+     "name": "Frontier",
+     "note": "Leased all 176 of its jets"
+    },
+    "correctIndex": 0,
+    "explanation": "Ryanair owns its jets, so it keeps their future value or loss. For Frontier's jets, the lessors carry it."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "What share of its 647 jets did Ryanair own at the end of March 2026?",
+    "min": 0,
+    "max": 100,
+    "value": 96,
+    "unit": "%",
+    "explanation": "620 out of 647 is about 96%."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "An interviewer asks why leasing grew from about 10% of the fleet in the 1970s to 58% by 2023.",
+      "prompt": "Which point shows the most depth?",
+      "options": [
+       "Leasing moves residual value risk to the lessor",
+       "Leased jets fly faster than owned ones",
+       "Leases make tickets cheaper for travelers"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "That is the trade at the heart of every operating lease.",
+       "Speed has nothing to do with who owns the jet.",
+       "Fares depend on far more than fleet ownership."
+      ],
+      "explanation": "Leasing frees cash and adds flexibility, and the lessor takes the residual value risk."
+     },
+     "proReasoning": "Explain leasing as a trade: the airline gets flexibility and frees cash, while the lessor takes the residual value risk.",
+     "commonMistake": "Describing leasing as just renting, with no word about who carries the risk.",
+     "mentalModel": "Leases move the value risk."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Used jet values could fall sharply after the shortage ends. You compare Ryanair and Frontier.",
+      "prompt": "Who is more exposed to that fall?",
+      "options": [
+       "Both equally, since both fly cheap seats",
+       "Frontier, which leased all 176 of its jets",
+       "Ryanair, which owns almost all its jets"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Ownership, not the seats, decides who is exposed.",
+       "Frontier's lessors carry that risk on its jets.",
+       "The owner keeps the loss as well as the gain."
+      ],
+      "explanation": "Owning brings the upside and the downside of residual value. Leasing hands both to the lessor."
+     },
+     "proReasoning": "Investors ask who owns the jets before they ask how the jets are valued. The owner carries the swing.",
+     "commonMistake": "Assuming every airline is equally exposed to aircraft values.",
+     "mentalModel": "The owner carries the swing."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You sell a service that tracks the value of jets over time.",
+      "prompt": "Who is your most natural first customer?",
+      "options": [
+       "Passengers who book cheap flights",
+       "Airport shops near the gates",
+       "Owners, like lessors and Ryanair"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Passengers do not carry any jet's value.",
+       "Shops have no stake in what jets are worth.",
+       "They carry the residual value, so they care most."
+      ],
+      "explanation": "Whoever owns the jet owns its future value, so owners pay to track it."
+     },
+     "proReasoning": "Founders sell value data to whoever owns the asset. Lessors and owning airlines carry the residual value.",
+     "commonMistake": "Pitching value tools to people who carry no value risk.",
+     "mentalModel": "Sell to the owner."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You learn that Frontier leased all 176 of its jets.",
+      "prompt": "What happens to those jets when the leases end?",
+      "options": [
+       "They go back to the lessors",
+       "Frontier owns them for free",
+       "They are scrapped at once"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Under an operating lease, the jet returns to its owner.",
+       "No transfer of ownership comes with the lease.",
+       "Many leased jets go on to fly for other airlines."
+      ],
+      "explanation": "A leased jet goes back to its owner at the end, and the owner keeps its value."
+     },
+     "proReasoning": "A leased jet can fly for several airlines over its life. The owner stays the same.",
+     "commonMistake": "Thinking a long lease ends with the airline owning the jet.",
+     "mentalModel": "Leased jets go home."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:f6d576662d71"
+  ]
+ },
+ {
+  "id": "3e44227a-2007-5ae9-bcc5-f96c340f8c6a",
+  "market_id": "aerospace",
+  "day": 49,
+  "slot": 3,
+  "content": {
+   "id": "aerospace-d49-c3",
+   "title": "Own it or lease it",
+   "lessonTitle": "What a jet is worth later",
+   "slot": 3,
+   "type": "decide",
+   "brief": {
+    "headline": "You run a growing airline that needs 20 more narrowbodies. You can buy them with cash and debt, or take them on operating leases.",
+    "kicker": "Decide who should carry the residual value.",
+    "fullText": "Owning means paying for the jets and keeping their residual value, the gain or the loss. Leasing means paying rent and handing the jets back at the end, so the lessor carries that risk.\n\nRyanair, whose owned jets carry no debt, says its rivals face rising aircraft lease costs. Frontier leased its whole fleet of 176. Appraisers price a jet from its base value, its market value and its maintenance condition.",
+    "sources": [
+     {
+      "url": "https://corporate.ryanair.com/news/ryanair-2025-26-pat-rises-40-to-e2-26bn-pre-except-traffic-grows-4-to-208m-despite-boeing-delays/",
+      "label": "Ryanair, FY26 results, May 2026"
+     },
+     {
+      "url": "https://s21.q4cdn.com/257736825/files/doc_financials/2025/q4/Frontier-Airlines-Reports-Fourth-Quarter-2025-Financial-Results.pdf",
+      "label": "Frontier Airlines, fourth quarter 2025 results, Feb 2026"
+     },
+     {
+      "url": "https://brodies.com/insights/aviation-and-space/aviation-finance-what-are-the-key-features-of-an-operating-lease/",
+      "label": "Brodies, Aviation finance: the key features of an operating lease"
+     },
+     {
+      "url": "https://www.acumen.aero/blogs/aircraft-valuation-explained-base-value-vs-market-value-",
+      "label": "Acumen Aviation, Aircraft valuation explained: base value vs market value, Apr 2026"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "sortSignal",
+    "prompt": "Which goes with owning, and which with leasing?",
+    "buckets": [
+     "Owning",
+     "Leasing"
+    ],
+    "items": [
+     {
+      "text": "You keep the residual value",
+      "bucket": 0
+     },
+     {
+      "text": "You need cash or debt up front",
+      "bucket": 0
+     },
+     {
+      "text": "You hand the jet back at the end",
+      "bucket": 1
+     },
+     {
+      "text": "The lessor carries the value risk",
+      "bucket": 1
+     }
+    ],
+    "explanation": "Owning keeps the residual value and needs capital. Leasing hands the jet and the value risk back to the lessor."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "Frontier's leases expire between 2027 and 2037. How many years does that window span?",
+    "min": 0,
+    "max": 30,
+    "value": 10,
+    "unit": "years",
+    "explanation": "From 2027 to 2037 is 10 years, so the jets go back in stages."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You're in fleet planning. The board asks whether to buy or lease 20 jets.",
+      "prompt": "What should your answer start with?",
+      "options": [
+       "Which brochure looks better",
+       "Who should carry the jets' future value",
+       "Which option has the lowest first payment"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Looks do not move the economics.",
+       "That frames the real trade between owning and leasing.",
+       "The first payment hides the value risk."
+      ],
+      "explanation": "Owning and leasing differ mainly in who keeps the residual value. Start there."
+     },
+     "proReasoning": "Fleet planners frame buy or lease as a question of who carries residual value, then price both paths.",
+     "commonMistake": "Comparing first payments and ignoring the value at the end.",
+     "mentalModel": "Start with who carries the value."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "The airline plans to own all 20 jets, funded with new debt.",
+      "prompt": "What risk do you add to your model?",
+      "options": [
+       "The risk that lessors raise rent",
+       "No new risk at all",
+       "The risk that jet values fall"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Owned jets pay no rent.",
+       "Owning adds value risk and debt.",
+       "The owner carries the residual value, up or down."
+      ],
+      "explanation": "An owner carries the residual value. Debt makes a fall in value hurt more."
+     },
+     "proReasoning": "When an airline buys jets with debt, investors stress-test what the jets would be worth in a downturn.",
+     "commonMistake": "Treating owned jets as risk-free assets.",
+     "mentalModel": "Owned jets carry value risk."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You are founding a small airline with little cash.",
+      "prompt": "Which path fits you best at the start?",
+      "options": [
+       "Buy all 20 jets with the cash you raised",
+       "Lease, and let the lessor carry value risk",
+       "Wait until you can buy every jet outright"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "That uses cash you need to run the airline.",
+       "Leasing frees cash and moves the value risk.",
+       "Waiting gives rivals the routes."
+      ],
+      "explanation": "A young airline rarely has the cash or the balance sheet to carry residual value. Leasing fits."
+     },
+     "proReasoning": "Start-up airlines lease to save cash. They can buy later, as Ryanair-style owners do.",
+     "commonMistake": "Tying up all your cash in jets before the routes prove out.",
+     "mentalModel": "Lease first, own later."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend asks why Ryanair owns its planes while Frontier leased all of its.",
+      "prompt": "What's the simplest answer?",
+      "options": [
+       "Leased planes are older and less safe",
+       "Ryanair got its jets free from Boeing",
+       "Owning keeps the value, leasing saves cash"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Frontier flew new A320neos on lease.",
+       "Ryanair paid for its jets.",
+       "That is the trade each airline made."
+      ],
+      "explanation": "Each airline chose who should carry the jets' future value."
+     },
+     "proReasoning": "Two budget airlines can make opposite fleet choices and both work. The difference is who carries the value.",
+     "commonMistake": "Thinking leased planes must be older or worse.",
+     "mentalModel": "Same seats, different owners."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:64a775953a00"
+  ]
+ },
+ {
+  "id": "959955eb-af59-5387-ae9c-243504114890",
+  "market_id": "aerospace",
+  "day": 50,
+  "slot": 1,
+  "content": {
+   "id": "aerospace-d50-c1",
+   "title": "Renting engines while yours wait",
+   "lessonTitle": "Buying the jets you rent",
+   "slot": 1,
+   "type": "apply",
+   "brief": {
+    "headline": "IATA says supply chain problems cost airlines more than $11 billion in 2025. About $2.6 billion of it went on leasing extra engines.",
+    "kicker": "Apply day 50: rent is what you pay when you cannot own enough.",
+    "fullText": "Engines were spending longer in maintenance, so airlines needed more of them to keep flying the same schedule. They rented the difference. IATA's split for 2025 was about $4.2 billion in extra fuel, $3.1 billion in extra maintenance, $2.6 billion in engine leasing and $1.4 billion for holding surplus inventory.\n\nIATA also said aircraft lease rates were up 20 to 30% since 2019. Renting buys flexibility, but in a shortage it gets expensive.",
+    "sources": [
+     {
+      "url": "https://www.iata.org/en/pressroom/2025-releases/2025-12-09-02/",
+      "label": "IATA, aerospace supply chain bottlenecks continue to constrain airlines, Dec 2025"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "multipleChoice",
+    "prompt": "Why did airlines spend about $2.6 billion leasing engines in 2025?",
+    "options": [
+     "Engine makers stopped selling engines",
+     "Leased engines burn less fuel",
+     "Engines spent longer in maintenance"
+    ],
+    "correctIndex": 2,
+    "explanation": "With engines stuck in shops for longer, airlines rented extra ones to keep their jets flying."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "Of the $11 billion, about how many billion dollars went on engine leasing?",
+    "min": 0,
+    "max": 6,
+    "value": 2.6,
+    "unit": "B",
+    "explanation": "About $2.6 billion, behind fuel at $4.2 billion and maintenance at $3.1 billion."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "An interviewer asks where supply chain delays show up in an airline's costs.",
+      "prompt": "Which answer is most specific?",
+      "options": [
+       "Fuel, maintenance and engine leases",
+       "Only in late deliveries of new jets",
+       "Nowhere, since suppliers pay for it"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "IATA put those lines at $4.2, $3.1 and $2.6 billion.",
+       "Late jets are only part of the bill.",
+       "Airlines carried more than $11 billion of costs."
+      ],
+      "explanation": "IATA broke the 2025 bill into fuel, maintenance, engine leasing and inventory."
+     },
+     "proReasoning": "Name the cost lines: extra fuel, maintenance and engine leases. IATA put the 2025 total above $11 billion.",
+     "commonMistake": "Talking about delays only as late deliveries.",
+     "mentalModel": "Delays become rent and fuel."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "An airline's engine lease costs jump while its fleet size stays flat.",
+      "prompt": "What is the likeliest cause?",
+      "options": [
+       "Its lessor raised rent on its jets",
+       "It added many more routes this year",
+       "Its engines spend longer in the shop"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Aircraft rent is a separate line from engine leases.",
+       "A flat fleet makes that unlikely to need more engines.",
+       "IATA tied 2025 engine leasing to longer shop visits."
+      ],
+      "explanation": "Longer maintenance means more spare engines rented to keep the same jets flying."
+     },
+     "proReasoning": "Investors read rising engine rent as a maintenance signal, not a growth signal.",
+     "commonMistake": "Reading higher rent as a sign the airline is growing.",
+     "mentalModel": "Engine rent tracks shop time."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Airlines paid about $2.6 billion in 2025 to rent extra engines.",
+      "prompt": "Which product attacks that cost most directly?",
+      "options": [
+       "A marketplace to buy brand-new engines",
+       "A service to lease out more airframes",
+       "A tool that cuts engine time in the shop"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "New engines are scarce, and airlines already wait.",
+       "The rent was for engines, not airframes.",
+       "Less shop time means fewer spare engines to rent."
+      ],
+      "explanation": "The rent exists because engines sit in shops. Shorten that, and the rent shrinks."
+     },
+     "proReasoning": "Founders aim at the cause of a cost. Here, the cause is time engines spend in maintenance.",
+     "commonMistake": "Building around the symptom instead of the cause.",
+     "mentalModel": "Shrink shop time, shrink rent."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend is surprised that airlines rent engines, not just planes.",
+      "prompt": "What's the explanation?",
+      "options": [
+       "Engines can be swapped between jets",
+       "Airlines never own any engines",
+       "Rented engines are always newer"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "A spare engine keeps a jet flying while its own is in the shop.",
+       "Many airlines own engines too.",
+       "Age has nothing to do with why they rent."
+      ],
+      "explanation": "An engine can come off one jet and go onto another, so a rented spare covers one in the shop."
+     },
+     "proReasoning": "Engines are separate assets that move between jets. That is why they have their own lease market.",
+     "commonMistake": "Thinking an engine is fixed to one plane for life.",
+     "mentalModel": "Engines move between jets."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:a0f296fc1f7a"
+  ]
+ },
+ {
+  "id": "2229f84d-b3f6-5676-a3ea-1daa788937d2",
+  "market_id": "aerospace",
+  "day": 50,
+  "slot": 2,
+  "content": {
+   "id": "aerospace-d50-c2",
+   "title": "The rent stopped, the value stayed",
+   "lessonTitle": "Buying the jets you rent",
+   "slot": 2,
+   "type": "connect",
+   "brief": {
+    "headline": "On day 49 you saw that the owner keeps a jet's residual value. On day 50, Norwegian bought 10 Boeing 737-800s it had leased and took that value for itself.",
+    "kicker": "Connect day 49 and day 50: buying out a lease buys the residual value.",
+    "fullText": "On day 49 you saw that residual value is what a jet will be worth later, and that the owner keeps it. Under an operating lease, that owner is the lessor.\n\nOn day 50 you saw Norwegian agree in March 2025 to buy 10 leased 737-800s. It expected a one-off gain of about NOK 570 million and yearly savings of about NOK 200 million after financing costs. The rent stopped, and the jets' future value became Norwegian's, along with the risk that it falls.",
+    "sources": [
+     {
+      "url": "https://www.mynewsdesk.com/uk/norwegian/pressreleases/norwegian-to-purchase-ten-boeing-737-800-aircraft-3372843",
+      "label": "Norwegian, Norwegian to purchase ten Boeing 737-800 aircraft, Mar 2025"
+     },
+     {
+      "url": "https://brodies.com/insights/aviation-and-space/aviation-finance-what-are-the-key-features-of-an-operating-lease/",
+      "label": "Brodies, Aviation finance: the key features of an operating lease"
+     },
+     {
+      "url": "https://www.acumen.aero/blogs/aircraft-valuation-explained-base-value-vs-market-value-",
+      "label": "Acumen Aviation, Aircraft valuation explained: base value vs market value, Apr 2026"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "buildChain",
+    "prompt": "Put the buyout in order.",
+    "steps": [
+     "Norwegian leases the 737-800s",
+     "The lessor offers favourable terms",
+     "Norwegian buys the jets with cash",
+     "It arranges long-term financing",
+     "The rent stops and the value is Norwegian's"
+    ],
+    "explanation": "Norwegian paid from cash first, then arranged long-term financing. From then on it kept the jets' value."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "Norwegian expected a one-off gain of about how many million NOK?",
+    "min": 0,
+    "max": 1500,
+    "value": 570,
+    "unit": "M",
+    "explanation": "About NOK 570 million at once, plus about NOK 200 million a year in savings."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your manager asks what Norwegian really bought along with the ten jets.",
+      "prompt": "What is your answer?",
+      "options": [
+       "A newer version of the 737",
+       "A new paint scheme for the fleet",
+       "The jets' residual value, and its risk"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "They were the same 737-800s it already flew.",
+       "Paint has nothing to do with it.",
+       "Owning means keeping the future value, up or down."
+      ],
+      "explanation": "Buying a leased jet moves the residual value from the lessor to the airline."
+     },
+     "proReasoning": "Say what changed hands: rent became ownership, and the residual value moved to the airline.",
+     "commonMistake": "Describing a buyout as only a cost saving.",
+     "mentalModel": "A buyout buys the residual."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Norwegian books a NOK 570 million one-off gain from the buyout.",
+      "prompt": "How should you treat it?",
+      "options": [
+       "As profit that repeats every year",
+       "As a sign that fares will rise",
+       "As a one-off, apart from yearly savings"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Norwegian called it non-recurring.",
+       "Fares are a different question.",
+       "The repeat part is about NOK 200 million a year."
+      ],
+      "explanation": "Separate the one-off gain from the recurring savings before you value the deal."
+     },
+     "proReasoning": "Investors split one-off gains from recurring savings. Here that is NOK 570 million once and about NOK 200 million a year.",
+     "commonMistake": "Adding a one-off gain to every future year.",
+     "mentalModel": "Split once from every year."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You want to help airlines decide when to buy out their leases.",
+      "prompt": "Which inputs must your tool include?",
+      "options": [
+       "Seat colours and cabin layouts",
+       "Rent, financing cost and residual value",
+       "Social media ratings of the airline"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Cabins do not change the deal math.",
+       "Those are the pieces Norwegian weighed.",
+       "Ratings do not price a jet."
+      ],
+      "explanation": "A buyout swaps rent for financing and gains the residual value. The tool needs all three."
+     },
+     "proReasoning": "Founders model a buyout with rent saved, financing cost and the jet's future value.",
+     "commonMistake": "Leaving residual value out of a buy or lease tool.",
+     "mentalModel": "Rent, financing, residual."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend asks why an airline would buy planes it was already flying.",
+      "prompt": "What's the best short answer?",
+      "options": [
+       "Because leased jets cannot fly abroad",
+       "To keep their future value and stop rent",
+       "To be allowed to repaint them"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Leased jets fly abroad every day.",
+       "That is what Norwegian gained.",
+       "Leased jets carry airline colours already."
+      ],
+      "explanation": "Owning ends the rent and keeps whatever the jet is worth later."
+     },
+     "proReasoning": "Buying a plane you lease can save money and keep its future value.",
+     "commonMistake": "Thinking airlines buy planes only when they need more of them.",
+     "mentalModel": "Same plane, new owner."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:6b9f1c133d16"
+  ]
+ },
+ {
+  "id": "a5f6cf45-7eca-56fb-b414-5693296be16b",
+  "market_id": "aerospace",
+  "day": 50,
+  "slot": 3,
+  "content": {
+   "id": "aerospace-d50-c3",
+   "title": "Buy, extend or hand back",
+   "lessonTitle": "Buying the jets you rent",
+   "slot": 3,
+   "type": "decide",
+   "brief": {
+    "headline": "You are CFO of an airline whose leases on 10 jets end next year. You can buy them, extend the leases or hand them back.",
+    "kicker": "Decide which money stream you would rather pay.",
+    "fullText": "Leasing swaps a big purchase for rent. Frontier, which leased its whole fleet, paid $748 million in aircraft rent in 2025. Owning swaps rent for the price, the financing and a yearly fall in value, and the owner keeps the residual value.\n\nIn December 2025, IATA said lease rates had risen 20 to 30% since 2019. In March 2025, Norwegian bought 10 jets it had leased and expected about NOK 200 million a year in savings after financing costs.",
+    "sources": [
+     {
+      "url": "https://s21.q4cdn.com/257736825/files/doc_financials/2025/q4/Frontier-Airlines-Reports-Fourth-Quarter-2025-Financial-Results.pdf",
+      "label": "Frontier Airlines, fourth quarter 2025 results, Feb 2026"
+     },
+     {
+      "url": "https://www.iata.org/en/pressroom/2025-releases/2025-12-09-02/",
+      "label": "IATA, aerospace supply chain bottlenecks continue to constrain airlines, Dec 2025"
+     },
+     {
+      "url": "https://www.mynewsdesk.com/uk/norwegian/pressreleases/norwegian-to-purchase-ten-boeing-737-800-aircraft-3372843",
+      "label": "Norwegian, Norwegian to purchase ten Boeing 737-800 aircraft, Mar 2025"
+     },
+     {
+      "url": "https://brodies.com/insights/aviation-and-space/aviation-finance-what-are-the-key-features-of-an-operating-lease/",
+      "label": "Brodies, Aviation finance: the key features of an operating lease"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "faceOff",
+    "prompt": "With rents up 20 to 30% since 2019, which path gains more from that rise?",
+    "left": {
+     "name": "Owning the jets",
+     "note": "No rent, keeps the residual value"
+    },
+    "right": {
+     "name": "Extending the leases",
+     "note": "Pays the new, higher rent"
+    },
+    "correctIndex": 0,
+    "explanation": "Higher rent makes owning look better. The owner pays no rent and keeps the value."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "Suppose a jet rents for $300,000 a month and rates rise 25%. What is the new rent, in thousands?",
+    "min": 0,
+    "max": 600,
+    "value": 375,
+    "unit": "K",
+    "explanation": "$300,000 times 1.25 is $375,000 a month in this example."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "The CEO wants your view on the 10 expiring leases by Friday.",
+      "prompt": "What do you bring?",
+      "options": [
+       "The cheapest extension quote you can find",
+       "Last year's fleet budget, rolled forward",
+       "Rent against owning costs, with a value view"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Cheap rent can still cost more than owning.",
+       "Rents have moved since last year.",
+       "That is the comparison behind every buyout."
+      ],
+      "explanation": "Compare the two streams and add a view on what the jets will be worth."
+     },
+     "proReasoning": "CFOs lay rent next to financing and depreciation, then add a residual value view.",
+     "commonMistake": "Choosing the lowest monthly payment without the full picture.",
+     "mentalModel": "Compare streams, add the residual."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "An airline you follow decides to buy out its expiring leases with new debt.",
+      "prompt": "What do you check?",
+      "options": [
+       "That the savings beat the new interest",
+       "That the jets are the newest version",
+       "That the lessor agreed quickly"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Norwegian quoted savings net of financing costs.",
+       "The same 737-800s can still be a good buy.",
+       "Speed of agreement says little about value."
+      ],
+      "explanation": "A buyout pays only if rent saved beats the cost of financing plus the value risk."
+     },
+     "proReasoning": "Investors want savings stated after financing, as Norwegian did, and a view on residual value.",
+     "commonMistake": "Counting rent saved without the interest on new debt.",
+     "mentalModel": "Net of financing, or it does not count."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You run a young airline with thin cash and leases ending next year.",
+      "prompt": "What is your safest move?",
+      "options": [
+       "Hand them all back and stop flying",
+       "Buy every jet with your cash",
+       "Extend most leases and keep cash"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "You lose the routes you built.",
+       "That drains the cash you need to operate.",
+       "You keep flying and keep a cash buffer."
+      ],
+      "explanation": "Owning needs capital. With thin cash, rent keeps you flexible, even at higher rates."
+     },
+     "proReasoning": "Young airlines protect cash first. Buyouts can wait until the balance sheet can carry them.",
+     "commonMistake": "Copying a big airline's buyout without its cash.",
+     "mentalModel": "Cash first, ownership later."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend asks what happens when an airline's plane lease runs out.",
+      "prompt": "What are the choices?",
+      "options": [
+       "Buy it, extend the lease or return it",
+       "The airline keeps the plane for free",
+       "The airline must scrap the plane"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Those are the three real options.",
+       "Nothing about a lease makes it free.",
+       "The plane belongs to the lessor, not the airline."
+      ],
+      "explanation": "At lease end, the airline can buy, extend or hand the jet back."
+     },
+     "proReasoning": "A lease end is a real decision point with three paths.",
+     "commonMistake": "Thinking the plane simply disappears when the lease ends.",
+     "mentalModel": "Buy, extend or return."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:2c624916a467"
+  ]
+ },
+ {
+  "id": "8b62628d-61f9-5bb2-a800-a237abc9ff15",
+  "market_id": "aerospace",
+  "day": 51,
+  "slot": 1,
+  "content": {
+   "id": "aerospace-d51-c1",
+   "title": "Renting the crew with the jet",
+   "lessonTitle": "When the lessor wants the jet back",
+   "slot": 1,
+   "type": "apply",
+   "brief": {
+    "headline": "In February 2025, IndiGo agreed to damp lease three more Boeing 787-9s from Norse Atlantic, for four in all. Its own Airbus A350s were not due until 2027.",
+    "kicker": "Apply day 51: when jets are scarce, airlines rent whole operations.",
+    "fullText": "In a wet lease, also called ACMI, an airline rents the aircraft, crew, maintenance and insurance from another operator. A damp lease is a wet lease with only part of the crew, often without cabin crew. In a dry lease, only the aircraft is rented.\n\nIndiGo's leases ran for an initial six months, extendable to up to 18 months, subject to regulatory approvals. It had a firm order for 30 A350-900s, with options for 70 more, and deliveries expected from 2027. Renting a whole operation let it fly long-haul before its own jets arrived.",
+    "sources": [
+     {
+      "url": "https://www.goindigo.in/press-releases/indigo-signs-firm-damp-lease-agreement-for-additional-three-wide-body-aircraft-with-norse-atlantic-airways.html",
+      "label": "IndiGo, firm damp lease agreement for three more wide-body aircraft, Feb 2025"
+     },
+     {
+      "url": "https://www.casa.gov.au/node/249723",
+      "label": "Civil Aviation Safety Authority (Australia), aircraft leasing guidance and glossary"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "sortSignal",
+    "prompt": "Wet lease or dry lease?",
+    "buckets": [
+     "Wet lease",
+     "Dry lease"
+    ],
+    "items": [
+     {
+      "text": "The crew comes with the aircraft",
+      "bucket": 0
+     },
+     {
+      "text": "The lessor covers maintenance and insurance",
+      "bucket": 0
+     },
+     {
+      "text": "Only the aircraft is rented",
+      "bucket": 1
+     },
+     {
+      "text": "The airline supplies its own crew",
+      "bucket": 1
+     }
+    ],
+    "explanation": "A wet lease is the whole package: aircraft, crew, maintenance and insurance. A dry lease is the aircraft alone."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "IndiGo's damp leases could be extended to up to how many months?",
+    "min": 0,
+    "max": 48,
+    "value": 18,
+    "unit": "months",
+    "explanation": "An initial six months, extendable to up to 18, subject to regulatory approvals."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "An interviewer asks how an airline can launch long-haul routes before its own jets arrive.",
+      "prompt": "What is your best example?",
+      "options": [
+       "Borrow pilots from a rival airline",
+       "Wet or damp lease jets with crews",
+       "Order more jets for faster delivery"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Crews come with an operator, not a loan.",
+       "IndiGo damp leased 787-9s from Norse Atlantic.",
+       "New jets were sold out for years."
+      ],
+      "explanation": "A wet or damp lease rents an operation, so an airline can start flying while it waits for its own jets."
+     },
+     "proReasoning": "Cite IndiGo: four damp leased 787-9s bridged the gap to its A350s, due from 2027.",
+     "commonMistake": "Assuming a new route must wait for new deliveries.",
+     "mentalModel": "Rent the operation, then own."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "An airline grows fast on wet leased jets that run six months at a time.",
+      "prompt": "What risk do you flag?",
+      "options": [
+       "Short terms and approvals can end capacity",
+       "Wet leases always cost less than owning",
+       "The leases are too long to get out of"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "IndiGo's extensions were subject to regulatory approvals.",
+       "Nothing says rented capacity is always cheaper.",
+       "Six months is short, not long."
+      ],
+      "explanation": "Rented capacity can disappear when a lease ends or an approval is not renewed."
+     },
+     "proReasoning": "Investors treat wet leased capacity as temporary until the airline's own jets arrive.",
+     "commonMistake": "Valuing rented capacity as if it were owned.",
+     "mentalModel": "Rented capacity is temporary."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You run a small airline with spare jets and crews in your quiet season.",
+      "prompt": "What is the opening?",
+      "options": [
+       "Wet lease them to airlines short of jets",
+       "Sell the jets now while prices are high",
+       "Park them and wait for your summer peak"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "That is what Norse Atlantic did for IndiGo.",
+       "You lose the jets for your own peak.",
+       "Parked jets earn nothing."
+      ],
+      "explanation": "In a shortage, spare aircraft with crews are worth renting out."
+     },
+     "proReasoning": "Operators with spare aircraft and crews can earn from airlines that cannot get jets.",
+     "commonMistake": "Letting jets sit idle while others are short.",
+     "mentalModel": "Spare capacity is a product."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You board an IndiGo flight on a 787 with a Norse Atlantic crew.",
+      "prompt": "What's going on?",
+      "options": [
+       "Norse bought IndiGo",
+       "IndiGo is damp leasing the jet",
+       "The flight was sold by mistake"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Both remain separate companies.",
+       "IndiGo rents the jet and flight crew from Norse.",
+       "It is a planned arrangement."
+      ],
+      "explanation": "In a damp lease, another operator supplies the aircraft and part of the crew."
+     },
+     "proReasoning": "The crew on your flight can work for a different airline than the name on your ticket.",
+     "commonMistake": "Assuming the brand always flies its own planes.",
+     "mentalModel": "The brand can rent the flight."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:8dfa3b03466f"
+  ]
+ },
+ {
+  "id": "c6424f63-809c-5016-9e38-ffbd5f1e9aac",
+  "market_id": "aerospace",
+  "day": 51,
+  "slot": 2,
+  "content": {
+   "id": "aerospace-d51-c2",
+   "title": "The hardest thing to replace",
+   "lessonTitle": "When the lessor wants the jet back",
+   "slot": 2,
+   "type": "connect",
+   "brief": {
+    "headline": "On day 3, Boeing paid to bring back a supplier it could not replace. On day 51, AerCap took 24 jets back from Frontier early, because jets had become hard to replace.",
+    "kicker": "Connect day 3 and day 51: whatever is hardest to replace holds the power.",
+    "fullText": "On day 3 you saw Boeing complete its purchase of Spirit AeroSystems' Boeing work in December 2025, bringing its 737 fuselage supplier in-house. No one else could build those parts soon.\n\nOn day 51 you saw the same rule in fleets. IATA put the aircraft delivery shortfall at 5,300 jets or more. In February 2026, Frontier agreed to return 24 leased A320neos to AerCap years early, and AerCap's chief executive said the deal let it redeploy them. In a shortage, the jet is the thing that is hard to replace.",
+    "sources": [
+     {
+      "url": "https://boeing.mediaroom.com/2025-12-08-Boeing-Completes-Acquisition-of-Spirit-Aerosystems",
+      "label": "Boeing, Boeing completes acquisition of Spirit AeroSystems, Dec 2025"
+     },
+     {
+      "url": "https://www.iata.org/en/pressroom/2025-releases/2025-12-09-02/",
+      "label": "IATA, aerospace supply chain bottlenecks continue to constrain airlines, Dec 2025"
+     },
+     {
+      "url": "https://ir.flyfrontier.com/node/11021/pdf",
+      "label": "Frontier Airlines, fleet optimization transaction with AerCap, Feb 2026"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "faceOff",
+    "prompt": "In 2026, which was harder to replace?",
+    "left": {
+     "name": "A spare A320neo",
+     "note": "Shortfall of 5,300 jets or more"
+    },
+    "right": {
+     "name": "One more lessee",
+     "note": "Airlines are short of jets"
+    },
+    "correctIndex": 0,
+    "explanation": "Airlines wanting jets were easy to find. Jets were not, so AerCap welcomed the 24 back."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "IATA put the 2025 delivery shortfall at how many thousand jets or more?",
+    "min": 0,
+    "max": 12,
+    "value": 5.3,
+    "unit": "K",
+    "explanation": "At least 5,300 aircraft, IATA said in December 2025."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "An interviewer asks what Boeing buying Spirit and AerCap taking jets back have in common.",
+      "prompt": "What links them?",
+      "options": [
+       "Power sits with what is hard to replace",
+       "Both were forced on them by regulators",
+       "Both were mainly moves to cut taxes"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "A sole fuselage maker then, scarce jets now.",
+       "No regulator forced either deal.",
+       "Neither was described as a tax move."
+      ],
+      "explanation": "The same rule from day 3 explains the fleet market in day 51."
+     },
+     "proReasoning": "Use one rule across the industry: power goes to whatever is hardest to replace.",
+     "commonMistake": "Treating supply chain and fleet deals as unrelated.",
+     "mentalModel": "Find the hardest thing to replace."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "The aircraft shortage is expected to last years.",
+      "prompt": "Who holds the stronger hand in lease talks?",
+      "options": [
+       "Airlines seeking more jets",
+       "Owners of the scarce jets",
+       "Neither, since rents are fixed"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "They compete for scarce jets.",
+       "Scarce jets give their owners the stronger hand.",
+       "Rents rose 20 to 30% since 2019."
+      ],
+      "explanation": "When jets are scarce, their owners set the terms."
+     },
+     "proReasoning": "Investors favor owners of scarce assets while the shortage lasts, and watch for its end.",
+     "commonMistake": "Ignoring which side is short in a negotiation.",
+     "mentalModel": "Scarcity sets the terms."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You plan a product for the aircraft market in a shortage.",
+      "prompt": "Where is the biggest pull?",
+      "options": [
+       "Tools to help airlines retire jets early",
+       "Anything that adds usable jets or engines",
+       "A service to book more new jet orders"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Retiring early makes the shortage worse.",
+       "Scarce capacity is what buyers lack.",
+       "New jets are sold out for years."
+      ],
+      "explanation": "Buyers pay for whatever is hardest to replace. Right now that is flying capacity."
+     },
+     "proReasoning": "Founders build toward the scarce thing. In 2026, that means jets and engines that can fly.",
+     "commonMistake": "Building for a part of the market that is not short.",
+     "mentalModel": "Build toward the scarcity."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend asks why a lessor would happily take planes back early.",
+      "prompt": "What's the simplest answer?",
+      "options": [
+       "Jets are scarce, so it can lease them out",
+       "A court ordered it to take them back",
+       "It wanted to scrap them for parts"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "AerCap said it could redeploy them.",
+       "It was a negotiated deal.",
+       "They were young A320neos in demand."
+      ],
+      "explanation": "In a shortage, a returned jet is an opportunity for its owner."
+     },
+     "proReasoning": "In a shortage, getting a plane back early can be good news for its owner.",
+     "commonMistake": "Thinking an early return always hurts the lessor.",
+     "mentalModel": "Scarce jets are welcome home."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:b2ba8f4ce3b8"
+  ]
+ },
+ {
+  "id": "f84c27ec-334f-572c-8f74-d71059c76778",
+  "market_id": "aerospace",
+  "day": 51,
+  "slot": 3,
+  "content": {
+   "id": "aerospace-d51-c3",
+   "title": "What to ask for on the way out",
+   "lessonTitle": "When the lessor wants the jet back",
+   "slot": 3,
+   "type": "decide",
+   "brief": {
+    "headline": "You run an airline with more leased jets than you can fly well. One lessor wants six of them back early to place with other airlines.",
+    "kicker": "Decide what to ask for when the lessor wants the jets.",
+    "fullText": "Frontier faced this in 2026. It returned 24 A320neos to AerCap years early, and AerCap won 10 future sale-leaseback deals in the package. Frontier still booked $209 million of charges in the first half of 2026, and expected to save about $90 million a year in rent.\n\nIATA put the delivery shortfall at 5,300 jets or more. Retirements fell to 1.5% of the fleet a year over the past five years, against a 25-year average of 2.2%.",
+    "sources": [
+     {
+      "url": "https://ir.flyfrontier.com/node/11021/pdf",
+      "label": "Frontier Airlines, fleet optimization transaction with AerCap, Feb 2026"
+     },
+     {
+      "url": "https://s21.q4cdn.com/257736825/files/doc_news/Frontier-Airlines-Delivers-Record-Second-Quarter-2026-Revenue-of-1-3-billion-up-38-percent-Year-over-Year-and-Significantly-Beats-Wal-3O320.pdf",
+      "label": "Frontier Airlines, second quarter 2026 results, Jul 2026"
+     },
+     {
+      "url": "https://www.ch-aviation.com/news/163846-frontier-to-return-24-a320neo-in-2q26-defers-deliveries",
+      "label": "ch-aviation, Frontier to return 24 A320neos in 2Q26, Feb 2026"
+     },
+     {
+      "url": "https://www.iata.org/en/pressroom/2025-releases/2025-12-09-02/",
+      "label": "IATA, aerospace supply chain bottlenecks continue to constrain airlines, Dec 2025"
+     },
+     {
+      "url": "https://smbc.aero/sites/smbc.aero/files/2026-01/SMBC%20AC%20Plane%20Insights%20Q1%202026.pdf",
+      "label": "SMBC Aviation Capital, Plane Insights Q1 2026"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "multipleChoice",
+    "prompt": "Why does the lessor want the jets back early?",
+    "options": [
+     "It can redeploy them in a shortage",
+     "It plans to scrap them for parts",
+     "The law requires early returns"
+    ],
+    "correctIndex": 0,
+    "explanation": "With jets scarce, the lessor can place them with other airlines. That gives the airline something to bargain with."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "Frontier's charges were $209 million. Over how many years of $90 million rent savings would that be earned back?",
+    "min": 0,
+    "max": 10,
+    "value": 2.3,
+    "unit": "years",
+    "explanation": "209 divided by 90 is about 2.3 years."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You are on the airline team negotiating the early return of six jets.",
+      "prompt": "What do you push for?",
+      "options": [
+       "Lower return costs in exchange",
+       "Nothing, just thank them",
+       "A rent increase on the rest"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "The lessor wants the jets, so it can give something.",
+       "You give up value you hold.",
+       "That works against you."
+      ],
+      "explanation": "When the lessor wants the jets, the airline can trade for better terms on the way out."
+     },
+     "proReasoning": "Negotiators know who needs whom. When the lessor wants the jets, the airline asks for something back.",
+     "commonMistake": "Treating an early return as a favour from the lessor.",
+     "mentalModel": "Trade what they want."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Frontier reports $209 million of charges for its early returns.",
+      "prompt": "How do you judge the deal?",
+      "options": [
+       "By the share price that day",
+       "Against the yearly rent it saves",
+       "As pure loss, nothing more"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "One day's price says little.",
+       "About $90 million a year earns it back in a little over two years.",
+       "The rent saving is the other half."
+      ],
+      "explanation": "A one-off charge buys a stream of savings. Compare the two."
+     },
+     "proReasoning": "Investors weigh one-off exit costs against recurring rent saved.",
+     "commonMistake": "Reading the charge without the savings.",
+     "mentalModel": "Charge now, savings later."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You see airlines with surplus jets and others short of them.",
+      "prompt": "What service do you offer?",
+      "options": [
+       "Buying parked young jets to scrap them",
+       "Brokering new jet orders for airlines",
+       "Matching surplus jets with airlines in need"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Young jets are usually worth more flying.",
+       "New jets are sold out for years.",
+       "That is what AerCap does when it redeploys jets."
+      ],
+      "explanation": "The gap between surplus and shortage is a market."
+     },
+     "proReasoning": "Founders find the airline with too many jets and the one with too few.",
+     "commonMistake": "Ignoring the surplus side of a shortage.",
+     "mentalModel": "Match surplus to shortage."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend asks why an airline would pay $209 million to give planes back.",
+      "prompt": "What's the reason?",
+      "options": [
+       "It saves about $90 million a year in rent",
+       "The lessor paid it to give them back",
+       "It had to by law once leases ran long"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "The charge pays for years of lower rent.",
+       "Frontier paid the charges, not the lessor.",
+       "It was a negotiated deal, not a legal duty."
+      ],
+      "explanation": "Paying once to stop paying every year can make sense."
+     },
+     "proReasoning": "Sometimes paying once is cheaper than paying every month.",
+     "commonMistake": "Judging a deal only by its upfront cost.",
+     "mentalModel": "Pay once, save yearly."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:bca927613d7f"
+  ]
+ },
+ {
+  "id": "c99ef631-58e9-592c-bfeb-8b7002211245",
+  "market_id": "aerospace",
+  "day": 52,
+  "slot": 1,
+  "content": {
+   "id": "aerospace-d52-c1",
+   "title": "Full life versus half life",
+   "lessonTitle": "Writing a jet down to 15%",
+   "slot": 1,
+   "type": "apply",
+   "brief": {
+    "headline": "In 2026, IBA data valued a freshly overhauled V2500-A5 engine with new life-limited parts at about $11 million to $13 million. Full-life engine values for the 777-300ER topped $32 million.",
+    "kicker": "Apply day 52: condition changes the number.",
+    "fullText": "Appraisers usually start from a half-life jet: every major maintenance event halfway through its interval. A freshly overhauled engine with new life-limited parts sits at the far end, with its whole interval ahead. That is why it is quoted at full-life value.\n\nIBA also put spot lease rates for 777-300ER engines at $170,000 to $185,000 a month in early 2026. The same engine type can be worth very different amounts, depending on how much life it has left.",
+    "sources": [
+     {
+      "url": "https://aerospace-innovations.com/engine-shortages-and-mro-backlog-keep-values-and-lease-rates-elevated-says-iba/",
+      "label": "Aerospace Innovations, engine shortages keep values and lease rates elevated, says IBA, Mar 2026"
+     },
+     {
+      "url": "https://avm-mag.com/three-months-after-spirit-airlines-bankruptcy-where-the-engines-went",
+      "label": "Aviation Maintenance Magazine, three months after Spirit: where the engines went, Aug 2026"
+     },
+     {
+      "url": "https://www.acumen.aero/blogs/aircraft-valuation-explained-base-value-vs-market-value-",
+      "label": "Acumen Aviation, Aircraft valuation explained: base value vs market value, Apr 2026"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "multipleChoice",
+    "prompt": "Why is a freshly overhauled engine worth more than a half-life one?",
+    "options": [
+     "It carries a newer type certificate",
+     "It has its whole interval ahead of it",
+     "It burns far less fuel than before"
+    ],
+    "correctIndex": 1,
+    "explanation": "Full life means all the time to the next overhaul is still ahead. A half-life engine has used half of it."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "777-300ER engine spot leases ran up to about how many thousand dollars a month?",
+    "min": 0,
+    "max": 400,
+    "value": 185,
+    "unit": "K",
+    "explanation": "IBA put them at $170,000 to $185,000 a month."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "An interviewer shows two V2500 engines of the same age with very different values.",
+      "prompt": "What explains the gap?",
+      "options": [
+       "The colour of the cowling",
+       "Which airline flew it first",
+       "How much life each has left"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Paint does not set engine value.",
+       "Previous operators matter far less.",
+       "Full-life engines can fetch about $11 to $13 million."
+      ],
+      "explanation": "Remaining life drives engine value more than age."
+     },
+     "proReasoning": "Explain value through remaining life: full-life, half-life or near the next shop visit.",
+     "commonMistake": "Valuing engines by age alone.",
+     "mentalModel": "Life left sets the value."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A lessor reports high engine values across its portfolio.",
+      "prompt": "What do you ask?",
+      "options": [
+       "Are these half-life or full-life values?",
+       "How many engines are on lease today?",
+       "Who built the engines in the first place?"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "The basis changes the number by millions.",
+       "Lease count does not tell you the condition basis.",
+       "The maker matters less than the life left."
+      ],
+      "explanation": "A value means little until you know the condition it assumes."
+     },
+     "proReasoning": "Investors ask which condition a value assumes before comparing numbers.",
+     "commonMistake": "Comparing a full-life value with a half-life one.",
+     "mentalModel": "Know the condition basis."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You are building software for engine traders.",
+      "prompt": "Which field matters most on each listing?",
+      "options": [
+       "The airline that flew it most recently",
+       "Remaining life to the next shop visit",
+       "The date the engine was first built"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Previous operators matter far less.",
+       "That sets most of the price.",
+       "Age matters less than life remaining."
+      ],
+      "explanation": "Traders price engines on life remaining. Make it the first field."
+     },
+     "proReasoning": "Founders put remaining life and maintenance status at the center of any engine tool.",
+     "commonMistake": "Listing engines like cars, by age and looks.",
+     "mentalModel": "Lead with life remaining."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend asks how one jet engine could be worth over $32 million.",
+      "prompt": "What's the fairer view?",
+      "options": [
+       "Only a whole new jet costs that much",
+       "That price must include spare parts",
+       "A full-life big engine can cost that much"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "One engine alone reached that value.",
+       "That is the engine value itself.",
+       "IBA put 777-300ER full-life values above $32 million."
+      ],
+      "explanation": "Big engines with full life ahead are among the most valuable parts of a jet."
+     },
+     "proReasoning": "One large engine can be worth as much as a whole older narrowbody.",
+     "commonMistake": "Thinking the airframe holds most of a jet's value.",
+     "mentalModel": "Engines carry big value."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:72af8945fd36"
+  ]
+ },
+ {
+  "id": "fc0eca4d-eb88-5060-a180-8727ad9ec42f",
+  "market_id": "aerospace",
+  "day": 52,
+  "slot": 2,
+  "content": {
+   "id": "aerospace-d52-c2",
+   "title": "A late jet lifts an old one",
+   "lessonTitle": "Writing a jet down to 15%",
+   "slot": 2,
+   "type": "connect",
+   "brief": {
+    "headline": "On day 8, Boeing took a $4.9 billion charge as the 777X slipped. By early 2026, a big lessor said 777-300ER extension rates were high because that delay limits replacements.",
+    "kicker": "Connect day 8 and day 52: a late new jet lifts the old one's numbers.",
+    "fullText": "On day 8 you saw Boeing take a $4.9 billion charge in October 2025, with first 777X delivery pushed to 2027, seven years after the original 2020 target.\n\nOn day 52 you saw how values and rents are counted. In January 2026, SMBC Aviation Capital said appraisers put three new twin-aisle types 4 to 5% higher in value than two years before, with lease rates up 10 to 20%. Extension rates were high for the A330ceo and 777-300ER, because the 777X delay limits replacement supply. The 777-300ER saw a significant lift in values and rates.",
+    "sources": [
+     {
+      "url": "https://www.thenationalnews.com/business/aviation/2025/10/29/boeing-extends-delay-on-deliveries-of-first-777x-aircraft-to-2027",
+      "label": "The National, Boeing extends 777X delivery delay to 2027, Oct 2025"
+     },
+     {
+      "url": "https://smbc.aero/sites/smbc.aero/files/2026-01/SMBC%20AC%20Plane%20Insights%20Q1%202026.pdf",
+      "label": "SMBC Aviation Capital, Plane Insights Q1 2026"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "buildChain",
+    "prompt": "Follow how one delay moves another jet's numbers.",
+    "steps": [
+     "The 777X misses its delivery dates",
+     "Airlines cannot replace older 777-300ERs",
+     "They extend leases on the jets they have",
+     "777-300ER values and lease rates rise"
+    ],
+    "explanation": "When the replacement is late, the jet it was meant to replace stays in demand."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "Twin-aisle lease rates rose 10 to 20% in two years. Values on three new types rose up to how many percent?",
+    "min": 0,
+    "max": 20,
+    "value": 5,
+    "unit": "%",
+    "explanation": "Values rose 4 to 5%, so rents climbed faster than values."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "An interviewer asks how the 777X delay affects lessors.",
+      "prompt": "What is your answer?",
+      "options": [
+       "It lifts demand for 777-300ERs",
+       "It has no effect on other jets",
+       "It cuts all widebody rents"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "SMBC saw high extension rates and a lift in values.",
+       "Delays ripple into older types.",
+       "Rents went up, not down."
+      ],
+      "explanation": "A late replacement keeps the jet it replaces busy and valuable."
+     },
+     "proReasoning": "Trace a delay to the jet it was meant to replace. Its values and rents tend to rise.",
+     "commonMistake": "Looking at a new jet's delay only from the maker's side.",
+     "mentalModel": "Delays lift the incumbent."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Rents on new twin-aisles rose 10 to 20%, values only 4 to 5%.",
+      "prompt": "What does that do to rent as a share of value?",
+      "options": [
+       "It stays the same",
+       "It rises",
+       "It falls"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "The two moved at different speeds.",
+       "Rent grew faster than value, so the ratio climbed.",
+       "That would need values to outpace rents."
+      ],
+      "explanation": "When rent grows faster than value, each dollar of jet earns more rent."
+     },
+     "proReasoning": "Investors track rent against value. When rents outpace values, owners earn more per dollar invested.",
+     "commonMistake": "Reading value growth and rent growth as the same thing.",
+     "mentalModel": "Compare rent growth to value growth."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Airlines are extending 777-300ER leases because the 777X is late.",
+      "prompt": "Where is the opening for you?",
+      "options": [
+       "Parts made only for the delayed 777X jet",
+       "Training crews for the late 777X fleet",
+       "Services that keep older widebodies flying"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "777X deliveries are delayed to 2027.",
+       "Crews will not fly it until 2027 at the earliest.",
+       "Older jets flying longer need upkeep."
+      ],
+      "explanation": "When older jets fly longer, everything that keeps them flying sells more."
+     },
+     "proReasoning": "Founders serve the fleet that is actually flying, not the one that is late.",
+     "commonMistake": "Building for a delayed jet before it arrives.",
+     "mentalModel": "Serve the jets still flying."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You keep flying on older 777s, even on new routes.",
+      "prompt": "What is one reason?",
+      "options": [
+       "Their replacement, the 777X, is late",
+       "Airlines just prefer older planes",
+       "Newer planes cost too much to fly"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "First delivery slipped to 2027.",
+       "It is about supply, not taste.",
+       "The new jet is not available yet."
+      ],
+      "explanation": "When the new jet is late, the old one keeps flying."
+     },
+     "proReasoning": "A delay at one factory changes what you fly for years.",
+     "commonMistake": "Thinking airlines keep old jets by choice alone.",
+     "mentalModel": "Late jets keep old jets busy."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:b67976b879db"
+  ]
+ },
+ {
+  "id": "a0cfb494-29ea-5461-a32e-23bb0864f4ee",
+  "market_id": "aerospace",
+  "day": 52,
+  "slot": 3,
+  "content": {
+   "id": "aerospace-d52-c3",
+   "title": "Two airlines, two clocks",
+   "lessonTitle": "Writing a jet down to 15%",
+   "slot": 3,
+   "type": "decide",
+   "brief": {
+    "headline": "You compare two airlines. Ryanair depreciates jets over 23 years to 15% of value, and Southwest over about 25 years with residuals of 14% to 20%.",
+    "kicker": "Decide how to compare profits built on different assumptions.",
+    "fullText": "Yearly depreciation is the price minus the residual value, divided by the years of use. On Ryanair's terms, that is about 3.7% of the delivery value a year. A longer life or a higher residual means a smaller yearly charge, and a bigger reported profit.\n\nOne appraiser says jets keep about 70% of their value after five years, 50% after ten and 35% after fifteen. Book value follows the rule an airline picks. Market value follows buyers and sellers.",
+    "sources": [
+     {
+      "url": "https://investor.ryanair.com/wp-content/uploads/2026/06/Ryanair-2026-Annual-Report.pdf",
+      "label": "Ryanair, 2026 Annual Report"
+     },
+     {
+      "url": "https://www.sec.gov/Archives/edgar/data/92380/000009238025000024/R30.htm",
+      "label": "Southwest Airlines, 2024 annual report (10-K), accounting policies"
+     },
+     {
+      "url": "https://www.acumen.aero/blogs/aircraft-valuation-explained-base-value-vs-market-value-",
+      "label": "Acumen Aviation, Aircraft valuation explained: base value vs market value, Apr 2026"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "spotFake",
+    "prompt": "One of these is false. Tap it.",
+    "statements": [
+     "Ryanair uses a 23-year useful life for its 737s.",
+     "A higher residual value makes the yearly charge bigger.",
+     "Southwest assumes residual values of 14% to 20%."
+    ],
+    "fakeIndex": 1,
+    "explanation": "A higher residual leaves less of the price to spread, so the yearly charge gets smaller."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "A $100 million jet over 25 years to a 20% residual. What is the yearly charge, in millions?",
+    "min": 0,
+    "max": 8,
+    "value": 3.2,
+    "unit": "M",
+    "explanation": "$80 million spread over 25 years is $3.2 million a year, against about $3.7 million on Ryanair's terms."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your manager asks why two similar airlines show different depreciation per jet.",
+      "prompt": "Where do you look first?",
+      "options": [
+       "Their fuel bills and labour costs",
+       "Their useful life and residual value",
+       "Their fleet size and route maps"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Those are separate cost lines.",
+       "Those two numbers set the yearly charge.",
+       "Fleet size does not set the charge per jet."
+      ],
+      "explanation": "Depreciation per jet comes down to two assumptions."
+     },
+     "proReasoning": "Analysts read the accounting policy note first: useful life and residual value.",
+     "commonMistake": "Comparing charges without reading the assumptions.",
+     "mentalModel": "Read the policy note first."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "One airline uses longer lives and higher residuals than its rival.",
+      "prompt": "How do you compare their profits?",
+      "options": [
+       "Take reported profits as they are",
+       "Ignore depreciation entirely",
+       "Adjust to the same assumptions first"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Policy choices can flatter one side.",
+       "Depreciation is a real cost of owning.",
+       "That puts both on a like-for-like basis."
+      ],
+      "explanation": "Different assumptions change reported profit. Level them before comparing."
+     },
+     "proReasoning": "Investors restate both airlines on one set of assumptions before comparing margins.",
+     "commonMistake": "Rewarding an airline for a gentler depreciation policy.",
+     "mentalModel": "Level the assumptions."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You build a tool that compares airline costs.",
+      "prompt": "What feature helps analysts most?",
+      "options": [
+       "Restating depreciation on one basis",
+       "Showing reported profit side by side",
+       "Ranking airlines by fleet size"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "That fixes the comparison problem.",
+       "Different policies make that misleading.",
+       "Size says nothing about policy."
+      ],
+      "explanation": "The hard part is putting different policies on the same footing."
+     },
+     "proReasoning": "Founders solve the comparison problem: one basis for life and residual across airlines.",
+     "commonMistake": "Showing reported numbers side by side as if they matched.",
+     "mentalModel": "One basis for all."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend asks how two airlines can value the same plane differently.",
+      "prompt": "What's the answer?",
+      "options": [
+       "The planes are different models",
+       "They choose different lives and residuals",
+       "One of them must be breaking the rules"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "The difference comes from the assumptions.",
+       "23 years and 15%, against about 25 years and 14 to 20%.",
+       "Both follow accepted rules."
+      ],
+      "explanation": "Book value depends on assumptions each airline chooses."
+     },
+     "proReasoning": "Book value is a rule, not a price. Different rules give different numbers.",
+     "commonMistake": "Thinking book value is what a plane would sell for.",
+     "mentalModel": "Book value is a rule."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:d90baea0695c"
+  ]
+ },
+ {
+  "id": "a8135b50-215c-5384-9b34-4dc408938045",
+  "market_id": "aerospace",
+  "day": 53,
+  "slot": 1,
+  "content": {
+   "id": "aerospace-d53-c1",
+   "title": "Five more years on the books",
+   "lessonTitle": "The lease that became debt",
+   "slot": 1,
+   "type": "apply",
+   "brief": {
+    "headline": "In the first half of 2026, Air France-KLM stretched the depreciation period of its A350s, A320neo family jets and 787s from 20 to 25 years. Depreciation fell by about €24 million in six months.",
+    "kicker": "Apply day 53: the yearly review can change the profit line.",
+    "fullText": "The group said 25 years is the most likely period of use for these aircraft. The change covered 42 A350-900s, 30 A320neos, 34 A321neos, 15 787-10s and 23 787-9s.\n\nIAS 16 asks owners to review useful life and residual value at least at each financial year-end. Here the review stretched the life, so each year carries a smaller share of the cost. Reported profit rises, but no extra cash comes in.",
+    "sources": [
+     {
+      "url": "https://www.ch-aviation.com/news/170406-air-france-klm-extends-a320neo-a350-b787-life-to-25-years",
+      "label": "ch-aviation, Air France-KLM extends A320neo, A350 and 787 life to 25 years, Aug 2026"
+     },
+     {
+      "url": "https://aviation.direct/bilanzielle-anpassungen-bei-air-france-klm-konzern-verlaengert-die-kalkulatorische-nutzungsdauer-moderner-passagierflugzeuge",
+      "label": "aviation.direct, Air France-KLM extends the useful life of modern aircraft, Aug 2026"
+     },
+     {
+      "url": "https://www.bdo.com.au/en-au/accounting-news/accounting-news-may-2018/more-common-errors",
+      "label": "BDO, IAS 16: more common errors, May 2018"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "spotFake",
+    "prompt": "One of these is false. Tap it.",
+    "statements": [
+     "Air France-KLM moved those jets from 20 to 25 years.",
+     "The change brought in about €24 million of new cash.",
+     "The change covered A350s, A320neo family jets and 787s."
+    ],
+    "fakeIndex": 1,
+    "explanation": "The €24 million was lower depreciation, a book charge. No extra cash came in."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "By how many years did Air France-KLM stretch the depreciation period?",
+    "min": 0,
+    "max": 15,
+    "value": 5,
+    "unit": "years",
+    "explanation": "From 20 years to 25."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "In an airline finance interview, you are asked what Air France-KLM's change did.",
+      "prompt": "What is the accurate answer?",
+      "options": [
+       "It cut the yearly charge, not the cash",
+       "It raised cash by about €24 million",
+       "It changed the aircraft maintenance"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Depreciation fell about €24 million in six months.",
+       "Depreciation is not cash.",
+       "The jets did not change, only the estimate."
+      ],
+      "explanation": "A longer life spreads the cost thinner. Cash is unchanged."
+     },
+     "proReasoning": "Separate book effects from cash effects. A longer useful life lifts profit without adding cash.",
+     "commonMistake": "Calling lower depreciation a cash gain.",
+     "mentalModel": "Book, not cash."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "An airline lifts its operating profit partly by extending aircraft lives.",
+      "prompt": "How do you treat that part?",
+      "options": [
+       "Treat it as a one-off cash gain",
+       "Strip it out to compare like with like",
+       "Count it as better flight operations"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "No cash came in.",
+       "That shows how operations really moved.",
+       "Flying did not change."
+      ],
+      "explanation": "An accounting change can lift profit without any change in how the airline runs."
+     },
+     "proReasoning": "Investors strip out estimate changes to see the underlying trend.",
+     "commonMistake": "Crediting management for a change in assumptions.",
+     "mentalModel": "Strip out estimate changes."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Airlines now justify longer aircraft lives with data on wear and maintenance.",
+      "prompt": "What could you sell them?",
+      "options": [
+       "Software to speed up aircraft boarding",
+       "A new loyalty scheme for airlines",
+       "Evidence on how long modern jets last"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Boarding speed does not support an estimate.",
+       "Loyalty has nothing to do with it.",
+       "Estimates must rest on evidence each year."
+      ],
+      "explanation": "IAS 16 reviews need evidence. Better data helps defend the estimate."
+     },
+     "proReasoning": "Founders sell the evidence auditors ask for when airlines change aircraft lives.",
+     "commonMistake": "Assuming accounting estimates need no data.",
+     "mentalModel": "Estimates need evidence."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend reads that Air France-KLM now expects its new jets to fly 25 years, not 20.",
+      "prompt": "What changed?",
+      "options": [
+       "Its estimate of how long they will fly",
+       "The planes were rebuilt to last longer",
+       "A new law extended aircraft lives"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "It called 25 years the most likely period of use.",
+       "The jets were not changed.",
+       "No law did this."
+      ],
+      "explanation": "The accounting estimate changed, not the aircraft."
+     },
+     "proReasoning": "Airlines regularly update their guess about how long planes will fly.",
+     "commonMistake": "Thinking a useful life is fixed by the manufacturer.",
+     "mentalModel": "The guess changed, not the plane."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:054ede4798c9"
+  ]
+ },
+ {
+  "id": "3f85cc04-7049-5404-a0e4-292808ef0867",
+  "market_id": "aerospace",
+  "day": 53,
+  "slot": 2,
+  "content": {
+   "id": "aerospace-d53-c2",
+   "title": "The estimate must be defended",
+   "lessonTitle": "The lease that became debt",
+   "slot": 2,
+   "type": "connect",
+   "brief": {
+    "headline": "On day 52, Ryanair wrote its 737s down over 23 years to 15% of value. On day 53, IAS 16 says that estimate must be reviewed at least every financial year-end.",
+    "kicker": "Connect day 52 and day 53: the yearly charge rests on a reviewed guess.",
+    "fullText": "On day 52 you saw that useful life and residual value set the yearly depreciation charge. Ryanair uses 23 years and a residual of 15% of market value on delivery.\n\nOn day 53 you saw the rule behind it. IAS 16 says residual value and useful life must be reviewed at least at each financial year-end, and more often if there are signs of change. Ryanair bases its residual estimate on independent valuations and on actual disposals of its jets in earlier years.",
+    "sources": [
+     {
+      "url": "https://investor.ryanair.com/wp-content/uploads/2026/06/Ryanair-2026-Annual-Report.pdf",
+      "label": "Ryanair, 2026 Annual Report"
+     },
+     {
+      "url": "https://www.bdo.com.au/en-au/accounting-news/accounting-news-may-2018/more-common-errors",
+      "label": "BDO, IAS 16: more common errors, May 2018"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "sortSignal",
+    "prompt": "Is it an estimate, or the rule about estimates?",
+    "buckets": [
+     "The estimate",
+     "The rule"
+    ],
+    "items": [
+     {
+      "text": "A 23-year useful life",
+      "bucket": 0
+     },
+     {
+      "text": "A residual of 15% of value",
+      "bucket": 0
+     },
+     {
+      "text": "Review at least every year-end",
+      "bucket": 1
+     },
+     {
+      "text": "Review sooner if signs of change",
+      "bucket": 1
+     }
+    ],
+    "explanation": "Ryanair picks the numbers. IAS 16 says how often they must be checked."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "Ryanair assumes a 737 keeps what percent of its delivery value at the end of its life?",
+    "min": 0,
+    "max": 50,
+    "value": 15,
+    "unit": "%",
+    "explanation": "15% of market value on delivery, after 23 years."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "An auditor asks how your airline supports its 15% residual estimate.",
+      "prompt": "What is the strongest answer?",
+      "options": [
+       "Our finance team agreed on it",
+       "Outside valuations and past sales",
+       "It has used 15% for many years"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "An estimate needs support, not just agreement.",
+       "That is the evidence Ryanair cites.",
+       "History alone is not evidence."
+      ],
+      "explanation": "An estimate is only as good as the evidence behind it."
+     },
+     "proReasoning": "Back every residual with independent valuations and real disposal prices.",
+     "commonMistake": "Defending an estimate because it has not changed.",
+     "mentalModel": "Evidence behind every estimate."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Used jet prices have risen sharply. An airline keeps its residual estimate unchanged.",
+      "prompt": "What do you note?",
+      "options": [
+       "The estimate is fixed until a sale",
+       "Its cash flow will jump right away",
+       "A review could change future charges"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "IAS 16 requires yearly reviews.",
+       "Depreciation is not cash.",
+       "IAS 16 requires the review every year-end."
+      ],
+      "explanation": "A yearly review can move the residual and the charge with it."
+     },
+     "proReasoning": "Investors watch for estimate reviews when market values move a lot.",
+     "commonMistake": "Treating residual estimates as fixed forever.",
+     "mentalModel": "Reviews move the charge."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Airlines must review residual values every year-end.",
+      "prompt": "What could you sell into that yearly need?",
+      "options": [
+       "Independent value reports each year",
+       "A one-time review when jets are sold",
+       "Software for booking more flights"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Every review needs fresh value evidence.",
+       "The review is yearly, not one-time.",
+       "Bookings do not support estimates."
+      ],
+      "explanation": "A rule that repeats every year creates a repeat customer."
+     },
+     "proReasoning": "Founders love repeat needs. A yearly review needs yearly evidence.",
+     "commonMistake": "Selling a one-off when the need repeats.",
+     "mentalModel": "Yearly rule, yearly sale."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend thinks Ryanair just guesses how much its planes will be worth.",
+      "prompt": "What's the fairer view?",
+      "options": [
+       "A regulator sets it for each jet",
+       "It uses valuations and past sales",
+       "It copies the number Boeing gives"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "The airline sets it, under IAS 16.",
+       "That is what Ryanair says it does.",
+       "The airline sets its own estimate."
+      ],
+      "explanation": "It is an estimate, checked every year against evidence."
+     },
+     "proReasoning": "A residual value is an educated estimate, checked every year.",
+     "commonMistake": "Thinking accounting numbers are pulled from thin air.",
+     "mentalModel": "An estimate, checked yearly."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:ff9a8fb27b92"
+  ]
+ },
+ {
+  "id": "9af2c0a4-ea62-5699-b545-9f8614004765",
+  "market_id": "aerospace",
+  "day": 53,
+  "slot": 3,
+  "content": {
+   "id": "aerospace-d53-c3",
+   "title": "Comparing a renter and an owner",
+   "lessonTitle": "The lease that became debt",
+   "slot": 3,
+   "type": "decide",
+   "brief": {
+    "headline": "You compare two airlines. One owns most of its jets, the other leases most of them. Both report under IFRS 16.",
+    "kicker": "Decide how to compare debt fairly.",
+    "fullText": "Since 2019, IFRS 16 puts most leases on the balance sheet as a right-of-use asset and a lease liability. On January 1, 2019, it added €5.2 billion to IAG's net debt, taking it to €6.4 billion.\n\nAcross airlines, retail and transport, liabilities rose by more than 20% on average under the rule. Before it, some airlines added a multiple of lease costs to net debt to compare fairly. Leases under 12 months with no purchase option can still stay off the balance sheet.",
+    "sources": [
+     {
+      "url": "https://www.ey.com/en_lb/insights/ifrs/how-the-leases-standard-impacts-company-balance-sheets",
+      "label": "EY, How the leases standard impacts company balance sheets"
+     },
+     {
+      "url": "https://iairgroup.com/press-releases/2020/iag-final-results-2019",
+      "label": "IAG, final results 2019, Feb 2020"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "faceOff",
+    "prompt": "Under IFRS 16, which debt figure is fairer to compare?",
+    "left": {
+     "name": "Net debt with lease liabilities",
+     "note": "Counts leases as debt"
+    },
+    "right": {
+     "name": "Bank loans only",
+     "note": "Leaves leases out"
+    },
+    "correctIndex": 0,
+    "explanation": "The leasing airline owes rent just as the owner owes loans. Count both."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "IFRS 16 added about how many billion euros to IAG's net debt on January 1, 2019?",
+    "min": 0,
+    "max": 12,
+    "value": 5.2,
+    "unit": "B",
+    "explanation": "About €5.2 billion, taking net debt to €6.4 billion."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your boss wants a quick debt comparison of the two airlines.",
+      "prompt": "Which figure do you use?",
+      "options": [
+       "Bank loans and bonds, leases left out",
+       "Cash on hand, which shows strength",
+       "Net debt including lease liabilities"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "That flatters the airline that leases.",
+       "Cash alone says nothing about debt.",
+       "That treats renter and owner alike."
+      ],
+      "explanation": "IFRS 16 counts leases as debt. Use that figure for both."
+     },
+     "proReasoning": "Compare debt including leases, so renters and owners stand on the same footing.",
+     "commonMistake": "Comparing bank loans only, which makes the leasing airline look lighter.",
+     "mentalModel": "Leases are debt."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "The leasing airline looks less indebted on bank loans alone.",
+      "prompt": "What do you do?",
+      "options": [
+       "Add lease liabilities before judging",
+       "Buy it, since its bank debt is lower",
+       "Treat its leases as rent, not debt"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "That is the IFRS 16 view.",
+       "Its leases are debt too.",
+       "IFRS 16 no longer treats them as only rent."
+      ],
+      "explanation": "Leasing moves debt into lease liabilities, not away."
+     },
+     "proReasoning": "Investors read net debt with leases in. IAG's jumped €5.2 billion on one day.",
+     "commonMistake": "Rewarding an airline for debt that sits in leases.",
+     "mentalModel": "Count the leases."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You want to win airline customers with short-term aircraft leases.",
+      "prompt": "Which accounting point might help your pitch?",
+      "options": [
+       "Short leases are tax-free",
+       "Leases under 12 months can stay off",
+       "All leases stay off the books"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Nothing here is about tax.",
+       "IFRS 16 exempts short leases with no purchase option.",
+       "Since 2019, most leases go on the books."
+      ],
+      "explanation": "The short-term exemption is narrow. Know exactly where it applies."
+     },
+     "proReasoning": "Founders know the exact exemption: under 12 months, no purchase option.",
+     "commonMistake": "Promising customers off-balance-sheet treatment for long leases.",
+     "mentalModel": "Know the narrow exemption."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend reads that IAG's debt jumped €5.2 billion in one day in 2019.",
+      "prompt": "What happened?",
+      "options": [
+       "It bought 50 new jets on that day",
+       "It took out a big new bank loan",
+       "A new rule counted its leases as debt"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "No jets changed hands.",
+       "No new borrowing caused the jump.",
+       "IFRS 16 started on January 1, 2019."
+      ],
+      "explanation": "The planes were the same. The way their leases were counted changed."
+     },
+     "proReasoning": "A company's debt can jump overnight because of how it is counted.",
+     "commonMistake": "Reading every jump in debt as new borrowing.",
+     "mentalModel": "Counting can change the debt."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:22c8b10c1e31"
+  ]
+ },
+ {
+  "id": "58c66e52-bde8-5c59-8a05-8eaccf5488d3",
+  "market_id": "aerospace",
+  "day": 54,
+  "slot": 1,
+  "content": {
+   "id": "aerospace-d54-c1",
+   "title": "The engines leave first",
+   "lessonTitle": "Worth more in pieces",
+   "slot": 1,
+   "type": "apply",
+   "brief": {
+    "headline": "By early August 2026, 84 former Spirit jets sat stored at AerSale's site in Goodyear, Arizona. Almost all the stored A320neos had already had their engines removed.",
+    "kicker": "Apply day 54: the engines leave first.",
+    "fullText": "Spirit stopped flying on May 2, 2026, with 114 A320-family jets, 66 leased and 48 owned, plus 18 spare engines. In June, Killick Aerospace bought three owned A320neos to part out. One was the youngest A320neo yet taken in for disassembly.\n\nWillis Lease's chief executive said geared turbofan engines from former Spirit jets were going into lease pools to support other airlines. AerSale's Goodyear maintenance shop ran at under 20% of capacity in the second quarter. It had expected more work getting jets ready for new airlines.",
+    "sources": [
+     {
+      "url": "https://avm-mag.com/three-months-after-spirit-airlines-bankruptcy-where-the-engines-went",
+      "label": "Aviation Maintenance Magazine, three months after Spirit: where the engines went, Aug 2026"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "faceOff",
+    "prompt": "In mid-2026, which part of an ex-Spirit A320neo was in more demand?",
+    "left": {
+     "name": "The airframe",
+     "note": "Stored in Arizona"
+    },
+    "right": {
+     "name": "The engines",
+     "note": "Going into lease pools"
+    },
+    "correctIndex": 1,
+    "explanation": "The engines were pulled and put to work. The airframes waited."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "How many former Spirit jets were stored at Goodyear by early August 2026?",
+    "min": 0,
+    "max": 150,
+    "value": 84,
+    "unit": "jets",
+    "explanation": "84 former Spirit aircraft, stored for banks and lessors."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "An interviewer asks why stored A320neos had their engines removed.",
+      "prompt": "What is your answer?",
+      "options": [
+       "The engines were sold to Airbus",
+       "The engines earn money on lease now",
+       "Engines must be removed for storage"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "They went to lease pools, not back to Airbus.",
+       "They went into lease pools for other airlines.",
+       "That was not the reason given."
+      ],
+      "explanation": "In an engine shortage, the engines can work while the airframe waits."
+     },
+     "proReasoning": "Explain that value moved to the engines, so owners put them to work first.",
+     "commonMistake": "Assuming a stored jet is idle in every part.",
+     "mentalModel": "Put the engines to work."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "AerSale's Goodyear shop ran under 20% of capacity while 84 jets sat there.",
+      "prompt": "What does that tell you?",
+      "options": [
+       "The shop was too small for the work",
+       "Demand for A320neos had disappeared",
+       "Jets were stored, not readied to fly"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "It had spare capacity.",
+       "Their engines were in demand.",
+       "Less transition work came in than expected."
+      ],
+      "explanation": "A stored jet is not a jet heading back into service. Watch transition work, not storage counts."
+     },
+     "proReasoning": "Investors separate storage from transition. Only transitions bring maintenance revenue.",
+     "commonMistake": "Counting every stored jet as future maintenance work.",
+     "mentalModel": "Storage is not transition."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Dozens of young airframes sit without engines in the desert.",
+      "prompt": "What is the business?",
+      "options": [
+       "Selling parts to airlines short of spares",
+       "Buying them to fly a new airline at once",
+       "Repainting them to sell as new jets"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Killick and others bought neos to part out.",
+       "Most still wait in storage.",
+       "They are not new, and buyers know it."
+      ],
+      "explanation": "The shortage is in spares. Airframes become a source of parts."
+     },
+     "proReasoning": "Founders follow the shortage. In 2026, that was spares and engines.",
+     "commonMistake": "Treating stored jets as junk with no value.",
+     "mentalModel": "Airframes become parts."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You see photos of young A320neos with no engines in the Arizona desert.",
+      "prompt": "What's going on?",
+      "options": [
+       "They failed their last safety check",
+       "Their engines are flying on other jets",
+       "They are waiting for a new paint job"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "They are simply stored.",
+       "Engines went into lease pools.",
+       "Paint is not why the engines are gone."
+      ],
+      "explanation": "The engines were worth more at work than waiting on a parked jet."
+     },
+     "proReasoning": "A parked jet without engines may be feeding other planes.",
+     "commonMistake": "Thinking an engineless jet is broken.",
+     "mentalModel": "The engines moved on."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:b37267bd40b0"
+  ]
+ },
+ {
+  "id": "58b3f074-435b-51b8-9290-80a8c8d943b4",
+  "market_id": "aerospace",
+  "day": 54,
+  "slot": 2,
+  "content": {
+   "id": "aerospace-d54-c2",
+   "title": "From a powder flaw to the scrapyard",
+   "lessonTitle": "Worth more in pieces",
+   "slot": 2,
+   "type": "connect",
+   "brief": {
+    "headline": "On day 6, a flaw in metal powder forced 600 to 700 Pratt & Whitney engines off A320neos for inspection. On day 54, young A320neos with those engines were taken apart for spares.",
+    "kicker": "Connect day 6 and day 54: a factory flaw ends up in the scrapyard.",
+    "fullText": "On day 6 you saw that a microscopic contaminant got into powdered metal at an RTX plant during a 2015 ramp-up. RTX expected an average of 350 jets grounded a year through 2026.\n\nOn day 54 you saw EirTrade buy two ex-Spirit A320neos, 4 and 3.5 years old, to tear down. Both had Pratt & Whitney geared turbofans. Demand for A320neo and engine spares was strong after supply chain limits and engine problems, and some engine pairs had become worth more to their owners than the jets they power.",
+    "sources": [
+     {
+      "url": "https://thesun.my/business/rtx-engine-issue-will-ground-350-planes-a-year-through-2026-MD11479063",
+      "label": "Reuters via The Sun (Malaysia), RTX engine issue will ground 350 planes a year through 2026, Sep 2023"
+     },
+     {
+      "url": "https://www.flightglobal.com/aerospace/ex-spirit-a320neos-become-youngest-to-be-broken-up-for-spares/166352.article",
+      "label": "FlightGlobal, ex-Spirit A320neos become youngest to be broken up for spares, Feb 2026"
+     },
+     {
+      "url": "https://aviationweek.com/mro/aircraft-propulsion/mro-memo-younger-neo-teardowns-reflect-frothy-engine-market",
+      "label": "Aviation Week, MRO Memo: younger neo teardowns reflect frothy engine market, Feb 2026"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "buildChain",
+    "prompt": "Follow the flaw from the factory to the teardown.",
+    "steps": [
+     "A contaminant gets into metal powder in 2015",
+     "Engines come off A320neos for inspection",
+     "Grounded jets drive demand for spare engines",
+     "Young A320neos are torn down for spares"
+    ],
+    "explanation": "A flaw deep in the supply chain raised the value of spares so much that young jets became worth more in parts."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "RTX expected about how many jets to be grounded each year, on average, through 2026?",
+    "min": 0,
+    "max": 800,
+    "value": 350,
+    "unit": "jets",
+    "explanation": "An average of 350 a year, with as many as 650 idle in the first half of 2024."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "An interviewer asks how an engine flaw could affect aircraft values.",
+      "prompt": "What is your best answer?",
+      "options": [
+       "It had no real effect on aircraft values",
+       "It made every A320neo worth nothing",
+       "It raised spare values enough to part out jets"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "The teardowns show the effect.",
+       "Engine pairs became worth more, not less.",
+       "Young neos were torn down for spares."
+      ],
+      "explanation": "Groundings created a shortage of spares, and that changed where value sat."
+     },
+     "proReasoning": "Trace one flaw from the factory to the aftermarket. It moved value from airframes to engines and parts.",
+     "commonMistake": "Thinking a flaw only hurts the engine maker.",
+     "mentalModel": "Follow the flaw downstream."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You own A320neos with geared turbofans while groundings continue.",
+      "prompt": "What could raise your engine values?",
+      "options": [
+       "The spare shortage the flaw created",
+       "A drop in demand for the A320neo",
+       "Lower jet fuel prices this year"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Scarce spares lifted engine values.",
+       "Paint does not move engine values.",
+       "Fuel is not the driver here."
+      ],
+      "explanation": "The same flaw that grounded jets made spare engines scarce and valuable."
+     },
+     "proReasoning": "Investors see that one firm's problem can lift the value of another's assets.",
+     "commonMistake": "Assuming bad news for an engine maker is bad for every engine owner.",
+     "mentalModel": "Shortage lifts the spares."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Groundings from the powder flaw continue through 2026.",
+      "prompt": "Where is your opening?",
+      "options": [
+       "Cheaper spare seats for cabins",
+       "Faster engine inspection and repair",
+       "A new airframe for the A320neo"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Seats do not move engines.",
+       "Shorter shop time eases the spare shortage.",
+       "The airframe was not the problem."
+      ],
+      "explanation": "The bottleneck is engine shop time. Shorten it and jets fly again."
+     },
+     "proReasoning": "Founders target the slowest step, here engine inspection and repair.",
+     "commonMistake": "Building around the symptom, not the bottleneck.",
+     "mentalModel": "Fix the slowest step."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend asks how a speck of dirt from 2015 could scrap a jet in 2026.",
+      "prompt": "What's the chain?",
+      "options": [
+       "The dirt damaged the planes' airframes",
+       "The two are not connected at all",
+       "Flaw, groundings, scarce spares, teardowns"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "The flaw was in engine parts.",
+       "The two are linked.",
+       "Each step raised the value of parts."
+      ],
+      "explanation": "A tiny flaw led to a spare shortage that made young jets worth more in pieces."
+     },
+     "proReasoning": "Small flaws can travel a long way through the aircraft market.",
+     "commonMistake": "Thinking scrapped jets must be old or damaged.",
+     "mentalModel": "Small flaw, long chain."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:da099be8f194"
+  ]
+ },
+ {
+  "id": "2bb93f49-ac7f-5abf-8b95-75ba432f45c2",
+  "market_id": "aerospace",
+  "day": 54,
+  "slot": 3,
+  "content": {
+   "id": "aerospace-d54-c3",
+   "title": "A bet on the shortage lasting",
+   "lessonTitle": "Worth more in pieces",
+   "slot": 3,
+   "type": "decide",
+   "brief": {
+    "headline": "You are offered a 4-year-old A320neo with geared turbofans and no airline to lease it to. The price only works if engine values stay high.",
+    "kicker": "Decide whether to bet on the engine shortage lasting.",
+    "fullText": "Almost 20 A320neos had been sold for part-out by February 2026, and some engine pairs were worth more to their owners than the jets they power. A pair of serviceable geared turbofans rented for about $400,000 a month in 2026.\n\nBut an industry chief warned that values and lease rates could fall once the engine problems are solved. Today's high engine prices rest on today's shortage.",
+    "sources": [
+     {
+      "url": "https://aviationweek.com/mro/aircraft-propulsion/mro-memo-younger-neo-teardowns-reflect-frothy-engine-market",
+      "label": "Aviation Week, MRO Memo: younger neo teardowns reflect frothy engine market, Feb 2026"
+     },
+     {
+      "url": "https://avm-mag.com/three-months-after-spirit-airlines-bankruptcy-where-the-engines-went",
+      "label": "Aviation Maintenance Magazine, three months after Spirit: where the engines went, Aug 2026"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "sortSignal",
+    "prompt": "Does it support buying now, or waiting?",
+    "buckets": [
+     "Supports buying",
+     "Supports waiting"
+    ],
+    "items": [
+     {
+      "text": "Engine pairs rent for about $400,000 a month",
+      "bucket": 0
+     },
+     {
+      "text": "Almost 20 A320neos already sold for part-out",
+      "bucket": 0
+     },
+     {
+      "text": "Values could fall once engines are fixed",
+      "bucket": 1
+     },
+     {
+      "text": "High prices rest on the shortage",
+      "bucket": 1
+     }
+    ],
+    "explanation": "Today's demand supports buying. The risk is that the shortage behind it ends."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "At $400,000 a month, how many million dollars would an engine pair earn in a year?",
+    "min": 0,
+    "max": 12,
+    "value": 4.8,
+    "unit": "M",
+    "explanation": "$400,000 times 12 months is $4.8 million a year, if it stays leased."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your investment committee asks for a view on the deal.",
+      "prompt": "What should your view hinge on?",
+      "options": [
+       "How long the engine shortage lasts",
+       "How new the airframe looks inside",
+       "The price the jet cost when new"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "That drives engine rents and values.",
+       "Paint does not drive value.",
+       "Original cost does not set value now."
+      ],
+      "explanation": "The whole deal is a bet on the shortage. Say how long you think it lasts."
+     },
+     "proReasoning": "Name the key assumption out loud: the price works only while engines stay scarce.",
+     "commonMistake": "Presenting a shortage price as if it were permanent.",
+     "mentalModel": "Name the key assumption."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Engine rents of $400,000 a month make the deal look strong.",
+      "prompt": "How do you test it?",
+      "options": [
+       "Ignore the warning as just one view",
+       "Rerun it with rents and values falling",
+       "Assume rents keep rising every year"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "The warning is the main risk.",
+       "That shows what happens if the problems are solved.",
+       "Nothing supports that."
+      ],
+      "explanation": "A shortage-era price needs a downside case for when the shortage ends."
+     },
+     "proReasoning": "Investors stress-test with lower rents and values for when the engine problems are fixed.",
+     "commonMistake": "Underwriting today's peak as the base case.",
+     "mentalModel": "Test the post-shortage case."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You plan a business parting out young jets for spares.",
+      "prompt": "What risk do you plan for most?",
+      "options": [
+       "Too many airlines wanting your parts",
+       "Running out of jets to take apart",
+       "Spare prices falling after engine fixes"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "That is not the main risk.",
+       "Weight does not matter here.",
+       "That would squeeze your margins."
+      ],
+      "explanation": "Part-out margins depend on scarce spares. Plan for prices to fall."
+     },
+     "proReasoning": "Founders in part-out plan for the day spare prices fall.",
+     "commonMistake": "Building a business that only works at peak prices.",
+     "mentalModel": "Plan for the end of the peak."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend asks if young A320neos will keep being torn down.",
+      "prompt": "What's the fairer view?",
+      "options": [
+       "Only while engines stay scarce",
+       "Yes, it will go on forever now",
+       "No, it was just a one-time rumour"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Values could fall once engines are fixed.",
+       "Shortages end.",
+       "It happened in 2026."
+      ],
+      "explanation": "Young teardowns are a product of the engine shortage."
+     },
+     "proReasoning": "Young teardowns are a sign of a shortage, not a permanent trend.",
+     "commonMistake": "Assuming today's odd market will last forever.",
+     "mentalModel": "Shortages end."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:85a745c355bc"
+  ]
+ },
+ {
+  "id": "b431f995-2f30-55ab-96a2-f43c84f9de81",
+  "market_id": "aerospace",
+  "day": 55,
+  "slot": 1,
+  "content": {
+   "id": "aerospace-d55-c1",
+   "title": "A lease built to be bought",
+   "lessonTitle": "Three ways to lease a jet",
+   "slot": 1,
+   "type": "apply",
+   "brief": {
+    "headline": "In October 2026, Qatar Airways signed its first Japanese operating lease with call option, or JOLCO, for three Boeing 787-9s. Japanese investors fund the jets, and the airline keeps the right to buy them.",
+    "kicker": "Apply day 55: an operating lease that behaves like a finance lease.",
+    "fullText": "Japanese corporate investors provide the equity and receive tax benefits, paired with non-recourse bank debt from HSBC. Together they give Qatar Airways 100% financing. The deal is the first of three planned transactions covering seven aircraft.\n\nA JOLCO is technically an operating lease. But the airline holds an option to buy each jet at a price fixed upfront, and airlines are generally expected to use it, though they do not have to. That makes it similar to a finance lease with a purchase option.\n\nOn day 55 you saw the line between the two lease types: who ends up carrying the jet's ownership risk.",
+    "sources": [
+     {
+      "url": "https://enterpriseam.com/logistics/2026/10/19/qatar-airways-taps-japanese-investors-for-the-first-time-to-finance-three-boeing-787-9s/",
+      "label": "EnterpriseAM, Qatar Airways taps Japanese investors for the first time, Oct 2026"
+     },
+     {
+      "url": "https://morganlewis.com/pubs/2023/03/jol-vs-jolco-in-the-aviation-sector-what-are-they-and-how-do-they-differ",
+      "label": "Morgan Lewis, JOL vs JOLCO in the aviation sector, Mar 2023"
+     },
+     {
+      "url": "https://www.reedsmith.com/our-insights/blogs/legal-flight-deck/102k676/operating-lease-and-finance-lease-the-key-differences/",
+      "label": "Reed Smith, Operating lease and finance lease: the key differences, Aug 2023"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "sortSignal",
+    "prompt": "Which feature makes a JOLCO look like each lease type?",
+    "buckets": [
+     "Like an operating lease",
+     "Like a finance lease"
+    ],
+    "items": [
+     {
+      "text": "Technically classed as an operating lease",
+      "bucket": 0
+     },
+     {
+      "text": "The airline does not have to buy",
+      "bucket": 0
+     },
+     {
+      "text": "A purchase price fixed upfront",
+      "bucket": 1
+     },
+     {
+      "text": "Airlines are expected to buy the jet",
+      "bucket": 1
+     }
+    ],
+    "explanation": "On paper it is an operating lease. In practice the call option usually makes the airline the final owner, as in a finance lease."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "Qatar's JOLCO is the first of three deals. How many aircraft will the three cover in all?",
+    "min": 0,
+    "max": 20,
+    "value": 7,
+    "unit": "aircraft",
+    "explanation": "Seven aircraft across three transactions, starting with three 787-9s."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You're interviewing for an aviation finance analyst role. They ask you what a JOLCO is.",
+      "prompt": "What's your best answer?",
+      "options": [
+       "A wet lease from a Japanese airline",
+       "A loan from the Japanese government",
+       "An operating lease with an option to buy"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "A wet lease comes with crew; a JOLCO is a way to fund a jet.",
+       "Japanese corporate investors and a bank fund it, not the state.",
+       "That is the structure, and the option is usually used."
+      ],
+      "explanation": "A JOLCO pairs Japanese equity with bank debt in an operating lease that carries a call option."
+     },
+     "proReasoning": "Good candidates define the structure and then say why it sits between an operating and a finance lease.",
+     "commonMistake": "Treating every lease with Japanese money in it as the same product.",
+     "mentalModel": "Name the lease, then say who will own the jet at the end."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You analyze Qatar Airways' debt. Its new 787-9s sit in a JOLCO.",
+      "prompt": "How should you think about these jets?",
+      "options": [
+       "As jets Qatar will likely own later",
+       "As jets it will surely hand back",
+       "As jets that stay off its books"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Airlines are generally expected to use the call option.",
+       "The call option points the other way.",
+       "Since IFRS 16 in 2019, leases no longer sit off the books."
+      ],
+      "explanation": "The call option makes the airline the likely long-term owner, so treat the jets much like owned assets."
+     },
+     "proReasoning": "Investors read the option terms, because they decide who carries the jet at the end.",
+     "commonMistake": "Treating the label operating lease as proof the airline carries no ownership risk.",
+     "mentalModel": "Read the option, not the label.",
+     "sources": [
+      {
+       "url": "https://morganlewis.com/pubs/2023/03/jol-vs-jolco-in-the-aviation-sector-what-are-they-and-how-do-they-differ",
+       "label": "Morgan Lewis, JOL vs JOLCO in the aviation sector, Mar 2023"
+      },
+      {
+       "url": "https://www.reedsmith.com/our-insights/blogs/legal-flight-deck/102k676/operating-lease-and-finance-lease-the-key-differences/",
+       "label": "Reed Smith, Operating lease and finance lease: the key differences, Aug 2023"
+      }
+     ]
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You build software for airline treasury teams. Qatar now mixes JOLCOs with other financing.",
+      "prompt": "Which detail should your tool track first?",
+      "options": [
+       "The crew roster for each jet",
+       "Each call option date and price",
+       "The paint scheme of each jet"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Rosters belong to operations, not to lease finance.",
+       "The option decides whether and when Qatar buys each jet.",
+       "Paint has no bearing on the financing."
+      ],
+      "explanation": "A treasury team has to plan the cash for each purchase option long before the date arrives."
+     },
+     "proReasoning": "Founders build around the dates that move money, like option exercise dates.",
+     "commonMistake": "Tracking operational detail that the finance team never uses.",
+     "mentalModel": "Follow the dates that move cash."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend asks why Japanese investors would fund jets for a Gulf airline.",
+      "prompt": "What's the main reason?",
+      "options": [
+       "They plan to fly the jets themselves",
+       "Japanese law forces them to invest",
+       "They receive tax benefits on the equity"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Qatar Airways flies the jets, not the investors.",
+       "They invest by choice, for the returns and the tax benefits.",
+       "Japanese corporate investors put in equity and get tax benefits."
+      ],
+      "explanation": "The tax benefit draws the equity in, and the bank debt fills the rest of the price."
+     },
+     "proReasoning": "A jet's money can come from very far from where it flies.",
+     "commonMistake": "Assuming the airline or its home country pays for every jet it flies.",
+     "mentalModel": "Follow the money, not the flag."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:a5b5f9677ce0"
+  ]
+ },
+ {
+  "id": "a3db5862-4ba1-556a-948b-75bbcd300cdd",
+  "market_id": "aerospace",
+  "day": 55,
+  "slot": 2,
+  "content": {
+   "id": "aerospace-d55-c2",
+   "title": "Paid in steps, sold at the door",
+   "lessonTitle": "Three ways to lease a jet",
+   "slot": 2,
+   "type": "connect",
+   "brief": {
+    "headline": "On day 2 you saw buyers pay for a jet in steps, with the balance due at delivery. In a sale-leaseback, delivery day is also the day the airline sells the jet to a lessor.",
+    "kicker": "Connect day 2 and day 55: delivery day changes hands twice.",
+    "fullText": "On day 2 you saw how an airliner gets paid for. Pre-delivery payments come in installments during the build and can reach 30% of the price. The rest is due on delivery.\n\nOn day 55 you saw the sale-leaseback. Virgin Atlantic will take six new A330-900s between the second quarter of 2026 and the end of 2027, and AerCap buys each one at delivery and leases it back.\n\nThe gap between the bulk price and the value makes it pay. One analyst put a 737 MAX 8 at about $44 million paid at handover, against a fair market value of $56 million. Selling at value can give the airline a gain of about $12 million a jet.",
+    "sources": [
+     {
+      "url": "https://bclplaw.com/en-US/insights/pdp-financing-in-aviation.html",
+      "label": "BCLP, PDP financing in aviation"
+     },
+     {
+      "url": "https://travelradar.aero/virgin-atlantic-agrees-sale-and-leaseback-of-a330-900s-to-aercap/",
+      "label": "Travel Radar, Virgin Atlantic agrees sale and leaseback of A330-900s to AerCap, Jan 2026"
+     },
+     {
+      "url": "https://leehamnews.com/2026/11/11/lessors-playing-increasing-ownership-role-in-global-fleet/",
+      "label": "Leeham News, Lessors playing increasing ownership role in global fleet, Nov 2026"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "buildChain",
+    "prompt": "Follow the money from order to sale-leaseback.",
+    "steps": [
+     "The airline orders jets at a bulk price",
+     "It pays installments during the build",
+     "At delivery, a lessor buys the jet at value",
+     "The airline leases it back and keeps flying it"
+    ],
+    "explanation": "The airline pays the maker in steps, then sells to the lessor on delivery day and keeps flying the jet."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "In the 737 MAX 8 example, about how many million dollars of gain does the airline book per jet?",
+    "min": 0,
+    "max": 30,
+    "value": 12,
+    "unit": "M",
+    "explanation": "$56 million of value minus about $44 million paid is about $12 million."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You've joined an airline's fleet finance team. Ten new jets arrive next year, bought at a bulk price.",
+      "prompt": "What should you model first?",
+      "options": [
+       "The gain from selling some at delivery",
+       "The interest cost of paying cash for all ten",
+       "Their resale value in about 25 years"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "A bulk price below value is what makes a sale-leaseback pay.",
+       "Worth knowing, but it ignores the gain on the table.",
+       "A sale-leaseback hands that long-term value to the lessor."
+      ],
+      "explanation": "The gap between bulk price and market value is the core of the sale-leaseback decision."
+     },
+     "proReasoning": "Fleet finance analysts compare the bulk price with market value before every delivery.",
+     "commonMistake": "Treating the order price as what the jet is worth.",
+     "mentalModel": "Price paid and value are two numbers. The gap is the deal."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "An airline reports a big gain from sale-leasebacks on new deliveries this quarter.",
+      "prompt": "How do you read that gain?",
+      "options": [
+       "As proof its jets are rising in value",
+       "As a one-off tied to deliveries",
+       "As steady income from flying"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "The gain reflects a bulk discount, not rising values.",
+       "It comes from selling new jets above their bulk price.",
+       "Flying income comes from tickets, not jet sales."
+      ],
+      "explanation": "Sale-leaseback gains depend on deliveries. Fewer deliveries mean smaller gains, whatever happens to fares."
+     },
+     "proReasoning": "Investors separate delivery gains from the profit the airline makes by flying.",
+     "commonMistake": "Treating sale-leaseback gains as repeatable operating profit.",
+     "mentalModel": "Delivery gains follow deliveries."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your startup values new aircraft for airlines and lessors. A carrier plans sale-leasebacks on 20 jets.",
+      "prompt": "What do they need from you?",
+      "options": [
+       "A list of cheaper paint suppliers",
+       "A booking engine for passengers",
+       "A defensible market value for each jet"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Paint does not set the sale price.",
+       "Passenger booking has nothing to do with the sale.",
+       "The sale price, and the gain, rest on market value."
+      ],
+      "explanation": "Every sale-leaseback needs an agreed value, because that value sets the price and the rent."
+     },
+     "proReasoning": "Founders sell into the step where money changes hands, here the valuation at delivery.",
+     "commonMistake": "Building for the airline operation when the money moves in finance.",
+     "mentalModel": "Sell to the moment the price is set."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend asks why an airline would sell a brand new jet the day it arrives.",
+      "prompt": "What's the best answer?",
+      "options": [
+       "It sells above cost and keeps flying it",
+       "The jet failed its checks at delivery",
+       "Airlines are not allowed to own new jets"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "A bulk price below value turns delivery into a gain.",
+       "A failed jet would not be sold and leased back.",
+       "Airlines can own jets; many simply choose not to."
+      ],
+      "explanation": "The airline pays the bulk price, sells at value and leases the jet back, so it never stops flying."
+     },
+     "proReasoning": "Selling the jet does not mean losing it. The airline keeps flying it under a lease.",
+     "commonMistake": "Thinking a sale-leaseback means the airline is in trouble.",
+     "mentalModel": "Sold on paper, still flying."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:34f03fbfbb47"
+  ]
+ },
+ {
+  "id": "4f8303da-414f-58dc-8a19-c7224f0a4e1e",
+  "market_id": "aerospace",
+  "day": 55,
+  "slot": 3,
+  "content": {
+   "id": "aerospace-d55-c3",
+   "title": "Five jets for six years",
+   "lessonTitle": "Three ways to lease a jet",
+   "slot": 3,
+   "type": "decide",
+   "brief": {
+    "headline": "You run fleet planning at a growing airline. You need five A320neos for about six years, until a new order arrives. You must pick an operating lease or a finance lease.",
+    "kicker": "Decide with day 55: who should carry the jet after year six?",
+    "fullText": "In an operating lease, the lessor keeps ownership and the residual value risk. Terms normally run no longer than 12 years, the jet goes back at the end, and the contract sets detailed maintenance, insurance and return conditions. The airline usually pays maintenance reserves or an end-of-lease payment.\n\nIn a finance lease, the airline takes the ownership risks and rewards. The rent pays off the cost, and at the end the airline can take title, often for a nominal price. It is not generally asked to pay toward maintenance events.\n\nThis is a scenario built on those rules.",
+    "sources": [
+     {
+      "url": "https://www.reedsmith.com/our-insights/blogs/legal-flight-deck/102k676/operating-lease-and-finance-lease-the-key-differences/",
+      "label": "Reed Smith, Operating lease and finance lease: the key differences, Aug 2023"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "faceOff",
+    "prompt": "Which lease fits a six-year need for five jets?",
+    "left": {
+     "name": "Operating lease",
+     "note": "Jet goes back; the lessor keeps residual risk"
+    },
+    "right": {
+     "name": "Finance lease",
+     "note": "Airline takes title; it keeps residual risk"
+    },
+    "correctIndex": 0,
+    "explanation": "You only need the jets for six years. An operating lease lets you hand them back and leaves their later value to the lessor."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "Operating leases normally run no longer than how many years?",
+    "min": 0,
+    "max": 30,
+    "value": 12,
+    "unit": "years",
+    "explanation": "Normally 12 years or less, so a lessor leases the same jet several times over its life."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your CFO asks why you picked an operating lease for the five A320neos.",
+      "prompt": "What is your strongest reason?",
+      "options": [
+       "Finance leases are banned for A320neos",
+       "We need them six years, not their full life",
+       "Operating leases never cost anything extra"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Nothing bans finance leases on any aircraft type.",
+       "The lessor takes the residual risk after you hand them back.",
+       "You still pay rent and maintenance reserves."
+      ],
+      "explanation": "Match the lease to how long you need the jet. A short need suits a lease that ends with a handback."
+     },
+     "proReasoning": "Planners tie the lease type to how long the airline needs the aircraft.",
+     "commonMistake": "Arguing that one lease type is always cheaper.",
+     "mentalModel": "Short need, operating lease. Long need, think about owning."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You compare two airlines. One owns most of its jets, the other runs mostly on operating leases.",
+      "prompt": "Which risk does the leasing airline avoid?",
+      "options": [
+       "Paying for its own fuel",
+       "Meeting maintenance conditions",
+       "A fall in its jets' future value"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Every airline pays for its own fuel.",
+       "Operating leases set detailed maintenance conditions.",
+       "The lessor carries residual value risk in an operating lease."
+      ],
+      "explanation": "Residual risk sits with the owner. In an operating lease, that is the lessor."
+     },
+     "proReasoning": "Investors ask who carries residual value before comparing airline balance sheets.",
+     "commonMistake": "Thinking leasing removes maintenance obligations.",
+     "mentalModel": "The owner carries the future value."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your startup helps airlines hand leased jets back. Five A320neos will return in six years.",
+      "prompt": "What will the airline need from you?",
+      "options": [
+       "Proof the jets meet the return conditions",
+       "A plan to repaint them in new colors",
+       "A buyer for the jets at lease end"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Operating leases set detailed return conditions to meet.",
+       "Paint is a small part of the handback.",
+       "The lessor owns the jets and decides who buys them."
+      ],
+      "explanation": "The handback is judged against the contract. Showing the jets meet it is the airline's job."
+     },
+     "proReasoning": "Founders who know lease contracts sell to the pain at handback.",
+     "commonMistake": "Offering to sell jets that belong to the lessor.",
+     "mentalModel": "At handback, the contract is the checklist."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend asks what happens to the five jets after six years.",
+      "prompt": "What's the likely answer?",
+      "options": [
+       "The airline is forced to buy all five",
+       "The lessor finds them a new airline",
+       "They go straight to the scrapyard"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Under an operating lease, the jet goes back.",
+       "Lessors lease one jet several times over its life.",
+       "Six-year-old jets are far from scrap."
+      ],
+      "explanation": "An operating lease ends with a handback, and the lessor places the jet with its next airline."
+     },
+     "proReasoning": "A jet can serve several airlines in its life, one lease at a time.",
+     "commonMistake": "Thinking an airline keeps every jet it once flew.",
+     "mentalModel": "One jet, many lessees."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:9fe71591279b"
+  ]
+ },
+ {
+  "id": "29229e33-f6f2-53e7-9fa1-f489f3130dde",
+  "market_id": "aerospace",
+  "day": 56,
+  "slot": 1,
+  "content": {
+   "id": "aerospace-d56-c1",
+   "title": "Avolon sells a record 95 jets",
+   "lessonTitle": "Rent, spread and a good sale",
+   "slot": 1,
+   "type": "apply",
+   "brief": {
+    "headline": "Avolon's net income rose 29% to $591 million in 2025. It sold a record 95 aircraft, averaging 10 years old, and agreed to sell 72 more.",
+    "kicker": "Apply day 56: rent pays the bills, sales lift the profit.",
+    "fullText": "Avolon, based in Dublin, took in $2.75 billion of lease revenue in 2025, up 7%, out of $3.0 billion of total revenue. It works with 139 airlines in 61 countries.\n\nIt also bought 168 aircraft in the year, 106 of them in one deal with Castlelake, and ordered 90 new Airbus jets. Selling older jets while buying newer ones is the cycle you saw on day 56.\n\nAvolon paid $297 million in dividends for 2025.",
+    "sources": [
+     {
+      "url": "https://www.avolon.aero/news/avolon-2025-fy-results",
+      "label": "Avolon, 2025 full year results, Feb 2026"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "spotFake",
+    "prompt": "One of these is false. Tap it.",
+    "statements": [
+     "Avolon sold a record 95 aircraft in 2025.",
+     "Lease revenue was most of its 2025 revenue.",
+     "Avolon stopped buying aircraft in 2025."
+    ],
+    "fakeIndex": 2,
+    "explanation": "Avolon bought 168 aircraft in 2025 and ordered 90 new Airbus jets."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "Avolon's 2025 net income was how many million dollars?",
+    "min": 0,
+    "max": 1500,
+    "value": 591,
+    "unit": "M",
+    "explanation": "$591 million, up 29% from $458 million."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You're preparing for an interview at Avolon. They ask what drove its 2025 results.",
+      "prompt": "What's your best answer?",
+      "options": [
+       "Steady rent plus a record year of sales",
+       "A one-time windfall from higher ticket fares",
+       "Cutting back to fewer airline customers"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Lease revenue grew 7% and it sold a record 95 jets.",
+       "Lessors earn rent, not ticket fares.",
+       "It works with 139 airlines in 61 countries."
+      ],
+      "explanation": "Name both engines: lease revenue and gains from selling older jets."
+     },
+     "proReasoning": "Strong candidates name both income lines and back each with a number.",
+     "commonMistake": "Talking about a lessor as if it sold tickets.",
+     "mentalModel": "Rent plus sales. Name both."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Avolon sold a record 95 jets in 2025 and has 72 more agreed for sale.",
+      "prompt": "What should you ask about future profits?",
+      "options": [
+       "Has it stopped ordering any new jets?",
+       "Can it keep selling at gains like these?",
+       "Will its existing leases stop paying rent?"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "It ordered 90 new Airbus jets in 2025.",
+       "Sales gains depend on buyers staying keen on older jets.",
+       "Its leases keep paying rent under contract."
+      ],
+      "explanation": "Rent is contracted. Sales depend on the market, so they deserve the harder questions."
+     },
+     "proReasoning": "Investors test the less certain income line, which here is sales.",
+     "commonMistake": "Treating a record year of sales as the new normal.",
+     "mentalModel": "Contracted rent is steady. Sales gains are not."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your startup helps lessors move jets between owners. Avolon has 72 aircraft agreed for sale.",
+      "prompt": "Where can you help most?",
+      "options": [
+       "Selling seats on flights those jets operate",
+       "Designing new cabins for the buyers",
+       "Speeding the transfer of records and title"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Lessors do not sell seats.",
+       "A buyer may refit cabins, but that is not the sale.",
+       "Every sale needs records and ownership moved cleanly."
+      ],
+      "explanation": "A record year of sales means a record amount of paperwork. Faster transfers close deals sooner."
+     },
+     "proReasoning": "Founders look for work that grows with deal volume.",
+     "commonMistake": "Pitching airline products to a lessor.",
+     "mentalModel": "More sales, more transfers."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend asks why a lessor would sell 10-year-old jets while ordering new ones.",
+      "prompt": "What's the reason?",
+      "options": [
+       "It sells at a gain and buys newer jets",
+       "Jets over ten years old cannot fly",
+       "New jets come with no maintenance costs"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "That cycle keeps its fleet young and its profits up.",
+       "10-year-old jets keep flying for years.",
+       "Every jet needs maintenance, new ones included."
+      ],
+      "explanation": "Selling mid-life jets and buying new ones keeps the fleet young and frees cash."
+     },
+     "proReasoning": "Lessors keep their fleet young by selling mid-life jets on.",
+     "commonMistake": "Thinking a sold jet stops flying.",
+     "mentalModel": "Sell mid-life, buy new."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:2a02d23cd99c"
+  ]
+ },
+ {
+  "id": "e0f6bdb4-0649-515d-b8c3-9e500b889e1b",
+  "market_id": "aerospace",
+  "day": 56,
+  "slot": 2,
+  "content": {
+   "id": "aerospace-d56-c2",
+   "title": "Spare engines, steady rent",
+   "lessonTitle": "Rent, spread and a good sale",
+   "slot": 2,
+   "type": "connect",
+   "brief": {
+    "headline": "On day 6 you saw a powder metal flaw pull 600 to 700 Pratt & Whitney engines in for inspection. By 2025, AerCap called spare engines exceptionally high in demand.",
+    "kicker": "Connect day 6 and day 56: groundings turn engines into rent.",
+    "fullText": "On day 6 you saw how a flaw in metal powder forced 600 to 700 more geared turbofan engines in for inspection in 2023. Turnaround was put at 250 to 300 days, and an average of 350 aircraft were expected to be grounded from 2024 to 2026.\n\nOn day 56 you saw how lessors earn rent. An airline waiting on its own engine can lease a spare. AerCap committed to buy 281 new engines over two years through its engine business and a joint venture, and expected about $200 million of earnings from its joint ventures in 2026.",
+    "sources": [
+     {
+      "url": "https://www.aviationpros.com/engines-components/aircraft-engines/news/53072125/pratt-whitney-investigation-to-take-hundreds-of-jets-out-of-service",
+      "label": "AviationPros, Pratt & Whitney investigation to take hundreds of jets out of service, Sep 2023"
+     },
+     {
+      "url": "https://finance.yahoo.com/news/aercap-q4-earnings-call-highlights-223338773.html",
+      "label": "Yahoo Finance, AerCap Q4 2025 earnings call highlights, Feb 2026"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "multipleChoice",
+    "prompt": "Why did engine groundings help engine lessors?",
+    "options": [
+     "Airlines rented spares during repairs",
+     "Lessors bought the grounded engines cheaply",
+     "Lessors were paid to fix the powder flaw"
+    ],
+    "correctIndex": 0,
+    "explanation": "An engine in the shop for 250 to 300 days leaves a gap. A leased spare fills it, and the lessor earns rent."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "How many new engines did AerCap commit to buy over two years?",
+    "min": 0,
+    "max": 700,
+    "value": 281,
+    "unit": "engines",
+    "explanation": "281 engines, through its engine business and a joint venture."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You're interviewing at a lessor's engine team. They ask why demand for spares is so strong.",
+      "prompt": "What's your best answer?",
+      "options": [
+       "Airlines retired their older jets early",
+       "Long shop visits leave airlines short",
+       "New engines now last far longer"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Retirements slowed, which kept older jets flying.",
+       "Turnarounds of 250 to 300 days created a gap.",
+       "Engines need inspections and overhauls."
+      ],
+      "explanation": "Tie the demand to a cause: long shop visits from the powder metal inspections."
+     },
+     "proReasoning": "Good candidates link a lessor's demand to a real event in the fleet.",
+     "commonMistake": "Saying demand is strong without saying why.",
+     "mentalModel": "Find the gap, then the rent.",
+     "sources": [
+      {
+       "url": "https://www.aviationpros.com/engines-components/aircraft-engines/news/53072125/pratt-whitney-investigation-to-take-hundreds-of-jets-out-of-service",
+       "label": "AviationPros, Pratt & Whitney investigation to take hundreds of jets out of service, Sep 2023"
+      },
+      {
+       "url": "https://leehamnews.com/2026/11/11/lessors-playing-increasing-ownership-role-in-global-fleet/",
+       "label": "Leeham News, Lessors playing increasing ownership role in global fleet, Nov 2026"
+      }
+     ]
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "AerCap expects about $200 million from its joint ventures in 2026. Groundings were expected to ease after 2026.",
+      "prompt": "What do you watch?",
+      "options": [
+       "Whether passengers notice the engines",
+       "Whether jets get repainted",
+       "Whether spare demand holds as repairs clear"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Passengers do not drive engine leasing.",
+       "Paint has no link to engine demand.",
+       "Part of the demand came from the inspection backlog."
+      ],
+      "explanation": "Some spare engine demand is tied to the inspections. Check what remains once they clear."
+     },
+     "proReasoning": "Investors ask how much of a boom comes from a one-off event.",
+     "commonMistake": "Assuming demand from a recall lasts forever.",
+     "mentalModel": "Separate the event from the trend."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your startup matches spare engines with airlines that need them fast.",
+      "prompt": "Who is your first customer?",
+      "options": [
+       "An airline with jets waiting on engines",
+       "A passenger booking a flight next month",
+       "An airport planning a new terminal"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Every grounded day costs that airline money.",
+       "Passengers do not lease engines.",
+       "Airports do not need spare engines."
+      ],
+      "explanation": "The airline with a grounded jet feels the pain daily and will pay for speed."
+     },
+     "proReasoning": "Founders sell first to whoever loses money every day the problem lasts.",
+     "commonMistake": "Selling to people who never feel the gap.",
+     "mentalModel": "Grounded jet, urgent buyer."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend asks how an engine flaw could help a leasing company years later.",
+      "prompt": "What's the link?",
+      "options": [
+       "Lessors had supplied the faulty powder",
+       "Airlines rent spare engines during repairs",
+       "The flaw raised the value of every engine"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Lessors had no part in making the engines.",
+       "Long repairs created demand for spares.",
+       "The flaw meant inspections, not higher value."
+      ],
+      "explanation": "A problem in one part of the chain became rent for another."
+     },
+     "proReasoning": "One company's problem can be another's business.",
+     "commonMistake": "Thinking a recall only hurts.",
+     "mentalModel": "Every gap gets filled by someone."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:4cf54bbec09b"
+  ]
+ },
+ {
+  "id": "6f499efa-96ae-56db-b0c4-c23695ca66c7",
+  "market_id": "aerospace",
+  "day": 56,
+  "slot": 3,
+  "content": {
+   "id": "aerospace-d56-c3",
+   "title": "Sell the old jets now?",
+   "lessonTitle": "Rent, spread and a good sale",
+   "slot": 3,
+   "type": "decide",
+   "brief": {
+    "headline": "You run the portfolio at a lessor. Buyers are paying well for older jets, as AerCap found when it sold assets at a 27% gain-on-sale margin in 2025. You must decide how much to sell.",
+    "kicker": "Decide with day 56: rent today or a gain today?",
+    "fullText": "AerCap sold 108 of its own aircraft in 2025, averaging 15 years old. Its net spread on lease assets was 7.8%, or 3.5% after depreciation.\n\nFor 2026, AerCap planned $2 to $3 billion of asset sales and left gains on sale out of its adjusted earnings guidance. It expects the aircraft shortage to last at least through the end of the decade.\n\nThis is a scenario built on those facts.",
+    "sources": [
+     {
+      "url": "https://www.aercap.com/_assets/_51cac73cf6c793459e1623a8c623e08d/aercap/db/539/14594/earnings_release/AerCap+2025+Fourth+Quarter+Earnings+Release.pdf",
+      "label": "AerCap, 2025 fourth quarter and full year earnings release, Feb 2026"
+     },
+     {
+      "url": "https://finance.yahoo.com/news/aercap-q4-earnings-call-highlights-223338773.html",
+      "label": "Yahoo Finance, AerCap Q4 2025 earnings call highlights, Feb 2026"
+     },
+     {
+      "url": "https://www.aercap.com/_assets/_921eb7058eff746106fcf362369c4140/aercap/db/540/14609/file/AerCap+Bloomberg+Transcript+4Q25.pdf",
+      "label": "AerCap, fourth quarter 2025 earnings call transcript, Feb 2026"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "sortSignal",
+    "prompt": "Does each fact argue for selling now or for keeping the jet?",
+    "buckets": [
+     "Sell now",
+     "Keep leasing"
+    ],
+    "items": [
+     {
+      "text": "Buyers pay well for older jets",
+      "bucket": 0
+     },
+     {
+      "text": "Cash can fund newer aircraft",
+      "bucket": 0
+     },
+     {
+      "text": "The jet earns a steady spread",
+      "bucket": 1
+     },
+     {
+      "text": "The shortage may last for years",
+      "bucket": 1
+     }
+    ],
+    "explanation": "Strong prices favor selling. A steady spread and a long shortage favor keeping. Most lessors do some of each."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "At the top of its range, how many billion dollars of assets did AerCap plan to sell in 2026?",
+    "min": 0,
+    "max": 10,
+    "value": 3,
+    "unit": "B",
+    "explanation": "Between $2 billion and $3 billion, below the $3.9 billion it sold in 2025."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your boss asks for a one-line rule on when to sell an older jet.",
+      "prompt": "What do you propose?",
+      "options": [
+       "Never sell a jet while it can still fly",
+       "Sell every jet on its tenth birthday",
+       "Sell when the price beats the future rent"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "You would miss strong prices like those in 2025.",
+       "A fixed age ignores the market price.",
+       "That compares the two ways the jet can pay you."
+      ],
+      "explanation": "Compare the sale price with the value of the rent you give up. Pick the bigger one."
+     },
+     "proReasoning": "Portfolio teams compare sale price with the value of future rent, jet by jet.",
+     "commonMistake": "Using a fixed age rule regardless of prices.",
+     "mentalModel": "Sell when the buyer pays more than the rent is worth to you."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A lessor reports record gains on sale, but its guidance leaves them out.",
+      "prompt": "Why would it do that?",
+      "options": [
+       "Sales gains are hard to predict",
+       "Sales gains are not real profit",
+       "The rules ban counting them"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "They depend on market prices and how many jets it sells.",
+       "They are real profit, just not steady.",
+       "No rule bans reporting them."
+      ],
+      "explanation": "AerCap leaves gains out of its adjusted earnings guidance because they swing with the market."
+     },
+     "proReasoning": "Investors value steady rent and volatile gains differently.",
+     "commonMistake": "Adding record gains straight into next year's forecast.",
+     "mentalModel": "Steady income gets a steady multiple."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your startup prices used jets for lessors deciding whether to sell.",
+      "prompt": "What makes your price useful?",
+      "options": [
+       "It maps every route the jet has flown",
+       "It compares sale value with rent still due",
+       "It ranks jets by how new their paint is"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Routes say little about the sale value.",
+       "That is the comparison behind every sell or keep call.",
+       "Paint does not move the decision."
+      ],
+      "explanation": "A lessor decides by comparing two values. A tool that shows both helps it decide."
+     },
+     "proReasoning": "Founders build for the exact decision the customer makes.",
+     "commonMistake": "Showing data that does not change the decision.",
+     "mentalModel": "Build for the decision, not the data."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend asks why a lessor would sell a jet that still earns rent every month.",
+      "prompt": "What's the reason?",
+      "options": [
+       "Jets stop earning rent after five years",
+       "The law forces lessors to sell old jets",
+       "A buyer may pay more than the rent is worth"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Older jets can keep earning rent.",
+       "No law forces lessors to sell.",
+       "A good price can beat years of future rent."
+      ],
+      "explanation": "A lessor weighs the price today against the rent it would give up."
+     },
+     "proReasoning": "Every jet a lessor owns has two values: what it earns and what it sells for.",
+     "commonMistake": "Thinking a lessor only sells jets it no longer wants.",
+     "mentalModel": "Rent later or cash now."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:d709314de170"
+  ]
+ },
+ {
+  "id": "dd34155f-2c06-5452-b5c4-7623b9c1e726",
+  "market_id": "aerospace",
+  "day": 57,
+  "slot": 1,
+  "content": {
+   "id": "aerospace-d57-c1",
+   "title": "Air Lease changes hands",
+   "lessonTitle": "When the lessor pulls the leases",
+   "slot": 1,
+   "type": "apply",
+   "brief": {
+    "headline": "In April 2026, Sumitomo, SMBC Aviation Capital, Apollo and Brookfield completed their purchase of Air Lease. The deal valued it at about $28.2 billion including debt.",
+    "kicker": "Apply day 57: scale is how lessors gain power.",
+    "fullText": "Air Lease owned 490 aircraft at the end of 2025. Its shareholders approved the deal in December 2025, and it closed in April 2026 at about $7.4 billion for the shares. The company was renamed Sumisho Air Lease.\n\nSMBC Aviation Capital will service most of the portfolio. It already owns, services or has ordered more than 1,700 aircraft.\n\nOn day 57 you saw where a lessor's power comes from: owning jets airlines need, holding factory slots and borrowing cheaply. A bigger lessor has more of all three.",
+    "sources": [
+     {
+      "url": "https://www.businesswire.com/news/home/20260408078834/en/Sumitomo-Corporation-SMBC-Aviation-Capital-Apollo-and-Brookfield-Complete-the-Acquisition-of-Air-Lease-Corporation",
+      "label": "Business Wire, Sumitomo, SMBC Aviation Capital, Apollo and Brookfield complete the acquisition of Air Lease, Apr 2026"
+     },
+     {
+      "url": "https://www.businesswire.com/news/home/20260211014166/en",
+      "label": "Air Lease, fourth quarter and full year 2025 results, Feb 2026"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "multipleChoice",
+    "prompt": "After the deal, who services most of the Air Lease portfolio?",
+    "options": [
+     "Air Lease on its own",
+     "SMBC Aviation Capital",
+     "Apollo"
+    ],
+    "correctIndex": 1,
+    "explanation": "SMBC Aviation Capital services the majority of the portfolio. Apollo and Brookfield funds are co-investors."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "How many aircraft did Air Lease own at the end of 2025?",
+    "min": 0,
+    "max": 1200,
+    "value": 490,
+    "unit": "aircraft",
+    "explanation": "490 owned aircraft, plus 218 on order."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You're interviewing at a lessor the week the Air Lease deal closes. They ask what it means.",
+      "prompt": "What's your best answer?",
+      "options": [
+       "Airlines will lease fewer jets from now on",
+       "Fewer, bigger lessors with more buying power",
+       "Lessors are leaving the leasing market"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Nothing in the deal shrinks leasing.",
+       "SMBC now services a far larger fleet than before.",
+       "Big investors just paid to get in."
+      ],
+      "explanation": "Name the trend: consolidation gives the biggest lessors more scale with plane makers and lenders."
+     },
+     "proReasoning": "Good candidates turn a deal headline into a view on the industry.",
+     "commonMistake": "Reciting the price without saying why it matters.",
+     "mentalModel": "A deal is a signal. Say what it signals."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Air Lease sold for $7.4 billion of equity with about $28.2 billion of enterprise value.",
+      "prompt": "What does the gap between the two tell you?",
+      "options": [
+       "The buyers overpaid by $20 billion",
+       "Air Lease had no debt at all",
+       "Most of the value is funded by debt"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "The gap is debt, not a premium.",
+       "The gap is mostly the debt it carried.",
+       "Enterprise value includes debt to be assumed or refinanced."
+      ],
+      "explanation": "Lessors run on debt. Enterprise value counts it; the equity price does not."
+     },
+     "proReasoning": "Investors read enterprise value and equity value together for any debt-heavy business.",
+     "commonMistake": "Confusing enterprise value with the price paid for the shares.",
+     "mentalModel": "Equity plus net debt equals enterprise value."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You sell lease management software. Air Lease is now serviced by SMBC Aviation Capital.",
+      "prompt": "Where should you focus your sales effort?",
+      "options": [
+       "On the servicer that runs the leases",
+       "On the passive equity investors",
+       "On the airline passengers"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "The servicer runs the leases day to day.",
+       "Funds rarely pick lease software.",
+       "Passengers never see lease systems."
+      ],
+      "explanation": "After a merger, the servicer chooses the tools. Sell to whoever runs the work."
+     },
+     "proReasoning": "Founders map who runs the operation after a deal, not just who owns it.",
+     "commonMistake": "Selling to the owner when the servicer makes the choice.",
+     "mentalModel": "Sell to the operator."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend asks why investment firms like Apollo would buy into a plane leasing company.",
+      "prompt": "What's a good answer?",
+      "options": [
+       "They want to build their own planes",
+       "Long leases pay steady, contracted rent",
+       "They plan to start their own airline"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Lessors buy jets; they do not build them.",
+       "Air Lease had years of rent already signed.",
+       "They bought a lessor, not an airline."
+      ],
+      "explanation": "Signed rent on long leases looks like a steady income stream, which suits long-term investors."
+     },
+     "proReasoning": "Leasing appeals to investors who want long, predictable income.",
+     "commonMistake": "Thinking investors in lessors want to fly planes.",
+     "mentalModel": "Contracted rent draws patient money."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:0a36db3d7a60"
+  ]
+ },
+ {
+  "id": "6e09dabc-f1e1-57d9-8acd-0ddae3b99e23",
+  "market_id": "aerospace",
+  "day": 57,
+  "slot": 2,
+  "content": {
+   "id": "aerospace-d57-c2",
+   "title": "Two Spirits, one lesson",
+   "lessonTitle": "When the lessor pulls the leases",
+   "slot": 2,
+   "type": "connect",
+   "brief": {
+    "headline": "On day 3, Boeing bought back Spirit AeroSystems, a supplier it could not replace. On day 57, AerCap pulled leases from Spirit Airlines, a customer it could live without.",
+    "kicker": "Connect day 3 and day 57: power sits with the harder to replace.",
+    "fullText": "On day 3 you saw that the upper hand belongs to whoever is hardest to replace. Spirit AeroSystems built 737 fuselages and major structures for other Boeing jets, and Boeing completed its purchase of Spirit's Boeing work on December 8, 2025.\n\nOn day 57 you saw the same rule from the other side. Spirit Airlines, a different company, needed AerCap's jets. In August 2025 AerCap ended leases on 36 future jets and said Spirit was in default on 37 more. Spirit filed for bankruptcy, and in October it rejected 27 of those 37 leases in a settlement.",
+    "sources": [
+     {
+      "url": "https://boeing.mediaroom.com/2025-12-08-Boeing-Completes-Acquisition-of-Spirit-AeroSystems",
+      "label": "Boeing, Boeing completes acquisition of Spirit AeroSystems, Dec 2025"
+     },
+     {
+      "url": "https://www.irishexaminer.com/business/companies/arid-41723202.html",
+      "label": "Irish Examiner (Reuters), Spirit Airlines cancels Airbus order in settlement with AerCap, Oct 2025"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "faceOff",
+    "prompt": "In August 2025, which side was harder to replace?",
+    "left": {
+     "name": "AerCap, for Spirit Airlines",
+     "note": "Owner of the jets Spirit flew and expected"
+    },
+    "right": {
+     "name": "Spirit Airlines, for AerCap",
+     "note": "One airline customer among many"
+    },
+    "correctIndex": 0,
+    "explanation": "Spirit could not quickly find other jets. AerCap could place its jets with other airlines."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "In the settlement, Spirit rejected how many of its 37 existing AerCap leases?",
+    "min": 0,
+    "max": 37,
+    "value": 27,
+    "unit": "leases",
+    "explanation": "27 of 37, and it signed new leases for 30 jets due from 2027 to 2029."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You're interviewing for an airline strategy role. They ask what the Spirit and AerCap fight teaches.",
+      "prompt": "What's your best answer?",
+      "options": [
+       "Lessors always lose money in bankruptcy",
+       "Leasing removes all fleet risk for airlines",
+       "An airline that leases depends on its lessors"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "AerCap kept deposits and a claim of up to $572 million.",
+       "Spirit nearly lost much of its future fleet.",
+       "Losing AerCap meant losing much of its fleet."
+      ],
+      "explanation": "The same rule as day 3: whoever is hard to replace holds the upper hand."
+     },
+     "proReasoning": "Strong candidates apply one principle across very different cases.",
+     "commonMistake": "Treating suppliers and lessors as unrelated problems.",
+     "mentalModel": "Ask who is harder to replace."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You hold shares in a struggling airline that leases most of its jets from one lessor.",
+      "prompt": "What risk should worry you most?",
+      "options": [
+       "The lessor pulling leases if payments slip",
+       "The lessor raising its paint standards",
+       "The lessor selling its own shares"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "That is what pushed Spirit into bankruptcy.",
+       "Paint standards do not threaten a fleet.",
+       "A lessor's own shares do not touch your fleet."
+      ],
+      "explanation": "Concentration on one lessor gives that lessor great power when the airline weakens."
+     },
+     "proReasoning": "Investors check how concentrated an airline's lessors are.",
+     "commonMistake": "Ignoring who owns the airline's fleet.",
+     "mentalModel": "One big lessor is one big risk."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your startup supplies airlines. Your biggest customer leases most of its jets from one lessor.",
+      "prompt": "What do you watch?",
+      "options": [
+       "The lessor's dividend to its owners",
+       "Your customer's standing with its lessor",
+       "Your customer's weekly ticket sales"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "A lessor's dividend does not touch your customer's fleet.",
+       "If the lessor pulls jets, your customer shrinks fast.",
+       "Sales matter, but the fleet risk sits with the lessor."
+      ],
+      "explanation": "Spirit planned to shrink by nearly half. A supplier to Spirit would feel that directly."
+     },
+     "proReasoning": "Founders track the risks that sit behind their customers.",
+     "commonMistake": "Assuming a large customer is a safe customer.",
+     "mentalModel": "Know your customer's landlord.",
+     "sources": [
+      {
+       "url": "https://www.irishexaminer.com/business/companies/arid-41723202.html",
+       "label": "Irish Examiner (Reuters), Spirit Airlines cancels Airbus order in settlement with AerCap, Oct 2025"
+      }
+     ]
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend mixes up Spirit AeroSystems and Spirit Airlines.",
+      "prompt": "How do you tell them apart?",
+      "options": [
+       "They are the same company under two names",
+       "Both are aircraft leasing companies",
+       "One built airframes, one flew passengers"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "They are different companies.",
+       "Neither is a lessor; AerCap is.",
+       "Spirit AeroSystems built fuselages; Spirit Airlines flew."
+      ],
+      "explanation": "Two companies, one shared name, and the same lesson about who is hard to replace."
+     },
+     "proReasoning": "Same name, different businesses, same rule of power.",
+     "commonMistake": "Assuming a shared name means a shared company.",
+     "mentalModel": "Check the business, not the name."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:9d69f772b5ac"
+  ]
+ },
+ {
+  "id": "ca837654-0bfd-5367-81f8-472474725e49",
+  "market_id": "aerospace",
+  "day": 57,
+  "slot": 3,
+  "content": {
+   "id": "aerospace-d57-c3",
+   "title": "Renewal talks in a shortage",
+   "lessonTitle": "When the lessor pulls the leases",
+   "slot": 3,
+   "type": "decide",
+   "brief": {
+    "headline": "You run fleet at an airline. Ten leases with a big lessor end next year, and new jets are sold out for years. The lessor says other airlines want your jets.",
+    "kicker": "Decide with day 57: how much power do you have at renewal?",
+    "fullText": "AerCap's lease extension rate was 87% in 2025, up from 79% in 2024. It expects the aircraft shortage to last at least through the end of the decade.\n\nIn 2023, Air Lease co-founder Steven Udvar-Hazy described the same squeeze: the airline with a jet wants to extend, and several others want that same jet because they need lift.\n\nThis is a scenario built on those facts.",
+    "sources": [
+     {
+      "url": "https://www.aercap.com/_assets/_921eb7058eff746106fcf362369c4140/aercap/db/540/14609/file/AerCap+Bloomberg+Transcript+4Q25.pdf",
+      "label": "AerCap, fourth quarter 2025 earnings call transcript, Feb 2026"
+     },
+     {
+      "url": "https://gulfnews.com/business/aviation/used-jets-rents-surge-44-as-airlines-pay-up-to-buoy-fleets-1.98846632",
+      "label": "Gulf News (Bloomberg), Used jets rents surge 44% as airlines pay up, Oct 2023"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "buildChain",
+    "prompt": "Follow how a shortage shifts power to lessors.",
+    "steps": [
+     "Factories deliver fewer jets than airlines want",
+     "Airlines keep the jets they already lease",
+     "Lease extension rates climb",
+     "Lessors negotiate renewals from strength"
+    ],
+    "explanation": "Scarce new jets keep airlines in the jets they have, and that puts lessors in the stronger seat."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "What was AerCap's lease extension rate in 2024, in percent?",
+    "min": 0,
+    "max": 100,
+    "value": 79,
+    "unit": "%",
+    "explanation": "79% in 2024, then 87% in 2025."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your CFO asks for a renewal plan for the ten jets.",
+      "prompt": "What do you recommend?",
+      "options": [
+       "Start talks early and offer a longer term",
+       "Wait until the final month to push",
+       "Return the jets and hope for new ones"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "A longer term is worth something to the lessor.",
+       "The lessor has other airlines lined up.",
+       "New jets are sold out for years."
+      ],
+      "explanation": "When you have little power, offer what the lessor values, like term, and move early."
+     },
+     "proReasoning": "Fleet planners trade term for price when supply is tight.",
+     "commonMistake": "Waiting for bargaining power you do not have.",
+     "mentalModel": "Weak hand, move early."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A lessor reports its extension rate rose from 79% to 87%.",
+      "prompt": "What does that tell you?",
+      "options": [
+       "The lessor must have cut its rents",
+       "Airlines keep jets they cannot replace",
+       "Airlines are leaving the market fast"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Nothing in the figure says rents fell.",
+       "AerCap linked it to strong customer demand.",
+       "Airlines are holding on, not leaving."
+      ],
+      "explanation": "Higher extensions mean less idle time and fewer costly handbacks for the lessor."
+     },
+     "proReasoning": "Investors read extension rates as a gauge of how tight the market is.",
+     "commonMistake": "Ignoring renewals and watching only new deals.",
+     "mentalModel": "Extensions measure scarcity."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your startup helps airlines benchmark lease renewal terms.",
+      "prompt": "Why would airlines pay now?",
+      "options": [
+       "Lessors are rushing to cut their rents",
+       "New jets have become easy to order",
+       "They negotiate from weakness and need data"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Lessors hold the stronger hand in a shortage.",
+       "New jets are sold out for years.",
+       "Good data is one of the few levers they have left."
+      ],
+      "explanation": "The weaker side in a negotiation values information most."
+     },
+     "proReasoning": "Founders sell data to whoever has the weaker hand.",
+     "commonMistake": "Selling to the side that already holds the power.",
+     "mentalModel": "Information helps the weaker side most."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend asks why airlines keep flying older leased jets instead of new ones.",
+      "prompt": "What's the main reason?",
+      "options": [
+       "New jets are sold out for years",
+       "Older jets are always cheaper to run",
+       "Rules ban new jets"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "AerCap expects the shortage to last through the decade.",
+       "Older jets often burn more fuel.",
+       "No rule bans new jets."
+      ],
+      "explanation": "When factories cannot keep up, airlines hold on to what they have."
+     },
+     "proReasoning": "Shortages change who sets the terms.",
+     "commonMistake": "Thinking airlines keep old jets by choice.",
+     "mentalModel": "Scarcity keeps old jets flying."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:b477922af49e"
+  ]
+ },
+ {
+  "id": "53427306-900f-5fc5-905e-df2964ace599",
+  "market_id": "aerospace",
+  "day": 58,
+  "slot": 1,
+  "content": {
+   "id": "aerospace-d58-c1",
+   "title": "Ten billion dollars to make it happen",
+   "lessonTitle": "$28.9 billion of rent on the books",
+   "slot": 1,
+   "type": "apply",
+   "brief": {
+    "headline": "If 2027 production holds, lessors could own about 840 of some 1,400 new deliveries, about 60%. Leeham estimates they would pay airlines over $10 billion to make that happen.",
+    "kicker": "Apply day 58: price the sale-leaseback market with two numbers.",
+    "fullText": "Leeham News put the average at $12 million per jet, the gap between what an airline pays the maker and what the jet is worth. It cited a typical 737 MAX 8 at about $44 million on a bulk deal, against a fair market value of $56 million.\n\nThat gain is paid by lessors to airlines through sale-leasebacks. 840 jets at about $12 million each is just over $10 billion.\n\nLeeham also noted that lessor ownership rose from 10% of the fleet in the 1970s to a majority today.",
+    "sources": [
+     {
+      "url": "https://leehamnews.com/2026/11/11/lessors-playing-increasing-ownership-role-in-global-fleet/",
+      "label": "Leeham News, Lessors playing increasing ownership role in global fleet, Nov 2026"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "multipleChoice",
+    "prompt": "What is the $10 billion in this estimate?",
+    "options": [
+     "The premium lessors pay over the bulk price",
+     "The total purchase price of 840 new jets",
+     "The rent airlines pay lessors in a year"
+    ],
+    "correctIndex": 0,
+    "explanation": "840 jets at about $12 million each. That is the premium over the bulk price, not the full price of the jets."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "About what percent of 2027 deliveries could lessors own?",
+    "min": 0,
+    "max": 100,
+    "value": 60,
+    "unit": "%",
+    "explanation": "About 840 of some 1,400 deliveries, or about 60%."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You're asked in an interview to size the 2027 sale-leaseback market quickly.",
+      "prompt": "How do you do it?",
+      "options": [
+       "Add up every airline's yearly revenue",
+       "Count the passengers the jets will fly",
+       "Multiply lessor jets by the average gain"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Revenue does not size sale-leasebacks.",
+       "Passenger counts do not price jets.",
+       "840 times about $12 million gives just over $10 billion."
+      ],
+      "explanation": "Two numbers, one multiplication. Showing the method matters as much as the answer."
+     },
+     "proReasoning": "Interviewers reward a clear method built from a few sourced numbers.",
+     "commonMistake": "Guessing a big number with no method behind it.",
+     "mentalModel": "Units times value per unit."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "An airline expects big sale-leaseback gains in 2027 from its deliveries.",
+      "prompt": "What could shrink those gains?",
+      "options": [
+       "Fewer deliveries than planned",
+       "More passengers than expected",
+       "Lower fuel prices"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "The estimate depends on 2027 production holding.",
+       "More passengers do not cut the gain.",
+       "Fuel does not set the gap between price and value."
+      ],
+      "explanation": "No delivery, no sale. The whole estimate rests on production holding."
+     },
+     "proReasoning": "Investors find the one assumption a forecast cannot survive without.",
+     "commonMistake": "Trusting a forecast without checking its condition.",
+     "mentalModel": "Find the if in the forecast."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your startup runs auctions that match airlines with lessors for sale-leasebacks.",
+      "prompt": "Why is 2027 a good year to launch?",
+      "options": [
+       "Lessors will stop buying new jets",
+       "About 840 jets could need a lessor buyer",
+       "Airlines will stop leasing in 2027"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Lessors are expected to own most deliveries.",
+       "That volume is a large market for matching.",
+       "The trend points to more leasing."
+      ],
+      "explanation": "A market of hundreds of jets and over $10 billion in gains is worth building for."
+     },
+     "proReasoning": "Founders size the market with the same numbers the industry uses.",
+     "commonMistake": "Launching without a sense of deal volume.",
+     "mentalModel": "Volume makes a market."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend asks who will own most new planes delivered in 2027.",
+      "prompt": "What's the likely answer?",
+      "options": [
+       "The airlines flying them, nearly all",
+       "The plane makers themselves",
+       "Leasing companies, about 60% of them"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Most new jets go to lessors.",
+       "Makers sell the jets; they do not keep them.",
+       "Leeham estimates about 840 of 1,400 deliveries."
+      ],
+      "explanation": "Most new jets in 2027 could belong to companies that never fly them."
+     },
+     "proReasoning": "The owner of a jet and its operator are often different companies.",
+     "commonMistake": "Assuming the name on the tail is the owner.",
+     "mentalModel": "Operator and owner differ."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:582dc9149526"
+  ]
+ },
+ {
+  "id": "634f4e54-fb62-57df-9112-41682826962d",
+  "market_id": "aerospace",
+  "day": 58,
+  "slot": 2,
+  "content": {
+   "id": "aerospace-d58-c2",
+   "title": "A lessor's backlog",
+   "lessonTitle": "$28.9 billion of rent on the books",
+   "slot": 2,
+   "type": "connect",
+   "brief": {
+    "headline": "On day 4 you divided a backlog by deliveries to get years of work. A lessor reads its order book differently: how much is already leased, and at what rent.",
+    "kicker": "Connect day 4 and day 58: a backlog only counts once it's leased.",
+    "fullText": "On day 4 you read a plane maker's backlog, deliveries and book-to-bill ratio.\n\nOn day 58 you saw Air Lease's numbers. It had 218 aircraft on order at the end of 2025. All but 1% of deliveries through 2027 were already leased, 82% through 2028, and about 64% of the whole order book through 2031. Those future deliveries carried $9.3 billion of signed rent.\n\nFor a lessor, an unleased order is a risk. A leased one is income waiting to arrive.",
+    "sources": [
+     {
+      "url": "https://www.businesswire.com/news/home/20260211014166/en",
+      "label": "Air Lease, fourth quarter and full year 2025 results, Feb 2026"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "sortSignal",
+    "prompt": "Is it a plane maker's measure or a lessor's?",
+    "buckets": [
+     "Plane maker",
+     "Lessor"
+    ],
+    "items": [
+     {
+      "text": "Backlog of aircraft ordered",
+      "bucket": 0
+     },
+     {
+      "text": "Book-to-bill ratio",
+      "bucket": 0
+     },
+     {
+      "text": "Share of order book already leased",
+      "bucket": 1
+     },
+     {
+      "text": "Signed rent on future deliveries",
+      "bucket": 1
+     }
+    ],
+    "explanation": "A maker counts orders and deliveries. A lessor also counts how much of its order book has a lessee and a rent."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "What share of Air Lease's deliveries through 2028 was already leased, in percent?",
+    "min": 0,
+    "max": 100,
+    "value": 82,
+    "unit": "%",
+    "explanation": "82% through 2028, and 99% through 2027."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You're interviewing at a lessor. They ask how you would judge its order book.",
+      "prompt": "What's your best answer?",
+      "options": [
+       "By how much is leased, and at what rent",
+       "By the total number of jets on order",
+       "By how famous its airline customers are"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Placement and rent turn orders into income.",
+       "Orders alone can become unleased risk.",
+       "Fame says little about the rent."
+      ],
+      "explanation": "A lessor's order book is only as good as its placements."
+     },
+     "proReasoning": "Candidates who ask about placement show they think like a lessor.",
+     "commonMistake": "Judging a lessor's order book like a plane maker's backlog.",
+     "mentalModel": "Placed orders are income; unplaced ones are risk."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Two lessors have the same number of jets on order. One has placed 99% of its next two years.",
+      "prompt": "Which carries less risk?",
+      "options": [
+       "They carry exactly the same risk",
+       "The one with 99% already placed",
+       "The one with more unplaced jets"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Placement changes the risk a lot.",
+       "Placed jets come with lessees and signed rent.",
+       "Unplaced jets still need a lessee."
+      ],
+      "explanation": "An unplaced jet arriving from the factory needs an airline quickly, or it earns nothing."
+     },
+     "proReasoning": "Investors compare placement rates, not just order counts.",
+     "commonMistake": "Treating every ordered jet as future revenue.",
+     "mentalModel": "Count the placed ones."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your startup helps lessors place aircraft on order with airlines.",
+      "prompt": "Which jets matter most to your customers?",
+      "options": [
+       "The ones already placed through 2027",
+       "The ones flying on long leases",
+       "The ones arriving soon with no lessee"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Those already have lessees and rent.",
+       "Those already earn rent.",
+       "Those are the jets that could sit idle."
+      ],
+      "explanation": "Unplaced near-term deliveries are a lessor's most urgent problem."
+     },
+     "proReasoning": "Founders target the most urgent slice of a customer's risk.",
+     "commonMistake": "Offering help where the problem is already solved.",
+     "mentalModel": "Find the unplaced jets."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend asks how a lessor can know its rent years before a jet is built.",
+      "prompt": "What's the answer?",
+      "options": [
+       "It signs leases before delivery",
+       "It guesses the rent later",
+       "Airlines pay the rent upfront"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Air Lease had $9.3 billion signed on future jets.",
+       "The rent is set in signed leases.",
+       "Rent is paid over the lease, not upfront."
+      ],
+      "explanation": "Lessors often place jets with airlines years before the factory finishes them."
+     },
+     "proReasoning": "Leasing is planned years ahead, like the factories that feed it.",
+     "commonMistake": "Thinking leases are signed when the jet arrives.",
+     "mentalModel": "Lease first, deliver later."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:30e578b2941c"
+  ]
+ },
+ {
+  "id": "c7dca453-9aae-5c7a-b2e1-a0e178a4ced6",
+  "market_id": "aerospace",
+  "day": 58,
+  "slot": 3,
+  "content": {
+   "id": "aerospace-d58-c3",
+   "title": "Pricing one lease",
+   "lessonTitle": "$28.9 billion of rent on the books",
+   "slot": 3,
+   "type": "decide",
+   "brief": {
+    "headline": "You price leases at a lessor. A new jet is valued at $45 million, and your debt costs about 4.15% a year, like Air Lease in 2025. You must set the monthly rent.",
+    "kicker": "Decide with day 58: rent must clear the cost of money.",
+    "fullText": "The lease rate factor is the monthly rent divided by the aircraft's value, quoted as a monthly percentage. Acumen gives the example of a jet at 0.75% a month earning 9% a year in gross rent, and warns that is not a 9% return once financing, downtime and other costs come out.\n\nAir Lease paid a composite 4.15% on its debt in 2025. AerCap's adjusted debt to equity was 2.11 to 1, so most of each jet is paid for with borrowed money.\n\nThis is a scenario built on those facts.",
+    "sources": [
+     {
+      "url": "https://www.acumen.aero/blogs/lease-rate-factors-explained-how-are-monthly-aircraft-lease-payments-calculated-",
+      "label": "Acumen Aviation, Lease rate factors explained, Aug 2026"
+     },
+     {
+      "url": "https://www.businesswire.com/news/home/20260211014166/en",
+      "label": "Air Lease, fourth quarter and full year 2025 results, Feb 2026"
+     },
+     {
+      "url": "https://www.aercap.com/_assets/_51cac73cf6c793459e1623a8c623e08d/aercap/db/539/14594/earnings_release/AerCap+2025+Fourth+Quarter+Earnings+Release.pdf",
+      "label": "AerCap, 2025 fourth quarter and full year earnings release, Feb 2026"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "faceOff",
+    "prompt": "Which lease brings in more rent each month?",
+    "left": {
+     "name": "$50 million jet at 0.75%",
+     "note": "Monthly factor on a larger value"
+    },
+    "right": {
+     "name": "$40 million jet at 0.9%",
+     "note": "Higher factor on a smaller value"
+    },
+    "correctIndex": 0,
+    "explanation": "$50 million at 0.75% is $375,000. $40 million at 0.9% is $360,000."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "A $45 million jet at 0.8% a month. What is the monthly rent, in thousands of dollars?",
+    "min": 0,
+    "max": 1000,
+    "value": 360,
+    "unit": "K",
+    "explanation": "$45 million times 0.008 is $360,000 a month."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your manager asks you to sanity-check a 0.8% factor on the $45 million jet.",
+      "prompt": "What do you check first?",
+      "options": [
+       "That the factor is a nice round number",
+       "That yearly rent covers funding and costs",
+       "That the jet has the right seat count"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "A round number proves nothing.",
+       "9.6% gross a year must cover 4.15% debt and other costs.",
+       "Seats matter to the airline, not the factor."
+      ],
+      "explanation": "A factor of 0.8% gives 9.6% a year in gross rent. Check it against what the money costs."
+     },
+     "proReasoning": "Pricing analysts turn the monthly factor into a yearly rate and compare it with funding cost.",
+     "commonMistake": "Treating gross rent as profit.",
+     "mentalModel": "Monthly factor times 12, then subtract the cost of money."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A lessor's funding cost rises by a full point, but its lease rate factors stay the same.",
+      "prompt": "What happens to its spread?",
+      "options": [
+       "It widens on new leases",
+       "It does not change at all",
+       "It narrows on new leases"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Higher costs cannot widen the gap.",
+       "The cost side moved, so the gap moved.",
+       "More is paid on debt from the same rent."
+      ],
+      "explanation": "With mostly debt-funded jets, every rise in funding cost eats into the spread unless rents rise too."
+     },
+     "proReasoning": "Investors watch the cost of funds as closely as rents.",
+     "commonMistake": "Looking only at rent growth.",
+     "mentalModel": "Spread is rent minus the cost of money."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your startup builds a lease pricing tool for small lessors.",
+      "prompt": "Which input must it include?",
+      "options": [
+       "The lessor's own cost of funds",
+       "The airline's brand colors",
+       "The weather at the home airport"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Rent has to clear what the money costs.",
+       "Colors do not affect price.",
+       "Weather does not set the rent."
+      ],
+      "explanation": "A pricing tool without funding cost cannot tell a lessor whether a deal pays."
+     },
+     "proReasoning": "Founders build tools that include the number that decides the deal.",
+     "commonMistake": "Pricing from rent alone.",
+     "mentalModel": "No cost of funds, no price."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend hears a jet rents for 0.8% of its value a month and calls that easy money.",
+      "prompt": "What's the fairer view?",
+      "options": [
+       "The airline pays it all upfront",
+       "Debt, downtime and costs eat much of it",
+       "It is almost pure profit for the lessor"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Rent is paid monthly over the lease.",
+       "Acumen warns gross rent is not the return.",
+       "Interest and depreciation come out first."
+      ],
+      "explanation": "Gross rent looks large until you take out interest, depreciation and idle time."
+     },
+     "proReasoning": "A rent figure is the start of the math, not the end.",
+     "commonMistake": "Calling gross rent profit.",
+     "mentalModel": "Gross is not net."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:b1604abfbd4b"
+  ]
+ },
+ {
+  "id": "aaf77faa-4d69-5ff0-bc3f-50cabfc02082",
+  "market_id": "aerospace",
+  "day": 59,
+  "slot": 1,
+  "content": {
+   "id": "aerospace-d59-c1",
+   "title": "India's 54 grounded jets",
+   "lessonTitle": "Getting the jet back",
+   "slot": 1,
+   "type": "apply",
+   "brief": {
+    "headline": "Go First filed for insolvency in India on May 2, 2023. Lessors of its 54 aircraft could not take them back for about a year, even though India had joined the Cape Town Convention in 2008.",
+    "kicker": "Apply day 59: a treaty needs local law and courts behind it.",
+    "fullText": "An insolvency moratorium stopped lessors from deregistering and repossessing the jets. In October 2023, India exempted Cape Town aircraft deals from that moratorium. In December 2023, the Aviation Working Group still cut India's Cape Town compliance score from 63.5 to 50.\n\nOn April 26, 2024, the Delhi High Court ordered the jets deregistered within five working days. India's Cape Town Act came into force on May 1, 2025. It adopts Alternative A, with a waiting period of two calendar months.",
+    "sources": [
+     {
+      "url": "https://www.freepressjournal.in/amp/india/aviation-working-group-downgrades-indias-rating-to-negative-amid-go-firsts-aircraft-repossession-legal-battle",
+      "label": "Free Press Journal, Aviation Working Group downgrades India's rating, Dec 2023"
+     },
+     {
+      "url": "https://morganlewis.com/pubs/2025/04/indian-aviation-and-cape-town-part-i",
+      "label": "Morgan Lewis, Indian aviation and Cape Town, part I, Apr 2025"
+     },
+     {
+      "url": "https://foxmandal.in/cleared-for-takeoff-indias-long-awaited-cape-town-act/",
+      "label": "Fox Mandal, Cleared for takeoff: India's long-awaited Cape Town Act, 2025"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "buildChain",
+    "prompt": "Put India's Cape Town story in order.",
+    "steps": [
+     "India joins the Cape Town Convention",
+     "Go First files for insolvency",
+     "AWG cuts India's compliance score",
+     "A court orders the jets deregistered",
+     "India's Cape Town Act takes effect"
+    ],
+    "explanation": "2008, May 2023, December 2023, April 2024, then May 2025. Joining was the first step, not the last."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "How many aircraft were leased to Go First?",
+    "min": 0,
+    "max": 120,
+    "value": 54,
+    "unit": "aircraft",
+    "explanation": "54 aircraft, which courts finally ordered deregistered in 2024."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You're interviewing at a lessor. They ask what Go First taught the industry.",
+      "prompt": "What's your best answer?",
+      "options": [
+       "Signing Cape Town is not enforcing it",
+       "India banned aircraft leasing outright",
+       "Lessors can never get their jets back"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "India had joined in 2008 but lacked a local law.",
+       "India still allows leasing and passed a new law.",
+       "The jets were ordered deregistered in 2024."
+      ],
+      "explanation": "A treaty works when local law and courts apply it. India closed that gap in 2025."
+     },
+     "proReasoning": "Strong candidates separate a treaty on paper from enforcement in practice.",
+     "commonMistake": "Assuming a country that signed Cape Town will apply it.",
+     "mentalModel": "Signed is not enforced."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A lessor has many jets with Indian airlines. India's Cape Town Act is now in force.",
+      "prompt": "How has its risk changed?",
+      "options": [
+       "Nothing changes until another collapse",
+       "Repossession should be faster and surer",
+       "Indian leasing risk is now zero"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "The law changes the rules before any collapse.",
+       "The law sets a two-month waiting period.",
+       "Courts still have to apply the law."
+      ],
+      "explanation": "A clear waiting period cuts the time a jet sits stuck, which lowers the risk."
+     },
+     "proReasoning": "Investors update risk when a country changes its law, then watch the first case under it.",
+     "commonMistake": "Treating a new law as a guarantee.",
+     "mentalModel": "New law, lower risk, still test it."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your startup tracks lessors' rights in different countries.",
+      "prompt": "What should it record for India now?",
+      "options": [
+       "No Cape Town rules apply there yet",
+       "A ban on leasing from foreign lessors",
+       "Alternative A with a two-month wait"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "India joined in 2008 and passed its Act in 2025.",
+       "Foreign lessors operate in India.",
+       "That is what the 2025 Act adopted."
+      ],
+      "explanation": "Country by country, the waiting period is the number a lessor most wants to know."
+     },
+     "proReasoning": "Founders turn legal detail into one clear number per country.",
+     "commonMistake": "Recording that a country signed Cape Town and stopping there.",
+     "mentalModel": "One country, one waiting period."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend asks why lessors could not simply fly their jets out of India in 2023.",
+      "prompt": "What's the reason?",
+      "options": [
+       "A court moratorium blocked deregistration",
+       "The jets were missing their engines",
+       "The jets belonged to the Indian state"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Without deregistration, the jets could not leave.",
+       "Engines were not the legal block.",
+       "The lessors owned the jets."
+      ],
+      "explanation": "A jet registered in a country cannot simply fly off. The court had to let the lessors deregister it."
+     },
+     "proReasoning": "Owning a jet does not mean you can move it.",
+     "commonMistake": "Thinking ownership is enough to take a jet back.",
+     "mentalModel": "Registration decides where a jet can go."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:ec4bdf434574"
+  ]
+ },
+ {
+  "id": "28740bb1-22b7-557e-86fc-b29c47f6fb0c",
+  "market_id": "aerospace",
+  "day": 59,
+  "slot": 2,
+  "content": {
+   "id": "aerospace-d59-c2",
+   "title": "Russia, twice in 2022",
+   "lessonTitle": "Getting the jet back",
+   "slot": 2,
+   "type": "connect",
+   "brief": {
+    "headline": "On day 27 you saw Boeing stop buying Russian titanium in March 2022. That same month, a Russian law banned the export of leased jets, and lessors lost hundreds of aircraft.",
+    "kicker": "Connect day 27 and day 59: one war, two supply risks.",
+    "fullText": "On day 27 you saw that VSMPO-AVISMA supplied about a third of Boeing's titanium. Boeing suspended purchases from Russia, while Airbus, which relied on Russia for about half its titanium, kept buying within sanctions.\n\nOn day 59 you saw the lessors' side. A London judge found their jets were lost on March 10, 2022, when Russia banned their export. Russia had joined Cape Town in 2011 with a 60-day Alternative A, yet the jets stayed. In June 2025, AerCap won about $1 billion from war-risks insurers.",
+    "sources": [
+     {
+      "url": "https://www.malaymail.com/news/money/2022/03/08/boeing-suspends-russian-titanium-as-airbus-keeps-buying/2046061",
+      "label": "Malay Mail (Reuters), Boeing suspends Russian titanium as Airbus keeps buying, Mar 2022"
+     },
+     {
+      "url": "https://www.lawsociety.ie/gazette/top-stories/2025/june/aercaps-$1-billion-award-in-insurance-case/",
+      "label": "Law Society Gazette of Ireland, AerCap's $1 billion award in insurance case, Jun 2025"
+     },
+     {
+      "url": "https://cliffordchance.com/content/dam/cliffordchance/briefings/2011/03/russia-is-joining-the-cape-town-convention-english.pdf",
+      "label": "Clifford Chance, Russia is joining the Cape Town Convention, Mar 2011"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "spotFake",
+    "prompt": "One of these is false. Tap it.",
+    "statements": [
+     "Boeing suspended Russian titanium purchases in 2022.",
+     "Russia returned leased jets within 60 days.",
+     "Airbus kept buying Russian titanium within sanctions."
+    ],
+    "fakeIndex": 1,
+    "explanation": "Russia banned the export of the jets. A London court found them lost from March 10, 2022."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "About what share of Boeing's titanium came from VSMPO-AVISMA, in percent?",
+    "min": 0,
+    "max": 100,
+    "value": 33,
+    "unit": "%",
+    "explanation": "About a third. Airbus said Russia covered about half of its needs."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You're interviewing for a risk role at a lessor. They ask what 2022 taught you.",
+      "prompt": "What's your best answer?",
+      "options": [
+       "Only the plane makers face country risk",
+       "Country risk hits supply and assets at once",
+       "Signing a treaty always protects lessors"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Lessors lost hundreds of jets.",
+       "Titanium supply and leased jets were both hit in 2022.",
+       "Russia had signed Cape Town, yet kept the jets."
+      ],
+      "explanation": "One event hit makers through supply and lessors through their jets."
+     },
+     "proReasoning": "Good risk thinkers trace one event through several parts of the industry.",
+     "commonMistake": "Treating each risk as if it lived alone.",
+     "mentalModel": "One shock, many channels."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You compare two lessors. One has many jets in a single country with weak courts.",
+      "prompt": "What do you ask first?",
+      "options": [
+       "What color its jets are painted",
+       "How tall its head office is",
+       "How much of the fleet sits there"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Paint does not change risk.",
+       "Office size does not change risk.",
+       "Concentration decides how much one country can cost you."
+      ],
+      "explanation": "AerCap took a $2.7 billion charge in 2022. Exposure by country sets the size of such a loss."
+     },
+     "proReasoning": "Investors check exposure by country before trusting a lessor's returns.",
+     "commonMistake": "Ignoring where the fleet actually flies.",
+     "mentalModel": "Know where the jets are.",
+     "sources": [
+      {
+       "url": "https://www.lawsociety.ie/gazette/top-stories/2025/june/aercaps-$1-billion-award-in-insurance-case/",
+       "label": "Law Society Gazette of Ireland, AerCap's $1 billion award in insurance case, Jun 2025"
+      }
+     ]
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your startup gives lessors early warning on country risk.",
+      "prompt": "Which signal fits best?",
+      "options": [
+       "New laws that limit moving aircraft",
+       "Monthly changes in local jet fuel prices",
+       "Weekly ticket sales at local airlines"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Russia's export ban is what locked the jets in.",
+       "Fuel prices did not trap any jets.",
+       "Sales matter less than laws that trap jets."
+      ],
+      "explanation": "The loss was dated to the day a law banned exports. Laws like that are the signal."
+     },
+     "proReasoning": "Founders track the signals that came before past losses.",
+     "commonMistake": "Watching noise instead of the laws that trap assets.",
+     "mentalModel": "Watch the law, not the headlines."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend asks how the same war hit Boeing and aircraft lessors.",
+      "prompt": "What's the link?",
+      "options": [
+       "Neither was affected by the war at all",
+       "Titanium for one, trapped jets for the other",
+       "Both had big factories seized in Russia"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Both felt it in 2022.",
+       "Boeing lost a third of its titanium source; lessors lost jets.",
+       "Lessors lost jets, not factories."
+      ],
+      "explanation": "Makers depend on inputs, lessors on getting their jets back. 2022 tested both."
+     },
+     "proReasoning": "Big events reach every layer of the industry, each in its own way.",
+     "commonMistake": "Thinking a war only touches the airlines that fly there.",
+     "mentalModel": "Each layer has its own exposure."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:e794d775c0ef"
+  ]
+ },
+ {
+  "id": "f3283e74-b30e-556a-9ca6-e2cc76f13c19",
+  "market_id": "aerospace",
+  "day": 59,
+  "slot": 3,
+  "content": {
+   "id": "aerospace-d59-c3",
+   "title": "Placing jets in a new jurisdiction",
+   "lessonTitle": "Getting the jet back",
+   "slot": 3,
+   "type": "decide",
+   "brief": {
+    "headline": "You run marketing at a lessor. An Indian airline wants ten A320neos. India now has a Cape Town Act, but Go First is fresh in your memory.",
+    "kicker": "Decide with day 59: how do you lease into a market that just fixed its law?",
+    "fullText": "India's Cape Town Act took effect on May 1, 2025. It adopts Alternative A with a two-month waiting period. In Go First's case, lessors waited about a year after the May 2023 filing, and the Aviation Working Group cut India's compliance score from 63.5 to 50 in December 2023.\n\nThe Cape Town registry is electronic and first to file. Under Alternative A, an insolvent airline must cure defaults or hand back the jet within the waiting period.\n\nThis is a scenario built on those facts.",
+    "sources": [
+     {
+      "url": "https://foxmandal.in/cleared-for-takeoff-indias-long-awaited-cape-town-act/",
+      "label": "Fox Mandal, Cleared for takeoff: India's long-awaited Cape Town Act, 2025"
+     },
+     {
+      "url": "https://www.freepressjournal.in/amp/india/aviation-working-group-downgrades-indias-rating-to-negative-amid-go-firsts-aircraft-repossession-legal-battle",
+      "label": "Free Press Journal, Aviation Working Group downgrades India's rating, Dec 2023"
+     },
+     {
+      "url": "https://www.unidroit.org/wp-content/uploads/2023/06/Cape-Town-Convention-aircraft-protocol-J.-Wool-26-June-2023.pdf",
+      "label": "UNIDROIT, Jeffrey Wool, The Cape Town Convention and Aircraft Protocol, Jun 2023"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "sortSignal",
+    "prompt": "Does each fact help or hurt your chance of getting jets back?",
+    "buckets": [
+     "Helps",
+     "Hurts"
+    ],
+    "items": [
+     {
+      "text": "India's 2025 Cape Town Act",
+      "bucket": 0
+     },
+     {
+      "text": "A two-month waiting period",
+      "bucket": 0
+     },
+     {
+      "text": "The Go First moratorium in 2023",
+      "bucket": 1
+     },
+     {
+      "text": "AWG cutting India's score to 50",
+      "bucket": 1
+     }
+    ],
+    "explanation": "The new law points the right way. The track record is why lessors will watch the first case under it."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "AWG cut India's compliance score from 63.5 to what?",
+    "min": 0,
+    "max": 80,
+    "value": 50,
+    "unit": "points",
+    "explanation": "From 63.5 to 50, in December 2023."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your credit committee asks whether to approve the ten-jet deal in India.",
+      "prompt": "What do you recommend?",
+      "options": [
+       "Reject India until another test case",
+       "Approve on the treaty alone, no extras",
+       "Approve, with filings and insurance"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "You may wait years and miss a market that fixed its law.",
+       "You ignore the Go First record.",
+       "You use the new law and still cover the gap."
+      ],
+      "explanation": "Use the new law, file first in the registry and insure the remaining risk."
+     },
+     "proReasoning": "Deal teams combine the legal fix with protection for what is still untested.",
+     "commonMistake": "Treating a new law as either useless or perfect.",
+     "mentalModel": "Trust the law, insure the gap."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A lessor tells investors it will grow fast in India after the 2025 Act.",
+      "prompt": "What evidence would reassure you?",
+      "options": [
+       "A first insolvency settled within the wait",
+       "A jump in its share price after the news",
+       "Opening a large new office in Mumbai"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "That would show courts apply the two-month rule.",
+       "Prices move for many reasons.",
+       "Offices do not prove enforcement."
+      ],
+      "explanation": "The law matters most the first time an airline fails under it."
+     },
+     "proReasoning": "Investors wait for the first real test of a new rule.",
+     "commonMistake": "Trusting a law before anyone has used it.",
+     "mentalModel": "The first case is the proof."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your startup files Cape Town registrations for lessors.",
+      "prompt": "Why does speed matter?",
+      "options": [
+       "Filing order does not matter",
+       "The first to file gets priority",
+       "Late filings are cheaper"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Order decides priority.",
+       "The registry ranks interests by filing order.",
+       "Cost is not the issue; priority is."
+      ],
+      "explanation": "In a first-to-file registry, a slow filing can cost a lender its place in line."
+     },
+     "proReasoning": "Founders sell speed where the rules reward being first.",
+     "commonMistake": "Treating registration as paperwork that can wait.",
+     "mentalModel": "First to file, first in line."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend asks why a treaty from 2001 needed a new Indian law in 2025.",
+      "prompt": "What's the answer?",
+      "options": [
+       "The treaty expired in 2024",
+       "India had never joined it",
+       "Local law had to give it force"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "The treaty did not expire.",
+       "India joined in 2008.",
+       "India joined in 2008 but lacked a local law."
+      ],
+      "explanation": "A treaty sets the rules, but each country has to make its courts follow them."
+     },
+     "proReasoning": "International rules still run through national courts.",
+     "commonMistake": "Thinking signing a treaty settles everything.",
+     "mentalModel": "Treaty plus local law."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:42de7321e484"
+  ]
+ },
+ {
+  "id": "143a0855-66a9-5298-9a00-2523033f6ed3",
+  "market_id": "aerospace",
+  "day": 60,
+  "slot": 1,
+  "content": {
+   "id": "aerospace-d60-c1",
+   "title": "Blackstone backs engine leasing",
+   "lessonTitle": "Selling the leases to investors",
+   "slot": 1,
+   "type": "apply",
+   "brief": {
+    "headline": "In January 2026, Willis Lease Finance and Blackstone's credit arm announced an engine leasing partnership. It expects to deploy more than $1 billion over two years.",
+    "kicker": "Apply day 60: private credit moves into leasing.",
+    "fullText": "Blackstone Credit & Insurance is expected to provide much of the credit for the partnership's deals. Willis Lease usually funds assets with 80% debt and 20% equity, according to its CFO.\n\nOn day 60 you saw new money arriving in aircraft leasing. Aviation ABS raised $9.95 billion in 2025, and Apollo and Brookfield funds co-invested in the purchase of Air Lease.\n\nOn day 56 you saw why engines draw that money: AerCap called spare engines exceptionally high in demand.",
+    "sources": [
+     {
+      "url": "https://asreport.americanbanker.com/news/wlfc-partners-with-blackstone-to-fuel-aircraft-leasing",
+      "label": "Asset Securitization Report, WLFC partners with Blackstone on aircraft leasing, Jan 2026"
+     },
+     {
+      "url": "https://airfreight.news/articles/full/aviation-abs-issuances-jump-85-in-volume-to-us9.9bn-in-2025",
+      "label": "Air Freight News, Aviation ABS issuance jumps 85% to $9.9bn in 2025 (IBA), Nov 2025"
+     },
+     {
+      "url": "https://finance.yahoo.com/news/aercap-q4-earnings-call-highlights-223338773.html",
+      "label": "Yahoo Finance, AerCap Q4 2025 earnings call highlights, Feb 2026"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "multipleChoice",
+    "prompt": "What does Blackstone mainly bring to the partnership?",
+    "options": [
+     "A network of engine repair shops",
+     "Much of the credit for its deals",
+     "Its own fleet of spare engines"
+    ],
+    "correctIndex": 1,
+    "explanation": "Blackstone is expected to provide much of the credit. Willis Lease brings the engine leasing business."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "Willis Lease usually funds assets with what percent debt?",
+    "min": 0,
+    "max": 100,
+    "value": 80,
+    "unit": "%",
+    "explanation": "80% debt and 20% equity, according to its CFO."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You're interviewing at a credit fund that wants to grow in aviation.",
+      "prompt": "Why might they like engine leasing?",
+      "options": [
+       "Airlines no longer use engines",
+       "Spare engines are in high demand",
+       "Engines never need overhauls"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Every jet needs engines.",
+       "AerCap called spare engines exceptionally high in demand.",
+       "Engines need regular shop visits."
+      ],
+      "explanation": "Demand for spares is what makes engine leasing attractive to new capital."
+     },
+     "proReasoning": "Candidates link a fund's interest to a real demand signal.",
+     "commonMistake": "Explaining an investment without the demand behind it.",
+     "mentalModel": "Money follows demand."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Engine leasing draws $1 billion of new private credit. You own shares in an engine lessor.",
+      "prompt": "What could this mean for you?",
+      "options": [
+       "Engine rents will surely double",
+       "No effect on the market",
+       "More competition for the same deals"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Nothing guarantees higher rents.",
+       "A billion dollars of capital moves a niche.",
+       "New capital chasing deals can push returns down."
+      ],
+      "explanation": "New money brings new bidders, which can raise asset prices and lower returns."
+     },
+     "proReasoning": "Investors ask what new capital does to future returns, not just to today's prices.",
+     "commonMistake": "Reading new money as only good news for incumbents.",
+     "mentalModel": "More money, more bidders."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your startup tracks the condition of leased engines for their owners.",
+      "prompt": "Who is a new customer for you?",
+      "options": [
+       "Credit funds now financing engines",
+       "Airlines buying new cabin seats",
+       "Airports planning new terminals"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "New lenders need to know what backs their loans.",
+       "Seats have nothing to do with engine condition.",
+       "Airports do not finance engines."
+      ],
+      "explanation": "New lenders know credit better than engines. Data on the collateral fills that gap."
+     },
+     "proReasoning": "Founders find the newcomers who lack the industry's own know-how.",
+     "commonMistake": "Selling only to experts who already have the data.",
+     "mentalModel": "New money needs new eyes."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend asks why a giant investment firm cares about jet engines.",
+      "prompt": "What's a good answer?",
+      "options": [
+       "It plans to launch its own airline",
+       "Leased engines earn steady, secured income",
+       "It wants to start building its own engines"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "It is lending, not flying.",
+       "That is the kind of income credit funds seek.",
+       "It finances engines; it does not build them."
+      ],
+      "explanation": "Leases backed by valuable engines look like secured lending, which credit funds know well."
+     },
+     "proReasoning": "Leasing looks like lending to investors, with a jet part as security.",
+     "commonMistake": "Thinking investors in engines want to run airlines.",
+     "mentalModel": "An engine lease is a secured loan in disguise."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:7fc40b77556e"
+  ]
+ },
+ {
+  "id": "7859b6ca-145c-57a7-8e59-53dbb24df7d4",
+  "market_id": "aerospace",
+  "day": 60,
+  "slot": 2,
+  "content": {
+   "id": "aerospace-d60-c2",
+   "title": "Who pays first when rent falls short",
+   "lessonTitle": "Selling the leases to investors",
+   "slot": 2,
+   "type": "connect",
+   "brief": {
+    "headline": "On day 13 you saw that a contract type decides who pays when costs run over. On day 60 you saw the ABS waterfall decide who loses first when lease income falls short.",
+    "kicker": "Connect day 13 and day 60: structure decides who carries the loss.",
+    "fullText": "On day 13 you saw that under a firm-fixed-price contract, the contractor takes maximum risk and full responsibility for costs.\n\nOn day 60 you saw the aircraft ABS waterfall. Lease income pays expenses first, then senior noteholders, then junior noteholders, and the residual holders last. If an airline delays payment or defaults, the money runs out at the bottom first.\n\nSenior note yields fell from an average of 6% in 2023 to 5% in 2025, the price of being paid first.",
+    "sources": [
+     {
+      "url": "https://www.acquisition.gov/far/16.202-1",
+      "label": "Federal Acquisition Regulation 16.202-1, firm-fixed-price contracts"
+     },
+     {
+      "url": "https://www.acumen.aero/blogs/aircraft-abs-explained-how-does-aircraft-backed-securitisation-work-",
+      "label": "Acumen Aviation, Aircraft ABS explained, Jul 2026"
+     },
+     {
+      "url": "https://airfreight.news/articles/full/aviation-abs-issuances-jump-85-in-volume-to-us9.9bn-in-2025",
+      "label": "Air Freight News, Aviation ABS issuance jumps 85% to $9.9bn in 2025 (IBA), Nov 2025"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "faceOff",
+    "prompt": "If lease income falls short, who is hit first?",
+    "left": {
+     "name": "Senior noteholders",
+     "note": "Paid right after expenses"
+    },
+    "right": {
+     "name": "Residual holders",
+     "note": "Paid last, after everyone else"
+    },
+    "correctIndex": 1,
+    "explanation": "The residual sits at the bottom of the waterfall, so it absorbs a shortfall first."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "Senior aviation ABS notes yielded about what percent on average in 2023?",
+    "min": 0,
+    "max": 15,
+    "value": 6,
+    "unit": "%",
+    "explanation": "About 6% in 2023, falling to 5% in 2025."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You're asked in an interview to explain the ABS waterfall simply.",
+      "prompt": "What's the best explanation?",
+      "options": [
+       "Everyone in the deal is paid equally",
+       "Junior notes are paid before seniors",
+       "Cash fills the top first, the bottom last"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "The order of payment is the whole point.",
+       "Seniors come before juniors.",
+       "Expenses, then senior, junior and residual, in order."
+      ],
+      "explanation": "A waterfall is a payment order. Whoever is paid last carries the most risk."
+     },
+     "proReasoning": "Clear candidates explain structure as an order of payment.",
+     "commonMistake": "Describing tranches without saying who is paid when.",
+     "mentalModel": "Paid last, risked most."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You can buy senior notes at about 5% or a residual slice with higher hoped-for returns.",
+      "prompt": "What are you really choosing?",
+      "options": [
+       "How much loss you take first",
+       "Which airline flies the jets",
+       "How fast the jets fly"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "The residual takes losses before the seniors do.",
+       "The airline mix is the same for both.",
+       "Speed has nothing to do with it."
+      ],
+      "explanation": "Same pool, different place in line. The yield pays you for where you stand."
+     },
+     "proReasoning": "Investors price their place in the waterfall, not just the pool.",
+     "commonMistake": "Comparing yields without comparing seniority.",
+     "mentalModel": "Yield is the price of your place in line."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your startup models ABS cash flows for investors.",
+      "prompt": "What must the model show?",
+      "options": [
+       "The airline's average ticket prices",
+       "Who gets paid when a lessee defaults",
+       "The cabin layout of each aircraft"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Ticket prices sit with the airline.",
+       "That is how each tranche feels a default.",
+       "Cabin layout does not drive payments."
+      ],
+      "explanation": "Investors buy the model to see how a default flows down the waterfall."
+     },
+     "proReasoning": "Founders model the stress case, because that is what investors pay for.",
+     "commonMistake": "Modeling only the case where every lessee pays.",
+     "mentalModel": "Show the bad day."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend asks what a defense contract and an aircraft bond have in common.",
+      "prompt": "What's the link?",
+      "options": [
+       "Both pay everything in cash upfront",
+       "Both are run by the same government agency",
+       "The structure decides who takes the loss"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Neither pays everything upfront.",
+       "Different worlds, different rules.",
+       "Fixed price and the waterfall both assign the loss."
+      ],
+      "explanation": "Contracts and bonds both decide in advance who pays when things go wrong."
+     },
+     "proReasoning": "Different deals, same question: who pays when it goes wrong?",
+     "commonMistake": "Treating structure as fine print.",
+     "mentalModel": "The structure is the risk."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:0674600b6e71"
+  ]
+ },
+ {
+  "id": "d8efd23e-0de5-52b5-9ba4-7acd9ff5705e",
+  "market_id": "aerospace",
+  "day": 60,
+  "slot": 3,
+  "content": {
+   "id": "aerospace-d60-c3",
+   "title": "Recycle the mid-life jets",
+   "lessonTitle": "Selling the leases to investors",
+   "slot": 3,
+   "type": "decide",
+   "brief": {
+    "headline": "You run a mid-size lessor with 20 mid-life narrowbodies on lease. You want capital for new orders. Mid-life narrowbodies were central to 2025 aviation ABS deals.",
+    "kicker": "Decide with day 60: should you sell the pool to bond investors?",
+    "fullText": "Aviation ABS raised $9.95 billion across 15 deals in 2025. Senior note yields fell to about 5%. Lessors use securitisation to refinance portfolios, recycle capital or support new purchases.\n\nInvestors look hard at the pool: airline credit, maintenance, residual value, remarketing and concentration in one airline, type or region. With weak disclosure, spreads widen quickly. The servicer's active management matters as much as the initial structure.\n\nThis is a scenario built on those facts.",
+    "sources": [
+     {
+      "url": "https://airfreight.news/articles/full/aviation-abs-issuances-jump-85-in-volume-to-us9.9bn-in-2025",
+      "label": "Air Freight News, Aviation ABS issuance jumps 85% to $9.9bn in 2025 (IBA), Nov 2025"
+     },
+     {
+      "url": "https://www.acumen.aero/blogs/aircraft-abs-explained-how-does-aircraft-backed-securitisation-work-",
+      "label": "Acumen Aviation, Aircraft ABS explained, Jul 2026"
+     },
+     {
+      "url": "https://www.acumen.aero/blogs/abs-and-capital-markets-a-return-to-structured-aviation-finance",
+      "label": "Acumen Aviation, ABS and capital markets: a return to structured aviation finance, Feb 2026"
+     }
+    ]
+   },
+   "evidence": {
+    "kind": "sortSignal",
+    "prompt": "Does each feature lower or raise the risk investors see?",
+    "buckets": [
+     "Lowers risk",
+     "Raises risk"
+    ],
+    "items": [
+     {
+      "text": "Leases spread across many airlines",
+      "bucket": 0
+     },
+     {
+      "text": "A servicer with a strong record",
+      "bucket": 0
+     },
+     {
+      "text": "Clear data on every aircraft",
+      "bucket": 0
+     },
+     {
+      "text": "Most jets with one airline",
+      "bucket": 1
+     },
+     {
+      "text": "Missing maintenance records",
+      "bucket": 1
+     }
+    ],
+    "explanation": "Diversity, servicing and disclosure calm investors. Concentration and poor records make them demand more."
+   },
+   "numbers": {
+    "kind": "numberSense",
+    "prompt": "How many aviation ABS deals priced in 2025?",
+    "min": 0,
+    "max": 40,
+    "value": 15,
+    "unit": "deals",
+    "explanation": "15 deals worth $9.95 billion, up from 10 deals in 2024."
+   },
+   "calls": {
+    "career": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your CEO asks how to make the 20-jet pool attractive to ABS investors.",
+      "prompt": "What do you prioritize?",
+      "options": [
+       "Clean records and a spread of lessees",
+       "Fresh paint and new seats on every jet",
+       "The lowest rents to keep lessees happy"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Disclosure and diversity narrow spreads.",
+       "Paint and seats do not change investor risk.",
+       "Low rents shrink the cash that pays the notes."
+      ],
+      "explanation": "Investors pay more for pools they can see clearly and that do not rely on one airline."
+     },
+     "proReasoning": "Capital markets teams prepare the pool long before the deal launches.",
+     "commonMistake": "Thinking structure alone wins over investors.",
+     "mentalModel": "A clean pool prices tighter."
+    },
+    "invest": {
+     "call": {
+      "kind": "theCall",
+      "situation": "You are offered senior notes in the 20-jet pool. Half the jets lease to one airline.",
+      "prompt": "What is your main concern?",
+      "options": [
+       "The seat count on each jet",
+       "Concentration in that one airline",
+       "The age of the cabin interiors"
+      ],
+      "correctIndex": 1,
+      "consequences": [
+       "Seat counts do not decide who pays.",
+       "One default could hit half the cash flow.",
+       "Cabins age, but they do not pay the notes."
+      ],
+      "explanation": "Concentration is one of the main ABS risks. One weak airline can sink a narrow pool."
+     },
+     "proReasoning": "Investors check concentration by airline, type and region before price.",
+     "commonMistake": "Looking only at the headline yield.",
+     "mentalModel": "Spread the risk or price it."
+    },
+    "build_startup": {
+     "call": {
+      "kind": "theCall",
+      "situation": "Your startup prepares data rooms for aircraft ABS deals.",
+      "prompt": "What is your pitch to the lessor?",
+      "options": [
+       "We repaint every jet before the sale",
+       "We help your airlines sell more tickets",
+       "Better disclosure can narrow your spreads"
+      ],
+      "correctIndex": 2,
+      "consequences": [
+       "Paint does not change the price of notes.",
+       "Ticket sales sit with the airlines.",
+       "Weak disclosure widens spreads quickly."
+      ],
+      "explanation": "If clearer data narrows spreads, the lessor saves money on every note it sells."
+     },
+     "proReasoning": "Founders tie their product to the customer's funding cost.",
+     "commonMistake": "Selling convenience when the buyer cares about price.",
+     "mentalModel": "Clearer data, cheaper money."
+    },
+    "curiosity": {
+     "call": {
+      "kind": "theCall",
+      "situation": "A friend asks why a lessor would sell rent from jets it still owns to bond investors.",
+      "prompt": "What's the reason?",
+      "options": [
+       "It frees capital to buy newer jets",
+       "It wants to get out of leasing",
+       "Bond investors take over flying the jets"
+      ],
+      "correctIndex": 0,
+      "consequences": [
+       "Securitisation recycles capital into new aircraft.",
+       "It keeps leasing, with fresh money.",
+       "Airlines keep flying the jets."
+      ],
+      "explanation": "The lessor turns future rent into cash today and puts it to work again."
+     },
+     "proReasoning": "Securitisation turns rent over years into money now.",
+     "commonMistake": "Thinking the jets change hands in the sky.",
+     "mentalModel": "Future rent, cash today."
+    }
+   }
+  },
+  "tags": [
+   "handwritten-v1",
+   "src:a9d1f7ac3d07"
+  ]
  }
 ];
 

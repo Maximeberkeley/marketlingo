@@ -498,6 +498,13 @@
       "when": 1794500000073,
       "tag": "0073_opening_gift",
       "breakpoints": true
+    },
+    {
+      "idx": 71,
+      "version": "7",
+      "when": 1794500000074,
+      "tag": "0074_aerospace_handwritten_days_31_60",
+      "breakpoints": true
     }
   ]
 }

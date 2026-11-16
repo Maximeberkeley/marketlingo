@@ -2,7 +2,6 @@
 import aerospace from './aerospace.ts';
 import ai from './ai.ts';
 import biotech from './biotech.ts';
-import fintech from './fintech.ts';
 
 /** The hand-written Deep Cases bundled with this function, by market, as deep_cases rows. */
-export const DEEP_CASES = { aerospace, ai, biotech, fintech };
+export const DEEP_CASES = { aerospace, ai, biotech };

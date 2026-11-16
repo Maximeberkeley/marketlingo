@@ -38,8 +38,8 @@ describe('load-handwritten-lessons ships the same lessons as the migrations', ()
     expect(execFileSync('python3', ['scripts/lessons/export_loader.py', '--check'], { encoding: 'utf8' })).toContain('up to date');
   }, 120000);
 
-  it('covers all eleven markets, row for row: same stack ids, titles, tags and slide counts', () => {
-    expect(MARKETS.length).toBe(11);
+  it('covers all twelve markets, row for row: same stack ids, titles, tags and slide counts', () => {
+    expect(MARKETS.length).toBe(12);
     for (const file of MIGRATIONS) {
       const market = marketOf(file);
       expect(fnOf(market), market).toBeTruthy();

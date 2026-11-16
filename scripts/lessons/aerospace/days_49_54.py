@@ -4,6 +4,7 @@
 # structures are days 55-60. Builds on day 2 (lessors), day 6 (the geared turbofan flaw) and day 8 (777X).
 # Every source below was opened and checked on November 16, 2026.
 SRC = {
+    'ge_10k_43': {'url': 'https://www.geaerospace.com/sites/default/files/geaerospace_10k_01292026.pdf', 'label': 'GE Aerospace, 2025 annual report on Form 10-K, Jan 2026'},
     'ry_fy26_49': {'url': 'https://corporate.ryanair.com/news/ryanair-2025-26-pat-rises-40-to-e2-26bn-pre-except-traffic-grows-4-to-208m-despite-boeing-delays/', 'label': 'Ryanair, FY26 results, May 2026'},
     'ry_ar26_49': {'url': 'https://investor.ryanair.com/wp-content/uploads/2026/06/Ryanair-2026-Annual-Report.pdf', 'label': 'Ryanair, 2026 Annual Report'},
     'frontier_q4_49': {'url': 'https://s21.q4cdn.com/257736825/files/doc_financials/2025/q4/Frontier-Airlines-Reports-Fourth-Quarter-2025-Financial-Results.pdf', 'label': 'Frontier Airlines, fourth quarter 2025 results, Feb 2026'},
@@ -48,9 +49,9 @@ LESSONS = [
             {'kind': 'multipleChoice', 'id': 'mc', 'prompt': "An appraiser wants a long-run price that ignores today's shortage. Which value fits?",
              'options': ['Market value', 'Base value', 'Scrap value'], 'correctIndex': 1,
              'explanation': 'Base value assumes a balanced market, so it smooths out a shortage. Market value is the price under conditions right now.'},
-            {'kind': 'multipleChoice', 'id': 'review', 'prompt': 'Week 7 review: engine makers can sell new engines near cost. Where does much of their profit come from?',
-             'options': ['Interest on loans to airlines', 'Fees charged for pilot training', 'Parts and service over the years'], 'correctIndex': 2,
-             'explanation': 'The aftermarket pays for decades. That same upkeep, done or not done, is what shifts a jet\'s value from the half-life starting point.'},
+            {'kind': 'multipleChoice', 'id': 'review', 'prompt': "Week 7 review: in 2025, what share of GE Aerospace's commercial engine revenue came from services?",
+             'options': ['About a quarter', 'About half', 'About three quarters'], 'correctIndex': 2,
+             'explanation': "Services brought $25.0 billion of $33.3 billion, 75%. That same upkeep, done or not done, is what shifts a jet's value from the half-life starting point.", 'sources': ['ge_10k_43']},
         ],
         'lenses': {
             'career': ('Ask who owns the fleet', 'Ask whether an airline owns or leases its jets. Owning means it carries what those jets will be worth later.', ['brodies_49', 'ry_ar26_49']),
