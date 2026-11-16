@@ -1408,7 +1408,7 @@ CASES = [
         'brief': {
             'headline': 'You run a mid-size lessor with 20 mid-life narrowbodies on lease. You want capital for new orders. Mid-life narrowbodies were central to 2025 aviation ABS deals.',
             'kicker': 'Decide with day 60: should you sell the pool to bond investors?',
-            'fullText': 'Aviation ABS raised $9.95 billion across 15 deals in 2025. Senior note yields fell to about 5%. Lessors use securitisation to refinance portfolios, recycle capital or support new purchases.\n\nInvestors look hard at the pool: airline credit, maintenance, residual value, remarketing and concentration in one airline, type or region. With weak disclosure, spreads widen quickly. The servicer\'s active management matters as much as the initial structure.\n\nThis is a scenario built on those facts.',
+            'fullText': 'Aviation ABS raised $9.95 billion across 15 deals by late November 2025. Senior A tranche yields fell to about 5%. Lessors use securitisation to refinance portfolios, recycle capital or support new purchases.\n\nInvestors look hard at the pool: airline credit, maintenance, residual value, remarketing and concentration in one airline, type or region. With weak disclosure, spreads widen quickly. The servicer\'s active management matters as much as the initial structure.\n\nThis is a scenario built on those facts.',
             'sources': ['afn_abs_55', 'acumen_abs_55', 'acumen_absmkt_55'],
         },
         'evidence': {

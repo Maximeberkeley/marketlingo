@@ -1408,7 +1408,7 @@ CASES = [
                 {'text': 'Engine pairs rent for about $400,000 a month', 'bucket': 0},
                 {'text': 'Almost 20 A320neos already sold for part-out', 'bucket': 0},
                 {'text': 'Values could fall once engines are fixed', 'bucket': 1},
-                {'text': 'High prices rest on the shortage', 'bucket': 1},
+                {'text': 'High prices are tied to the shortage', 'bucket': 1},
             ],
             'explanation': 'Today\'s demand supports buying. The risk is that the shortage behind it ends.',
         },

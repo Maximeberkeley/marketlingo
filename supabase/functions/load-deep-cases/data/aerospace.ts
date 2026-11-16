@@ -21919,7 +21919,7 @@ const rows: unknown[] = [
     "prompt": "Why are GE and Safran adding LEAP shop capacity now?",
     "options": [
      "Airlines are retiring their LEAPs",
-     "Shop visits are set to multiply",
+     "IATA expects shop visits to multiply",
      "LEAP production is ending"
     ],
     "correctIndex": 1,
@@ -22027,7 +22027,7 @@ const rows: unknown[] = [
   },
   "tags": [
    "handwritten-v1",
-   "src:2937db7e4af6"
+   "src:b58a4f6c2d17"
   ]
  },
  {
@@ -22137,7 +22137,7 @@ const rows: unknown[] = [
        "LEAP visits alone rise to over 5,000 a year by 2040.",
        "A real limit, but a different market."
       ],
-      "explanation": "Shop visits for new single-aisle engines are set to multiply. That bottleneck is growing."
+      "explanation": "IATA expects shop visits for new single-aisle engines to multiply. That bottleneck is growing."
      },
      "proReasoning": "Founders aim at the bottleneck that is growing, not the one being fixed.",
      "commonMistake": "Building for the bottleneck everyone is already solving.",
@@ -22169,7 +22169,7 @@ const rows: unknown[] = [
   },
   "tags": [
    "handwritten-v1",
-   "src:ba43a301bdf1"
+   "src:bb037b4b8b0b"
   ]
  },
  {
@@ -22237,7 +22237,7 @@ const rows: unknown[] = [
       "consequences": [
        "About 45,000 mechanics will retire in the next decade.",
        "Two-thirds of shops find hiring hard.",
-       "Shop visits are set to multiply."
+       "IATA expects shop visits to multiply."
       ],
       "explanation": "Retirements and rising shop visits point to strong demand for certified mechanics."
      },
@@ -22259,7 +22259,7 @@ const rows: unknown[] = [
       "consequences": [
        "Labor rates are rising 5.5 to 6.0% a year.",
        "Two-thirds of shops find hiring hard.",
-       "LEAP visits are set to multiply."
+       "IATA expects LEAP visits to multiply."
       ],
       "explanation": "Demand is there. People to do the work are the constraint."
      },
@@ -22315,7 +22315,7 @@ const rows: unknown[] = [
   },
   "tags": [
    "handwritten-v1",
-   "src:4792580321d1"
+   "src:d7251791b451"
   ]
  },
  {
@@ -24899,7 +24899,7 @@ const rows: unknown[] = [
       "bucket": 1
      },
      {
-      "text": "High prices rest on the shortage",
+      "text": "High prices are tied to the shortage",
       "bucket": 1
      }
     ],
@@ -25007,7 +25007,7 @@ const rows: unknown[] = [
   },
   "tags": [
    "handwritten-v1",
-   "src:85a745c355bc"
+   "src:a78ea16de6cd"
   ]
  },
  {
@@ -27567,7 +27567,7 @@ const rows: unknown[] = [
    "brief": {
     "headline": "You run a mid-size lessor with 20 mid-life narrowbodies on lease. You want capital for new orders. Mid-life narrowbodies were central to 2025 aviation ABS deals.",
     "kicker": "Decide with day 60: should you sell the pool to bond investors?",
-    "fullText": "Aviation ABS raised $9.95 billion across 15 deals in 2025. Senior note yields fell to about 5%. Lessors use securitisation to refinance portfolios, recycle capital or support new purchases.\n\nInvestors look hard at the pool: airline credit, maintenance, residual value, remarketing and concentration in one airline, type or region. With weak disclosure, spreads widen quickly. The servicer's active management matters as much as the initial structure.\n\nThis is a scenario built on those facts.",
+    "fullText": "Aviation ABS raised $9.95 billion across 15 deals by late November 2025. Senior A tranche yields fell to about 5%. Lessors use securitisation to refinance portfolios, recycle capital or support new purchases.\n\nInvestors look hard at the pool: airline credit, maintenance, residual value, remarketing and concentration in one airline, type or region. With weak disclosure, spreads widen quickly. The servicer's active management matters as much as the initial structure.\n\nThis is a scenario built on those facts.",
     "sources": [
      {
       "url": "https://airfreight.news/articles/full/aviation-abs-issuances-jump-85-in-volume-to-us9.9bn-in-2025",
@@ -27716,7 +27716,7 @@ const rows: unknown[] = [
   },
   "tags": [
    "handwritten-v1",
-   "src:a9d1f7ac3d07"
+   "src:5cb396085374"
   ]
  }
 ];

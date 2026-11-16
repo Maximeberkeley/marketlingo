@@ -123,7 +123,7 @@ LESSONS = [
             'build_startup': ('Overhaul capacity is scarce', 'Emirates had 28 engines waiting for overhaul in July 2026. Anything that speeds engine repair has a buyer.', ['natl_clark_37']),
             'curiosity': ('Why airlines switch engines', 'Air New Zealand bought its next 787s with GE engines after trouble with Rolls-Royce. It could, because the 787 offers both.', ['anz_787_37']),
         },
-        'rule': ('In widebodies, the buyer has bargaining power only where a second engine maker exists.', ['anz_787_37', 'rr_xwb_37']),
+        'rule': ('In widebodies, a second engine maker gives the buyer more bargaining power.', ['anz_787_37', 'rr_xwb_37']),
         'takeaway': 'The A350 flies only with Rolls-Royce engines and the 777X only with GE. On the 787, Air New Zealand could take its next order to GE after Trent 1000 trouble, and that choice is the buyer\'s power.',
     },
     {
@@ -163,12 +163,12 @@ LESSONS = [
         'day': 41, 'facet': 'rules', 'title': 'Sixty minutes from an airport',
         'open': {
             'eyebrow': 'Day 41 · The rules', 'kicker': 'A twin needs approval to fly far from land.',
-            'headline': "In October 2014, Europe's regulator approved the A350-900 to fly up to 370 minutes from a diversion airport on one engine.",
+            'headline': "In October 2014, EASA approved the A350-900 for ETOPS beyond 180 minutes, with an option for about 370 minutes of diversion time on one engine.",
             'fullText': 'That option stretched the diversion distance to as much as 2,500 nautical miles. The basic A350 came with 180 minutes, and airlines could choose 300 or 370. Without such approval, US rules keep a twin-engine airliner within 60 minutes of an adequate airport, flying on one engine. The approval is called ETOPS.',
             'sources': ['avtoday_a350_37', 'cfr_121161_37'],
         },
         'cards': [
-            {'kind': 'microInsight', 'id': 'base', 'eyebrow': 'The baseline', 'text': 'Under US rules, a twin-engine airliner must stay within 60 minutes of an adequate airport. The time is flown at one-engine-out cruise speed.', 'highlight': 'Going farther takes ETOPS approval.', 'keyTerms': [{'term': 'ETOPS', 'definition': 'Extended operations: approval to fly routes more than an hour from an adequate airport.'}], 'sources': ['cfr_121161_37', 'boeing_gloss_37']},
+            {'kind': 'microInsight', 'id': 'base', 'eyebrow': 'The baseline', 'text': 'Under US rules, a twin-engine airliner must stay within 60 minutes of an adequate airport. The time is flown at one-engine-out cruise speed.', 'highlight': 'Going farther takes ETOPS approval.', 'keyTerms': [{'term': 'ETOPS', 'definition': 'Extended operations: approval for a twin to fly routes more than 60 minutes from an adequate airport on one engine.'}], 'sources': ['cfr_121161_37', 'boeing_gloss_37']},
             {'kind': 'microInsight', 'id': 'two', 'eyebrow': 'Two approvals', 'text': 'The airplane and engine combination must be approved for ETOPS. The airline itself must be approved too.', 'highlight': 'An approved plane alone does not let an airline fly the route.', 'sources': ['faa_etops_37']},
             {'kind': 'info', 'id': 'steps', 'eyebrow': 'The steps', 'title': 'Minutes are approved in steps', 'body': 'FAA guidance groups twin-engine ETOPS up to 120 minutes, up to 180, and beyond 180. The North Pacific allows 207 minutes.', 'bullets': ['Historically, 120-minute ETOPS required 12 months of in-service experience.', 'Accelerated approval lets an airline start without that experience.'], 'sources': ['faa_etops_37']},
         ],
@@ -195,7 +195,7 @@ LESSONS = [
         'open': {
             'eyebrow': 'Day 42 · Where it breaks', 'kicker': 'The line between short and long haul is moving.',
             'headline': 'Cirium counted about 56,500 transatlantic narrow-body flights scheduled for 2025, up 50% from 2019.',
-            'fullText': 'JetBlue, Aer Lingus, Iberia and TAP are among the airlines flying single-aisle jets across the ocean. Business Insider noted that narrow-bodies cost less to operate and are easier to fill on lower-demand routes. Airbus says its A321XLR burns 30% less fuel per seat than previous generation competitors. The old split, narrow-bodies short and widebodies long, no longer holds.',
+            'fullText': 'JetBlue, Aer Lingus, Iberia and TAP are among the airlines flying single-aisle jets across the ocean. Business Insider noted that narrow-bodies cost less to operate and are easier to fill on lower-demand routes. Airbus says its A321XLR burns 30% less fuel per seat than previous generation competitors. Single-aisle jets now fly some long routes too.',
             'sources': ['bi_transat_37', 'airbus_xlr_tc_37'],
         },
         'cards': [

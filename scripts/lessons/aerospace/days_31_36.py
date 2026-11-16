@@ -100,7 +100,7 @@ LESSONS = [
         'day': 33, 'facet': 'power', 'title': 'How the third seller vanished',
         'open': {
             'eyebrow': 'Day 33 · The power', 'kicker': 'A challenger ended up inside the duopoly.',
-            'headline': "In October 2017, Airbus took a 50.01% stake in Bombardier's CSeries jet program without paying any cash.",
+            'headline': "In October 2017, Airbus agreed to take a 50.01% stake in Bombardier's CSeries jet program without paying any cash.",
             'fullText': 'The CSeries seated 110 to 130 passengers, and Delta had ordered 75. Boeing accused Bombardier of selling them at absurdly low prices, and the US Commerce Department proposed duties of 292%. Airbus offered to assemble the jets in Alabama, outside those duties. In January 2018, the US International Trade Commission ruled unanimously against Boeing. The CSeries now flies as the Airbus A220.',
             'sources': ['cnbc_cseries_31', 'avweb_itc_31', 'cnbc_embraer_31'],
         },
@@ -110,7 +110,7 @@ LESSONS = [
             {'kind': 'info', 'id': 'trade', 'eyebrow': 'Another lever', 'title': 'Trade law as a weapon', 'body': 'Boeing used a US trade complaint to fight the CSeries. Commerce proposed 292% duties, but the trade commission voted against Boeing.', 'bullets': ['Building the jets in Alabama was Airbus\'s answer to the duties.'], 'sources': ['avweb_itc_31', 'cnbc_cseries_31']},
         ],
         'checks': [
-            {'kind': 'buildChain', 'id': 'chain', 'prompt': 'Put the CSeries story in order.', 'steps': ['Boeing alleges absurdly low prices', 'Commerce proposes 292% duties', 'Airbus takes a 50.01% stake', 'The trade commission rules against Boeing', 'The jet flies as the Airbus A220'],
+            {'kind': 'buildChain', 'id': 'chain', 'prompt': 'Put the CSeries story in order.', 'steps': ['Boeing alleges absurdly low prices', 'Commerce proposes 292% duties', 'Airbus agrees to a 50.01% stake', 'The trade commission rules against Boeing', 'The jet flies as the Airbus A220'],
              'explanation': 'The duties pushed Bombardier toward Airbus. The ruling came after the deal, and the jet now carries the Airbus name.'},
             {'kind': 'faceOff', 'id': 'face', 'prompt': 'Which takeover of a smaller rival went through?',
              'left': {'name': 'Boeing and Embraer', 'note': '80% of the commercial jet unit'}, 'right': {'name': 'Airbus and the CSeries', 'note': '50.01% of the program'}, 'correctIndex': 1,
@@ -126,7 +126,7 @@ LESSONS = [
             'build_startup': ('A challenger needs a channel', 'The CSeries was a new jet, yet it turned to Airbus once US duties loomed. Plan how you will build and sell at scale, not only what you build.', ['cnbc_cseries_31', 'avweb_itc_31']),
             'curiosity': ('The A220 began as a Canadian jet', 'If you fly on an Airbus A220, you are on the jet Bombardier first built as the CSeries.', ['cnbc_embraer_31', 'cnbc_cseries_31']),
         },
-        'rule': ('In a duopoly, the two giants keep their power by absorbing or blocking the third seller.', ['cnbc_cseries_31', 'cnbc_embraer_31', 'avweb_itc_31']),
+        'rule': ('In this duopoly, both giants moved to absorb a third seller, and only Airbus closed its deal.', ['cnbc_cseries_31', 'cnbc_embraer_31', 'avweb_itc_31']),
         'takeaway': 'Airbus took control of the CSeries in 2017, and Boeing tried to buy Embraer\'s jets in 2018. The two giants compete hard on price, but both moved to absorb or block a third seller.',
     },
     {
@@ -138,7 +138,7 @@ LESSONS = [
             'sources': ['enca_backlog_31', 'boeing_10k_31'],
         },
         'cards': [
-            {'kind': 'microInsight', 'id': 'unfilled', 'eyebrow': 'Two counts', 'text': 'Unfilled orders count every firm order not yet delivered. The ASC 606 backlog drops the deals unlikely to close.', 'highlight': 'Purchase options and announced orders count in neither.', 'keyTerms': [{'term': 'ASC 606', 'definition': 'The US accounting standard Boeing applies when deciding which orders count in backlog.'}], 'sources': ['boeing_10k_31', 'fg_777x_31', 'enca_backlog_31']},
+            {'kind': 'microInsight', 'id': 'unfilled', 'eyebrow': 'Two counts', 'text': 'Unfilled orders count every firm order not yet delivered. The ASC 606 backlog drops the deals unlikely to close.', 'highlight': 'Purchase options count in neither.', 'keyTerms': [{'term': 'ASC 606', 'definition': 'The US revenue standard whose contract tests decide which Boeing orders count in backlog.'}], 'sources': ['boeing_10k_31', 'fg_777x_31', 'enca_backlog_31']},
             {'kind': 'microInsight', 'id': 'net', 'eyebrow': 'Gross and net', 'text': 'Gross orders count every new sale. Net orders subtract the cancellations.', 'highlight': 'From January to September 2026, Airbus booked 1,174 gross orders and 1,105 net.', 'sources': ['airbus_9m26_31']},
             {'kind': 'info', 'id': 'risk', 'eyebrow': 'Why it matters', 'title': 'The adjustment tracks risk', 'body': 'Boeing weighs whether a buyer is committed and can pay, plus sanctions. An order can stay unfilled yet leave the backlog.', 'bullets': ['In 2025, these adjustments mainly involved the 777X and 787.'], 'sources': ['boeing_10k_31']},
         ],
@@ -155,7 +155,7 @@ LESSONS = [
         'lenses': {
             'career': ('Ask which backlog number', 'Boeing had 6,720 unfilled orders but 6,130 in backlog at the end of 2025. Asking which count someone means shows you know the accounting.', ['enca_backlog_31']),
             'invest': ('Use the adjusted figure', 'The ASC 606 backlog drops orders unlikely to close. It is the more cautious count of future revenue.', ['boeing_10k_31', 'fg_777x_31']),
-            'build_startup': ('Plan around firm orders', "Options and announced orders are not in Boeing's backlog. Size your supply plans on the orders that count.", ['boeing_10k_31']),
+            'build_startup': ('Plan around firm orders', "Purchase options are not in Boeing's backlog. Size your supply plans on the orders that count.", ['boeing_10k_31']),
             'curiosity': ('An order is not always a sale', 'Boeing left 590 ordered airplanes out of its backlog at the end of 2025. An order can be signed and still be doubted.', ['enca_backlog_31']),
         },
         'rule': ('In backlog numbers, count only the orders likely to become deliveries.', ['boeing_10k_31', 'enca_backlog_31']),

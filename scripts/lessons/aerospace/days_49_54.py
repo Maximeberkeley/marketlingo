@@ -125,7 +125,7 @@ LESSONS = [
             'build_startup': ('Spare jets are a market', 'Frontier had jets to spare while others were short. Matching spare aircraft with airlines that need them is real work.', ['frontier_aercap_49', 'iata_dec25_49']),
             'curiosity': ('Giving a plane back early', 'Frontier handed back 24 jets years before their leases ended. The owner wanted them, to lease them again.', ['frontier_aercap_49', 'ag_frontier_49']),
         },
-        'rule': ('In a shortage, the side that holds the jets sets the terms.', ['iata_dec25_49', 'frontier_aercap_49']),
+        'rule': ('In a shortage, the side that holds the jets has the stronger hand, but leaving early still costs.', ['iata_dec25_49', 'frontier_aercap_49']),
         'takeaway': 'With a delivery shortfall of 5,300 jets or more, owners hold the stronger hand. Frontier still paid $209 million to hand 24 jets back early, and AerCap took them to place elsewhere.',
     },
     {
@@ -169,7 +169,7 @@ LESSONS = [
             'sources': ['iag_fy19_49', 'ey_ifrs16_49'],
         },
         'cards': [
-            {'kind': 'microInsight', 'id': 'ifrs16', 'eyebrow': 'IFRS 16', 'text': 'Since 2019, IFRS 16 puts most leases on the balance sheet. The airline records a right-of-use asset and a lease liability.', 'highlight': 'Leases under 12 months with no purchase option can stay off.', 'keyTerms': [{'term': 'Right-of-use asset', 'definition': "A lessee's right to use a leased asset, recorded on its balance sheet."}], 'sources': ['ey_ifrs16_49']},
+            {'kind': 'microInsight', 'id': 'ifrs16', 'eyebrow': 'IFRS 16', 'text': 'Since 2019, IFRS 16 puts most leases on the balance sheet. The airline records a right-of-use asset and a lease liability.', 'highlight': 'Leases of 12 months or less with no purchase option, and low-value assets, can stay off.', 'keyTerms': [{'term': 'Right-of-use asset', 'definition': "A lessee's right to use a leased asset, recorded on its balance sheet."}], 'sources': ['ey_ifrs16_49']},
             {'kind': 'microInsight', 'id': 'ias16', 'eyebrow': 'The yearly check', 'text': 'Under IAS 16, residual value and useful life must be reviewed at least at each financial year-end.', 'highlight': "Residual value means today's price for an asset as old as it will be at the end.", 'sources': ['bdo_ias16_49']},
             {'kind': 'info', 'id': 'compare', 'eyebrow': 'Why it matters', 'title': 'Leasing no longer hides the debt', 'body': 'In airlines, retail and transport, liabilities rose by more than 20% on average under IFRS 16. Before, some airlines added a multiple of lease costs to net debt.', 'bullets': ['Under IFRS 16, lessees no longer split leases into operating and finance.'], 'sources': ['ey_ifrs16_49']},
         ],
@@ -205,7 +205,7 @@ LESSONS = [
         'cards': [
             {'kind': 'microInsight', 'id': 'engines', 'eyebrow': 'Where the value sits', 'text': 'Some engine pairs are now worth more to their owners than the jets they power. Almost 20 A320neos had been sold for part-out by February 2026.', 'highlight': 'A pair of serviceable geared turbofans rented for about $400,000 a month in 2026.', 'keyTerms': [{'term': 'Part-out', 'definition': 'Taking an aircraft apart to sell its engines and parts separately.'}], 'sources': ['avw_neo_49', 'avm_spirit_49']},
             {'kind': 'microInsight', 'id': 'first', 'eyebrow': 'Engines first', 'text': 'Lessors that took back ex-Spirit A320neos leased some of the engines out. The airframes waited on the ground.', 'highlight': "Aircastle's four did not expect to fly again until around mid-2027.", 'sources': ['avm_spirit_49']},
-            {'kind': 'info', 'id': 'risk', 'eyebrow': 'The open question', 'title': 'Values could fall when engines are fixed', 'body': 'An industry chief warned values and lease rates could fall once engine problems are solved. High engine prices rest on the shortage.', 'bullets': ['The two torn-down jets had been delivered new in late 2021 and mid-2022.'], 'sources': ['avw_neo_49', 'flight_neo_49']},
+            {'kind': 'info', 'id': 'risk', 'eyebrow': 'The open question', 'title': 'Values could fall when engines are fixed', 'body': 'An industry chief warned values and lease rates could fall once engine problems are solved. He tied high engine prices to the shortage.', 'bullets': ['The two torn-down jets had been delivered new in late 2021 and mid-2022.'], 'sources': ['avw_neo_49', 'flight_neo_49']},
         ],
         'checks': [
             {'kind': 'buildChain', 'id': 'chain', 'prompt': 'Follow how a young jet ends up in pieces.', 'steps': ['Engine problems ground many A320neos', 'Spare engines and parts run short', 'Engines and parts earn more than the whole jet', 'Young airframes are taken apart for spares'],

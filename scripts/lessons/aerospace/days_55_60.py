@@ -129,7 +129,7 @@ LESSONS = [
             'build_startup': ('Know who holds the slots', 'SMBC said its Airbus order gives airlines a continuous delivery pipeline. Whoever holds the slots shapes who gets jets.', ['ag_smbc_55']),
             'curiosity': ('A landlord with the keys', 'Spirit flew jets it did not own. When AerCap pulled the leases, Spirit faced losing much of its fleet.', ['examiner_spirit_55']),
         },
-        'rule': ('In a shortage, power sits with whoever owns the jets.', ['examiner_spirit_55', 'yahoo_aercap_55']),
+        'rule': ('In a shortage, owning the jets gives a lessor leverage over its airlines.', ['examiner_spirit_55', 'yahoo_aercap_55']),
         'takeaway': 'Lessors hold factory slots and the jets airlines need. AerCap pulled 36 future leases from Spirit in 2025, and with new jets scarce its lease extension rate hit 87%.',
     },
     {
@@ -201,8 +201,8 @@ LESSONS = [
         'day': 60, 'facet': 'frontier', 'title': 'Selling the leases to investors',
         'open': {
             'eyebrow': 'Day 60 · What comes next', 'kicker': 'Lessors now sell slices of their fleets to investors.',
-            'headline': 'In 2025, aviation asset-backed securities raised $9.95 billion across 15 deals, up 85% from 2024.',
-            'fullText': 'IBA called it the strongest year since 17 deals in 2019. In an aircraft ABS, a pool of leased jets sits in a separate company, and the rent pays investors who bought its notes. Yields on the senior notes fell from an average of 6% in 2023 to 5% in 2025. Lessors use the money to recycle capital into new aircraft.',
+            'headline': 'By late November 2025, aviation asset-backed securities had raised $9.95 billion across 15 deals, up 85% on 2024.',
+            'fullText': 'IBA called it the strongest year since 17 deals in 2019. In an aircraft ABS, a pool of leased jets sits in a separate company, and the rent pays investors who bought its notes. Yields on the senior A tranche fell from an average of 6% in 2023 to 5% in 2025. Lessors use the money to recycle capital into new aircraft.',
             'sources': ['afn_abs_55', 'acumen_abs_55'],
         },
         'cards': [
@@ -212,7 +212,7 @@ LESSONS = [
         ],
         'checks': [
             {'kind': 'spotFake', 'id': 'fake', 'prompt': 'One of these is false. Tap it.',
-             'statements': ['Aviation ABS raised $9.95 billion in 2025.', 'Senior noteholders are paid after junior ones.', 'Senior note yields averaged about 5% in 2025.'], 'fakeIndex': 1,
+             'statements': ['Aviation ABS raised $9.95 billion by late November 2025.', 'Senior noteholders are paid after junior ones.', 'Senior A tranche yields averaged about 5% in 2025.'], 'fakeIndex': 1,
              'explanation': 'Senior notes are paid first. That is why they carry less risk and earn less.'},
             {'kind': 'numberSense', 'id': 'ns-abs', 'prompt': 'By what percent did aviation ABS issuance grow from 2024 to 2025?', 'min': 0, 'max': 200, 'value': 85, 'unit': '%',
              'explanation': 'From $5.38 billion in 10 deals to $9.95 billion in 15, up 85%.'},
@@ -225,9 +225,9 @@ LESSONS = [
             'career': ('Have a view on the new money', 'ABS and big investment firms put more money into aviation in 2025 and 2026. Say whether you think it stays when the shortage ends, and why.', ['afn_abs_55', 'bw_alc_close_55']),
             'invest': ('Check the servicer', 'ABS results depend on active management of leases, transitions and remarketing. Ask who services the pool before you buy the notes.', ['acumen_abs_55']),
             'build_startup': ('Clear data narrows spreads', 'With weak disclosure, ABS spreads widen quickly. Ask issuers whether better pool data would cut their funding cost.', ['acumen_absmkt_55']),
-            'curiosity': ('Your flight, in a bond', 'The jet you board may sit in a pool whose rent pays bond investors. Aviation ABS raised $9.95 billion in 2025.', ['afn_abs_55', 'acumen_abs_55']),
+            'curiosity': ('Your flight, in a bond', 'The jet you board may sit in a pool whose rent pays bond investors. Aviation ABS raised $9.95 billion by late November 2025.', ['afn_abs_55', 'acumen_abs_55']),
         },
         'rule': ('In leasing, new money arrives when jets are scarce; test it for when they are not.', ['afn_abs_55', 'acumen_abs_55']),
-        'takeaway': 'Aviation ABS raised $9.95 billion in 2025, up 85%, and firms like Apollo, Brookfield and Blackstone moved into leasing. The bet rests on scarce jets, and ABS investors carry the risk if rents and values fall.',
+        'takeaway': 'Aviation ABS raised $9.95 billion by late November 2025, up 85%, and firms like Apollo, Brookfield and Blackstone moved into leasing. The bet rests on scarce jets, and ABS investors carry the risk if rents and values fall.',
     },
 ]
