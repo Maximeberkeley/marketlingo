@@ -30,7 +30,7 @@ import { StreakSheet } from "../components/social/StreakSheet";
 import { RaceCard } from "../components/social/RaceCard";
 import { FriendPicker } from "../components/social/FriendPicker";
 import { RewardCelebration } from "../components/social/RewardCelebration";
-import { firstName, raceIsOver } from "../lib/friendSocial";
+import { firstName, raceIsOver, visibleRaces } from "../lib/friendSocial";
 import { FriendSheet } from "../components/social/FriendSheet";
 import { NudgeSheet } from "../components/social/NudgeSheet";
 import { FindFriendsSheet } from "../components/social/FindFriendsSheet";
@@ -306,7 +306,7 @@ function FriendsScreen() {
     }
   };
   const streaks = social.social?.streaks ?? [];
-  const races = social.social?.races ?? [];
+  const races = visibleRaces(social.social?.races ?? []);
   const openStreak = streaks.find((s) => s.id === openStreakId) ?? null;
   const isNudged = (friendId, nudgedToday = false) => nudgedToday || nudgedIds.has(friendId) || !!friends.find((f) => f.id === friendId)?.nudgedToday;
   const nudgeStateFor = (friendId, nudgedToday) => isNudged(friendId, nudgedToday) ? "nudged" : "idle";
