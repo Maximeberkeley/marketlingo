@@ -17,7 +17,7 @@ builder that turns them into one migration per industry.
 
 | Market | Migration | Days done | Cases |
 |---|---|---|---|
-| aerospace | `0038_aerospace_deep_cases.sql` | 1-30 | 90 of 90 |
+| aerospace | `0038_aerospace_deep_cases.sql` | 1-60 | 180 of 180 |
 | ai | `0039_ai_deep_cases.sql` | 1-60 | 180 of 180 |
 | biotech | `0040_biotech_deep_cases.sql` | 1-30 | 90 of 90 |
 | fintech | `0041_fintech_deep_cases.sql` | 1-30 | 90 of 90 |
@@ -65,7 +65,7 @@ Every case is built on the lesson of its day, so read the lesson first.
   - every source URL, with its label at the bottom.
   - It covers days 1-30 for aerospace, ai, biotech, fintech and neuroscience, and days 1-5 for the ten newer
     industries.
-- For days 6-30 of the ten newer industries and days 31-60 of ai, read the lesson source directly:
+- For days 6-30 of the ten newer industries and days 31-60 of ai and aerospace, read the lesson source directly:
   `scripts/lessons/<market>/days_*.py`.
 
 ## What a day needs

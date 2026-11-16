@@ -77,3 +77,6 @@ verify_jwt = false
 
 [functions.load-handwritten-lessons-3]
 verify_jwt = false
+
+[functions.load-handwritten-lessons-4]
+verify_jwt = false
