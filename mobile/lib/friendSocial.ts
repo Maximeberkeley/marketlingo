@@ -189,6 +189,22 @@ export function raceIsOver(r: Pick<FriendRace, 'status' | 'ends_at'>, now = new 
 }
 
 /**
+ * The races worth a card: a finished race leaves once its reward is collected and either a newer race with the
+ * same friend has started (the rematch is on) or it ended more than a day ago (the rematch offer had its chance).
+ * Uncollected rewards always stay.
+ */
+export function visibleRaces(races: FriendRace[], now = new Date()): FriendRace[] {
+  const DAY = 24 * 60 * 60 * 1000;
+  const started = (r: FriendRace) => Date.parse(r.starts_at ?? r.ends_at ?? '') || 0;
+  return races.filter(r => {
+    if (!raceIsOver(r, now) || !r.claimed) return true;
+    const newer = races.some(o => o.id !== r.id && o.friend_id === r.friend_id && !raceIsOver(o, now) && (o.status === 'pending' || started(o) >= started(r)));
+    const ended = Date.parse(r.ends_at ?? '') || 0;
+    return !newer && now.getTime() - ended < DAY;
+  });
+}
+
+/**
  * The one social line for the Home chip, most urgent first: a reward to
  * collect, a friend streak waiting on you, an invite to answer, a race in
  * progress. Null when there is nothing to say.

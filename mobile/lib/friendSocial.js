@@ -122,6 +122,16 @@ function timeLeft(endsAt, now = /* @__PURE__ */ new Date()) {
 function raceIsOver(r, now = /* @__PURE__ */ new Date()) {
   return r.status === "finished" || r.status === "active" && !!r.ends_at && new Date(r.ends_at).getTime() <= now.getTime();
 }
+function visibleRaces(races, now = /* @__PURE__ */ new Date()) {
+  const DAY = 24 * 60 * 60 * 1e3;
+  const started = (r) => Date.parse(r.starts_at ?? r.ends_at ?? "") || 0;
+  return races.filter((r) => {
+    if (!raceIsOver(r, now) || !r.claimed) return true;
+    const newer = races.some((o) => o.id !== r.id && o.friend_id === r.friend_id && !raceIsOver(o, now) && (o.status === "pending" || started(o) >= started(r)));
+    const ended = Date.parse(r.ends_at ?? "") || 0;
+    return !newer && now.getTime() - ended < DAY;
+  });
+}
 const xpGap = (n) => n.toLocaleString("en-US");
 function homeSocialLine(social, now = /* @__PURE__ */ new Date()) {
   if (!social) return null;
@@ -168,5 +178,6 @@ export {
   raceShare,
   streakToday,
   streakTodayLine,
-  timeLeft
+  timeLeft,
+  visibleRaces
 };
