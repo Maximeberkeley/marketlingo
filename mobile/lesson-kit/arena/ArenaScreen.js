@@ -83,6 +83,10 @@ function ArenaScreen({ waves, marketId, marketName, bestScore, onExit, onFinish,
   const tickRef = useRef(null);
   const scrollRef = useRef(null);
   const revealCorrect = useRevealCorrect(scrollRef);
+  const dragKind = exercise?.kind === "sortSignal";
+  useEffect(() => {
+    if (dragKind) scrollRef.current?.scrollTo({ y: 0, animated: false });
+  }, [dragKind, exercise?.id]);
   const clearTick = useCallback(() => {
     if (tickRef.current) {
       clearInterval(tickRef.current);
@@ -341,7 +345,8 @@ function ArenaScreen({ waves, marketId, marketName, bestScore, onExit, onFinish,
       scrollEventThrottle: 16,
       contentContainerStyle: styles.body,
       showsVerticalScrollIndicator: false,
-      keyboardShouldPersistTaps: "handled"
+      keyboardShouldPersistTaps: "handled",
+      scrollEnabled: !dragKind
     },
     !showWaveIntro ? /* @__PURE__ */ React.createElement(RevealCorrectProvider, { value: revealCorrect.reveal }, (!!exercise.leo?.line || !!ARENA_IDLE_LINES[exercise.kind] || phase === "feedback" && !isPassiveKind(exercise.kind)) && /* @__PURE__ */ React.createElement(
       LeoCoach,

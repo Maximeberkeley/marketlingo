@@ -132,6 +132,9 @@ export function ArenaScreen({ waves, marketId, marketName, bestScore, onExit, on
   const tickRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const scrollRef = useRef<ScrollView>(null);
   const revealCorrect = useRevealCorrect(scrollRef);
+  const dragKind = exercise?.kind === 'sortSignal';
+  // A drag exercise can't be scrolled by hand, so it always starts at the top.
+  useEffect(() => { if (dragKind) scrollRef.current?.scrollTo({ y: 0, animated: false }); }, [dragKind, exercise?.id]);
 
   const clearTick = useCallback(() => {
     if (tickRef.current) {
@@ -515,6 +518,8 @@ export function ArenaScreen({ waves, marketId, marketName, bestScore, onExit, on
         contentContainerStyle={styles.body}
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled"
+        // Dragging a Sort the signal card must not scroll the page (the lesson player does the same).
+        scrollEnabled={!dragKind}
       >
         {/* The question stays behind the round-intro card until Start is tapped */}
         {!showWaveIntro ? (
