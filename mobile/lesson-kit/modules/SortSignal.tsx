@@ -58,13 +58,21 @@ export function SortSignal({ exercise, phase, onChange }: ExerciseProps<SortSign
     if (done) onChange({ canCheck: true, isCorrect: wrongs === 0 });
   }, [done, wrongs]);
 
+  // The drop goes where the finger is, not where the card's centre happens to be: a wide card grabbed near
+  // its edge used to land in the wrong bucket (Max, Nov 17). Buckets also catch a near miss.
+  const SLOP = 16;
   const bucketAt = (pageX: number, pageY: number) => {
     for (let i = 0; i < bucketsRef.current.length; i++) {
       const r = bucketRects.current[i];
       if (!r) continue;
-      if (pageX >= r.x && pageX <= r.x + r.width && pageY >= r.y && pageY <= r.y + r.height) return i;
+      if (pageX >= r.x - SLOP && pageX <= r.x + r.width + SLOP && pageY >= r.y - SLOP && pageY <= r.y + r.height + SLOP) return i;
     }
     return null;
+  };
+  const dropPoint = (g: { moveX: number; moveY: number; dx: number; dy: number }) => {
+    if (g.moveX || g.moveY) return { x: g.moveX, y: g.moveY };
+    const base = cardRect.current;
+    return base ? { x: base.x + base.width / 2 + g.dx, y: base.y + base.height / 2 + g.dy } : null;
   };
 
   const responder = useRef(
@@ -84,16 +92,12 @@ export function SortSignal({ exercise, phase, onChange }: ExerciseProps<SortSign
         },
         onPanResponderMove: (e, g) => {
           pan.setValue({ x: g.dx, y: g.dy });
-          const base = cardRect.current;
-          if (base) {
-            setHover(bucketAt(base.x + base.width / 2 + g.dx, base.y + base.height / 2 + g.dy));
-          }
+          const p = dropPoint(g);
+          if (p) setHover(bucketAt(p.x, p.y));
         },
         onPanResponderRelease: (e, g) => {
-          const base = cardRect.current;
-          const target = base
-            ? bucketAt(base.x + base.width / 2 + g.dx, base.y + base.height / 2 + g.dy)
-            : null;
+          const p = dropPoint(g);
+          const target = p ? bucketAt(p.x, p.y) : null;
           setHover(null);
           if (target === null) {
             Animated.spring(pan, { toValue: { x: 0, y: 0 }, useNativeDriver: false }).start();

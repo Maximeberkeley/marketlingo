@@ -46,13 +46,19 @@ function SortSignal({ exercise, phase, onChange }) {
   useEffect(() => {
     if (done) onChange({ canCheck: true, isCorrect: wrongs === 0 });
   }, [done, wrongs]);
+  const SLOP = 16;
   const bucketAt = (pageX, pageY) => {
     for (let i = 0; i < bucketsRef.current.length; i++) {
       const r = bucketRects.current[i];
       if (!r) continue;
-      if (pageX >= r.x && pageX <= r.x + r.width && pageY >= r.y && pageY <= r.y + r.height) return i;
+      if (pageX >= r.x - SLOP && pageX <= r.x + r.width + SLOP && pageY >= r.y - SLOP && pageY <= r.y + r.height + SLOP) return i;
     }
     return null;
+  };
+  const dropPoint = (g) => {
+    if (g.moveX || g.moveY) return { x: g.moveX, y: g.moveY };
+    const base = cardRect.current;
+    return base ? { x: base.x + base.width / 2 + g.dx, y: base.y + base.height / 2 + g.dy } : null;
   };
   const responder = useRef(
     PanResponder.create({
@@ -69,14 +75,12 @@ function SortSignal({ exercise, phase, onChange }) {
       },
       onPanResponderMove: (e, g) => {
         pan.setValue({ x: g.dx, y: g.dy });
-        const base = cardRect.current;
-        if (base) {
-          setHover(bucketAt(base.x + base.width / 2 + g.dx, base.y + base.height / 2 + g.dy));
-        }
+        const p = dropPoint(g);
+        if (p) setHover(bucketAt(p.x, p.y));
       },
       onPanResponderRelease: (e, g) => {
-        const base = cardRect.current;
-        const target = base ? bucketAt(base.x + base.width / 2 + g.dx, base.y + base.height / 2 + g.dy) : null;
+        const p = dropPoint(g);
+        const target = p ? bucketAt(p.x, p.y) : null;
         setHover(null);
         if (target === null) {
           Animated.spring(pan, { toValue: { x: 0, y: 0 }, useNativeDriver: false }).start();
@@ -87,7 +91,7 @@ function SortSignal({ exercise, phase, onChange }) {
         const right = target === currentItem.bucket;
         tick(right);
         if (right) {
-          setPlaced((p) => [...p, target]);
+          setPlaced((p2) => [...p2, target]);
           setWhy(null);
           pan.setValue({ x: 0, y: 0 });
           setCursor((c) => c + 1);
