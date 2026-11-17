@@ -11,8 +11,8 @@ import { hasArt, useShop } from '../hooks/useShop';
 import { LeoAvatar } from '../components/shop/LeoAvatar';
 import { SLOT_ICON } from '../components/shop/ItemArt';
 import { Flask } from '../components/shop/ShopKit';
-import { PressScale } from '../components/shop/Motion';
-import { FloorShadow, SCENES, SceneTheme, Studio } from '../components/shop/Scene';
+import { Float, PressScale } from '../components/shop/Motion';
+import { FloorShadow, SCENES, SceneTheme, Studio, Sunburst, Twinkles } from '../components/shop/Scene';
 
 const fmt = (n: number) => n.toLocaleString('en-US');
 
@@ -44,10 +44,12 @@ export default function CollectionScreen() {
       <ScrollView contentContainerStyle={{ paddingBottom: insets.bottom + 30 }} showsVerticalScrollIndicator={false}>
         <View style={[styles.hero, { height: H }]}>
           <Studio color={t.bg[1]} spot={{ x: 0.5, y: 0.5 }} />
+          <Sunburst size={620} cx={width / 2} cy={floorY - leo * 0.45} color={t.ray} opacity={t.rayOpacity * 0.75} />
+          <Twinkles w={width} h={H} color={t.spark} />
           <FloorShadow width={leo * 0.8} cx={width / 2} y={floorY} dark={0.35} />
-          <View style={{ position: 'absolute', left: width / 2 - leo / 2, top: floorY - leo * 0.955 }}>
+          <Float distance={5} style={{ position: 'absolute', left: width / 2 - leo / 2, top: floorY - leo * 0.955 }}>
             <LeoAvatar look={drawn.length ? { hat: '', ...look } : {}} size={leo} crop={false} />
-          </View>
+          </Float>
           <LinearGradient colors={['transparent', 'rgba(0,0,0,0.55)']} style={styles.shade} pointerEvents="none" />
           <View style={styles.heroText}>
             <Text maxFontSizeMultiplier={1.2} style={styles.name}>{collection.name}</Text>
@@ -77,6 +79,7 @@ export default function CollectionScreen() {
               <PressScale key={c.id} onPress={() => router.push(`/shop-item?id=${c.id}` as any)} style={{ ...styles.tile, width: tile, ...(own ? { borderColor: COLORS.success + '88' } : {}) }} accessibilityLabel={`${c.name}, ${own ? 'owned' : price !== null ? `${price} XP` : 'earn it'}`}>
                 <View style={[styles.art, { height: tile * 0.82 }]}>
                   <Studio color={RARITY_TILE[c.rarity]} spot={{ x: 0.5, y: 0.55 }} />
+                  <Sunburst size={tile * 1.6} cx={(tile - 4) / 2} cy={tile * 0.44} color="#FFFFFF" opacity={0.26} period={48000} />
                   <View style={{ position: 'absolute', left: (tile - 4) / 2 - (tile * 0.86) / 2, bottom: -2 }}>
                     <LeoAvatar look={{ hat: '', [c.slot]: c.id }} size={tile * 0.86} crop={false} />
                   </View>

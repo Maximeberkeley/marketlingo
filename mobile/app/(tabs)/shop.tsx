@@ -19,8 +19,8 @@ import { DOUBLE_XP_ID, boostMinutes, doubleXpActive } from '../../lib/boosts';
 import { LeoAvatar } from '../../components/shop/LeoAvatar';
 import { ItemArt, ShopIcon } from '../../components/shop/ItemArt';
 import { Carousel, Flask, PriceButton, Row, SectionHead, XPChip } from '../../components/shop/ShopKit';
-import { Countdown, MotionScope, PressScale, Rise, ScrollWatch, useNow, useScrollWatch } from '../../components/shop/Motion';
-import { FloorShadow, PERK_SCENE, PerkObject, SCENES, SceneTheme, Studio } from '../../components/shop/Scene';
+import { Countdown, Float, MotionScope, PressScale, Rise, ScrollWatch, Sheen, useNow, useScrollWatch } from '../../components/shop/Motion';
+import { FloorShadow, PERK_SCENE, PerkObject, SCENES, SceneTheme, Studio, Sunburst, Twinkles } from '../../components/shop/Scene';
 import { MedalGlint, PODIUM_MEDALS } from '../../components/shop/MedalGlint';
 import { XPSheet } from '../../components/shop/XPSheet';
 import { DoubleXPTag } from '../../components/shop/DoubleXPTag';
@@ -156,7 +156,8 @@ export default function ShopScreen() {
                 <PressScale key={p.id} disabled={!p.live} onPress={() => open(p.route)} style={styles.powerTile} accessibilityLabel={tag ? `${p.name}, ${tag.toLowerCase()}` : p.name}>
                   <View style={[styles.powerArt, { backgroundColor: COLORS.bg1 }]}>
                     {p.live && <Studio color={POWER_TILE[p.icon]} />}
-                    <View style={{ opacity: p.live ? 1 : 0.55 }}><ShopIcon id={p.icon} size={60} /></View>
+                    {p.live && <Sunburst size={220} cx={84} cy={52} color="#FFFFFF" opacity={0.26} />}
+                    <Float distance={4} phase={p.live ? 0 : 700}><View style={{ opacity: p.live ? 1 : 0.55 }}><ShopIcon id={p.icon} size={60} /></View></Float>
                     {tag && <View style={styles.haveTag}><Text maxFontSizeMultiplier={1.3} style={styles.haveText}>{tag}</Text></View>}
                   </View>
                   <View style={styles.tileBody}>
@@ -199,8 +200,10 @@ export default function ShopScreen() {
                   <PressScale key={d.itemId} onPress={() => open(`/shop-item?id=${c.id}&deal=1`)} style={styles.dealTile} accessibilityLabel={`${c.name}, deal`}>
                     <View style={styles.dealArt}>
                       <Studio color={RARITY_TILE[c.rarity]} />
+                      <Sunburst size={240} cx={84} cy={62} color="#FFFFFF" opacity={0.26} />
                       <FloorShadow width={92} cx={84} y={118} dark={0.32} />
-                      <ItemArt item={c} size={116} tint="transparent" style={{ marginTop: 10 }} />
+                      <Float distance={3} phase={(c.id.length % 5) * 300}><ItemArt item={c} size={116} tint="transparent" style={{ marginTop: 10 }} /></Float>
+                      {c.rarity !== 'common' && <Sheen width={168} every={4200} delay={600} />}
                       <View style={styles.offBadge}><Text maxFontSizeMultiplier={1.3} style={styles.offText}>-30%</Text></View>
                     </View>
                     <View style={styles.tileBody}>
@@ -237,10 +240,12 @@ export default function ShopScreen() {
                 <PressScale key={b.id} onPress={() => open(`/shop-item?bundle=${b.id}`)} style={styles.bundleTile} accessibilityLabel={b.name}>
                   <View style={styles.bundleArt}>
                     <Studio color={SCENES[(b.collection in SCENES ? b.collection : 'promo') as SceneTheme].bg[1]} spot={{ x: 0.5, y: 0.6 }} />
+                    <Sunburst size={320} cx={138} cy={70} color="#FFFFFF" opacity={0.26} />
+                    <Twinkles w={276} h={128} color="#FFFFFF" points={[[0.2, 0.3, 12], [0.8, 0.25, 14], [0.7, 0.8, 9]]} />
                     <FloorShadow width={120} cx={138} y={124} dark={0.32} />
-                    <View style={{ position: 'absolute', left: 138 - 70, top: 128 - 140 * 0.955 + 2 }}>
+                    <Float distance={4} style={{ position: 'absolute', left: 138 - 70, top: 128 - 140 * 0.955 + 2 }}>
                       <LeoAvatar look={{ hat: '', ...wear }} size={140} crop={false} />
-                    </View>
+                    </Float>
                     <Text maxFontSizeMultiplier={1.3} style={styles.bundleCount}>{b.items.length} pieces</Text>
                     <View style={styles.saveBadge}><Text maxFontSizeMultiplier={1.3} style={styles.offText}>Save {save}%</Text></View>
                   </View>
@@ -288,6 +293,7 @@ export default function ShopScreen() {
                 {earnable.map(({ c, p }) => (
                   <TouchableOpacity key={c.id} activeOpacity={0.9} onPress={() => open(`/shop-item?id=${c.id}`)} style={styles.earnTile} accessibilityRole="button">
                     <View style={styles.earnArt}>
+                      <Sunburst size={220} cx={72} cy={50} color="#FDE68A" opacity={p.met ? 0.4 : 0.18} />
                       <View style={{ opacity: p.met ? 1 : 0.55 }}>
                         {(PODIUM_MEDALS as readonly string[]).includes(c.id)
                           ? <MedalGlint place={((PODIUM_MEDALS as readonly string[]).indexOf(c.id) + 1) as 1 | 2 | 3} height={84} interactive={false} />
@@ -354,11 +360,14 @@ function PromoCard({ feature, owned, look }: { feature: Feature; owned: boolean;
       <View style={[styles.promo, { height: H }]}>
         <View style={styles.promoClip}>
           <Studio color={t.bg[1]} spot={{ x: (leoX + leo / 2) / W, y: 0.5 }} light={0.22} edge={-0.5} />
+          <Sunburst size={420} cx={leoX + leo / 2} cy={H * 0.52} color={isSet ? t.ray : RARITY_COLOR[feature.item.rarity]} opacity={0.45} />
+          <Twinkles w={W} h={H} color={t.spark} points={[[0.52, 0.14, 16], [0.94, 0.1, 12], [0.6, 0.86, 10], [0.06, 0.08, 9], [0.42, 0.62, 8]]} />
           <FloorShadow width={leo * 0.8} cx={leoX + leo * 0.49} y={H - 16} dark={0.7} />
+          <Sheen width={W} every={3800} />
         </View>
-        <View style={{ position: 'absolute', left: leoX, top: leoTop }}>
+        <Float distance={6} style={{ position: 'absolute', left: leoX, top: leoTop }}>
           <LeoAvatar look={{ ...look, ...wear }} size={leo} crop={false} />
-        </View>
+        </Float>
         {/* Text sits above Leo: on narrow phones (iPhone SE) wings and capes reach under the title. */}
         <View style={styles.promoText}>
           <View style={styles.promoKicker}>
@@ -387,9 +396,12 @@ function PerkCard({ perk, width, waitlist, joined, locked, onJoin }: { perk: Per
     <PressScale onPress={() => open(`/shop-perk?id=${perk.id}`)} style={[styles.perk, { width }]} accessibilityLabel={`${perk.name}. ${status}`}>
       <View style={[styles.perkArt, { height: H }]}>
         <Studio color={scene.bg[1]} spot={{ x: 0.5, y: 0.5 }} light={0.18} edge={-0.45} />
-        <View style={{ position: 'absolute', left: width / 2 - 92, top: H / 2 - 60 }}>
+        <Sunburst size={380} cx={width / 2} cy={H * 0.56} color="#FDE68A" opacity={0.26} rays={18} />
+        <Twinkles w={width} h={H} color="#FDE68A" points={[[0.12, 0.3, 12], [0.86, 0.22, 15], [0.22, 0.82, 9], [0.8, 0.84, 10]]} />
+        <Float distance={5} style={{ position: 'absolute', left: width / 2 - 92, top: H / 2 - 60 }}>
           <PerkObject id={perk.id} width={184} />
-        </View>
+        </Float>
+        <Sheen width={width} every={5200} delay={1200} />
         <View style={styles.perkTag}><Text maxFontSizeMultiplier={1.3} style={styles.perkTagText}>{perk.kicker}</Text></View>
       </View>
       <View style={styles.perkBody}>
@@ -426,11 +438,14 @@ function CollectionCard({ collection, width, owned }: { collection: Collection; 
     <PressScale onPress={() => open(`/shop-collection?id=${collection.id}`)} style={[styles.coll, { width }]} accessibilityLabel={`${collection.name} collection`}>
       <View style={[styles.collArt, { height: H }]}>
         <Studio color={t.bg[1]} spot={{ x: 0.5, y: 0.62 }} />
+        <Sunburst size={420} cx={width / 2} cy={H * 0.62} color={t.ray} opacity={t.rayOpacity * 0.75} />
+        <Twinkles w={width} h={H} color={t.spark} />
         <FloorShadow width={200} cx={width / 2} y={H - 4} dark={0.35} />
+        <Sheen width={width} every={5600} delay={300} />
       </View>
-      <View style={{ position: 'absolute', left: width / 2 - leo / 2, top: leoTop }}>
+      <Float distance={5} style={{ position: 'absolute', left: width / 2 - leo / 2, top: leoTop }}>
         <LeoAvatar look={drawn.length ? { hat: '', ...look } : {}} size={leo} crop={false} />
-      </View>
+      </Float>
       <View style={styles.collBody}>
         <View style={{ flex: 1 }}>
           <Text maxFontSizeMultiplier={1.3} style={styles.collName}>{collection.name}</Text>

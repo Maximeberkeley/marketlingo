@@ -11,7 +11,8 @@ import { PERKS } from '../lib/shopCatalog';
 import { requirementProgress } from '../lib/shopEconomy';
 import { useShop } from '../hooks/useShop';
 import { ChunkyButton } from '../components/social/ChunkyButton';
-import { PERK_SCENE, PerkObject, Studio } from '../components/shop/Scene';
+import { PERK_SCENE, PerkObject, Studio, Sunburst, Twinkles } from '../components/shop/Scene';
+import { Float, Sheen } from '../components/shop/Motion';
 import { Flask } from '../components/shop/ShopKit';
 
 const fmt = (n: number) => n.toLocaleString('en-US');
@@ -42,9 +43,12 @@ export default function PerkScreen() {
       <ScrollView contentContainerStyle={{ paddingBottom: 24 }} showsVerticalScrollIndicator={false}>
         <View style={[styles.hero, { height: H }]}>
           <Studio color={scene.bg[1]} spot={{ x: 0.5, y: (insets.top + 140) / H }} light={0.18} edge={-0.45} />
-          <View style={{ position: 'absolute', left: width / 2 - objectW / 2, top: insets.top + 140 - objectW * 0.375 }}>
+          <Sunburst size={560} cx={width / 2} cy={insets.top + 140} color="#FDE68A" opacity={0.26} rays={20} />
+          <Twinkles w={width} h={H} color="#FDE68A" points={[[0.1, 0.45, 14], [0.9, 0.38, 18], [0.18, 0.86, 10], [0.84, 0.88, 12], [0.6, 0.3, 8]]} />
+          <Float distance={6} style={{ position: 'absolute', left: width / 2 - objectW / 2, top: insets.top + 140 - objectW * 0.375 }}>
             <PerkObject id={perk.id} width={objectW} />
-          </View>
+          </Float>
+          <Sheen width={width} every={5600} delay={800} />
           <LinearGradient colors={['transparent', COLORS.bg0]} style={styles.fade} pointerEvents="none" />
           <View style={[styles.heroTop, { top: insets.top + 8 }]}>
             <TouchableOpacity onPress={() => router.back()} hitSlop={12} style={styles.close} accessibilityRole="button" accessibilityLabel="Close">
