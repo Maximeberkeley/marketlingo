@@ -15,7 +15,7 @@ import {
   Modal,
   Animated,
   ScrollView,
-  KeyboardAvoidingView,
+  Keyboard,
   Platform,
   useWindowDimensions,
 } from 'react-native';
@@ -34,6 +34,17 @@ import { AIConsentModal } from './AIConsentModal';
 import { transcribeAudio } from '../../lib/interviewVoice';
 import { LeoCharacter } from '../mascot/LeoCharacter';
 import { log } from '../../lib/logger';
+
+/**
+ * Leo's answers sometimes come back with markdown bold (**DO**). Show it as bold text instead of asterisks,
+ * and drop any stray markers.
+ */
+export function withBold(text: string): React.ReactNode[] {
+  return text.split(/(\*\*[^*]+\*\*)/g).filter(Boolean).map((part, i) =>
+    /^\*\*[^*]+\*\*$/.test(part)
+      ? <Text key={i} style={{ fontWeight: '800' }}>{part.slice(2, -2)}</Text>
+      : part.replace(/\*\*/g, ''));
+}
 
 /** Wide screens get a centred panel, not a sheet stretched across an iPad. */
 const PANEL_MAX_WIDTH = 680;
@@ -291,6 +302,8 @@ export function AskLeoOverlay({
     async (text: string, instruction?: string) => {
       const question = text.trim();
       if (!question || isLoading) return;
+      // Sent: put the keyboard away so the answer has the whole sheet.
+      Keyboard.dismiss();
 
       if (!(await isFeatureEnabled('ai_leo'))) {
         setMessages([
@@ -419,6 +432,18 @@ export function AskLeoOverlay({
   // Shortcut cards wrap into a grid so all four stay visible on phones, iPads and Split View.
   const { width: winW, height: winH } = useWindowDimensions();
   const largeScreen = Math.min(winW, winH) >= 600;
+  // The sheet sits right on top of the keyboard and never runs under the status bar. Measured from the
+  // keyboard's own frame instead of KeyboardAvoidingView, which inside this modal pushed the sheet too high
+  // and left a gap above the keyboard (Max, Nov 17).
+  const [kb, setKb] = useState(0);
+  useEffect(() => {
+    const showEvt = Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow';
+    const hideEvt = Platform.OS === 'ios' ? 'keyboardWillHide' : 'keyboardDidHide';
+    const show = Keyboard.addListener(showEvt, e => setKb(Math.max(0, winH - e.endCoordinates.screenY)));
+    const hide = Keyboard.addListener(hideEvt, () => setKb(0));
+    return () => { show.remove(); hide.remove(); };
+  }, [winH]);
+  const kbOpen = kb > 0;
   const panelW = Math.min(winW, PANEL_MAX_WIDTH);
   // Phones scroll the shortcut cards sideways (roomy, nothing cut off); wide
   // panels (iPad, Split View) have room to show all four in one row.
@@ -427,18 +452,15 @@ export function AskLeoOverlay({
 
   return (
     <Modal visible={visible} animationType="fade" transparent onRequestClose={onClose}>
-      <KeyboardAvoidingView
-        style={styles.overlay}
-        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-        keyboardVerticalOffset={Platform.OS === 'ios' ? 8 : 0}
-      >
+      <View style={[styles.overlay, { paddingBottom: Platform.OS === 'ios' ? kb : 0 }]}>
         <TouchableOpacity style={styles.dismissArea} activeOpacity={1} onPress={onClose} />
         <Animated.View
           style={[
             styles.container,
             largeScreen && styles.containerLarge,
             {
-              paddingBottom: insets.bottom + 10,
+              paddingBottom: kbOpen ? 10 : insets.bottom + 10,
+              ...(kbOpen ? { minHeight: 0, maxHeight: winH - kb - insets.top - 8 } : null),
               transform: [
                 {
                   translateY: slideAnim.interpolate({
@@ -530,7 +552,7 @@ export function AskLeoOverlay({
                     ]}
                   >
                     <Text style={msg.role === 'user' ? styles.userText : styles.leoText}>
-                      {body}
+                      {msg.role === 'user' ? body : withBold(body)}
                       {isTyping ? ' ▍' : ''}
                     </Text>
                   </View>
@@ -681,7 +703,7 @@ export function AskLeoOverlay({
           </View>
           {isRecording && <Text style={styles.micHint}>Hold to talk, release to send</Text>}
         </Animated.View>
-      </KeyboardAvoidingView>
+      </View>
       <AIConsentModal {...modalProps} />
     </Modal>
   );
