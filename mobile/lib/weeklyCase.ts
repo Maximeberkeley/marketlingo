@@ -5,6 +5,7 @@
  * A case is one row of public.weekly_cases (see scripts/weekly/lib/mapping.mjs): its text is in `content`, and the
  * writing boxes are `content.response.parts`. The server (migration 0044) enforces the same limits as below.
  */
+import { getMarketById } from './markets';
 
 /**
  * Flat XP for submitting an answer; paid once per case. Normal XP earned, so it counts for friend races and the
@@ -16,6 +17,14 @@ export const SUGGESTED_MINUTES = 10;
 /** An answer needs at least this many words in every part, and at most HARD_CAP_FACTOR times the part's guidance. */
 export const MIN_PART_WORDS = 3;
 export const HARD_CAP_FACTOR = 2;
+/** One case a week for every industry, so friends on different courses can still compare answers. */
+export const SHARED_CASE_NOTE = 'Everyone gets the same case this week, whatever their industry.';
+
+/** The industry a case comes from, by name, or null when it has none or an unknown one. */
+export const caseIndustry = (c: Pick<WeeklyCase, 'marketId'>): string | null => (c.marketId && getMarketById(c.marketId)?.name) || null;
+/** The case comes from another industry than the learner's course, so say why they are seeing it. */
+export const fromOtherIndustry = (c: Pick<WeeklyCase, 'marketId'>, learnerMarket?: string | null): boolean =>
+  !!(c.marketId && learnerMarket && c.marketId !== learnerMarket && caseIndustry(c));
 
 export interface WeeklyPart {
   id: string;
@@ -183,6 +192,13 @@ export interface WeeklyCardInfo {
   tile: { icon: 'calendar' | 'check-circle' | 'award'; label: string };
   /** Last week's results, when they are ready and unread. */
   extra?: { label: string; path: string };
+  week?: number;
+  /** The case's industry by name, and whether it differs from the learner's. */
+  industry?: string;
+  otherIndustry?: boolean;
+  hook?: string;
+  /** What submitting wins, shown while the case is open and not answered. */
+  prize?: { xp: number };
 }
 
 export interface WeeklyCardInput {
@@ -193,6 +209,8 @@ export interface WeeklyCardInput {
   /** Released score of the current case, when results are out. */
   score?: number | null;
   previous?: { case: WeeklyCase; score: number | null } | null;
+  /** The learner's course, to explain a case from another industry. */
+  learnerMarket?: string | null;
 }
 
 export function weeklyCardInfo(input: WeeklyCardInput): WeeklyCardInfo {
@@ -204,25 +222,30 @@ export function weeklyCardInfo(input: WeeklyCardInput): WeeklyCardInfo {
     return { kind: 'none', title: 'Next case Monday', state: { before: 'A new business problem every week.' }, button: null, path: '/weekly-case', tile: { icon: 'calendar', label: 'SOON' }, extra };
   }
   const byline = presenter(current) ? `Presented by ${current.presentedBy}` : undefined;
-  const tile = { icon: 'calendar' as const, label: `WEEK ${weekNumber(current.weekStart)}` };
+  const week = weekNumber(current.weekStart);
+  const tile = { icon: 'calendar' as const, label: `WEEK ${week}` };
+  const about = {
+    week, industry: caseIndustry(current) ?? undefined, otherIndustry: fromOtherIndustry(current, input.learnerMarket),
+    hook: current.hook || undefined,
+  };
   const phase = phaseOf(current, now);
   if (phase === 'closed' && input.submitted) {
     return {
-      kind: 'results', title: current.title, byline, tile: { ...tile, icon: 'award' },
+      kind: 'results', title: current.title, byline, tile: { ...tile, icon: 'award' }, ...about,
       state: input.score != null ? { before: 'You scored ', bold: `${Math.round(input.score)} / 100` } : { before: 'Your results are ready.' },
       button: 'See results', path: `/weekly-case-results?id=${current.id}`, extra,
     };
   }
   if (input.submitted) {
     return {
-      kind: 'submitted', title: current.title, byline, tile: { ...tile, icon: 'check-circle' },
+      kind: 'submitted', title: current.title, byline, tile: { ...tile, icon: 'check-circle' }, ...about,
       state: { before: `Submitted · results ${resultsDay(current.closesAt, now)}` },
       button: null, path: '/weekly-case', extra,
     };
   }
   if (phase === 'open') {
     return {
-      kind: 'open', title: current.title, byline, tile,
+      kind: 'open', title: current.title, byline, tile, ...about, prize: { xp: WEEKLY_CASE_XP },
       state: { bold: `Closes in ${countdown(current.closesAt - now)}`, after: ` · about ${suggestedMinutes(current)} min` },
       button: 'Start the case', path: '/weekly-case', extra,
     };

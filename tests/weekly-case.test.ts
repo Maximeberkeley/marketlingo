@@ -6,7 +6,7 @@ import {
 } from '../supabase/functions/_shared/weekly-case';
 import { canonical, planSummary, planWeeks, type BundledWeek, type StoredCase, type StoredScoring } from '../supabase/functions/load-weekly-cases/plan';
 import {
-  blockingParts, canSubmit, caseFromRow, countdown, draftKey, emptyAnswers, hardCap, parseDraft, partStatus, phaseOf, pickCases,
+  blockingParts, canSubmit, caseFromRow, caseIndustry, fromOtherIndustry, countdown, draftKey, emptyAnswers, hardCap, parseDraft, partStatus, phaseOf, pickCases,
   presenter, resultsDay, scoreHeadline, shareText, suggestedMinutes, timerLabel, WEEKLY_CASE_XP, weekNumber, weeklyCardInfo,
   type WeeklyCase,
 } from '../mobile/lib/weeklyCase';
@@ -343,6 +343,20 @@ describe('the Practice card', () => {
     expect(none.kind).toBe('none');
     expect(none.button).toBeNull();
     expect(weeklyCardInfo({ now: base.closesAt + 1, current: base, submitted: false }).kind).toBe('none');
+  });
+  it('shows the prize while open and explains a case from another industry', () => {
+    const energy = { ...base, marketId: 'cleanenergy' };
+    const c = weeklyCardInfo({ now: T, current: energy, submitted: false, learnerMarket: 'aerospace' });
+    expect(c.prize).toEqual({ xp: WEEKLY_CASE_XP });
+    expect(c.week).toBe(48);
+    expect(c.industry).toBe(caseIndustry(energy));
+    expect(c.industry).toBeTruthy();
+    expect(c.otherIndustry).toBe(true);
+    expect(weeklyCardInfo({ now: T, current: energy, submitted: false, learnerMarket: 'cleanenergy' }).otherIndustry).toBe(false);
+    expect(weeklyCardInfo({ now: T, current: energy, submitted: true, learnerMarket: 'aerospace' }).prize).toBeUndefined();
+    expect(fromOtherIndustry({ marketId: null }, 'aerospace')).toBe(false);
+    expect(fromOtherIndustry({ marketId: 'nope' }, 'aerospace')).toBe(false);
+    expect(fromOtherIndustry({ marketId: 'ai' }, null)).toBe(false);
   });
   const input = { goal: 'career', lessonsStudied: 3, gamesCompleted: 0, drillsCompleted: 0, mocks: [] };
   it('goes first while it waits on the learner, otherwise last', () => {

@@ -19,8 +19,8 @@ import { log } from '../lib/logger';
 import { triggerHaptic } from '../lib/haptics';
 import { trackEvent } from '../lib/analytics';
 import {
-  blockingParts, canSubmit, countdown, countWords, draftKey, hardCap, parseDraft, partStatus, phaseOf, resultsDay,
-  suggestedMinutes, timerLabel, totalWords, WEEKLY_CASE_XP, WeeklyAnswers, WeeklyPart,
+  blockingParts, canSubmit, caseIndustry, countdown, fromOtherIndustry, SHARED_CASE_NOTE, countWords, draftKey, hardCap, parseDraft, partStatus, phaseOf, resultsDay,
+  suggestedMinutes, totalWords, WEEKLY_CASE_XP, WeeklyAnswers, WeeklyPart,
 } from '../lib/weeklyCase';
 import { loadBoard, requestScoring, submitAnswers, xpAlreadyPaid } from '../lib/weeklyCaseApi';
 import type { WeeklyBoardRow } from '../lib/weeklyCase';
@@ -59,21 +59,6 @@ function Primary({ label, onPress, disabled, quiet }: { label: string; onPress: 
     >
       <Text style={[styles.primaryText, quiet && styles.primaryQuietText]}>{label}</Text>
     </TouchableOpacity>
-  );
-}
-
-function Timer({ startedAt, minutes }: { startedAt: number | null; minutes: number }) {
-  const [now, setNow] = useState(Date.now());
-  useEffect(() => {
-    const id = setInterval(() => setNow(Date.now()), 1000);
-    return () => clearInterval(id);
-  }, []);
-  const t = timerLabel(startedAt ? now - startedAt : 0, minutes);
-  return (
-    <View style={[styles.timer, t.over && styles.timerOver]} accessibilityLabel={t.over ? `Over the suggested time by ${t.text}` : `${t.text} left of the suggested time`}>
-      <Feather name="clock" size={13} color={t.over ? COLORS.warning : COLORS.textSecondary} />
-      <Text style={[styles.timerText, t.over && { color: COLORS.warning }]}>{t.text}</Text>
-    </View>
   );
 }
 
@@ -281,10 +266,11 @@ export default function WeeklyCaseRoute() {
   const missing = blockingParts(answers, parts);
   const ready = canSubmit(answers, parts);
   const minutes = suggestedMinutes(current);
+  const industry = caseIndustry(current);
 
   return (
     <KeyboardAvoidingView style={styles.root} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
-      <Header onClose={close} right={!done && step === 'write' ? <Timer startedAt={startedAt} minutes={minutes} /> : undefined} />
+      <Header onClose={close} />
       <ScrollView
         contentContainerStyle={{ padding: 20, paddingBottom: insets.bottom + 140, gap: 18 }}
         keyboardShouldPersistTaps="handled"
@@ -313,9 +299,12 @@ export default function WeeklyCaseRoute() {
         ) : step === 'brief' ? (
           <>
             <View style={styles.metaRow}>
+              {industry ? <View style={styles.metaPill}><Feather name="briefcase" size={13} color={COLORS.textSecondary} /><Text style={styles.metaText}>{industry}</Text></View> : null}
               <View style={styles.metaPill}><Feather name="clock" size={13} color={COLORS.textSecondary} /><Text style={styles.metaText}>{`About ${minutes} min`}</Text></View>
               <View style={styles.metaPill}><Feather name="calendar" size={13} color={COLORS.textSecondary} /><Text style={styles.metaText}>{`Closes in ${countdown(current.closesAt - Date.now())}`}</Text></View>
+              <View style={[styles.metaPill, styles.prizePill]}><Feather name="gift" size={13} color={COLORS.accent} /><Text style={[styles.metaText, { color: COLORS.accent }]}>{`+${WEEKLY_CASE_XP} XP and Double XP`}</Text></View>
             </View>
+            {fromOtherIndustry(current, marketId) ? <Text style={styles.sharedNote}>{SHARED_CASE_NOTE}</Text> : null}
             <CaseBrief weekly={current} />
           </>
         ) : (
@@ -367,12 +356,11 @@ const styles = StyleSheet.create({
   close: { width: 44, height: 44, alignItems: 'center', justifyContent: 'center' },
   headerTitle: { ...TYPE.h3, flex: 1, textAlign: 'center', color: COLORS.textPrimary },
   headerRight: { width: 76, alignItems: 'flex-end', paddingRight: 8 },
-  timer: { flexDirection: 'row', alignItems: 'center', gap: 5, paddingHorizontal: 9, paddingVertical: 5, borderRadius: 14, backgroundColor: COLORS.bg1 },
-  timerOver: { backgroundColor: COLORS.warningSoft },
-  timerText: { fontSize: 13, fontWeight: '700', color: COLORS.textSecondary, fontVariant: ['tabular-nums'] },
   metaRow: { flexDirection: 'row', gap: 8, flexWrap: 'wrap' },
   metaPill: { flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 10, paddingVertical: 6, borderRadius: 14, backgroundColor: COLORS.bg1 },
   metaText: { fontSize: 12, fontWeight: '700', color: COLORS.textSecondary },
+  prizePill: { backgroundColor: COLORS.accentSoft },
+  sharedNote: { fontSize: 12, lineHeight: 17, color: COLORS.textMuted, marginTop: -6 },
   toggle: { flexDirection: 'row', alignItems: 'center', gap: 6, alignSelf: 'flex-start', minHeight: 36 },
   toggleText: { fontSize: 14, fontWeight: '700', color: COLORS.accent },
   questionEcho: { ...TYPE.bodyBold, fontSize: 15, lineHeight: 22, color: COLORS.textPrimary, padding: 14, borderRadius: 14, backgroundColor: COLORS.accentSoft },

@@ -28,7 +28,10 @@ import { trackEvent } from "../lib/analytics";
 import {
   blockingParts,
   canSubmit,
+  caseIndustry,
   countdown,
+  fromOtherIndustry,
+  SHARED_CASE_NOTE,
   countWords,
   draftKey,
   hardCap,
@@ -37,7 +40,6 @@ import {
   phaseOf,
   resultsDay,
   suggestedMinutes,
-  timerLabel,
   totalWords,
   WEEKLY_CASE_XP
 } from "../lib/weeklyCase";
@@ -65,15 +67,6 @@ function Primary({ label, onPress, disabled, quiet }) {
     },
     /* @__PURE__ */ React.createElement(Text, { style: [styles.primaryText, quiet && styles.primaryQuietText] }, label)
   );
-}
-function Timer({ startedAt, minutes }) {
-  const [now, setNow] = useState(Date.now());
-  useEffect(() => {
-    const id = setInterval(() => setNow(Date.now()), 1e3);
-    return () => clearInterval(id);
-  }, []);
-  const t = timerLabel(startedAt ? now - startedAt : 0, minutes);
-  return /* @__PURE__ */ React.createElement(View, { style: [styles.timer, t.over && styles.timerOver], accessibilityLabel: t.over ? `Over the suggested time by ${t.text}` : `${t.text} left of the suggested time` }, /* @__PURE__ */ React.createElement(Feather, { name: "clock", size: 13, color: t.over ? COLORS.warning : COLORS.textSecondary }), /* @__PURE__ */ React.createElement(Text, { style: [styles.timerText, t.over && { color: COLORS.warning }] }, t.text));
 }
 function PartBox({ part, value, onChange, flagged }) {
   const status = partStatus(value, part);
@@ -221,14 +214,15 @@ function WeeklyCaseRoute() {
   const missing = blockingParts(answers, parts);
   const ready = canSubmit(answers, parts);
   const minutes = suggestedMinutes(current);
-  return /* @__PURE__ */ React.createElement(KeyboardAvoidingView, { style: styles.root, behavior: Platform.OS === "ios" ? "padding" : void 0 }, /* @__PURE__ */ React.createElement(Header, { onClose: close, right: !done && step === "write" ? /* @__PURE__ */ React.createElement(Timer, { startedAt, minutes }) : void 0 }), /* @__PURE__ */ React.createElement(
+  const industry = caseIndustry(current);
+  return /* @__PURE__ */ React.createElement(KeyboardAvoidingView, { style: styles.root, behavior: Platform.OS === "ios" ? "padding" : void 0 }, /* @__PURE__ */ React.createElement(Header, { onClose: close }), /* @__PURE__ */ React.createElement(
     ScrollView,
     {
       contentContainerStyle: { padding: 20, paddingBottom: insets.bottom + 140, gap: 18 },
       keyboardShouldPersistTaps: "handled",
       showsVerticalScrollIndicator: false
     },
-    done ? /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(Submitted, { weekly: current, board }), paid ? /* @__PURE__ */ React.createElement(View, { style: styles.xpChip }, /* @__PURE__ */ React.createElement(Feather, { name: "zap", size: 14, color: COLORS.accent }), /* @__PURE__ */ React.createElement(Text, { style: styles.xpText }, `+${WEEKLY_CASE_XP} XP banked`)) : null, paid ? /* @__PURE__ */ React.createElement(TouchableOpacity, { onPress: () => router.push("/shop-boost"), accessibilityRole: "button", accessibilityLabel: "Double XP earned. Open it", style: styles.boostCard }, /* @__PURE__ */ React.createElement(ShopIcon, { id: "countdown", size: 44 }), /* @__PURE__ */ React.createElement(View, { style: { flex: 1 } }, /* @__PURE__ */ React.createElement(Text, { style: styles.boostTitle }, "+1 Double XP"), /* @__PURE__ */ React.createElement(Text, { style: styles.boostSub }, `${DOUBLE_XP_MINUTES} minutes of double XP, whenever you want. It counts for races.`)), /* @__PURE__ */ React.createElement(Feather, { name: "chevron-right", size: 18, color: COLORS.textMuted })) : null, /* @__PURE__ */ React.createElement(TouchableOpacity, { onPress: () => setBriefOpen((o) => !o), accessibilityRole: "button", style: styles.toggle }, /* @__PURE__ */ React.createElement(Text, { style: styles.toggleText }, briefOpen ? "Hide the case" : "Read the case again"), /* @__PURE__ */ React.createElement(Feather, { name: briefOpen ? "chevron-up" : "chevron-down", size: 16, color: COLORS.accent })), briefOpen ? /* @__PURE__ */ React.createElement(CaseBrief, { weekly: current }) : null) : step === "brief" ? /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(View, { style: styles.metaRow }, /* @__PURE__ */ React.createElement(View, { style: styles.metaPill }, /* @__PURE__ */ React.createElement(Feather, { name: "clock", size: 13, color: COLORS.textSecondary }), /* @__PURE__ */ React.createElement(Text, { style: styles.metaText }, `About ${minutes} min`)), /* @__PURE__ */ React.createElement(View, { style: styles.metaPill }, /* @__PURE__ */ React.createElement(Feather, { name: "calendar", size: 13, color: COLORS.textSecondary }), /* @__PURE__ */ React.createElement(Text, { style: styles.metaText }, `Closes in ${countdown(current.closesAt - Date.now())}`))), /* @__PURE__ */ React.createElement(CaseBrief, { weekly: current })) : /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(TouchableOpacity, { onPress: () => setBriefOpen((o) => !o), accessibilityRole: "button", style: styles.toggle }, /* @__PURE__ */ React.createElement(Text, { style: styles.toggleText }, briefOpen ? "Hide the case" : "Show the case"), /* @__PURE__ */ React.createElement(Feather, { name: briefOpen ? "chevron-up" : "chevron-down", size: 16, color: COLORS.accent })), briefOpen ? /* @__PURE__ */ React.createElement(CaseBrief, { weekly: current }) : /* @__PURE__ */ React.createElement(Text, { style: styles.questionEcho }, current.question), parts.map((p) => /* @__PURE__ */ React.createElement(PartBox, { key: p.id, part: p, value: answers[p.id] ?? "", onChange: setPart(p.id), flagged })), /* @__PURE__ */ React.createElement(Text, { style: styles.wordCount }, `${totalWords(answers)} words \xB7 saved on this phone`), message ? /* @__PURE__ */ React.createElement(Text, { style: styles.error, accessibilityLiveRegion: "polite" }, message) : null)
+    done ? /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(Submitted, { weekly: current, board }), paid ? /* @__PURE__ */ React.createElement(View, { style: styles.xpChip }, /* @__PURE__ */ React.createElement(Feather, { name: "zap", size: 14, color: COLORS.accent }), /* @__PURE__ */ React.createElement(Text, { style: styles.xpText }, `+${WEEKLY_CASE_XP} XP banked`)) : null, paid ? /* @__PURE__ */ React.createElement(TouchableOpacity, { onPress: () => router.push("/shop-boost"), accessibilityRole: "button", accessibilityLabel: "Double XP earned. Open it", style: styles.boostCard }, /* @__PURE__ */ React.createElement(ShopIcon, { id: "countdown", size: 44 }), /* @__PURE__ */ React.createElement(View, { style: { flex: 1 } }, /* @__PURE__ */ React.createElement(Text, { style: styles.boostTitle }, "+1 Double XP"), /* @__PURE__ */ React.createElement(Text, { style: styles.boostSub }, `${DOUBLE_XP_MINUTES} minutes of double XP, whenever you want. It counts for races.`)), /* @__PURE__ */ React.createElement(Feather, { name: "chevron-right", size: 18, color: COLORS.textMuted })) : null, /* @__PURE__ */ React.createElement(TouchableOpacity, { onPress: () => setBriefOpen((o) => !o), accessibilityRole: "button", style: styles.toggle }, /* @__PURE__ */ React.createElement(Text, { style: styles.toggleText }, briefOpen ? "Hide the case" : "Read the case again"), /* @__PURE__ */ React.createElement(Feather, { name: briefOpen ? "chevron-up" : "chevron-down", size: 16, color: COLORS.accent })), briefOpen ? /* @__PURE__ */ React.createElement(CaseBrief, { weekly: current }) : null) : step === "brief" ? /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(View, { style: styles.metaRow }, industry ? /* @__PURE__ */ React.createElement(View, { style: styles.metaPill }, /* @__PURE__ */ React.createElement(Feather, { name: "briefcase", size: 13, color: COLORS.textSecondary }), /* @__PURE__ */ React.createElement(Text, { style: styles.metaText }, industry)) : null, /* @__PURE__ */ React.createElement(View, { style: styles.metaPill }, /* @__PURE__ */ React.createElement(Feather, { name: "clock", size: 13, color: COLORS.textSecondary }), /* @__PURE__ */ React.createElement(Text, { style: styles.metaText }, `About ${minutes} min`)), /* @__PURE__ */ React.createElement(View, { style: styles.metaPill }, /* @__PURE__ */ React.createElement(Feather, { name: "calendar", size: 13, color: COLORS.textSecondary }), /* @__PURE__ */ React.createElement(Text, { style: styles.metaText }, `Closes in ${countdown(current.closesAt - Date.now())}`)), /* @__PURE__ */ React.createElement(View, { style: [styles.metaPill, styles.prizePill] }, /* @__PURE__ */ React.createElement(Feather, { name: "gift", size: 13, color: COLORS.accent }), /* @__PURE__ */ React.createElement(Text, { style: [styles.metaText, { color: COLORS.accent }] }, `+${WEEKLY_CASE_XP} XP and Double XP`))), fromOtherIndustry(current, marketId) ? /* @__PURE__ */ React.createElement(Text, { style: styles.sharedNote }, SHARED_CASE_NOTE) : null, /* @__PURE__ */ React.createElement(CaseBrief, { weekly: current })) : /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(TouchableOpacity, { onPress: () => setBriefOpen((o) => !o), accessibilityRole: "button", style: styles.toggle }, /* @__PURE__ */ React.createElement(Text, { style: styles.toggleText }, briefOpen ? "Hide the case" : "Show the case"), /* @__PURE__ */ React.createElement(Feather, { name: briefOpen ? "chevron-up" : "chevron-down", size: 16, color: COLORS.accent })), briefOpen ? /* @__PURE__ */ React.createElement(CaseBrief, { weekly: current }) : /* @__PURE__ */ React.createElement(Text, { style: styles.questionEcho }, current.question), parts.map((p) => /* @__PURE__ */ React.createElement(PartBox, { key: p.id, part: p, value: answers[p.id] ?? "", onChange: setPart(p.id), flagged })), /* @__PURE__ */ React.createElement(Text, { style: styles.wordCount }, `${totalWords(answers)} words \xB7 saved on this phone`), message ? /* @__PURE__ */ React.createElement(Text, { style: styles.error, accessibilityLiveRegion: "polite" }, message) : null)
   ), !done && /* @__PURE__ */ React.createElement(View, { style: [styles.bar, { paddingBottom: insets.bottom + 12 }] }, step === "brief" ? /* @__PURE__ */ React.createElement(Primary, { label: hasDraft ? "Continue writing" : "Start writing", onPress: startWriting }) : confirming ? /* @__PURE__ */ React.createElement(View, { style: styles.confirm }, /* @__PURE__ */ React.createElement(Text, { style: styles.confirmTitle }, "Submit your answer?"), /* @__PURE__ */ React.createElement(Text, { style: styles.confirmBody }, "You cannot change it after. Results come ", resultsDay(current.closesAt, Date.now()), "."), /* @__PURE__ */ React.createElement(View, { style: styles.confirmRow }, /* @__PURE__ */ React.createElement(View, { style: { flex: 1 } }, /* @__PURE__ */ React.createElement(Primary, { label: "Keep editing", quiet: true, onPress: () => setConfirming(false) })), /* @__PURE__ */ React.createElement(View, { style: { flex: 1 } }, /* @__PURE__ */ React.createElement(Primary, { label: busy ? "Submitting\u2026" : "Submit", disabled: busy, onPress: submit })))) : /* @__PURE__ */ React.createElement(
     Primary,
     {
@@ -248,12 +242,11 @@ const styles = StyleSheet.create({
   close: { width: 44, height: 44, alignItems: "center", justifyContent: "center" },
   headerTitle: { ...TYPE.h3, flex: 1, textAlign: "center", color: COLORS.textPrimary },
   headerRight: { width: 76, alignItems: "flex-end", paddingRight: 8 },
-  timer: { flexDirection: "row", alignItems: "center", gap: 5, paddingHorizontal: 9, paddingVertical: 5, borderRadius: 14, backgroundColor: COLORS.bg1 },
-  timerOver: { backgroundColor: COLORS.warningSoft },
-  timerText: { fontSize: 13, fontWeight: "700", color: COLORS.textSecondary, fontVariant: ["tabular-nums"] },
   metaRow: { flexDirection: "row", gap: 8, flexWrap: "wrap" },
   metaPill: { flexDirection: "row", alignItems: "center", gap: 6, paddingHorizontal: 10, paddingVertical: 6, borderRadius: 14, backgroundColor: COLORS.bg1 },
   metaText: { fontSize: 12, fontWeight: "700", color: COLORS.textSecondary },
+  prizePill: { backgroundColor: COLORS.accentSoft },
+  sharedNote: { fontSize: 12, lineHeight: 17, color: COLORS.textMuted, marginTop: -6 },
   toggle: { flexDirection: "row", alignItems: "center", gap: 6, alignSelf: "flex-start", minHeight: 36 },
   toggleText: { fontSize: 14, fontWeight: "700", color: COLORS.accent },
   questionEcho: { ...TYPE.bodyBold, fontSize: 15, lineHeight: 22, color: COLORS.textPrimary, padding: 14, borderRadius: 14, backgroundColor: COLORS.accentSoft },

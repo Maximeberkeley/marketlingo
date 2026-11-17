@@ -1,7 +1,11 @@
+import { getMarketById } from "./markets";
 const WEEKLY_CASE_XP = 200;
 const SUGGESTED_MINUTES = 10;
 const MIN_PART_WORDS = 3;
 const HARD_CAP_FACTOR = 2;
+const SHARED_CASE_NOTE = "Everyone gets the same case this week, whatever their industry.";
+const caseIndustry = (c) => c.marketId && getMarketById(c.marketId)?.name || null;
+const fromOtherIndustry = (c, learnerMarket) => !!(c.marketId && learnerMarket && c.marketId !== learnerMarket && caseIndustry(c));
 const str = (v) => typeof v === "string" ? v : "";
 function caseFromRow(row) {
   const c = row.content && typeof row.content === "object" ? row.content : {};
@@ -75,7 +79,14 @@ function weeklyCardInfo(input) {
     return { kind: "none", title: "Next case Monday", state: { before: "A new business problem every week." }, button: null, path: "/weekly-case", tile: { icon: "calendar", label: "SOON" }, extra };
   }
   const byline = presenter(current) ? `Presented by ${current.presentedBy}` : void 0;
-  const tile = { icon: "calendar", label: `WEEK ${weekNumber(current.weekStart)}` };
+  const week = weekNumber(current.weekStart);
+  const tile = { icon: "calendar", label: `WEEK ${week}` };
+  const about = {
+    week,
+    industry: caseIndustry(current) ?? void 0,
+    otherIndustry: fromOtherIndustry(current, input.learnerMarket),
+    hook: current.hook || void 0
+  };
   const phase = phaseOf(current, now);
   if (phase === "closed" && input.submitted) {
     return {
@@ -83,6 +94,7 @@ function weeklyCardInfo(input) {
       title: current.title,
       byline,
       tile: { ...tile, icon: "award" },
+      ...about,
       state: input.score != null ? { before: "You scored ", bold: `${Math.round(input.score)} / 100` } : { before: "Your results are ready." },
       button: "See results",
       path: `/weekly-case-results?id=${current.id}`,
@@ -95,6 +107,7 @@ function weeklyCardInfo(input) {
       title: current.title,
       byline,
       tile: { ...tile, icon: "check-circle" },
+      ...about,
       state: { before: `Submitted \xB7 results ${resultsDay(current.closesAt, now)}` },
       button: null,
       path: "/weekly-case",
@@ -107,6 +120,8 @@ function weeklyCardInfo(input) {
       title: current.title,
       byline,
       tile,
+      ...about,
+      prize: { xp: WEEKLY_CASE_XP },
       state: { bold: `Closes in ${countdown(current.closesAt - now)}`, after: ` \xB7 about ${suggestedMinutes(current)} min` },
       button: "Start the case",
       path: "/weekly-case",
@@ -166,15 +181,18 @@ function shareText(title, score, rank, friends) {
 export {
   HARD_CAP_FACTOR,
   MIN_PART_WORDS,
+  SHARED_CASE_NOTE,
   SUGGESTED_MINUTES,
   WEEKLY_CASE_XP,
   blockingParts,
   canSubmit,
   caseFromRow,
+  caseIndustry,
   countWords,
   countdown,
   draftKey,
   emptyAnswers,
+  fromOtherIndustry,
   hardCap,
   parseDraft,
   partStatus,
