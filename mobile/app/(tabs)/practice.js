@@ -8,7 +8,10 @@ import { playSound } from "../../lib/sounds";
 import { useStudiedLessons } from "../../hooks/useStudiedLessons";
 import { useUserXP } from "../../hooks/useUserXP";
 import { useWeeklyCase } from "../../hooks/useWeeklyCase";
-import { weeklyCardInfo } from "../../lib/weeklyCase";
+import { SHARED_CASE_NOTE, weeklyCardInfo } from "../../lib/weeklyCase";
+import { DOUBLE_XP_MINUTES } from "../../lib/boosts";
+import { Flask } from "../../components/shop/ShopKit";
+import { ShopIcon } from "../../components/shop/ItemArt";
 import { COLORS, TYPE } from "../../lib/constants";
 import { useAuth } from "../../hooks/useAuth";
 import { supabase } from "../../lib/supabase";
@@ -43,6 +46,18 @@ function PracticeCard({ card, first }) {
     },
     /* @__PURE__ */ React.createElement(Text, { style: [styles.buttonText, quiet && styles.buttonQuietText] }, card.button)
   ) : null, card.extra ? /* @__PURE__ */ React.createElement(TouchableOpacity, { onPress: () => router.push(card.extra.path), accessibilityRole: "link", style: styles.extra, hitSlop: { top: 8, bottom: 8 } }, /* @__PURE__ */ React.createElement(Text, { style: styles.extraText }, card.extra.label)) : null));
+}
+function WeeklyHero({ info }) {
+  const open = () => {
+    if (!info.button) return;
+    triggerHaptic("light");
+    playSound("tap").catch(() => {
+    });
+    router.push(info.path);
+  };
+  const done = info.kind === "submitted";
+  const live = info.kind === "open";
+  return /* @__PURE__ */ React.createElement(View, { style: [styles.hero, live && styles.heroLive] }, /* @__PURE__ */ React.createElement(View, { style: styles.heroTop }, /* @__PURE__ */ React.createElement(View, { style: styles.heroTag }, /* @__PURE__ */ React.createElement(Feather, { name: info.tile.icon, size: 14, color: COLORS.accent }), /* @__PURE__ */ React.createElement(Text, { style: styles.heroTagText }, info.week ? `Weekly Case \xB7 Week ${info.week}` : "Weekly Case")), info.industry ? /* @__PURE__ */ React.createElement(View, { style: styles.industry }, /* @__PURE__ */ React.createElement(Text, { style: styles.industryText, numberOfLines: 1 }, info.industry)) : null), /* @__PURE__ */ React.createElement(Text, { style: styles.heroTitle }, info.title), info.byline ? /* @__PURE__ */ React.createElement(Text, { style: styles.byline, numberOfLines: 1 }, info.byline) : null, info.hook && info.kind !== "none" ? /* @__PURE__ */ React.createElement(Text, { style: styles.heroHook, numberOfLines: 4 }, info.hook) : null, info.otherIndustry ? /* @__PURE__ */ React.createElement(View, { style: styles.heroNote }, /* @__PURE__ */ React.createElement(Feather, { name: "users", size: 13, color: COLORS.textMuted }), /* @__PURE__ */ React.createElement(Text, { style: styles.heroNoteText }, SHARED_CASE_NOTE)) : null, info.prize ? /* @__PURE__ */ React.createElement(View, { style: styles.prize, accessible: true, accessibilityLabel: `Submit to win ${info.prize.xp} XP and a ${DOUBLE_XP_MINUTES}-minute Double XP boost` }, /* @__PURE__ */ React.createElement(Text, { style: styles.prizeLabel }, "Submit to win"), /* @__PURE__ */ React.createElement(View, { style: styles.prizeRow }, /* @__PURE__ */ React.createElement(View, { style: styles.prizeItem }, /* @__PURE__ */ React.createElement(View, { style: styles.xpBadge }, /* @__PURE__ */ React.createElement(Flask, { size: 18, color: "#FFFFFF" })), /* @__PURE__ */ React.createElement(View, { style: { flexShrink: 1 } }, /* @__PURE__ */ React.createElement(Text, { style: styles.prizeBig }, `+${info.prize.xp} XP`), /* @__PURE__ */ React.createElement(Text, { style: styles.prizeSmall }, "On submit"))), /* @__PURE__ */ React.createElement(View, { style: styles.prizeItem }, /* @__PURE__ */ React.createElement(ShopIcon, { id: "countdown", size: 36 }), /* @__PURE__ */ React.createElement(View, { style: { flexShrink: 1 } }, /* @__PURE__ */ React.createElement(Text, { style: styles.prizeBig, numberOfLines: 1, adjustsFontSizeToFit: true }, "Double XP"), /* @__PURE__ */ React.createElement(Text, { style: styles.prizeSmall }, `${DOUBLE_XP_MINUTES} min boost`))))) : null, done ? /* @__PURE__ */ React.createElement(View, { style: styles.doneRow }, /* @__PURE__ */ React.createElement(Feather, { name: "check", size: 15, color: COLORS.success }), /* @__PURE__ */ React.createElement(Text, { style: styles.doneText }, info.state.before)) : /* @__PURE__ */ React.createElement(Text, { style: styles.stateLine }, info.state.before, info.state.bold ? /* @__PURE__ */ React.createElement(Text, { style: styles.stateBold }, info.state.bold) : null, info.state.after), info.button ? /* @__PURE__ */ React.createElement(TouchableOpacity, { onPress: open, activeOpacity: 0.88, accessibilityRole: "button", style: styles.heroButton }, /* @__PURE__ */ React.createElement(Text, { style: styles.heroButtonText }, info.button)) : null, info.extra ? /* @__PURE__ */ React.createElement(TouchableOpacity, { onPress: () => router.push(info.extra.path), accessibilityRole: "link", style: styles.extra, hitSlop: { top: 8, bottom: 8 } }, /* @__PURE__ */ React.createElement(Text, { style: styles.extraText }, info.extra.label)) : null);
 }
 function WorthAnotherLook({ entries, today, later }) {
   const due = dueEntries(entries, today);
@@ -108,19 +123,21 @@ function PracticeScreen() {
     return /* @__PURE__ */ React.createElement(View, { style: [styles.container, styles.centered] }, /* @__PURE__ */ React.createElement(ActivityIndicator, { size: "large", color: COLORS.accent }));
   }
   const today = localDateString();
+  const weeklyInfo = weekly.loading ? null : weeklyCardInfo({
+    now: Date.now(),
+    learnerMarket: selectedMarket,
+    current: weekly.current,
+    submitted: weekly.submitted,
+    score: weekly.score,
+    previous: weekly.previous && weekly.previousScore !== null ? { case: weekly.previous, score: weekly.previousScore } : null
+  });
   const cards = practiceCards({
     goal,
     lessonsStudied: studied.lessons.length,
     gamesCompleted: dailyCompletion?.games_completed,
     drillsCompleted: dailyCompletion?.drills_completed,
     mocks,
-    weekly: weekly.loading ? null : weeklyCardInfo({
-      now: Date.now(),
-      current: weekly.current,
-      submitted: weekly.submitted,
-      score: weekly.score,
-      previous: weekly.previous && weekly.previousScore !== null ? { case: weekly.previous, score: weekly.previousScore } : null
-    })
+    weekly: weeklyInfo
   });
   return /* @__PURE__ */ React.createElement(View, { style: styles.container }, /* @__PURE__ */ React.createElement(
     ScrollView,
@@ -129,7 +146,7 @@ function PracticeScreen() {
       showsVerticalScrollIndicator: false
     },
     /* @__PURE__ */ React.createElement(View, null, /* @__PURE__ */ React.createElement(Text, { style: styles.headerTitle }, "Practice"), selectedMarket && /* @__PURE__ */ React.createElement(View, { style: styles.marketBadge }, /* @__PURE__ */ React.createElement(View, { style: styles.marketDot }), /* @__PURE__ */ React.createElement(Text, { style: styles.marketBadgeText }, getMarketName(selectedMarket)))),
-    cards.map((card, i) => /* @__PURE__ */ React.createElement(PracticeCard, { key: card.id, card, first: i === 0 })),
+    cards.map((card, i) => card.id === "weekly-case" && weeklyInfo ? /* @__PURE__ */ React.createElement(WeeklyHero, { key: card.id, info: weeklyInfo }) : /* @__PURE__ */ React.createElement(PracticeCard, { key: card.id, card, first: i === 0 })),
     /* @__PURE__ */ React.createElement(WorthAnotherLook, { entries: ledger, today, later: nextDue(ledger, today) })
   ));
 }
@@ -163,6 +180,26 @@ const styles = StyleSheet.create({
   buttonQuiet: { backgroundColor: "transparent", borderWidth: 1.5, borderColor: COLORS.accent },
   buttonText: { fontSize: 14, fontWeight: "700", color: COLORS.textOnAccent },
   buttonQuietText: { color: COLORS.accent },
+  hero: { padding: 18, gap: 8, borderRadius: 22, backgroundColor: COLORS.bg1, borderWidth: 1, borderColor: COLORS.border },
+  heroLive: { borderColor: COLORS.accent, borderWidth: 2 },
+  heroTop: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: 10 },
+  heroTag: { flexDirection: "row", alignItems: "center", gap: 6, flexShrink: 0 },
+  heroTagText: { fontSize: 13, fontWeight: "800", color: COLORS.accent },
+  industry: { flexShrink: 1, paddingHorizontal: 10, paddingVertical: 4, borderRadius: 12, backgroundColor: COLORS.bg2, borderWidth: 1, borderColor: COLORS.border },
+  industryText: { fontSize: 12, fontWeight: "700", color: COLORS.textSecondary },
+  heroTitle: { fontSize: 24, lineHeight: 29, fontWeight: "800", letterSpacing: -0.4, color: COLORS.textPrimary, marginTop: 4 },
+  heroHook: { fontSize: 15, lineHeight: 21, color: COLORS.textSecondary },
+  heroNote: { flexDirection: "row", alignItems: "flex-start", gap: 6 },
+  heroNoteText: { flex: 1, fontSize: 12, lineHeight: 17, color: COLORS.textMuted },
+  prize: { marginTop: 6, padding: 14, borderRadius: 16, backgroundColor: COLORS.accentSoft, gap: 10 },
+  prizeLabel: { fontSize: 13, fontWeight: "700", color: COLORS.accent },
+  prizeRow: { flexDirection: "row", gap: 12 },
+  prizeItem: { flex: 1, flexDirection: "row", alignItems: "center", gap: 8 },
+  xpBadge: { width: 36, height: 36, borderRadius: 18, backgroundColor: COLORS.accentFill, alignItems: "center", justifyContent: "center" },
+  prizeBig: { fontSize: 16, fontWeight: "800", color: COLORS.textPrimary },
+  prizeSmall: { fontSize: 12, color: COLORS.textSecondary, marginTop: 1 },
+  heroButton: { marginTop: 6, minHeight: 50, borderRadius: 14, alignItems: "center", justifyContent: "center", backgroundColor: COLORS.accentFill },
+  heroButtonText: { fontSize: 16, fontWeight: "800", color: COLORS.textOnAccent },
   look: { padding: 16, paddingTop: 18, borderRadius: 20, backgroundColor: COLORS.bg1, borderWidth: 1, borderColor: COLORS.border, overflow: "hidden" },
   lookStripe: { position: "absolute", left: 0, right: 0, top: 0, height: 4, backgroundColor: COLORS.warning },
   lookHead: { flexDirection: "row", alignItems: "center", gap: 12 },
