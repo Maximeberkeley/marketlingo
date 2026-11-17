@@ -11,8 +11,8 @@ import { hasArt, useShop } from '../hooks/useShop';
 import { LeoAvatar } from '../components/shop/LeoAvatar';
 import { SLOT_ICON } from '../components/shop/ItemArt';
 import { Flask } from '../components/shop/ShopKit';
-import { Float, PressScale } from '../components/shop/Motion';
-import { FloatIcon, FloorShadow, SCENES, SceneBackdrop, SceneTheme, Sunburst, Twinkles } from '../components/shop/Scene';
+import { PressScale } from '../components/shop/Motion';
+import { FloorShadow, SCENES, SceneTheme, Studio } from '../components/shop/Scene';
 
 const fmt = (n: number) => n.toLocaleString('en-US');
 
@@ -43,16 +43,11 @@ export default function CollectionScreen() {
     <View style={styles.root}>
       <ScrollView contentContainerStyle={{ paddingBottom: insets.bottom + 30 }} showsVerticalScrollIndicator={false}>
         <View style={[styles.hero, { height: H }]}>
-          <SceneBackdrop theme={theme} sceneId={collection.id} />
-          <Sunburst size={620} cx={width / 2} cy={floorY - leo * 0.45} color={t.ray} opacity={t.rayOpacity} />
-          <Twinkles w={width} h={H} color={t.spark} />
-          <FloorShadow width={leo * 0.86} cx={width / 2} y={floorY} dark={0.45} />
-          <FloatIcon id={t.icons[1]} size={44} x={width - 70} y={insets.top + 60} depth={0} phase={700} />
-          <Float distance={5} style={{ position: 'absolute', left: width / 2 - leo / 2, top: floorY - leo * 0.955 }}>
+          <Studio color={t.bg[1]} spot={{ x: 0.5, y: 0.5 }} />
+          <FloorShadow width={leo * 0.8} cx={width / 2} y={floorY} dark={0.35} />
+          <View style={{ position: 'absolute', left: width / 2 - leo / 2, top: floorY - leo * 0.955 }}>
             <LeoAvatar look={drawn.length ? { hat: '', ...look } : {}} size={leo} crop={false} />
-          </Float>
-          <FloatIcon id={t.icons[0]} size={54} x={16} y={H - 150} depth={2} phase={200} />
-          <FloatIcon id={t.icons[2]} size={46} x={width - 64} y={H - 140} depth={1} phase={1200} />
+          </View>
           <LinearGradient colors={['transparent', 'rgba(0,0,0,0.55)']} style={styles.shade} pointerEvents="none" />
           <View style={styles.heroText}>
             <Text maxFontSizeMultiplier={1.2} style={styles.name}>{collection.name}</Text>
@@ -80,8 +75,8 @@ export default function CollectionScreen() {
             const color = RARITY_COLOR[c.rarity];
             return (
               <PressScale key={c.id} onPress={() => router.push(`/shop-item?id=${c.id}` as any)} style={{ ...styles.tile, width: tile, ...(own ? { borderColor: COLORS.success + '88' } : {}) }} accessibilityLabel={`${c.name}, ${own ? 'owned' : price !== null ? `${price} XP` : 'earn it'}`}>
-                <View style={[styles.art, { height: tile * 0.82, backgroundColor: RARITY_TILE[c.rarity] }]}>
-                  <Sunburst size={tile * 1.6} cx={(tile - 4) / 2} cy={tile * 0.44} color="#FFFFFF" opacity={0.34} period={48000} />
+                <View style={[styles.art, { height: tile * 0.82 }]}>
+                  <Studio color={RARITY_TILE[c.rarity]} spot={{ x: 0.5, y: 0.55 }} />
                   <View style={{ position: 'absolute', left: (tile - 4) / 2 - (tile * 0.86) / 2, bottom: -2 }}>
                     <LeoAvatar look={{ hat: '', [c.slot]: c.id }} size={tile * 0.86} crop={false} />
                   </View>

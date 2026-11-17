@@ -118,6 +118,38 @@ export function FloatIcon({ id, size, x, y, phase = 0, depth = 1 }: { id: string
 
 // ── Backdrops ───────────────────────────────────────────────────────────────────
 
+const hex = (c: string) => [1, 3, 5].map(i => parseInt(c.slice(i, i + 2), 16));
+/** Mixes a #RRGGBB colour toward white (amount > 0) or black (amount < 0). */
+export function shade(c: string, amount: number): string {
+  const t = amount > 0 ? 255 : 0;
+  const a = Math.abs(amount);
+  return '#' + hex(c).map(v => Math.round(v + (t - v) * a).toString(16).padStart(2, '0')).join('');
+}
+
+/**
+ * A photo-studio backdrop: one colour, lit from a soft spot behind the subject and falling off to the edges, with no
+ * props or pattern. The clean look for shop tiles: the item is the only thing on it.
+ */
+export function Studio({ color, spot = { x: 0.5, y: 0.42 }, light = 0.34, edge = -0.22, style }: {
+  color: string; spot?: { x: number; y: number }; light?: number; edge?: number; style?: ViewStyle;
+}) {
+  const gid = useGid('st');
+  return (
+    <View pointerEvents="none" style={[StyleSheet.absoluteFill, { backgroundColor: color }, style]}>
+      <Svg width="100%" height="100%">
+        <Defs>
+          <RadialGradient id={gid} cx={`${spot.x * 100}%`} cy={`${spot.y * 100}%`} rx="75%" ry="85%" fx={`${spot.x * 100}%`} fy={`${spot.y * 100}%`}>
+            <Stop offset="0" stopColor={shade(color, light)} />
+            <Stop offset="0.55" stopColor={color} />
+            <Stop offset="1" stopColor={shade(color, edge)} />
+          </RadialGradient>
+        </Defs>
+        <Rect x="0" y="0" width="100%" height="100%" fill={`url(#${gid})`} />
+      </Svg>
+    </View>
+  );
+}
+
 /** The full painted backdrop for a theme, filling its parent. A registered scene PNG wins over the coded one. */
 export function SceneBackdrop({ theme, sceneId, style }: { theme: SceneTheme; sceneId?: string; style?: ViewStyle }) {
   const gid = useGid('bg');
@@ -390,10 +422,6 @@ const PERK_OBJECTS: Record<string, () => React.ReactNode> = {
         <Circle r="13" fill="#FEF3C7" />
         <Path d={SPARK} fill="#F59E0B" transform="scale(0.85)" />
       </G>
-      {/* confetti */}
-      {[[18, 30, '#F472B6', 20], [140, 26, '#34D399', -30], [26, 64, '#FDE047', 45], [138, 64, '#60A5FA', 10], [118, 10, '#FDE047', 60], [40, 10, '#A78BFA', -15]].map(([x, y, c, r], i) => (
-        <Rect key={i} x={x as number} y={y as number} width="8" height="4" rx="1" fill={c as string} transform={`rotate(${r} ${x} ${y})`} />
-      ))}
     </G>
   ),
   'perk-hackathon': () => (

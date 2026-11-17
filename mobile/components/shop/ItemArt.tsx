@@ -32,7 +32,7 @@ export function ItemArt({ item, size, tint, style, showTag = true }: { item: Cos
   if (item.id in SHOP_ART) {
     return (
       <View style={[{ width: size, height: size, alignItems: 'center', justifyContent: 'center' }, style]}>
-        <LeoAvatar look={{ [item.slot]: item.id }} size={size} bg={tint ?? 'transparent'} />
+        <LeoAvatar look={{ hat: '', [item.slot]: item.id }} size={size} bg={tint ?? 'transparent'} />
       </View>
     );
   }

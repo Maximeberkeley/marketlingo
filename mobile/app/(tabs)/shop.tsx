@@ -19,9 +19,8 @@ import { DOUBLE_XP_ID, boostMinutes, doubleXpActive } from '../../lib/boosts';
 import { LeoAvatar } from '../../components/shop/LeoAvatar';
 import { ItemArt, ShopIcon } from '../../components/shop/ItemArt';
 import { Carousel, Flask, PriceButton, Row, SectionHead, XPChip } from '../../components/shop/ShopKit';
-import { Countdown, Float, MotionScope, PressScale, Rise, ScrollWatch, Sheen, useNow, useScrollWatch } from '../../components/shop/Motion';
-import { FloatIcon, FloorShadow, PERK_SCENE, PerkObject, SCENES, SceneBackdrop, SceneTheme, Sunburst, Twinkles } from '../../components/shop/Scene';
-import { SHOP_SCENES } from '../../lib/shopArt';
+import { Countdown, MotionScope, PressScale, Rise, ScrollWatch, useNow, useScrollWatch } from '../../components/shop/Motion';
+import { FloorShadow, PERK_SCENE, PerkObject, SCENES, SceneTheme, Studio } from '../../components/shop/Scene';
 import { MedalGlint, PODIUM_MEDALS } from '../../components/shop/MedalGlint';
 import { XPSheet } from '../../components/shop/XPSheet';
 import { DoubleXPTag } from '../../components/shop/DoubleXPTag';
@@ -29,7 +28,7 @@ import { ChunkyButton } from '../../components/social/ChunkyButton';
 
 export const SHOP_SEEN_KEY = 'ml_shop_tab_seen_v1';
 const fmt = (n: number) => n.toLocaleString('en-US');
-/** Bright backdrops for the power-up tiles (ice blue, repair orange, boost gold). */
+/** Studio colours for the power-up tiles (ice blue, repair orange, boost gold). */
 const POWER_TILE: Record<string, string> = { 'streak-freeze': '#38BDF8', 'streak-repair': '#FB923C', countdown: '#FBBF24' };
 
 const open = (path: string) => { triggerHaptic('light'); router.push(path as any); };
@@ -155,9 +154,9 @@ export default function ShopScreen() {
               const tag = p.id === STREAK_FREEZE_ID ? `You have ${freezes}` : p.earned && held > 0 ? `You have ${held}` : null;
               return (
                 <PressScale key={p.id} disabled={!p.live} onPress={() => open(p.route)} style={styles.powerTile} accessibilityLabel={tag ? `${p.name}, ${tag.toLowerCase()}` : p.name}>
-                  <View style={[styles.powerArt, { backgroundColor: p.live ? POWER_TILE[p.icon] : COLORS.bg1 }]}>
-                    {p.live && <Sunburst size={220} cx={84} cy={52} color="#FFFFFF" opacity={0.34} />}
-                    <Float distance={4} phase={p.live ? 0 : 700}><View style={{ opacity: p.live ? 1 : 0.55 }}><ShopIcon id={p.icon} size={64} /></View></Float>
+                  <View style={[styles.powerArt, { backgroundColor: COLORS.bg1 }]}>
+                    {p.live && <Studio color={POWER_TILE[p.icon]} />}
+                    <View style={{ opacity: p.live ? 1 : 0.55 }}><ShopIcon id={p.icon} size={60} /></View>
                     {tag && <View style={styles.haveTag}><Text maxFontSizeMultiplier={1.3} style={styles.haveText}>{tag}</Text></View>}
                   </View>
                   <View style={styles.tileBody}>
@@ -167,10 +166,10 @@ export default function ShopScreen() {
                       <View style={[styles.earnPill, styles.boostPill]}><Text maxFontSizeMultiplier={1.3} style={styles.boostPillText}>{`2x · ${boostMinutes(shop.doubleXpUntil, now.getTime())} min left`}</Text></View>
                     ) : p.earned ? (
                       held > 0
-                        ? <ChunkyButton label="Use now" onPress={() => open(p.route)} height={40} style={{ marginTop: 10 }} />
+                        ? <View style={styles.useRow}><Text maxFontSizeMultiplier={1.3} style={styles.useText}>Use now</Text><Feather name="chevron-right" size={15} color={COLORS.accent} /></View>
                         : <View style={styles.earnPill}><Text maxFontSizeMultiplier={1.3} style={styles.earnText}>Submit a Weekly Case</Text></View>
                     ) : p.live && p.price ? (
-                      <PriceButton price={p.price} onPress={() => open(p.route)} height={40} style={{ marginTop: 10 }} />
+                      <PriceTag price={p.price} />
                     ) : (
                       <View style={styles.soonPill}><Text maxFontSizeMultiplier={1.3} style={styles.soonText}>Coming soon</Text></View>
                     )}
@@ -197,20 +196,20 @@ export default function ShopScreen() {
                 const owned = shop.owns(c.id);
                 const color = RARITY_COLOR[c.rarity];
                 return (
-                  <PressScale key={d.itemId} onPress={() => open(`/shop-item?id=${c.id}&deal=1`)} style={[styles.dealTile, { borderColor: color + '66' }]} accessibilityLabel={`${c.name}, deal`}>
-                    <View style={[styles.dealArt, { backgroundColor: RARITY_TILE[c.rarity] }]}>
-                      <Sunburst size={240} cx={82} cy={62} color="#FFFFFF" opacity={0.34} />
-                      <Float distance={3} phase={(c.id.length % 5) * 300}><ItemArt item={c} size={112} tint="transparent" /></Float>
+                  <PressScale key={d.itemId} onPress={() => open(`/shop-item?id=${c.id}&deal=1`)} style={styles.dealTile} accessibilityLabel={`${c.name}, deal`}>
+                    <View style={styles.dealArt}>
+                      <Studio color={RARITY_TILE[c.rarity]} />
+                      <FloorShadow width={92} cx={84} y={118} dark={0.32} />
+                      <ItemArt item={c} size={116} tint="transparent" style={{ marginTop: 10 }} />
                       <View style={styles.offBadge}><Text maxFontSizeMultiplier={1.3} style={styles.offText}>-30%</Text></View>
-                      {c.rarity !== 'common' && <Sheen width={168} every={4200} delay={600} />}
                     </View>
                     <View style={styles.tileBody}>
                       <Text maxFontSizeMultiplier={1.3} style={styles.tileTitle} numberOfLines={1}>{c.name}</Text>
-                      <Text maxFontSizeMultiplier={1.3} style={[styles.rarity, { color }]}>{RARITY_LABEL[c.rarity].toUpperCase()}</Text>
+                      <View style={styles.rarityRow}><View style={[styles.rarityDot, { backgroundColor: color }]} /><Text maxFontSizeMultiplier={1.3} style={styles.rarity}>{RARITY_LABEL[c.rarity]}</Text></View>
                       {owned ? (
-                        <View style={styles.ownedPill}><Feather name="check" size={13} color={COLORS.success} /><Text maxFontSizeMultiplier={1.3} style={styles.ownedText}>Owned</Text></View>
+                        <View style={styles.ownedRow}><Feather name="check" size={14} color={COLORS.success} /><Text maxFontSizeMultiplier={1.3} style={styles.ownedText}>Owned</Text></View>
                       ) : (
-                        <PriceButton price={d.dealPrice} was={d.price} onPress={() => open(`/shop-item?id=${c.id}&deal=1`)} height={40} style={{ marginTop: 10 }} />
+                        <PriceTag price={d.dealPrice} was={d.price} />
                       )}
                     </View>
                   </PressScale>
@@ -237,12 +236,11 @@ export default function ShopScreen() {
               return (
                 <PressScale key={b.id} onPress={() => open(`/shop-item?bundle=${b.id}`)} style={styles.bundleTile} accessibilityLabel={b.name}>
                   <View style={styles.bundleArt}>
-                    <SceneBackdrop theme={(b.collection in SCENES ? b.collection : 'promo') as SceneTheme} sceneId={b.collection} />
-                    <Sunburst size={320} cx={138} cy={70} color="#FFFFFF" opacity={0.35} />
-                    <Twinkles w={276} h={128} color="#FFFFFF" points={[[0.2, 0.3, 12], [0.8, 0.25, 14], [0.7, 0.8, 9]]} />
-                    <Float distance={4} style={{ position: 'absolute', left: 138 - 70, top: 128 - 140 * 0.955 + 4 }}>
+                    <Studio color={SCENES[(b.collection in SCENES ? b.collection : 'promo') as SceneTheme].bg[1]} spot={{ x: 0.5, y: 0.6 }} />
+                    <FloorShadow width={120} cx={138} y={124} dark={0.32} />
+                    <View style={{ position: 'absolute', left: 138 - 70, top: 128 - 140 * 0.955 + 2 }}>
                       <LeoAvatar look={{ hat: '', ...wear }} size={140} crop={false} />
-                    </Float>
+                    </View>
                     <Text maxFontSizeMultiplier={1.3} style={styles.bundleCount}>{b.items.length} pieces</Text>
                     <View style={styles.saveBadge}><Text maxFontSizeMultiplier={1.3} style={styles.offText}>Save {save}%</Text></View>
                   </View>
@@ -250,11 +248,11 @@ export default function ShopScreen() {
                     <Text maxFontSizeMultiplier={1.3} style={styles.tileTitle}>{b.name}</Text>
                     <Text maxFontSizeMultiplier={1.3} style={styles.tileSub} numberOfLines={1}>{b.line}</Text>
                     {owned ? (
-                      <View style={styles.ownedPill}><Feather name="check" size={13} color={COLORS.success} /><Text maxFontSizeMultiplier={1.3} style={styles.ownedText}>Owned</Text></View>
+                      <View style={styles.ownedRow}><Feather name="check" size={14} color={COLORS.success} /><Text maxFontSizeMultiplier={1.3} style={styles.ownedText}>Owned</Text></View>
                     ) : ready ? (
-                      <PriceButton price={b.price} was={full} onPress={() => open(`/shop-item?bundle=${b.id}`)} height={42} style={{ marginTop: 10 }} />
+                      <PriceTag price={b.price} was={full} />
                     ) : (
-                      <View style={[styles.soonPill, { marginTop: 12 }]}><Text maxFontSizeMultiplier={1.3} style={styles.soonText}>Coming soon · {fmt(b.price)} XP</Text></View>
+                      <View style={styles.soonPill}><Text maxFontSizeMultiplier={1.3} style={styles.soonText}>Coming soon · {fmt(b.price)} XP</Text></View>
                     )}
                   </View>
                 </PressScale>
@@ -284,14 +282,12 @@ export default function ShopScreen() {
         {earnable.length > 0 && (
           <Rise index={8} style={styles.section}>
             <LinearGradient colors={isDark ? ['#2A1858', '#1B1240'] : ['#5B21B6', '#4C1D95']} style={styles.earnBand}>
-              <Twinkles w={390} h={120} color="#FDE68A" points={[[0.62, 0.22, 16], [0.86, 0.5, 12], [0.74, 0.12, 9]]} />
               <Text maxFontSizeMultiplier={1.3} style={styles.earnTitle}>Earn these</Text>
               <Text maxFontSizeMultiplier={1.3} style={styles.earnSub}>XP can't buy them. Only you can.</Text>
               <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 12, paddingTop: 14, paddingRight: 20 }}>
                 {earnable.map(({ c, p }) => (
                   <TouchableOpacity key={c.id} activeOpacity={0.9} onPress={() => open(`/shop-item?id=${c.id}`)} style={styles.earnTile} accessibilityRole="button">
                     <View style={styles.earnArt}>
-                      <Sunburst size={220} cx={72} cy={50} color="#FDE68A" opacity={p.met ? 0.4 : 0.18} />
                       <View style={{ opacity: p.met ? 1 : 0.55 }}>
                         {(PODIUM_MEDALS as readonly string[]).includes(c.id)
                           ? <MedalGlint place={((PODIUM_MEDALS as readonly string[]).indexOf(c.id) + 1) as 1 | 2 | 3} height={84} interactive={false} />
@@ -327,13 +323,23 @@ export default function ShopScreen() {
 
 // ── Pieces ───────────────────────────────────────────────────────────────────
 
+/** The price on a tile: the flask and the number, the old price struck through. The tile itself is the button. */
+function PriceTag({ price, was }: { price: number; was?: number | null }) {
+  return (
+    <View style={styles.priceRow} accessibilityLabel={`${fmt(price)} XP${was ? `, was ${fmt(was)}` : ''}`}>
+      <Flask size={16} />
+      <Text maxFontSizeMultiplier={1.3} style={styles.priceText}>{fmt(price)}</Text>
+      {was ? <Text maxFontSizeMultiplier={1.3} style={styles.wasText}>{fmt(was)}</Text> : null}
+    </View>
+  );
+}
+
 function PromoCard({ feature, owned, look }: { feature: Feature; owned: boolean; look: Record<string, string> }) {
   const { width: screen } = useWindowDimensions();
   const W = screen - 40;
   const H = 208;
   const isSet = feature.kind === 'bundle';
   const title = isSet ? feature.bundle.name : `Leo's ${feature.item.name.toLowerCase()}`;
-  const rarity = isSet ? null : feature.item.rarity;
   const line = isSet ? `Save ${Math.round((1 - feature.bundle.price / bundleFullPrice(feature.bundle)) * 100)}% on the set` : `${RARITY_LABEL[feature.item.rarity]} ${SLOT_LABEL[feature.item.slot].toLowerCase()}`;
   const price = isSet ? feature.bundle.price : priceOf(feature.item)!;
   const was = isSet ? bundleFullPrice(feature.bundle) : null;
@@ -347,16 +353,12 @@ function PromoCard({ feature, owned, look }: { feature: Feature; owned: boolean;
     <PressScale onPress={() => open(path)} accessibilityLabel={`${title}. ${line}`} style={{ marginTop: 34 }}>
       <View style={[styles.promo, { height: H }]}>
         <View style={styles.promoClip}>
-          <SceneBackdrop theme="promo" sceneId="promo" />
-          <Sunburst size={420} cx={leoX + leo / 2} cy={H * 0.52} color={rarity ? RARITY_COLOR[rarity] : t.ray} opacity={0.55} />
-          <Twinkles w={W} h={H} color={t.spark} points={[[0.52, 0.14, 16], [0.94, 0.1, 12], [0.6, 0.86, 10], [0.06, 0.08, 9], [0.42, 0.62, 8]]} />
+          <Studio color={t.bg[1]} spot={{ x: (leoX + leo / 2) / W, y: 0.5 }} light={0.22} edge={-0.5} />
           <FloorShadow width={leo * 0.8} cx={leoX + leo * 0.49} y={H - 16} dark={0.7} />
-          {rarity === 'legendary' || rarity === 'epic' || isSet ? <Sheen width={W} every={3800} /> : null}
         </View>
-        <FloatIcon id={t.icons[2]} size={40} x={leoX + leo * 0.06} y={-16} depth={0} phase={300} />
-        <Float distance={6} style={{ position: 'absolute', left: leoX, top: leoTop }}>
+        <View style={{ position: 'absolute', left: leoX, top: leoTop }}>
           <LeoAvatar look={{ ...look, ...wear }} size={leo} crop={false} />
-        </Float>
+        </View>
         {/* Text sits above Leo: on narrow phones (iPhone SE) wings and capes reach under the title. */}
         <View style={styles.promoText}>
           <View style={styles.promoKicker}>
@@ -372,8 +374,6 @@ function PromoCard({ feature, owned, look }: { feature: Feature; owned: boolean;
             <PriceButton price={price} was={was} onPress={() => open(path)} height={44} />
           )}
         </View>
-        <FloatIcon id={t.icons[1]} size={54} x={W - 60} y={H - 74} depth={2} phase={800} />
-        <FloatIcon id={t.icons[0]} size={36} x={W - 44} y={10} depth={1} phase={1300} />
       </View>
     </PressScale>
   );
@@ -383,24 +383,14 @@ function PerkCard({ perk, width, waitlist, joined, locked, onJoin }: { perk: Per
   const status = locked ? 'Unlocks after your Weekly Case' : waitlist >= 10 ? `${fmt(waitlist)} on the waitlist` : 'Coming soon';
   const scene = PERK_SCENE[perk.id] ?? PERK_SCENE['perk-tool-credits'];
   const H = 176;
-  const art = SHOP_SCENES[perk.id];
   return (
     <PressScale onPress={() => open(`/shop-perk?id=${perk.id}`)} style={[styles.perk, { width }]} accessibilityLabel={`${perk.name}. ${status}`}>
       <View style={[styles.perkArt, { height: H }]}>
-        {art ? <SceneBackdrop theme="promo" sceneId={perk.id} /> : (
-          <LinearGradient colors={scene.bg} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={StyleSheet.absoluteFill} />
-        )}
-        <Sunburst size={380} cx={width / 2} cy={H * 0.56} color="#FDE68A" opacity={0.32} rays={18} />
-        <Twinkles w={width} h={H} color="#FDE68A" points={[[0.12, 0.3, 12], [0.86, 0.22, 15], [0.22, 0.82, 9], [0.8, 0.84, 10]]} />
-        {!art && (
-          <Float distance={5} style={{ position: 'absolute', left: width / 2 - 92, top: H / 2 - 60 }}>
-            <PerkObject id={perk.id} width={184} />
-          </Float>
-        )}
-        <FloatIcon id={scene.icons[0]} size={42} x={14} y={H - 66} depth={2} phase={400} />
-        <FloatIcon id={scene.icons[1]} size={34} x={width - 54} y={46} depth={0} phase={1100} />
+        <Studio color={scene.bg[1]} spot={{ x: 0.5, y: 0.5 }} light={0.18} edge={-0.45} />
+        <View style={{ position: 'absolute', left: width / 2 - 92, top: H / 2 - 60 }}>
+          <PerkObject id={perk.id} width={184} />
+        </View>
         <View style={styles.perkTag}><Text maxFontSizeMultiplier={1.3} style={styles.perkTagText}>{perk.kicker}</Text></View>
-        <Sheen width={width} every={5200} delay={1200} />
       </View>
       <View style={styles.perkBody}>
         <Text maxFontSizeMultiplier={1.3} style={styles.perkName} numberOfLines={2}>{perk.name}</Text>
@@ -435,18 +425,12 @@ function CollectionCard({ collection, width, owned }: { collection: Collection; 
   return (
     <PressScale onPress={() => open(`/shop-collection?id=${collection.id}`)} style={[styles.coll, { width }]} accessibilityLabel={`${collection.name} collection`}>
       <View style={[styles.collArt, { height: H }]}>
-        <SceneBackdrop theme={theme} sceneId={collection.id} />
-        <Sunburst size={420} cx={width / 2} cy={H * 0.62} color={t.ray} opacity={t.rayOpacity} />
-        <Twinkles w={width} h={H} color={t.spark} />
-        <FloorShadow width={230} cx={width / 2} y={H - 4} dark={0.45} />
-        <Sheen width={width} every={5600} delay={300} />
+        <Studio color={t.bg[1]} spot={{ x: 0.5, y: 0.62 }} />
+        <FloorShadow width={200} cx={width / 2} y={H - 4} dark={0.35} />
       </View>
-      <FloatIcon id={t.icons[1]} size={40} x={width - 66} y={28} depth={0} phase={700} />
-      <Float distance={5} style={{ position: 'absolute', left: width / 2 - leo / 2, top: leoTop }}>
+      <View style={{ position: 'absolute', left: width / 2 - leo / 2, top: leoTop }}>
         <LeoAvatar look={drawn.length ? { hat: '', ...look } : {}} size={leo} crop={false} />
-      </Float>
-      <FloatIcon id={t.icons[0]} size={50} x={12} y={H - 74} depth={2} phase={200} />
-      <FloatIcon id={t.icons[2]} size={44} x={width - 60} y={H - 62} depth={1} phase={1200} />
+      </View>
       <View style={styles.collBody}>
         <View style={{ flex: 1 }}>
           <Text maxFontSizeMultiplier={1.3} style={styles.collName}>{collection.name}</Text>
@@ -454,13 +438,13 @@ function CollectionCard({ collection, width, owned }: { collection: Collection; 
           <View style={styles.collMeter}><View style={[styles.collFill, { width: `${Math.max(4, (have / Math.max(1, drawn.length)) * 100)}%` }]} /></View>
           <Text maxFontSizeMultiplier={1.3} style={styles.collOwned}>{drawn.length ? `${have} of ${drawn.length} collected` : 'Being drawn'}</Text>
         </View>
-        <ChunkyButton label="See set" onPress={() => open(`/shop-collection?id=${collection.id}`)} height={42} style={{ width: 110 }} haptic />
+        <View style={styles.useRow}><Text maxFontSizeMultiplier={1.3} style={styles.useText}>See set</Text><Feather name="chevron-right" size={15} color={COLORS.accent} /></View>
       </View>
     </PressScale>
   );
 }
 
-const CARD = { backgroundColor: COLORS.bg2, borderRadius: 20, borderWidth: 2, borderBottomWidth: 4, borderColor: COLORS.border };
+const CARD = { backgroundColor: COLORS.bg2, borderRadius: 20, borderWidth: 1, borderColor: COLORS.border };
 
 const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: COLORS.bg0 },
@@ -469,13 +453,13 @@ const styles = StyleSheet.create({
   pad: { paddingHorizontal: 20 },
   section: { marginTop: 30 },
 
-  bag: { width: 46, height: 46, borderRadius: 23, borderWidth: 2, borderBottomWidth: 4, borderColor: COLORS.border, backgroundColor: COLORS.bg2, alignItems: 'center', justifyContent: 'center' },
+  bag: { width: 46, height: 46, borderRadius: 23, borderWidth: 1, borderColor: COLORS.border, backgroundColor: COLORS.bg2, alignItems: 'center', justifyContent: 'center' },
   bagTag: { position: 'absolute', left: -4, bottom: -4, width: 18, height: 18, borderRadius: 9, backgroundColor: COLORS.accentFill, borderWidth: 2, borderColor: COLORS.bg0, alignItems: 'center', justifyContent: 'center' },
   freezeBadge: { position: 'absolute', right: -10, top: -6, flexDirection: 'row', alignItems: 'center', gap: 1, height: 20, paddingHorizontal: 4, borderRadius: 10, backgroundColor: isDark ? '#0C4A6E' : '#E0F2FE', borderWidth: 2, borderColor: COLORS.bg0 },
   freezeBadgeText: { fontSize: 11, fontWeight: '900', color: isDark ? '#BAE6FD' : '#0369A1' },
 
-  promo: { borderRadius: 26, borderBottomWidth: 5, borderColor: '#2B1670' },
-  promoClip: { ...StyleSheet.absoluteFillObject, borderRadius: 26, overflow: 'hidden', backgroundColor: '#0A0E2C' },
+  promo: { borderRadius: 24 },
+  promoClip: { ...StyleSheet.absoluteFillObject, borderRadius: 24, overflow: 'hidden', backgroundColor: '#0A0E2C' },
   promoText: { position: 'absolute', left: 18, top: 18, bottom: 18, width: '44%' },
   promoKicker: { flexDirection: 'row', alignItems: 'center', gap: 5, alignSelf: 'flex-start', paddingHorizontal: 9, height: 24, borderRadius: 12, backgroundColor: 'rgba(253,230,138,0.16)', borderWidth: 1, borderColor: 'rgba(253,230,138,0.4)' },
   promoKickerText: { fontSize: 11.5, fontWeight: '900', color: '#FDE68A', fontVariant: ['tabular-nums'] },
@@ -513,22 +497,30 @@ const styles = StyleSheet.create({
   tileTitle: { fontSize: 15, fontWeight: '800', color: COLORS.textPrimary },
   tileSub: { fontSize: 12, lineHeight: 16, color: COLORS.textSecondary, marginTop: 2, minHeight: 32 },
   headerRight: { flexDirection: 'row', alignItems: 'center', gap: 6 },
-  earnPill: { marginTop: 10, height: 40, borderRadius: 12, borderWidth: 2, borderStyle: 'dashed', borderColor: COLORS.border, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 6 },
+  earnPill: { marginTop: 10, height: 36, borderRadius: 12, borderWidth: 2, borderStyle: 'dashed', borderColor: COLORS.border, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 6 },
   earnText: { fontSize: 12, fontWeight: '800', color: COLORS.textSecondary, textAlign: 'center' },
   boostPill: { borderStyle: 'solid', borderColor: '#F59E0B', backgroundColor: isDark ? 'rgba(245,158,11,0.16)' : '#FEF3C7' },
   boostPillText: { fontSize: 13, fontWeight: '900', color: isDark ? '#FCD34D' : '#B45309' },
-  soonPill: { marginTop: 10, height: 36, borderRadius: 12, backgroundColor: COLORS.bg1, alignItems: 'center', justifyContent: 'center' },
+  soonPill: { marginTop: 10, height: 30, alignSelf: 'flex-start', paddingHorizontal: 10, borderRadius: 12, backgroundColor: COLORS.bg1, alignItems: 'center', justifyContent: 'center' },
   soonText: { fontSize: 12.5, fontWeight: '800', color: COLORS.textMuted },
-  rarity: { fontSize: 10.5, fontWeight: '900', letterSpacing: 0.8, marginTop: 2 },
+  rarityRow: { flexDirection: 'row', alignItems: 'center', gap: 5, marginTop: 3 },
+  rarityDot: { width: 7, height: 7, borderRadius: 4 },
+  rarity: { fontSize: 12, fontWeight: '600', color: COLORS.textSecondary },
+  priceRow: { flexDirection: 'row', alignItems: 'center', gap: 4, marginTop: 10, height: 22 },
+  priceText: { fontSize: 16, fontWeight: '800', color: COLORS.textPrimary, fontVariant: ['tabular-nums'] },
+  wasText: { fontSize: 13, fontWeight: '600', color: COLORS.textMuted, textDecorationLine: 'line-through', marginLeft: 4 },
+  ownedRow: { flexDirection: 'row', alignItems: 'center', gap: 5, marginTop: 10, height: 22 },
+  useRow: { flexDirection: 'row', alignItems: 'center', gap: 2, marginTop: 10, height: 22 },
+  useText: { fontSize: 14, fontWeight: '800', color: COLORS.accent },
   ownedPill: { marginTop: 10, height: 40, borderRadius: 12, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 5, backgroundColor: COLORS.successSoft },
   ownedText: { fontSize: 13.5, fontWeight: '800', color: COLORS.success },
 
   dealHead: { flexDirection: 'row', alignItems: 'flex-start' },
   clock: { flexDirection: 'row', alignItems: 'center', gap: 5, height: 28, paddingHorizontal: 10, borderRadius: 14, backgroundColor: COLORS.accentSoft, marginRight: 20, marginTop: 4 },
   clockText: { fontSize: 12.5, fontWeight: '800', color: COLORS.accent, fontVariant: ['tabular-nums'] },
-  dealTile: { width: 168, overflow: 'hidden', backgroundColor: COLORS.bg2, borderRadius: 20, borderWidth: 2, borderBottomWidth: 4 },
+  dealTile: { width: 168, overflow: 'hidden', ...CARD },
   dealArt: { height: 128, alignItems: 'center', justifyContent: 'center', overflow: 'hidden' },
-  offBadge: { position: 'absolute', top: 8, left: 8, paddingHorizontal: 7, height: 22, borderRadius: 7, backgroundColor: '#E11D48', alignItems: 'center', justifyContent: 'center' },
+  offBadge: { position: 'absolute', top: 10, left: 10, paddingHorizontal: 7, height: 22, borderRadius: 11, backgroundColor: '#14141F', alignItems: 'center', justifyContent: 'center' },
   offText: { fontSize: 11.5, fontWeight: '900', color: '#FFFFFF' },
 
   coll: { ...CARD },
@@ -545,7 +537,7 @@ const styles = StyleSheet.create({
   bundleTile: { width: 276, overflow: 'hidden', ...CARD },
   bundleArt: { height: 128, overflow: 'hidden' },
   bundleCount: { position: 'absolute', right: 10, bottom: 8, paddingHorizontal: 8, height: 22, lineHeight: 22, borderRadius: 11, overflow: 'hidden', backgroundColor: 'rgba(0,0,0,0.28)', fontSize: 11.5, fontWeight: '800', color: '#FFFFFF' },
-  saveBadge: { position: 'absolute', top: 8, left: 8, paddingHorizontal: 8, height: 22, borderRadius: 7, backgroundColor: '#E11D48', alignItems: 'center', justifyContent: 'center' },
+  saveBadge: { position: 'absolute', top: 10, left: 10, paddingHorizontal: 8, height: 22, borderRadius: 11, backgroundColor: '#14141F', alignItems: 'center', justifyContent: 'center' },
 
   earnBand: { paddingTop: 22, paddingBottom: 30, paddingLeft: 20 },
   bandOverscroll: { position: 'absolute', left: 0, right: 0, bottom: -800, height: 800 },
