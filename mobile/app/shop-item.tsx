@@ -18,7 +18,7 @@ import { LeoAvatar } from '../components/shop/LeoAvatar';
 import { ItemArt } from '../components/shop/ItemArt';
 import { PriceButton, XPChip } from '../components/shop/ShopKit';
 import { Float, Pop, Sheen, useReduceMotion } from '../components/shop/Motion';
-import { FloatIcon, FloorShadow, SCENES, SceneBackdrop, SceneTheme, Sunburst, Twinkles } from '../components/shop/Scene';
+import { FloorShadow, SCENES, SceneTheme, Studio, Sunburst, Twinkles } from '../components/shop/Scene';
 import { ChunkyButton } from '../components/social/ChunkyButton';
 import { ConfettiBurst } from '../components/ui/ConfettiBurst';
 
@@ -139,14 +139,12 @@ export default function ShopItemScreen() {
       <View style={styles.middle}>
       <View style={[styles.stage, { width: stageW }]}>
         <View style={styles.stageCard}>
-          <SceneBackdrop theme={theme} sceneId={sceneKey} />
-          <Sunburst size={520} cx={stageW / 2} cy={STAGE_H * 0.6} color={SCENES[theme].ray} opacity={SCENES[theme].rayOpacity} />
+          <Studio color={SCENES[theme].bg[1]} spot={{ x: 0.5, y: 0.6 }} />
+          <Sunburst size={520} cx={stageW / 2} cy={STAGE_H * 0.6} color={SCENES[theme].ray} opacity={SCENES[theme].rayOpacity * 0.75} />
           <Twinkles w={stageW} h={STAGE_H} color={SCENES[theme].spark} />
-          <FloorShadow width={260} cx={stageW / 2} y={STAGE_H - 4} dark={0.45} />
+          <FloorShadow width={230} cx={stageW / 2} y={STAGE_H - 4} dark={0.35} />
           {(lead.rarity === 'epic' || lead.rarity === 'legendary') && <Sheen width={stageW} every={3600} />}
         </View>
-        <FloatIcon id={SCENES[theme].icons[0]} size={50} x={10} y={STAGE_H - 78} depth={2} phase={200} />
-        <FloatIcon id={SCENES[theme].icons[1]} size={40} x={stageW - 58} y={22} depth={0} phase={900} />
         <Float distance={6} style={{ position: 'absolute', left: stageW / 2 - LEO_TRY / 2, top: STAGE_H - LEO_TRY * 0.955 + 4 }}>
           {/* Not drawn yet: plain Leo, so the page never passes off the current outfit as this item. */}
           <LeoAvatar look={art ? { ...shop.look, ...wearing } : {}} size={LEO_TRY} crop={false} />

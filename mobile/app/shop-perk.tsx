@@ -9,11 +9,10 @@ import { isDark } from '../lib/theme';
 import { triggerHaptic } from '../lib/haptics';
 import { PERKS } from '../lib/shopCatalog';
 import { requirementProgress } from '../lib/shopEconomy';
-import { SHOP_SCENES } from '../lib/shopArt';
 import { useShop } from '../hooks/useShop';
 import { ChunkyButton } from '../components/social/ChunkyButton';
+import { PERK_SCENE, PerkObject, Studio, Sunburst, Twinkles } from '../components/shop/Scene';
 import { Float, Sheen } from '../components/shop/Motion';
-import { FloatIcon, PERK_SCENE, PerkObject, SceneBackdrop, Sunburst, Twinkles } from '../components/shop/Scene';
 import { Flask } from '../components/shop/ShopKit';
 
 const fmt = (n: number) => n.toLocaleString('en-US');
@@ -36,7 +35,6 @@ export default function PerkScreen() {
   const balance = shop.balance.balance;
   const enough = balance >= perk.price;
   const scene = PERK_SCENE[perk.id] ?? PERK_SCENE['perk-tool-credits'];
-  const art = SHOP_SCENES[perk.id];
   const H = 250 + insets.top;
   const objectW = Math.min(250, width * 0.64);
 
@@ -44,18 +42,12 @@ export default function PerkScreen() {
     <View style={[styles.root, { paddingBottom: insets.bottom + 14 }]}>
       <ScrollView contentContainerStyle={{ paddingBottom: 24 }} showsVerticalScrollIndicator={false}>
         <View style={[styles.hero, { height: H }]}>
-          {art ? <SceneBackdrop theme="promo" sceneId={perk.id} /> : (
-            <LinearGradient colors={scene.bg} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={StyleSheet.absoluteFill} />
-          )}
-          <Sunburst size={560} cx={width / 2} cy={insets.top + 140} color="#FDE68A" opacity={0.3} rays={20} />
+          <Studio color={scene.bg[1]} spot={{ x: 0.5, y: (insets.top + 140) / H }} light={0.18} edge={-0.45} />
+          <Sunburst size={560} cx={width / 2} cy={insets.top + 140} color="#FDE68A" opacity={0.26} rays={20} />
           <Twinkles w={width} h={H} color="#FDE68A" points={[[0.1, 0.45, 14], [0.9, 0.38, 18], [0.18, 0.86, 10], [0.84, 0.88, 12], [0.6, 0.3, 8]]} />
-          {!art && (
-            <Float distance={6} style={{ position: 'absolute', left: width / 2 - objectW / 2, top: insets.top + 140 - objectW * 0.375 }}>
-              <PerkObject id={perk.id} width={objectW} />
-            </Float>
-          )}
-          <FloatIcon id={scene.icons[0]} size={54} x={18} y={H - 84} depth={2} phase={400} />
-          <FloatIcon id={scene.icons[1]} size={42} x={width - 66} y={insets.top + 64} depth={0} phase={1100} />
+          <Float distance={6} style={{ position: 'absolute', left: width / 2 - objectW / 2, top: insets.top + 140 - objectW * 0.375 }}>
+            <PerkObject id={perk.id} width={objectW} />
+          </Float>
           <Sheen width={width} every={5600} delay={800} />
           <LinearGradient colors={['transparent', COLORS.bg0]} style={styles.fade} pointerEvents="none" />
           <View style={[styles.heroTop, { top: insets.top + 8 }]}>
