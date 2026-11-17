@@ -277,7 +277,8 @@ export function CaseScreen({ deepCase, marketId, marketName, onExit, onFinish, g
 
       {stage.hint ? <Text style={styles.stageHint}>{stage.hint}</Text> : null}
 
-      <ScrollView ref={scrollRef} onScroll={revealCorrect.onScroll} scrollEventThrottle={16} contentContainerStyle={styles.body} showsVerticalScrollIndicator={false}>
+      <ScrollView ref={scrollRef} onScroll={revealCorrect.onScroll} scrollEventThrottle={16} contentContainerStyle={styles.body} showsVerticalScrollIndicator={false}
+        scrollEnabled={stage?.exercise?.kind !== 'sortSignal'}>
         <RevealCorrectProvider value={revealCorrect.reveal}>
         {(!!stage.exercise.leo?.line || (phase === 'feedback' && !passive)) && (
           <LeoCoach
