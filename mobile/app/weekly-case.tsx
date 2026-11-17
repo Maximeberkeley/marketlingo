@@ -279,7 +279,7 @@ export default function WeeklyCaseRoute() {
         {done ? (
           <>
             <Submitted weekly={current} board={board} />
-            {paid ? <View style={styles.xpChip}><Feather name="zap" size={14} color={COLORS.accent} /><Text style={styles.xpText}>{`+${WEEKLY_CASE_XP} XP banked`}</Text></View> : null}
+            {paid ? <View style={styles.xpChip}><Feather name="zap" size={14} color={COLORS.accent} /><Text style={styles.xpText}>{`+${WEEKLY_CASE_XP.toLocaleString('en-US')} XP banked`}</Text></View> : null}
             {paid ? (
               <TouchableOpacity onPress={() => router.push('/shop-boost' as any)} accessibilityRole="button" accessibilityLabel="Double XP earned. Open it" style={styles.boostCard}>
                 <ShopIcon id="countdown" size={44} />
@@ -302,7 +302,7 @@ export default function WeeklyCaseRoute() {
               {industry ? <View style={styles.metaPill}><Feather name="briefcase" size={13} color={COLORS.textSecondary} /><Text style={styles.metaText}>{industry}</Text></View> : null}
               <View style={styles.metaPill}><Feather name="clock" size={13} color={COLORS.textSecondary} /><Text style={styles.metaText}>{`About ${minutes} min`}</Text></View>
               <View style={styles.metaPill}><Feather name="calendar" size={13} color={COLORS.textSecondary} /><Text style={styles.metaText}>{`Closes in ${countdown(current.closesAt - Date.now())}`}</Text></View>
-              <View style={[styles.metaPill, styles.prizePill]}><Feather name="gift" size={13} color={COLORS.accent} /><Text style={[styles.metaText, { color: COLORS.accent }]}>{`+${WEEKLY_CASE_XP} XP and Double XP`}</Text></View>
+              <View style={[styles.metaPill, styles.prizePill]}><Feather name="gift" size={13} color={COLORS.accent} /><Text style={[styles.metaText, { color: COLORS.accent }]}>{`+${WEEKLY_CASE_XP.toLocaleString('en-US')} XP and Double XP`}</Text></View>
             </View>
             {fromOtherIndustry(current, marketId) ? <Text style={styles.sharedNote}>{SHARED_CASE_NOTE}</Text> : null}
             <CaseBrief weekly={current} />

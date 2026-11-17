@@ -1,5 +1,5 @@
 import { getMarketById } from "./markets";
-const WEEKLY_CASE_XP = 200;
+const WEEKLY_CASE_XP = 1000;
 const SUGGESTED_MINUTES = 10;
 const MIN_PART_WORDS = 3;
 const HARD_CAP_FACTOR = 2;

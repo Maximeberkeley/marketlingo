@@ -122,13 +122,13 @@ function WeeklyHero({ info }: { info: WeeklyCardInfo }) {
         </View>
       ) : null}
       {info.prize ? (
-        <View style={styles.prize} accessible accessibilityLabel={`Submit to win ${info.prize.xp} XP and a ${DOUBLE_XP_MINUTES}-minute Double XP boost`}>
+        <View style={styles.prize} accessible accessibilityLabel={`Submit to win ${info.prize.xp.toLocaleString('en-US')} XP and a ${DOUBLE_XP_MINUTES}-minute Double XP boost`}>
           <Text style={styles.prizeLabel}>Submit to win</Text>
           <View style={styles.prizeRow}>
             <View style={styles.prizeItem}>
               <View style={styles.xpBadge}><Flask size={18} color="#FFFFFF" /></View>
               <View style={{ flexShrink: 1 }}>
-                <Text style={styles.prizeBig}>{`+${info.prize.xp} XP`}</Text>
+                <Text style={styles.prizeBig}>{`+${info.prize.xp.toLocaleString('en-US')} XP`}</Text>
                 <Text style={styles.prizeSmall}>On submit</Text>
               </View>
             </View>

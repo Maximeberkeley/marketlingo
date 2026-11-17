@@ -11,8 +11,8 @@ const read = (p: string) => readFileSync(p, 'utf8');
 const NOW = Date.UTC(2026, 10, 11, 18);
 
 describe('Weekly Case reward', () => {
-  it('pays 200 XP as normal XP earned', () => {
-    expect(WEEKLY_CASE_XP).toBe(200);
+  it('pays 1,000 XP as normal XP earned', () => {
+    expect(WEEKLY_CASE_XP).toBe(1000);
     expect(read('mobile/app/weekly-case.tsx')).toContain("addXP(WEEKLY_CASE_XP, 'weekly_case'");
   });
   it('grants one Double XP token per submitted case on the server', () => {
