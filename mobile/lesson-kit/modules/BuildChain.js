@@ -1,3 +1,4 @@
+import { stepScore } from "../screens/lessonCredit";
 import React, { useEffect, useMemo, useState } from "react";
 import { View, Text, StyleSheet, TouchableOpacity, Animated } from "react-native";
 import { Feather } from "@expo/vector-icons";
@@ -21,7 +22,7 @@ function BuildChain({ exercise, phase, onChange }) {
   const complete = used.length === exercise.steps.length;
   useEffect(() => {
     if (!complete) return;
-    onChange({ canCheck: true, isCorrect: wrongs === 0 });
+    onChange({ canCheck: true, isCorrect: wrongs === 0, score: stepScore(exercise.steps.length, wrongs), slips: wrongs });
     Animated.sequence([
       Animated.timing(pulse, { toValue: 1, duration: 220, useNativeDriver: true }),
       Animated.timing(pulse, { toValue: 0, duration: 260, useNativeDriver: true })
@@ -59,7 +60,7 @@ function BuildChain({ exercise, phase, onChange }) {
         style: styles.arrow
       }
     ));
-  })), wrongs > 0 && /* @__PURE__ */ React.createElement(Text, { style: styles.slips, accessibilityLiveRegion: "polite" }, phase === "feedback" || complete ? `Right chain, but ${wrongs === 1 ? "1 tap was" : `${wrongs} taps were`} out of order. It only counts with no wrong taps.` : `That step comes later. ${wrongs === 1 ? "1 wrong tap" : `${wrongs} wrong taps`} so far.`), /* @__PURE__ */ React.createElement(Animated.View, { style: [styles.bank, { transform: [{ translateX }] }] }, bank.map(({ label, i }) => {
+  })), wrongs > 0 && /* @__PURE__ */ React.createElement(Text, { style: styles.slips, accessibilityLiveRegion: "polite" }, phase === "feedback" || complete ? `Right chain, with ${wrongs === 1 ? "1 tap" : `${wrongs} taps`} out of order on the way.` : "That step comes later. Try another one."), /* @__PURE__ */ React.createElement(Animated.View, { style: [styles.bank, { transform: [{ translateX }] }] }, bank.map(({ label, i }) => {
     const spent = used.includes(i);
     return /* @__PURE__ */ React.createElement(
       TouchableOpacity,
@@ -109,7 +110,7 @@ const styles = StyleSheet.create({
   slotText: { flex: 1, minWidth: 0, flexShrink: 1, fontSize: tokens.font.caption + 2, fontWeight: "600", color: tokens.color.textMuted },
   slotTextFilled: { color: tokens.color.text, fontWeight: "800" },
   arrow: { alignSelf: "center", marginVertical: 0 },
-  slips: { marginTop: tokens.space.sm, fontSize: tokens.font.caption + 1, fontWeight: "700", color: tokens.color.incorrectDark },
+  slips: { marginTop: tokens.space.sm, fontSize: tokens.font.caption + 1, fontWeight: "700", color: tokens.color.textSecondary },
   bank: {
     flexDirection: "row",
     flexWrap: "wrap",

@@ -6,6 +6,11 @@ export interface ExerciseState {
   isCorrect: boolean;
   /** The option the learner picked, for single-pick questions (drives "why that's wrong"). */
   selectedIndex?: number;
+  /** 0..1 credit for this attempt, for exercises that can be partly right (steps, rounds, closeness). Lessons use it;
+   *  the Arena and Deep Case keep scoring on isCorrect. */
+  score?: number;
+  /** Wrong tries on the way to finishing a multi-step exercise. */
+  slips?: number;
 }
 
 export interface ExerciseProps<T> {

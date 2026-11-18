@@ -1,3 +1,4 @@
+import { stepScore } from "../screens/lessonCredit";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { View, Text, StyleSheet, Animated, PanResponder } from "react-native";
 import { tokens } from "../theme/tokens";
@@ -44,7 +45,7 @@ function SortSignal({ exercise, phase, onChange }) {
     onChange({ canCheck: false, isCorrect: false });
   }, [exercise.id]);
   useEffect(() => {
-    if (done) onChange({ canCheck: true, isCorrect: wrongs === 0 });
+    if (done) onChange({ canCheck: true, isCorrect: wrongs === 0, score: stepScore(exercise.items.length, wrongs), slips: wrongs });
   }, [done, wrongs]);
   const SLOP = 16;
   const bucketAt = (pageX, pageY) => {

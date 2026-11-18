@@ -20,6 +20,8 @@ import { hasCalledToday } from '../../lib/leoCall';
 interface Props {
   correct: number;
   total: number;
+  /** Questions that come back tomorrow on the review ladder. */
+  toReview?: number;
   /** XP earned from correct answers, before bonuses. */
   baseXp: number;
   bestCombo?: number;
@@ -38,15 +40,10 @@ interface Props {
   takeaway?: string;
 }
 
-function formatTime(seconds: number) {
-  const m = Math.floor(seconds / 60);
-  const s = seconds % 60;
-  return m > 0 ? `${m} min ${s.toString().padStart(2, '0')}` : `${s} sec`;
-}
-
 export function LessonComplete({
   correct,
   total,
+  toReview = 0,
   baseXp,
   bestCombo = 0,
   heartsLeft,
@@ -143,11 +140,11 @@ export function LessonComplete({
         </Text>
       )}
 
-      <View style={styles.stats}>
-        {total > 0 && <Stat label="Accuracy" value={`${accuracy}%`} />}
-        {total > 0 && <Stat label="Correct" value={`${correct}/${total}`} />}
-        <Stat label="Time" value={formatTime(timeSpentSeconds)} />
-      </View>
+      {toReview > 0 && (
+        <Text style={styles.leoLine}>
+          {toReview === 1 ? 'One question comes back tomorrow to make it stick.' : `${toReview} questions come back tomorrow to make them stick.`}
+        </Text>
+      )}
 
       {/* Real progress: only sections the learner wrote count. */}
       {!dossier.loading && (
@@ -217,15 +214,6 @@ export function LessonComplete({
 }
 
 
-function Stat({ label, value }: { label: string; value: string }) {
-  return (
-    <View style={styles.stat}>
-      <Text style={styles.statValue}>{value}</Text>
-      <Text style={styles.statLabel}>{label}</Text>
-    </View>
-  );
-}
-
 const styles = StyleSheet.create({
   leoHero: { width: 132, height: 132, alignSelf: 'center', marginBottom: 8 },
   scroll: { flex: 1, backgroundColor: tokens.color.bg },
@@ -278,23 +266,6 @@ const styles = StyleSheet.create({
   },
   bonusLabel: { flex: 1, minWidth: 0, flexShrink: 1, fontSize: tokens.font.caption + 1, fontWeight: '700', color: tokens.color.textSecondary },
   bonusXp: { fontSize: tokens.font.caption + 1, fontWeight: '800', color: tokens.color.accent },
-  stats: {
-    flexDirection: 'row',
-    gap: tokens.space.md,
-    marginTop: tokens.space.lg,
-    width: '100%',
-  },
-  stat: {
-    flex: 1,
-    borderRadius: tokens.radius.lg,
-    borderWidth: 2,
-    borderColor: tokens.color.border,
-    paddingVertical: tokens.space.lg,
-    alignItems: 'center',
-    gap: 4,
-  },
-  statValue: { fontSize: tokens.font.body, fontWeight: '800', color: tokens.color.text },
-  statLabel: { fontSize: tokens.font.caption, color: tokens.color.textMuted, fontWeight: '600' },
   cta: { alignSelf: 'stretch', marginTop: tokens.space.lg },
   dossierCard: {
     alignSelf: 'stretch',
