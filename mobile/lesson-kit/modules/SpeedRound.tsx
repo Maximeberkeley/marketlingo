@@ -47,7 +47,7 @@ export function SpeedRound({ exercise, phase, onChange }: ExerciseProps<SpeedRou
     if (!finished) return;
     bar.stopAnimation();
     const pass = hits >= Math.ceil(exercise.rounds.length * 0.7);
-    onChange({ canCheck: true, isCorrect: pass });
+    onChange({ canCheck: true, isCorrect: pass, score: exercise.rounds.length ? hits / exercise.rounds.length : 1 });
   }, [finished, hits]);
 
   const round = exercise.rounds[index];

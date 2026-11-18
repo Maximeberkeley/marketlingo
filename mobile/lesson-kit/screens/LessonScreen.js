@@ -23,6 +23,7 @@ import { ChartRead } from "../modules/ChartRead";
 import { TheCall } from "../modules/TheCall";
 import { SayIt } from "../modules/SayIt";
 import { LessonComplete } from "./LessonComplete";
+import { creditXp, lessonOutcome } from "./lessonCredit";
 import { tokens } from "../theme/tokens";
 import { playSound } from "../../lib/sounds";
 import { getMarketWorld } from "../../data/marketWorlds";
@@ -74,6 +75,10 @@ function LessonScreen({
   const [phase, setPhase] = useState("answering");
   const [state, setState] = useState({ canCheck: false, isCorrect: false });
   const [correctCount, setCorrectCount] = useState(0);
+  const [answerXp, setAnswerXp] = useState(0);
+  const [attempts, setAttempts] = useState({});
+  const [outcomes, setOutcomes] = useState({});
+  const [retryNote, setRetryNote] = useState(null);
   const [gradedCount, setGradedCount] = useState(0);
   const [combo, setCombo] = useState(0);
   const [bestCombo, setBestCombo] = useState(0);
@@ -103,6 +108,10 @@ function LessonScreen({
     setPhase("answering");
     setState({ canCheck: false, isCorrect: false });
     setCorrectCount(0);
+    setAnswerXp(0);
+    setAttempts({});
+    setOutcomes({});
+    setRetryNote(null);
     setGradedCount(0);
     setCombo(0);
     setBestCombo(0);
@@ -198,6 +207,7 @@ function LessonScreen({
   const goToBeat = useCallback((target) => {
     const beat = queue[target];
     setIndex(target);
+    setRetryNote(null);
     setShowActions(false);
     const graded = beat && !isPassiveKind(beat.kind) ? results[beat.id] : void 0;
     if (graded !== void 0) {
@@ -235,20 +245,38 @@ function LessonScreen({
       return;
     }
     if (phase === "answering") {
-      if (!state.canCheck) return;
-      if (exercise) setResults((r) => ({ ...r, [exercise.id]: state.isCorrect }));
+      if (!state.canCheck || !exercise) return;
+      const outcome = lessonOutcome(exercise.kind, state, attempts[exercise.id] ?? 0);
+      if (outcome.kind === "retry") {
+        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning).catch(() => {
+        });
+        setAttempts((a) => ({ ...a, [exercise.id]: (a[exercise.id] ?? 0) + 1 }));
+        setRetryNote(outcome.note ?? outcome.title);
+        setState({ canCheck: false, isCorrect: false });
+        return;
+      }
+      setRetryNote(null);
+      const learnedIt = outcome.kind !== "missed";
+      setResults((r) => ({ ...r, [exercise.id]: learnedIt }));
+      setOutcomes((o) => ({ ...o, [exercise.id]: outcome }));
       if (index >= maxIndexReached) {
         setGradedCount((c) => c + 1);
-        if (state.isCorrect) {
+        if (learnedIt) {
           Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success).catch(() => {
           });
           playSound("correct").catch(() => {
           });
-          setCorrectCount((c) => c + 1);
-          const nextCombo = combo + 1;
-          setCombo(nextCombo);
-          setBestCombo((previous) => Math.max(previous, nextCombo));
-          firePop(`+${xpPerCorrect} XP`);
+          const xp = creditXp(xpPerCorrect, outcome.credit);
+          setCorrectCount((c) => c + outcome.credit);
+          setAnswerXp((x) => x + xp);
+          if (outcome.kind === "right") {
+            const nextCombo = combo + 1;
+            setCombo(nextCombo);
+            setBestCombo((previous) => Math.max(previous, nextCombo));
+          } else {
+            setCombo(0);
+          }
+          if (xp > 0) firePop(`+${xp} XP`);
         } else {
           Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error).catch(() => {
           });
@@ -267,7 +295,7 @@ function LessonScreen({
       return;
     }
     continueLesson();
-  }, [isInfo, phase, state, continueLesson, exercise, xpPerCorrect, firePop, combo, hearts, livesEnabled, index, maxIndexReached]);
+  }, [isInfo, phase, state, continueLesson, exercise, xpPerCorrect, firePop, combo, hearts, livesEnabled, index, maxIndexReached, attempts]);
   const retryMissed = useCallback(() => {
     setShowHeartsPrompt(false);
     setHearts(lesson.lives ?? MAX_HEARTS);
@@ -301,7 +329,8 @@ function LessonScreen({
       {
         correct: correctCount,
         total: gradedCount,
-        baseXp: correctCount * xpPerCorrect,
+        baseXp: answerXp,
+        toReview: missed.filter((e) => !/-retry\d+$/.test(e.id)).length,
         bestCombo,
         heartsLeft: livesEnabled ? hearts : void 0,
         timeSpentSeconds,
@@ -376,20 +405,23 @@ function LessonScreen({
         },
         style: [styles.beat, exercise.kind === "coldOpen" && styles.fullBleed, { opacity: combined && !combinedFits ? 0 : enter, transform: [{ translateY: enter.interpolate({ inputRange: [0, 1], outputRange: [12, 0] }) }] }]
       },
-      /* @__PURE__ */ React.createElement(RevealCorrectProvider, { value: revealCorrect.reveal }, exercise.kind === "sayIt" ? /* @__PURE__ */ React.createElement(SayIt, { key: exercise.id, exercise, marketId, stackId: stackId || lesson.id, onDone: continueLesson }) : renderExercise(exercise, phase, handleChange))
+      /* @__PURE__ */ React.createElement(RevealCorrectProvider, { value: revealCorrect.reveal }, exercise.kind === "sayIt" ? /* @__PURE__ */ React.createElement(SayIt, { key: exercise.id, exercise, marketId, stackId: stackId || lesson.id, onDone: continueLesson }) : /* @__PURE__ */ React.createElement(React.Fragment, { key: `${exercise.id}#${attempts[exercise.id] ?? 0}` }, renderExercise(exercise, phase, handleChange)))
     ),
     exercise.kind !== "coldOpen" && /* @__PURE__ */ React.createElement(View, { style: styles.lowerSpace })
   ), phase === "feedback" && !isInfo && /* @__PURE__ */ React.createElement(
     FeedbackFooter,
     {
       key: exercise.id,
-      isCorrect: state.isCorrect,
+      isCorrect: outcomes[exercise.id] ? outcomes[exercise.id].kind !== "missed" : state.isCorrect,
+      title: outcomes[exercise.id]?.title,
+      note: outcomes[exercise.id]?.note,
+      tone: outcomes[exercise.id]?.kind === "missed" ? "neutral" : void 0,
       explanation: feedback?.insight,
       correctAnswer: feedback?.answer,
       whyWrong: feedback?.whyWrong,
       review
     }
-  ), exercise.kind === "sayIt" ? /* @__PURE__ */ React.createElement(View, { style: { height: insets.bottom + tokens.space.lg } }) : /* @__PURE__ */ React.createElement(View, { style: [styles.footer, { paddingBottom: insets.bottom + (index > 0 ? tokens.space.xs : tokens.space.lg) }] }, /* @__PURE__ */ React.createElement(PrimaryButton, { label: buttonLabel, onPress: onAction, variant: buttonVariant }), index > 0 && /* @__PURE__ */ React.createElement(
+  ), exercise.kind === "sayIt" ? /* @__PURE__ */ React.createElement(View, { style: { height: insets.bottom + tokens.space.lg } }) : /* @__PURE__ */ React.createElement(View, { style: [styles.footer, { paddingBottom: insets.bottom + (index > 0 ? tokens.space.xs : tokens.space.lg) }] }, retryNote && phase === "answering" && /* @__PURE__ */ React.createElement(View, { style: styles.retryNote, accessibilityLiveRegion: "polite" }, /* @__PURE__ */ React.createElement(Text, { style: styles.retryTitle }, "Not yet"), /* @__PURE__ */ React.createElement(Text, { style: styles.retryText }, retryNote)), /* @__PURE__ */ React.createElement(PrimaryButton, { label: buttonLabel, onPress: onAction, variant: buttonVariant }), index > 0 && /* @__PURE__ */ React.createElement(
     TouchableOpacity,
     {
       onPress: goBack,
@@ -496,6 +528,15 @@ const styles = StyleSheet.create({
     fontWeight: "900",
     color: tokens.color.correctDark
   },
+  retryNote: {
+    marginBottom: tokens.space.sm,
+    paddingVertical: 10,
+    paddingHorizontal: 14,
+    borderRadius: 14,
+    backgroundColor: tokens.color.accentSoft
+  },
+  retryTitle: { fontSize: 15, fontWeight: "800", color: tokens.color.accentDark },
+  retryText: { fontSize: 14, lineHeight: 19, color: tokens.color.text, marginTop: 2 },
   footer: {
     paddingHorizontal: tokens.space.lg,
     paddingTop: tokens.space.md,

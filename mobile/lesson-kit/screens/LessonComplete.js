@@ -16,14 +16,10 @@ import { useUserProgress } from "../../hooks/useUserProgress";
 import { useDeliverable } from "../../hooks/useDeliverable";
 import { useAuth } from "../../hooks/useAuth";
 import { hasCalledToday } from "../../lib/leoCall";
-function formatTime(seconds) {
-  const m = Math.floor(seconds / 60);
-  const s = seconds % 60;
-  return m > 0 ? `${m} min ${s.toString().padStart(2, "0")}` : `${s} sec`;
-}
 function LessonComplete({
   correct,
   total,
+  toReview = 0,
   baseXp,
   bestCombo = 0,
   heartsLeft,
@@ -98,7 +94,7 @@ function LessonComplete({
     /* @__PURE__ */ React.createElement(Text, { style: styles.xpBig }, "+", totalXp, " XP"),
     total > 0 && /* @__PURE__ */ React.createElement(View, { style: styles.bonusList }, bonuses.map((b, i) => /* @__PURE__ */ React.createElement(View, { key: i, style: styles.bonusRow }, /* @__PURE__ */ React.createElement(MaterialCommunityIcons, { name: "flask", size: 14, color: tokens.color.accent }), /* @__PURE__ */ React.createElement(Text, { style: styles.bonusLabel }, b.label), /* @__PURE__ */ React.createElement(Text, { style: styles.bonusXp }, "+", b.xp)))),
     leoQuestions > 0 && /* @__PURE__ */ React.createElement(Text, { style: styles.leoLine }, "You asked Leo ", leoQuestions, " ", leoQuestions === 1 ? "thing" : "things", ". That's how it sticks."),
-    /* @__PURE__ */ React.createElement(View, { style: styles.stats }, total > 0 && /* @__PURE__ */ React.createElement(Stat, { label: "Accuracy", value: `${accuracy}%` }), total > 0 && /* @__PURE__ */ React.createElement(Stat, { label: "Correct", value: `${correct}/${total}` }), /* @__PURE__ */ React.createElement(Stat, { label: "Time", value: formatTime(timeSpentSeconds) })),
+    toReview > 0 && /* @__PURE__ */ React.createElement(Text, { style: styles.leoLine }, toReview === 1 ? "One question comes back tomorrow to make it stick." : `${toReview} questions come back tomorrow to make them stick.`),
     !dossier.loading && /* @__PURE__ */ React.createElement(
       TouchableOpacity,
       {
@@ -159,9 +155,6 @@ function LessonComplete({
     )
   );
 }
-function Stat({ label, value }) {
-  return /* @__PURE__ */ React.createElement(View, { style: styles.stat }, /* @__PURE__ */ React.createElement(Text, { style: styles.statValue }, value), /* @__PURE__ */ React.createElement(Text, { style: styles.statLabel }, label));
-}
 const styles = StyleSheet.create({
   leoHero: { width: 132, height: 132, alignSelf: "center", marginBottom: 8 },
   scroll: { flex: 1, backgroundColor: tokens.color.bg },
@@ -216,23 +209,6 @@ const styles = StyleSheet.create({
   },
   bonusLabel: { flex: 1, minWidth: 0, flexShrink: 1, fontSize: tokens.font.caption + 1, fontWeight: "700", color: tokens.color.textSecondary },
   bonusXp: { fontSize: tokens.font.caption + 1, fontWeight: "800", color: tokens.color.accent },
-  stats: {
-    flexDirection: "row",
-    gap: tokens.space.md,
-    marginTop: tokens.space.lg,
-    width: "100%"
-  },
-  stat: {
-    flex: 1,
-    borderRadius: tokens.radius.lg,
-    borderWidth: 2,
-    borderColor: tokens.color.border,
-    paddingVertical: tokens.space.lg,
-    alignItems: "center",
-    gap: 4
-  },
-  statValue: { fontSize: tokens.font.body, fontWeight: "800", color: tokens.color.text },
-  statLabel: { fontSize: tokens.font.caption, color: tokens.color.textMuted, fontWeight: "600" },
   cta: { alignSelf: "stretch", marginTop: tokens.space.lg },
   dossierCard: {
     alignSelf: "stretch",

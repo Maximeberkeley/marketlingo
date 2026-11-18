@@ -1,3 +1,4 @@
+import { closeness } from '../screens/lessonCredit';
 import React, { useEffect, useRef, useState } from 'react';
 import { View, Text, StyleSheet, PanResponder, Animated } from 'react-native';
 import { tokens } from '../theme/tokens';
@@ -40,7 +41,8 @@ export function NumberSense({ exercise, phase, onChange }: ExerciseProps<NumberS
     setRatio(0);
     setTouched(false);
     reveal.setValue(0);
-    onChange({ canCheck: true, isCorrect: Math.abs(exercise.min - exercise.value) / (exercise.max - exercise.min) <= (exercise.tolerance ?? 0.12) });
+    const startOff = Math.abs(exercise.min - exercise.value) / (exercise.max - exercise.min);
+    onChange({ canCheck: true, isCorrect: startOff <= (exercise.tolerance ?? 0.12), score: closeness(startOff, exercise.tolerance ?? 0.12) });
   }, [exercise.id]);
 
   useEffect(() => {
@@ -78,8 +80,8 @@ export function NumberSense({ exercise, phase, onChange }: ExerciseProps<NumberS
   ).current;
 
   useEffect(() => {
-    onChange({ canCheck: true, isCorrect: correct });
-  }, [ratio, touched, correct]);
+    onChange({ canCheck: true, isCorrect: correct, score: closeness(off, tolerance) });
+  }, [ratio, touched, correct, off, tolerance]);
 
   const targetRatio = (exercise.value - exercise.min) / (exercise.max - exercise.min);
 

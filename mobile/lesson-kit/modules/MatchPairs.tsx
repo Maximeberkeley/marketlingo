@@ -1,3 +1,4 @@
+import { stepScore } from '../screens/lessonCredit';
 import React, { useEffect, useMemo, useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Animated } from 'react-native';
 import { tokens } from '../theme/tokens';
@@ -48,7 +49,7 @@ export function MatchPairs({ exercise, phase, onChange }: ExerciseProps<MatchPai
       const next = [...matched, index];
       setMatched(next);
       setSelected(null);
-      if (next.length === exercise.pairs.length) onChange({ canCheck: true, isCorrect: misses <= MATCH_MISSES_ALLOWED });
+      if (next.length === exercise.pairs.length) onChange({ canCheck: true, isCorrect: misses <= MATCH_MISSES_ALLOWED, score: stepScore(exercise.pairs.length, misses), slips: misses });
       return;
     }
     tick(false);

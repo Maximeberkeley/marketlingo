@@ -26,6 +26,7 @@ import { SayIt } from '../modules/SayIt';
 import { ExerciseState } from '../exercises/types';
 
 import { LessonComplete } from './LessonComplete';
+import { creditXp, lessonOutcome, type Outcome } from './lessonCredit';
 import { tokens } from '../theme/tokens';
 import { Exercise, Lesson } from '../types';
 import { playSound } from '../../lib/sounds';
@@ -105,7 +106,13 @@ export function LessonScreen({
   const [maxIndexReached, setMaxIndexReached] = useState(0);
   const [phase, setPhase] = useState<'answering' | 'feedback'>('answering');
   const [state, setState] = useState<ExerciseState>({ canCheck: false, isCorrect: false });
+  /** Sum of per-question credit (0..1 each): partial and second-try answers count part. */
   const [correctCount, setCorrectCount] = useState(0);
+  const [answerXp, setAnswerXp] = useState(0);
+  /** Second-try state per question, and each graded question's outcome for its footer. */
+  const [attempts, setAttempts] = useState<Record<string, number>>({});
+  const [outcomes, setOutcomes] = useState<Record<string, Outcome>>({});
+  const [retryNote, setRetryNote] = useState<string | null>(null);
   const [gradedCount, setGradedCount] = useState(0);
   const [combo, setCombo] = useState(0);
   const [bestCombo, setBestCombo] = useState(0);
@@ -140,6 +147,10 @@ export function LessonScreen({
     setPhase('answering');
     setState({ canCheck: false, isCorrect: false });
     setCorrectCount(0);
+    setAnswerXp(0);
+    setAttempts({});
+    setOutcomes({});
+    setRetryNote(null);
     setGradedCount(0);
     setCombo(0);
     setBestCombo(0);
@@ -237,6 +248,7 @@ export function LessonScreen({
   const goToBeat = useCallback((target: number) => {
     const beat = queue[target];
     setIndex(target);
+    setRetryNote(null);
     setShowActions(false);
     const graded = beat && !isPassiveKind(beat.kind) ? results[beat.id] : undefined;
     if (graded !== undefined) {
@@ -276,18 +288,36 @@ export function LessonScreen({
       return;
     }
     if (phase === 'answering') {
-      if (!state.canCheck) return;
-      if (exercise) setResults(r => ({ ...r, [exercise.id]: state.isCorrect }));
+      if (!state.canCheck || !exercise) return;
+      const outcome = lessonOutcome(exercise.kind, state, attempts[exercise.id] ?? 0);
+      if (outcome.kind === 'retry') {
+        // Not revealed: the card resets for a second try.
+        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning).catch(() => {});
+        setAttempts(a => ({ ...a, [exercise.id]: (a[exercise.id] ?? 0) + 1 }));
+        setRetryNote(outcome.note ?? outcome.title);
+        setState({ canCheck: false, isCorrect: false });
+        return;
+      }
+      setRetryNote(null);
+      const learnedIt = outcome.kind !== 'missed';
+      setResults(r => ({ ...r, [exercise.id]: learnedIt }));
+      setOutcomes(o => ({ ...o, [exercise.id]: outcome }));
       if (index >= maxIndexReached) {
         setGradedCount(c => c + 1);
-        if (state.isCorrect) {
+        if (learnedIt) {
           Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success).catch(() => {});
           playSound('correct').catch(() => {});
-          setCorrectCount(c => c + 1);
-          const nextCombo = combo + 1;
-          setCombo(nextCombo);
-          setBestCombo(previous => Math.max(previous, nextCombo));
-          firePop(`+${xpPerCorrect} XP`);
+          const xp = creditXp(xpPerCorrect, outcome.credit);
+          setCorrectCount(c => c + outcome.credit);
+          setAnswerXp(x => x + xp);
+          if (outcome.kind === 'right') {
+            const nextCombo = combo + 1;
+            setCombo(nextCombo);
+            setBestCombo(previous => Math.max(previous, nextCombo));
+          } else {
+            setCombo(0);
+          }
+          if (xp > 0) firePop(`+${xp} XP`);
         } else {
           Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error).catch(() => {});
           playSound('wrong').catch(() => {});
@@ -304,7 +334,7 @@ export function LessonScreen({
       return;
     }
     continueLesson();
-  }, [isInfo, phase, state, continueLesson, exercise, xpPerCorrect, firePop, combo, hearts, livesEnabled, index, maxIndexReached]);
+  }, [isInfo, phase, state, continueLesson, exercise, xpPerCorrect, firePop, combo, hearts, livesEnabled, index, maxIndexReached, attempts]);
 
   const retryMissed = useCallback(() => {
     setShowHeartsPrompt(false);
@@ -343,7 +373,8 @@ export function LessonScreen({
       <LessonComplete
         correct={correctCount}
         total={gradedCount}
-        baseXp={correctCount * xpPerCorrect}
+        baseXp={answerXp}
+        toReview={missed.filter(e => !/-retry\d+$/.test(e.id)).length}
         bestCombo={bestCombo}
         heartsLeft={livesEnabled ? hearts : undefined}
         timeSpentSeconds={timeSpentSeconds}
@@ -417,7 +448,7 @@ export function LessonScreen({
           <RevealCorrectProvider value={revealCorrect.reveal}>
             {exercise.kind === 'sayIt'
               ? <SayIt key={exercise.id} exercise={exercise} marketId={marketId} stackId={stackId || lesson.id} onDone={continueLesson} />
-              : renderExercise(exercise, phase, handleChange)}
+              : <React.Fragment key={`${exercise.id}#${attempts[exercise.id] ?? 0}`}>{renderExercise(exercise, phase, handleChange)}</React.Fragment>}
           </RevealCorrectProvider>
         </Animated.View>
         {exercise.kind !== 'coldOpen' && <View style={styles.lowerSpace} />}
@@ -427,7 +458,10 @@ export function LessonScreen({
       {phase === 'feedback' && !isInfo && (
         <FeedbackFooter
           key={exercise.id}
-          isCorrect={state.isCorrect}
+          isCorrect={outcomes[exercise.id] ? outcomes[exercise.id].kind !== 'missed' : state.isCorrect}
+          title={outcomes[exercise.id]?.title}
+          note={outcomes[exercise.id]?.note}
+          tone={outcomes[exercise.id]?.kind === 'missed' ? 'neutral' : undefined}
           explanation={feedback?.insight}
           correctAnswer={feedback?.answer}
           whyWrong={feedback?.whyWrong}
@@ -439,6 +473,12 @@ export function LessonScreen({
         <View style={{ height: insets.bottom + tokens.space.lg }} />
       ) : (
         <View style={[styles.footer, { paddingBottom: insets.bottom + (index > 0 ? tokens.space.xs : tokens.space.lg) }]}>
+          {retryNote && phase === 'answering' && (
+            <View style={styles.retryNote} accessibilityLiveRegion="polite">
+              <Text style={styles.retryTitle}>Not yet</Text>
+              <Text style={styles.retryText}>{retryNote}</Text>
+            </View>
+          )}
           <PrimaryButton label={buttonLabel} onPress={onAction} variant={buttonVariant} />
           {index > 0 && (
             <TouchableOpacity
@@ -584,6 +624,15 @@ const styles = StyleSheet.create({
     fontWeight: '900',
     color: tokens.color.correctDark,
   },
+  retryNote: {
+    marginBottom: tokens.space.sm,
+    paddingVertical: 10,
+    paddingHorizontal: 14,
+    borderRadius: 14,
+    backgroundColor: tokens.color.accentSoft,
+  },
+  retryTitle: { fontSize: 15, fontWeight: '800', color: tokens.color.accentDark },
+  retryText: { fontSize: 14, lineHeight: 19, color: tokens.color.text, marginTop: 2 },
   footer: {
     paddingHorizontal: tokens.space.lg,
     paddingTop: tokens.space.md,

@@ -15,6 +15,11 @@ interface Props {
   whyWrong?: string;
   /** The lesson card behind this question, reopened from "Review this in the lesson". */
   review?: ReviewCard;
+  /** Lessons name the outcome kindly ("Got there", "Here's the answer"); the Arena and Deep Case keep the defaults. */
+  title?: string;
+  note?: string;
+  /** 'neutral' shows a missed answer in the accent colour instead of red. */
+  tone?: 'neutral';
 }
 
 /** Pull a trailing "Source: …" credit off the insight so it sits on its own line. */
@@ -25,21 +30,22 @@ export function splitSource(text: string): { insight: string; source: string } {
   return { insight: m[1].trim(), source: m[2].trim() };
 }
 
-export function FeedbackFooter({ isCorrect, explanation, correctAnswer, whyWrong, review }: Props) {
+export function FeedbackFooter({ isCorrect, explanation, correctAnswer, whyWrong, review, title, note, tone }: Props) {
   const [expanded, setExpanded] = useState(false);
   const [reviewing, setReviewing] = useState(false);
   const insets = useSafeAreaInsets();
-  const tint = isCorrect ? tokens.color.correctDark : tokens.color.incorrectDark;
+  const tint = isCorrect ? tokens.color.correctDark : tone === 'neutral' ? tokens.color.accentDark : tokens.color.incorrectDark;
   const { insight, source } = splitSource(explanation || '');
   const hasMore = Boolean(insight && insight.length > 150);
   return (
     <View style={styles.wrap}>
       <View style={styles.headRow}>
-        <Feather name={isCorrect ? 'check-circle' : 'x-circle'} size={20} color={tint} />
+        <Feather name={isCorrect ? 'check-circle' : tone === 'neutral' ? 'book-open' : 'x-circle'} size={20} color={tint} />
         <Text style={[styles.title, { color: tint }]}>
-          {isCorrect ? 'Correct' : 'Not quite'}
+          {title || (isCorrect ? 'Correct' : 'Not quite')}
         </Text>
       </View>
+      {!!note && <Text style={styles.why}>{note}</Text>}
       {!isCorrect && !!correctAnswer && (
         <ColorText text={`Answer: ${shortLabel(correctAnswer)}`} style={styles.body} maxSentences={1} maxLength={96} />
       )}

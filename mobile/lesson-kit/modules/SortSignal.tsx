@@ -1,3 +1,4 @@
+import { stepScore } from '../screens/lessonCredit';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { View, Text, StyleSheet, Animated, PanResponder, LayoutRectangle } from 'react-native';
 import { tokens } from '../theme/tokens';
@@ -55,7 +56,7 @@ export function SortSignal({ exercise, phase, onChange }: ExerciseProps<SortSign
   }, [exercise.id]);
 
   useEffect(() => {
-    if (done) onChange({ canCheck: true, isCorrect: wrongs === 0 });
+    if (done) onChange({ canCheck: true, isCorrect: wrongs === 0, score: stepScore(exercise.items.length, wrongs), slips: wrongs });
   }, [done, wrongs]);
 
   // The drop goes where the finger is, not where the card's centre happens to be: a wide card grabbed near

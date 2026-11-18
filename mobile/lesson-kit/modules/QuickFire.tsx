@@ -43,7 +43,7 @@ export function QuickFire({ exercise, phase, onChange }: ExerciseProps<QuickFire
     }, 420);
     if (next.length === total) {
       const misses = next.filter(ok => !ok).length;
-      onChange({ canCheck: true, isCorrect: misses <= QUICK_FIRE_MISSES_ALLOWED });
+      onChange({ canCheck: true, isCorrect: misses <= QUICK_FIRE_MISSES_ALLOWED, score: (total - misses) / total });
     }
   };
 
