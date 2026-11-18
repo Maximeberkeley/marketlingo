@@ -49,6 +49,7 @@ export type AnalyticsEvent =
   | 'say_it_shown'
   | 'say_it_saved'
   | 'say_it_skipped'
+  | 'apple_sign_in'
   | 'say_it_starter_used'
   | 'leo_clip_failed'
   | 'friend_streak_invited'
