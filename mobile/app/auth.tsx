@@ -22,6 +22,10 @@ import { LeoCharacter } from '../components/mascot/LeoCharacter';
 import { LeoAnimated } from '../components/mascot/LeoAnimated';
 import { normalizeDisplayName } from '../lib/displayName';
 import { applyPendingInvite } from '../lib/invites';
+import * as AppleAuthentication from 'expo-apple-authentication';
+import { appleSignInAvailable, saveAppleDisplayName, signInWithApple } from '../lib/appleAuth';
+import { isDark } from '../lib/theme';
+import { trackEvent } from '../lib/analytics';
 
 /** Leo waves hello once, then idles. This screen is replaced after sign-in. */
 function AuthLeo() {
@@ -39,6 +43,54 @@ export default function AuthScreen() {
   const [loading, setLoading] = useState(false);
   const [signupStep, setSignupStep] = useState<'name' | 'credentials'>('name');
   const [displayName, setDisplayName] = useState('');
+  const [appleReady, setAppleReady] = useState(false);
+
+  useEffect(() => { void appleSignInAvailable().then(setAppleReady); }, []);
+
+  /** One tap: Apple's sheet, then the same next step as email (new accounts attach their onboarding picks). */
+  const handleApple = async () => {
+    if (loading) return;
+    setLoading(true);
+    try {
+      const result = await signInWithApple();
+      if (result.status === 'canceled') return;
+      if (result.status === 'error') {
+        Alert.alert('Apple sign-in', result.error);
+        return;
+      }
+      trackEvent('apple_sign_in', { new_account: result.isNew });
+      void applyPendingInvite().catch(() => {});
+      if (!result.isNew) {
+        router.replace('/');
+        return;
+      }
+      const typed = displayName.trim() ? normalizeDisplayName(displayName) : null;
+      const name = typed || result.givenName;
+      if (name) await storage.setDisplayName(name);
+      await saveAppleDisplayName(result.userId, name).catch(() => {});
+      const industry = await storage.getIndustry().catch(() => null);
+      router.replace(industry ? ({ pathname: '/onboarding/familiarity', params: { resume: '1' } } as any) : '/onboarding');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const appleBlock = appleReady ? (
+    <View style={styles.appleBlock}>
+      <AppleAuthentication.AppleAuthenticationButton
+        buttonType={mode === 'login' ? AppleAuthentication.AppleAuthenticationButtonType.SIGN_IN : AppleAuthentication.AppleAuthenticationButtonType.CONTINUE}
+        buttonStyle={isDark ? AppleAuthentication.AppleAuthenticationButtonStyle.WHITE : AppleAuthentication.AppleAuthenticationButtonStyle.BLACK}
+        cornerRadius={12}
+        style={styles.appleButton}
+        onPress={() => void handleApple()}
+      />
+      <View style={styles.orRow}>
+        <View style={styles.orLine} />
+        <Text style={styles.orText}>{mode === 'signup' && signupStep === 'name' ? 'or pick a name' : 'or use email'}</Text>
+        <View style={styles.orLine} />
+      </View>
+    </View>
+  ) : null;
 
   useEffect(() => {
     if (params.mode === 'signup') setMode('signup');
@@ -111,6 +163,8 @@ export default function AuthScreen() {
           <Text style={styles.formTitle}>
             {mode === 'login' ? 'Welcome back' : signupStep === 'name' ? 'What should we call you?' : 'Create account'}
           </Text>
+
+          {appleBlock}
 
           {mode === 'signup' && signupStep === 'name' ? (
             <>
@@ -195,9 +249,6 @@ export default function AuthScreen() {
             </TouchableOpacity>
           )}
 
-          <Text style={styles.helperText}>
-            Social sign-in has been removed from the mobile app until the native OAuth flow is fully configured.
-          </Text>
             </>
           )}
 
@@ -231,6 +282,11 @@ const styles = StyleSheet.create({
   tagline: { fontSize: 14, color: COLORS.textMuted, marginTop: 4 },
   form: { flex: 1 },
   formTitle: { fontSize: 22, fontWeight: '700', color: COLORS.textPrimary, marginBottom: 24 },
+  appleBlock: { marginBottom: 8 },
+  appleButton: { width: '100%', height: 52 },
+  orRow: { flexDirection: 'row', alignItems: 'center', gap: 10, marginVertical: 18 },
+  orLine: { flex: 1, height: StyleSheet.hairlineWidth, backgroundColor: COLORS.border },
+  orText: { fontSize: 13, color: COLORS.textMuted },
   nameSubtitle: { fontSize: 15, lineHeight: 22, color: COLORS.textSecondary, marginTop: -14, marginBottom: 24 },
   inputGroup: { marginBottom: 16 },
   inputLabel: { fontSize: 13, fontWeight: '500', color: COLORS.textSecondary, marginBottom: 6 },
@@ -246,13 +302,6 @@ const styles = StyleSheet.create({
   disabledButton: { opacity: 0.4 },
   backToName: { alignItems: 'center', marginTop: 12 },
   backToNameText: { color: COLORS.accent, fontSize: 13, fontWeight: '600' },
-  helperText: {
-    fontSize: 12,
-    lineHeight: 18,
-    color: COLORS.textMuted,
-    textAlign: 'center',
-    marginTop: 16,
-  },
   switchMode: { alignItems: 'center', marginTop: 20 },
   switchText: { fontSize: 14, color: COLORS.textMuted },
   switchLink: { color: COLORS.accent, fontWeight: '600' },
