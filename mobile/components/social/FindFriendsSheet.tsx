@@ -196,7 +196,7 @@ export function FindFriendsSheet({ visible, searchPeople, friendIds, sentRequest
                 <Text style={[styles.label, { marginTop: 10 }]}>Your code</Text>
                 <View style={styles.mine}>
                   <Text style={styles.mineCode} selectable>{myCode || '······'}</Text>
-                  <TouchableOpacity style={styles.linkBtn} onPress={onShare} accessibilityLabel="Share invite link">
+                  <TouchableOpacity style={[styles.linkBtn, styles.mineShare]} onPress={onShare} accessibilityRole="button" accessibilityLabel="Share invite link">
                     <Feather name="share" size={15} color={COLORS.accent} />
                     <Text style={styles.linkBtnText}>Share invite link</Text>
                   </TouchableOpacity>
@@ -236,6 +236,7 @@ const styles = StyleSheet.create({
   divider: { height: 1, backgroundColor: COLORS.border, marginVertical: 6 },
   decline: { width: 40, height: 40, borderRadius: 20, borderWidth: 2, borderColor: COLORS.border, alignItems: 'center', justifyContent: 'center' },
   mine: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 10, paddingHorizontal: 14, height: 56, borderRadius: 16, backgroundColor: COLORS.bg1 },
+  mineShare: { alignSelf: 'center', flexShrink: 0 },
   mineCode: { fontSize: 20, fontWeight: '900', letterSpacing: 3, color: COLORS.textPrimary },
   sheet: { backgroundColor: COLORS.bg2, borderTopLeftRadius: 28, borderTopRightRadius: 28, paddingHorizontal: 18, paddingTop: 10, gap: 12, width: '100%', maxWidth: 680, alignSelf: 'center', height: '88%' },
   handle: { alignSelf: 'center', width: 40, height: 5, borderRadius: 3, backgroundColor: COLORS.border },
