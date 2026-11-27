@@ -27,7 +27,9 @@ const base: WeeklyCase = caseFromRow(rowOf(duo));
 
 describe('the cases map onto the tables the app reads', () => {
   it('has the two first weeks, one row and one grader key each', () => {
-    expect(weeks.map(w => w.weekly_case.week_start)).toEqual(['2026-11-16', '2026-11-23']);
+    // Later weeks are appended by the weekly author; the first two stay fixed.
+    expect(weeks.slice(0, 2).map(w => w.weekly_case.week_start)).toEqual(['2026-11-16', '2026-11-23']);
+    expect(new Set(weeks.map(w => w.weekly_case.week_start)).size).toBe(weeks.length);
     for (const w of weeks) expect(w.scoring.case_id).toBe(w.weekly_case.id);
   });
   it('reads every case into the phone shape: parts, exhibits as tables, a question, and no key', () => {
@@ -219,11 +221,11 @@ describe('the load-weekly-cases function', () => {
     expect(fn).toContain('0044_weekly_cases.sql');
   });
   it('inserts what is missing and writes nothing when everything is current', () => {
-    expect(planWeeks(weeks, [], [], before).map(p => p.action)).toEqual(['insert', 'insert']);
+    expect(planWeeks(weeks, [], [], before).map(p => p.action)).toEqual(weeks.map(() => 'insert'));
     const have = weeks.map(w => stored(w));
     const plans = planWeeks(weeks, have, weeks.map(storedKey), before);
-    expect(plans.map(p => p.action)).toEqual(['current', 'current']);
-    expect(planSummary(plans)).toEqual({ insert: 0, update: 0, current: 2, locked: 0 });
+    expect(plans.map(p => p.action)).toEqual(weeks.map(() => 'current'));
+    expect(planSummary(plans)).toEqual({ insert: 0, update: 0, current: weeks.length, locked: 0 });
   });
   it('compares by value, not key order or timestamp spelling', () => {
     const w = weeks[0];

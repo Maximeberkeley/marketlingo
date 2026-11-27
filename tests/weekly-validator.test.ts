@@ -19,18 +19,24 @@ const has = (errors: string[], text: string) => errors.some(e => e.includes(text
 
 describe('the two first weekly cases', () => {
   it('are on disk, on Mondays, in two different industries', () => {
-    expect(files.map(f => f.file)).toEqual(['2026-11-16-norway-grid-pause.json', '2026-11-23-duolingo-free-to-paid.json']);
-    expect(files.map(f => f.data.week_start)).toEqual(['2026-11-16', '2026-11-23']);
-    expect(new Set(files.map(f => f.data.market_id)).size).toBe(2);
+    // Later weeks are appended by the weekly author; the first two stay fixed.
+    const first = files.slice(0, 2);
+    expect(first.map(f => f.file)).toEqual(['2026-11-16-norway-grid-pause.json', '2026-11-23-duolingo-free-to-paid.json']);
+    expect(first.map(f => f.data.week_start)).toEqual(['2026-11-16', '2026-11-23']);
+    expect(new Set(first.map(f => f.data.market_id)).size).toBe(2);
+    for (const { data } of files) expect(new Date(`${data.week_start}T00:00:00Z`).getUTCDay(), data.week_start).toBe(1);
+    expect(new Set(files.map(f => f.data.week_start)).size).toBe(files.length);
   });
   it('validate without errors and fit about ten minutes', () => {
     for (const { file, data } of files) {
-      const r = validateCase(data, { today: TODAY, filename: file });
+      // A case written after TODAY is checked as of its own as_of date.
+      const today = data.as_of > TODAY ? data.as_of : TODAY;
+      const r = validateCase(data, { today, filename: file });
       expect(r.errors, file).toEqual([]);
       expect(r.stats.total, file).toBeGreaterThanOrEqual(8);
       expect(r.stats.total, file).toBeLessThanOrEqual(12);
     }
-    expect(validateSet(files, { today: TODAY }).setErrors).toEqual([]);
+    expect(validateSet(files, { today: files.map(f => f.data.as_of).concat(TODAY).sort().at(-1) }).setErrors).toEqual([]);
   });
   it('have every reported fact checked twice, with evidence', () => {
     for (const { data } of files) {
@@ -244,7 +250,7 @@ describe('the set of cases', () => {
     expect(run('2026-11-10')).toMatchObject({ target_week_start: '2026-11-16', already_written: true });
     expect(run('2026-11-13')).toMatchObject({ target_week_start: '2026-11-16', already_written: true });
     const next = run('2026-11-27');
-    expect(next).toMatchObject({ target_week_start: '2026-11-30', already_written: false });
+    expect(next).toMatchObject({ target_week_start: '2026-11-30', already_written: files.some(f => f.data.week_start === '2026-11-30') });
     expect(next.eligible_markets).not.toContain('ai');
     // On a Monday the target is the Monday after, never today.
     expect(run('2026-11-16').target_week_start).toBe('2026-11-23');

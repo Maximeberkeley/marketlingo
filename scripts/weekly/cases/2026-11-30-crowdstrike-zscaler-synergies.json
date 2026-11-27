@@ -1,0 +1,948 @@
+{
+  "schema_version": 1,
+  "week_start": "2026-11-30",
+  "market_id": "cybersecurity",
+  "kind": "original",
+  "presented_by": "MarketLingo",
+  "title": "CrowdStrike Buys Zscaler: Cut Costs or Chase Cross-Sell?",
+  "topic": "Sequencing cost savings and cross-selling after a $43.9 billion security software merger",
+  "hook": "CrowdStrike will pay $43.9 billion in stock for Zscaler and promises $500 million in savings and $1 billion in new revenue. Which promise comes first?",
+  "tension": "Cutting overlapping costs quickly delivers the $500 million target the company controls most, but the cuts can hit the same teams that must win $1 billion of cross-selling to 8,000 new customers.",
+  "as_of": "2026-11-27",
+  "stale_after": "2026-12-14",
+  "disclosure": "Educational case built from public company releases as of November 27, 2026. It is not investment advice, and the ratios in Exhibit 2 are our arithmetic, not figures the companies report.",
+  "brief": [
+    "On November 23, 2026, CrowdStrike agreed to buy Zscaler. CrowdStrike sells endpoint security on its Falcon platform: software that protects laptops, servers and cloud workloads. Zscaler runs a cloud network that checks traffic between users and applications under a \"zero trust\" model, where no user or device is trusted by default. The all-stock deal values Zscaler at about $43.9 billion. Zscaler shareholders get 1.135 CrowdStrike shares per share, an implied $260.41, about 34% above Zscaler's November 20, 2026 closing price.",
+    "The buyer is growing fast. In the quarter ended October 31, 2026, CrowdStrike's annual recurring revenue (ARR, the yearly value of subscriptions in force) grew 27% to $6.26 billion, including a record $419.2 million of net new ARR. Zscaler reported $3.9 billion of ARR for its latest fiscal quarter. CrowdStrike guided fiscal 2027 non-GAAP income from operations, a profit measure that leaves out stock pay and some other costs, of $1,540.9 million to $1,544.3 million. Its non-GAAP subscription gross margin was 82%.",
+    "CrowdStrike made two promises. Costs: $500 million a year of savings within 18 to 24 months after closing. Revenue: about $1 billion a year of extra revenue by the end of that period, building over the first 30 months. The company says about 8,000 Zscaler customers do not yet buy from CrowdStrike, and the two already share more than 2,000 customers and 16 product integrations.",
+    "CrowdStrike has not said where the savings will come from or how cross-selling will be organised. Both targets lean on the same people: the sales teams who know the customers and the engineers who connect the products. Zscaler's founder will keep running the Zscaler business and join CrowdStrike's board. The deal needs Zscaler shareholder and regulatory approval and is expected to close in the second half of CrowdStrike's fiscal 2028."
+  ],
+  "exhibits": [
+    {
+      "id": "terms",
+      "title": "Exhibit 1. Deal terms and the two companies",
+      "note": "ARR is for each company's latest reported quarter. Synergies are annual run-rates the buyer expects after closing.",
+      "columns": [
+        "Item",
+        "Figure"
+      ],
+      "rows": [
+        [
+          "Value placed on Zscaler",
+          "$43.9 billion"
+        ],
+        [
+          "Premium to November 20, 2026 close",
+          "34%"
+        ],
+        [
+          "CrowdStrike ARR (growth)",
+          "$6.26 billion (27%)"
+        ],
+        [
+          "Zscaler ARR",
+          "$3.9 billion"
+        ],
+        [
+          "CrowdStrike record quarterly net new ARR",
+          "$419.2 million"
+        ],
+        [
+          "Cost synergies, within 18 to 24 months",
+          "$500 million"
+        ],
+        [
+          "Revenue synergies, building over 30 months",
+          "$1 billion"
+        ],
+        [
+          "Zscaler customers not yet buying from CrowdStrike",
+          "8,000"
+        ]
+      ],
+      "source_ids": [
+        "deal",
+        "zsdeal",
+        "q3"
+      ]
+    },
+    {
+      "id": "ratios",
+      "title": "Exhibit 2. Sizing the two promises (our arithmetic)",
+      "note": "Each line divides or multiplies figures in Exhibit 1 or the brief. Gross profit applies CrowdStrike's own margin, which is an assumption.",
+      "columns": [
+        "Ratio",
+        "Value"
+      ],
+      "rows": [
+        [
+          "Deal value per dollar of Zscaler ARR",
+          "11.3x"
+        ],
+        [
+          "Zscaler share of combined ARR of $10.16 billion",
+          "38.4%"
+        ],
+        [
+          "Revenue synergies as a share of Zscaler ARR",
+          "25.6%"
+        ],
+        [
+          "Revenue synergies versus record quarterly net new ARR",
+          "2.4x"
+        ],
+        [
+          "Revenue synergies per Zscaler-only customer, if all came from them",
+          "$125,000"
+        ],
+        [
+          "Gross profit on revenue synergies at an 82% margin",
+          "$820 million"
+        ],
+        [
+          "Cost synergies versus low end of fiscal 2027 operating income guidance",
+          "32.4%"
+        ]
+      ],
+      "source_ids": [
+        "deal",
+        "q3"
+      ]
+    }
+  ],
+  "question": {
+    "text": "You lead integration planning at CrowdStrike for the two years after closing. When the cost target and the cross-selling target compete for the same people and budget, decide which one your plan protects first, and defend the call with the numbers."
+  },
+  "response": {
+    "parts": [
+      {
+        "id": "read",
+        "label": "Read the numbers",
+        "prompt": "What do the ratios in Exhibit 2 say about how much each promise matters to the deal, and which one is harder to hit?",
+        "max_words": 90,
+        "minutes": 2
+      },
+      {
+        "id": "call",
+        "label": "Your call",
+        "prompt": "Choose which target your plan protects first. Say where savings should come from, what you would leave untouched in the first year, and why.",
+        "max_words": 140,
+        "minutes": 2.5
+      },
+      {
+        "id": "losers",
+        "label": "Who loses",
+        "prompt": "Who pays for your choice (employees, customers or shareholders), and how would you limit the damage?",
+        "max_words": 90,
+        "minutes": 2
+      },
+      {
+        "id": "trigger",
+        "label": "When to switch",
+        "prompt": "What result, measured when, would make you change priorities?",
+        "max_words": 60,
+        "minutes": 1.5
+      }
+    ]
+  },
+  "rubric": [
+    {
+      "id": "reading",
+      "name": "Reading the data",
+      "weight": 25,
+      "part_ids": [
+        "read"
+      ],
+      "measures": "Whether the answer sizes both promises against the right base and judges which one is riskier.",
+      "excellent": "Compares the revenue target with Zscaler ARR and with record net new ARR, turns revenue into gross profit before comparing it with the cost target, and explains why revenue synergies depend on customers while cost synergies depend mostly on management.",
+      "weak": "Says $1 billion is bigger than $500 million and stops, or treats revenue and savings as the same kind of money."
+    },
+    {
+      "id": "call",
+      "name": "A clear, sequenced decision",
+      "weight": 30,
+      "part_ids": [
+        "call"
+      ],
+      "measures": "Whether one target is protected first and the plan says concretely where savings come from and what is ring-fenced.",
+      "excellent": "Commits to one priority, names which kinds of cost to take first and which teams to protect in year one, and links the choice to the numbers and to the price paid.",
+      "weak": "Says to do both equally, or picks one with no link to where the money comes from."
+    },
+    {
+      "id": "losers",
+      "name": "Who loses and how to limit it",
+      "weight": 20,
+      "part_ids": [
+        "losers"
+      ],
+      "measures": "Whether the answer names the real losers of its own plan and a credible way to reduce the harm.",
+      "excellent": "Names a specific group that loses (for example duplicate back-office staff, or shareholders waiting longer for margin, or Zscaler customers who use rival endpoint tools) and gives one concrete mitigation.",
+      "weak": "Claims nobody loses, or lists everyone without a mitigation."
+    },
+    {
+      "id": "trigger",
+      "name": "A measurable trigger",
+      "weight": 10,
+      "part_ids": [
+        "trigger"
+      ],
+      "measures": "Whether the answer sets a dated, numeric test that would change the plan.",
+      "excellent": "Gives a metric, a threshold and a date, such as revenue synergy run-rate against a straight-line path a year after closing.",
+      "weak": "Says the team will monitor progress, with no number or date."
+    },
+    {
+      "id": "numbers",
+      "name": "Use of numbers throughout",
+      "weight": 15,
+      "part_ids": [
+        "all"
+      ],
+      "measures": "Whether figures from the case support each claim across all parts, used accurately and without invented data.",
+      "excellent": "Uses at least three case figures correctly, labels ratios as estimates, and does not invent churn, overlap or headcount numbers the companies have not disclosed.",
+      "weak": "Uses no numbers, misreads a ratio, or invents a statistic."
+    }
+  ],
+  "model_answer": {
+    "summary": "Protect cross-selling first. Take savings from back office, duplicate infrastructure and tools, and ring-fence customer-facing sales and integration engineering for the first year. Switch to a cost-first plan if revenue synergies fall well behind a straight-line path.",
+    "parts": [
+      {
+        "part_id": "read",
+        "text": "The revenue promise is worth more but is harder. At CrowdStrike's 82% margin, $1 billion of revenue is roughly $820 million of gross profit, above the $500 million of savings. But it equals 25.6% of Zscaler's ARR and 2.4x CrowdStrike's best-ever quarter of net new ARR, and it depends on customers choosing to buy. Savings are mostly in management's control and already equal 32.4% of fiscal 2027 operating income guidance. At 11.3x Zscaler's ARR, the price only works if growth continues."
+      },
+      {
+        "part_id": "call",
+        "text": "Protect revenue. Zscaler is 38.4% of the combined $10.16 billion of ARR, so disrupting it is costly. Take savings first from duplicate offices, back-office systems, cloud infrastructure and overlapping marketing. Ring-fence account teams for the 8,000 Zscaler-only customers and the engineers behind the 16 integrations for the first year. Cut sales overlap only after accounts are mapped. Savings will arrive later than 24 months in this plan, but a lost customer costs both ARR and the cross-sell."
+      },
+      {
+        "part_id": "losers",
+        "text": "Back-office staff lose first, and shareholders wait longer for the full margin benefit. Zscaler customers who use rival endpoint tools may fear being pushed to switch. Limit it with clear, early severance and retention pay for key staff, and a public commitment that Zscaler keeps working with other endpoint products for a set period."
+      },
+      {
+        "part_id": "trigger",
+        "text": "A straight line to $1 billion over 30 months implies about $400 million of run-rate a year after closing. If cross-sell run-rate is well below that at the one-year review, or gross retention of Zscaler customers drops, accelerate the remaining cost cuts."
+      }
+    ],
+    "alternatives": [
+      {
+        "option": "Cost first: hit $500 million fast, then cross-sell",
+        "better_when": "CrowdStrike's own growth slows or its share price falls, so the all-stock price needs visible margin proof early, and customer overlap turns out larger than the release suggests."
+      },
+      {
+        "option": "Run Zscaler as a separate unit for a year, with no cuts",
+        "better_when": "Early signs show Zscaler customers leaving over lock-in fears, so keeping the brand and partners stable matters more than either synergy."
+      },
+      {
+        "option": "Bundle-led: one combined price for Falcon plus Zscaler from day one",
+        "better_when": "Shared customers already buy both and a bundle can speed cross-selling without new sales staff."
+      }
+    ],
+    "key_fact_ids": [
+      "revsyn",
+      "costsyn",
+      "rev_gp",
+      "rev_pct",
+      "rev_nn",
+      "cost_pct",
+      "zs_share",
+      "path12"
+    ]
+  },
+  "common_traps": [
+    {
+      "trap": "Comparing $1 billion of revenue with $500 million of savings directly",
+      "why": "Revenue carries costs; savings drop straight to profit. Turn revenue into gross profit first (about $820 million at an 82% margin) and remember that revenue depends on customers saying yes."
+    },
+    {
+      "trap": "Answering as an investor",
+      "why": "The question is about running the integration, not whether the price was fair or whether to buy either stock."
+    },
+    {
+      "trap": "Promising both targets in full and on time",
+      "why": "The case is about what gives when they collide for the same people. A plan with no priority and no trigger skips the trade-off."
+    },
+    {
+      "trap": "Inventing overlap, churn or headcount figures",
+      "why": "Neither company has disclosed where savings come from or how many staff overlap. Use the disclosed figures and say what you would need to learn."
+    }
+  ],
+  "sources": [
+    {
+      "id": "deal",
+      "title": "CrowdStrike to Acquire Zscaler (press release, Form 8-K Exhibit 99.1)",
+      "publisher": "U.S. Securities and Exchange Commission, filed by CrowdStrike Holdings, Inc.",
+      "url": "https://www.sec.gov/Archives/edgar/data/0001535527/000110465926130785/tm2630454d1_ex99-1.htm",
+      "tier": "primary",
+      "published": "2026-11-23",
+      "accessed": "2026-11-27"
+    },
+    {
+      "id": "zsdeal",
+      "title": "CrowdStrike to Acquire Zscaler, Bringing Network Security and Zero Trust to the Falcon Platform",
+      "publisher": "Zscaler, Inc.",
+      "url": "https://www.zscaler.com/press/crowdstrike-acquire-zscaler-bringing-network-security-and-zero-trust-falcon-platform",
+      "tier": "primary",
+      "published": "2026-11-23",
+      "accessed": "2026-11-27"
+    },
+    {
+      "id": "q3",
+      "title": "CrowdStrike third quarter fiscal 2027 results (Form 8-K Exhibit 99.1)",
+      "publisher": "U.S. Securities and Exchange Commission, filed by CrowdStrike Holdings, Inc.",
+      "url": "https://www.sec.gov/Archives/edgar/data/0001535527/000153552726000035/crwd-20261123xex991.htm",
+      "tier": "primary",
+      "published": "2026-11-23",
+      "accessed": "2026-11-27"
+    }
+  ],
+  "facts": [
+    {
+      "id": "ev",
+      "label": "Value the deal places on Zscaler (enterprise value)",
+      "kind": "reported",
+      "display": "$43.9 billion",
+      "value": 43.9,
+      "as_of": "2026-11-23",
+      "sources": [
+        "deal",
+        "zsdeal"
+      ],
+      "verified": [
+        {
+          "pass": 1,
+          "source_id": "deal",
+          "method": "quote",
+          "checked_on": "2026-11-27",
+          "evidence": "valued at an enterprise value of approximately $43.9 billion"
+        },
+        {
+          "pass": 2,
+          "source_id": "zsdeal",
+          "method": "second_source",
+          "checked_on": "2026-11-27",
+          "evidence": "all-stock transaction valued at an enterprise value of approximately $43.9 billion"
+        }
+      ]
+    },
+    {
+      "id": "ratio",
+      "label": "CrowdStrike shares per Zscaler share",
+      "kind": "reported",
+      "display": "1.135",
+      "value": 1.135,
+      "as_of": "2026-11-23",
+      "sources": [
+        "deal",
+        "zsdeal"
+      ],
+      "verified": [
+        {
+          "pass": 1,
+          "source_id": "deal",
+          "method": "quote",
+          "checked_on": "2026-11-27",
+          "evidence": "Zscaler shareholders will receive 1.135 shares of CrowdStrike common stock for each share of Zscaler common stock they own."
+        },
+        {
+          "pass": 2,
+          "source_id": "zsdeal",
+          "method": "second_source",
+          "checked_on": "2026-11-27",
+          "evidence": "Zscaler shareholders will receive 1.135 shares of CrowdStrike common stock for each share of Zscaler common stock they own."
+        }
+      ]
+    },
+    {
+      "id": "pershare",
+      "label": "Implied value per Zscaler share",
+      "kind": "reported",
+      "display": "$260.41",
+      "value": 260.41,
+      "as_of": "2026-11-20",
+      "sources": [
+        "deal",
+        "zsdeal"
+      ],
+      "verified": [
+        {
+          "pass": 1,
+          "source_id": "deal",
+          "method": "quote",
+          "checked_on": "2026-11-27",
+          "evidence": "an implied value of approximately $260.41 per Zscaler share"
+        },
+        {
+          "pass": 2,
+          "source_id": "zsdeal",
+          "method": "second_source",
+          "checked_on": "2026-11-27",
+          "evidence": "an implied value of approximately $260.41 per Zscaler share"
+        }
+      ]
+    },
+    {
+      "id": "premium",
+      "label": "Premium to Zscaler's November 20, 2026 closing price",
+      "kind": "reported",
+      "display": "34%",
+      "value": 34,
+      "as_of": "2026-11-20",
+      "sources": [
+        "deal",
+        "zsdeal"
+      ],
+      "verified": [
+        {
+          "pass": 1,
+          "source_id": "deal",
+          "method": "quote",
+          "checked_on": "2026-11-27",
+          "evidence": "This represents a premium of approximately 34% to Zscaler's closing share price as of November 20, 2026."
+        },
+        {
+          "pass": 2,
+          "source_id": "zsdeal",
+          "method": "second_source",
+          "checked_on": "2026-11-27",
+          "evidence": "a premium of approximately 34% to Zscaler's closing share price as of November 20, 2026."
+        }
+      ]
+    },
+    {
+      "id": "costsyn",
+      "label": "Annualized run-rate cost synergies promised",
+      "kind": "reported",
+      "display": "$500 million",
+      "value": 500,
+      "as_of": "2026-11-23",
+      "sources": [
+        "deal",
+        "zsdeal"
+      ],
+      "verified": [
+        {
+          "pass": 1,
+          "source_id": "deal",
+          "method": "quote",
+          "checked_on": "2026-11-27",
+          "evidence": "$500 million in annualized run-rate cost synergies within 18 to 24 months following the close"
+        },
+        {
+          "pass": 2,
+          "source_id": "zsdeal",
+          "method": "second_source",
+          "checked_on": "2026-11-27",
+          "evidence": "expects to achieve $500 million in annualized run-rate cost synergies within 18 to 24 months"
+        }
+      ]
+    },
+    {
+      "id": "synwin",
+      "label": "Months after closing to reach the cost synergies",
+      "kind": "reported",
+      "display": "18 to 24 months",
+      "value": 24,
+      "as_of": "2026-11-23",
+      "sources": [
+        "deal"
+      ],
+      "verified": [
+        {
+          "pass": 1,
+          "source_id": "deal",
+          "method": "quote",
+          "checked_on": "2026-11-27",
+          "evidence": "cost synergies within 18 to 24 months following the close"
+        },
+        {
+          "pass": 2,
+          "source_id": "deal",
+          "method": "verbatim_refetch",
+          "checked_on": "2026-11-27",
+          "evidence": "cost synergies within 18 to 24 months following the close"
+        }
+      ]
+    },
+    {
+      "id": "revsyn",
+      "label": "Annualized run-rate revenue synergies promised",
+      "kind": "reported",
+      "display": "$1 billion",
+      "value": 1,
+      "as_of": "2026-11-23",
+      "sources": [
+        "deal",
+        "zsdeal"
+      ],
+      "verified": [
+        {
+          "pass": 1,
+          "source_id": "deal",
+          "method": "quote",
+          "checked_on": "2026-11-27",
+          "evidence": "reaching approximately $1 billion in annualized run-rate revenue synergies by the end of that period"
+        },
+        {
+          "pass": 2,
+          "source_id": "zsdeal",
+          "method": "second_source",
+          "checked_on": "2026-11-27",
+          "evidence": "reaching approximately $1 billion in annualized run-rate revenue synergies by the end of that period"
+        }
+      ]
+    },
+    {
+      "id": "revwin",
+      "label": "Period over which revenue synergies build",
+      "kind": "reported",
+      "display": "30 months",
+      "value": 30,
+      "as_of": "2026-11-23",
+      "sources": [
+        "deal",
+        "zsdeal"
+      ],
+      "verified": [
+        {
+          "pass": 1,
+          "source_id": "deal",
+          "method": "quote",
+          "checked_on": "2026-11-27",
+          "evidence": "CrowdStrike expects revenue synergies to build progressively over the first 30 months following close"
+        },
+        {
+          "pass": 2,
+          "source_id": "zsdeal",
+          "method": "second_source",
+          "checked_on": "2026-11-27",
+          "evidence": "expects revenue synergies to build progressively over the first 30 months following close"
+        }
+      ]
+    },
+    {
+      "id": "zs_arr",
+      "label": "Zscaler ARR, latest reported fiscal quarter",
+      "kind": "reported",
+      "display": "$3.9 billion",
+      "value": 3.9,
+      "as_of": "2026-11-23",
+      "sources": [
+        "deal",
+        "zsdeal"
+      ],
+      "verified": [
+        {
+          "pass": 1,
+          "source_id": "deal",
+          "method": "quote",
+          "checked_on": "2026-11-27",
+          "evidence": "Zscaler reported $3.9 billion of ARR as of its recently completed fiscal quarter."
+        },
+        {
+          "pass": 2,
+          "source_id": "zsdeal",
+          "method": "second_source",
+          "checked_on": "2026-11-27",
+          "evidence": "Zscaler reported $3.9 billion of ARR as of its recently completed fiscal quarter."
+        }
+      ]
+    },
+    {
+      "id": "zsonly",
+      "label": "Zscaler customers that are not yet CrowdStrike customers",
+      "kind": "reported",
+      "display": "8,000",
+      "value": 8000,
+      "as_of": "2026-11-23",
+      "sources": [
+        "deal",
+        "zsdeal"
+      ],
+      "verified": [
+        {
+          "pass": 1,
+          "source_id": "deal",
+          "method": "quote",
+          "checked_on": "2026-11-27",
+          "evidence": "Approximately 8,000 Zscaler customers are not yet CrowdStrike customers."
+        },
+        {
+          "pass": 2,
+          "source_id": "zsdeal",
+          "method": "second_source",
+          "checked_on": "2026-11-27",
+          "evidence": "Approximately 8,000 Zscaler customers are not yet CrowdStrike customers."
+        }
+      ]
+    },
+    {
+      "id": "shared",
+      "label": "Customers the two companies already share (more than)",
+      "kind": "reported",
+      "display": "2,000",
+      "value": 2000,
+      "as_of": "2026-11-23",
+      "sources": [
+        "deal",
+        "zsdeal"
+      ],
+      "verified": [
+        {
+          "pass": 1,
+          "source_id": "deal",
+          "method": "quote",
+          "checked_on": "2026-11-27",
+          "evidence": "more than 2,000 shared customers and 16 integrations"
+        },
+        {
+          "pass": 2,
+          "source_id": "zsdeal",
+          "method": "second_source",
+          "checked_on": "2026-11-27",
+          "evidence": "spanning more than 2,000 shared customers and 16 integrations"
+        }
+      ]
+    },
+    {
+      "id": "integ",
+      "label": "Existing integrations between the two products",
+      "kind": "reported",
+      "display": "16",
+      "value": 16,
+      "as_of": "2026-11-23",
+      "sources": [
+        "deal",
+        "zsdeal"
+      ],
+      "verified": [
+        {
+          "pass": 1,
+          "source_id": "deal",
+          "method": "quote",
+          "checked_on": "2026-11-27",
+          "evidence": "more than 2,000 shared customers and 16 integrations"
+        },
+        {
+          "pass": 2,
+          "source_id": "zsdeal",
+          "method": "second_source",
+          "checked_on": "2026-11-27",
+          "evidence": "spanning more than 2,000 shared customers and 16 integrations"
+        }
+      ]
+    },
+    {
+      "id": "crwd_arr",
+      "label": "CrowdStrike ending ARR, October 31, 2026",
+      "kind": "reported",
+      "display": "$6.26 billion",
+      "value": 6.26,
+      "as_of": "2026-10-31",
+      "sources": [
+        "q3"
+      ],
+      "verified": [
+        {
+          "pass": 1,
+          "source_id": "q3",
+          "method": "quote",
+          "checked_on": "2026-11-27",
+          "evidence": "grew 27% year-over-year to $6.26 billion as of October 31, 2026"
+        },
+        {
+          "pass": 2,
+          "source_id": "q3",
+          "method": "verbatim_refetch",
+          "checked_on": "2026-11-27",
+          "evidence": "Ending ARR reaches $6.26 billion"
+        }
+      ]
+    },
+    {
+      "id": "crwd_arr_g",
+      "label": "CrowdStrike ARR growth, year over year",
+      "kind": "reported",
+      "display": "27%",
+      "value": 27,
+      "as_of": "2026-10-31",
+      "sources": [
+        "q3"
+      ],
+      "verified": [
+        {
+          "pass": 1,
+          "source_id": "q3",
+          "method": "quote",
+          "checked_on": "2026-11-27",
+          "evidence": "Ending ARR reaches $6.26 billion, accelerates growth for the fifth consecutive quarter to 27% year-over-year"
+        },
+        {
+          "pass": 2,
+          "source_id": "q3",
+          "method": "verbatim_refetch",
+          "checked_on": "2026-11-27",
+          "evidence": "accelerates growth for the fifth consecutive quarter to 27% year-over-year"
+        }
+      ]
+    },
+    {
+      "id": "nnarr",
+      "label": "CrowdStrike net new ARR in the quarter ended October 31, 2026",
+      "kind": "reported",
+      "display": "$419.2 million",
+      "value": 419.2,
+      "as_of": "2026-10-31",
+      "sources": [
+        "q3"
+      ],
+      "verified": [
+        {
+          "pass": 1,
+          "source_id": "q3",
+          "method": "quote",
+          "checked_on": "2026-11-27",
+          "evidence": "of which $419.2 million was net new ARR added in the quarter."
+        },
+        {
+          "pass": 2,
+          "source_id": "q3",
+          "method": "verbatim_refetch",
+          "checked_on": "2026-11-27",
+          "evidence": "of which $419.2 million was net new ARR added in the quarter."
+        }
+      ]
+    },
+    {
+      "id": "oi_low",
+      "label": "Low end of CrowdStrike fiscal 2027 non-GAAP income from operations guidance",
+      "kind": "reported",
+      "display": "$1,540.9 million",
+      "value": 1540.9,
+      "as_of": "2027-01-31",
+      "sources": [
+        "q3"
+      ],
+      "verified": [
+        {
+          "pass": 1,
+          "source_id": "q3",
+          "method": "table_row",
+          "checked_on": "2026-11-27",
+          "evidence": "Non-GAAP income from operations | $1,540.9 - $1,544.3 million (Full Year FY27 Guidance)"
+        },
+        {
+          "pass": 2,
+          "source_id": "q3",
+          "method": "verbatim_refetch",
+          "checked_on": "2026-11-27",
+          "evidence": "Non-GAAP income from operations | $438.1 - $441.5 million | $1,540.9 - $1,544.3 million (second range is full-year FY27)"
+        }
+      ]
+    },
+    {
+      "id": "oi_high",
+      "label": "High end of CrowdStrike fiscal 2027 non-GAAP income from operations guidance",
+      "kind": "reported",
+      "display": "$1,544.3 million",
+      "value": 1544.3,
+      "as_of": "2027-01-31",
+      "sources": [
+        "q3"
+      ],
+      "verified": [
+        {
+          "pass": 1,
+          "source_id": "q3",
+          "method": "table_row",
+          "checked_on": "2026-11-27",
+          "evidence": "Non-GAAP income from operations | $1,540.9 - $1,544.3 million (Full Year FY27 Guidance)"
+        },
+        {
+          "pass": 2,
+          "source_id": "q3",
+          "method": "verbatim_refetch",
+          "checked_on": "2026-11-27",
+          "evidence": "Non-GAAP income from operations | $438.1 - $441.5 million | $1,540.9 - $1,544.3 million (second range is full-year FY27)"
+        }
+      ]
+    },
+    {
+      "id": "gm",
+      "label": "CrowdStrike non-GAAP subscription gross margin, quarter ended October 31, 2026",
+      "kind": "reported",
+      "display": "82%",
+      "value": 82,
+      "as_of": "2026-10-31",
+      "sources": [
+        "q3"
+      ],
+      "verified": [
+        {
+          "pass": 1,
+          "source_id": "q3",
+          "method": "quote",
+          "checked_on": "2026-11-27",
+          "evidence": "Non-GAAP subscription gross margin was 82%, compared to 81%"
+        },
+        {
+          "pass": 2,
+          "source_id": "q3",
+          "method": "verbatim_refetch",
+          "checked_on": "2026-11-27",
+          "evidence": "Non-GAAP subscription gross margin was 82%, compared to 81% in the third quarter of fiscal 2026."
+        }
+      ]
+    },
+    {
+      "id": "mult",
+      "label": "Deal value divided by Zscaler ARR (our arithmetic)",
+      "kind": "derived",
+      "display": "11.3x",
+      "value": 11.3,
+      "formula": "ev / zs_arr",
+      "scale": 1,
+      "inputs": [
+        "ev",
+        "zs_arr"
+      ],
+      "decimals": 1,
+      "as_of": "2026-11-23"
+    },
+    {
+      "id": "combined",
+      "label": "CrowdStrike plus Zscaler ARR (our arithmetic)",
+      "kind": "derived",
+      "display": "$10.16 billion",
+      "value": 10.16,
+      "formula": "crwd_arr + zs_arr",
+      "scale": 1,
+      "inputs": [
+        "crwd_arr",
+        "zs_arr"
+      ],
+      "decimals": 2,
+      "as_of": "2026-11-23"
+    },
+    {
+      "id": "zs_share",
+      "label": "Zscaler share of combined ARR (our arithmetic)",
+      "kind": "derived",
+      "display": "38.4%",
+      "value": 38.4,
+      "formula": "zs_arr / (zs_arr + crwd_arr)",
+      "scale": 100,
+      "inputs": [
+        "zs_arr",
+        "crwd_arr"
+      ],
+      "decimals": 1,
+      "as_of": "2026-11-23"
+    },
+    {
+      "id": "rev_pct",
+      "label": "Revenue synergies as a share of Zscaler ARR (our arithmetic)",
+      "kind": "derived",
+      "display": "25.6%",
+      "value": 25.6,
+      "formula": "revsyn / zs_arr",
+      "scale": 100,
+      "inputs": [
+        "revsyn",
+        "zs_arr"
+      ],
+      "decimals": 1,
+      "as_of": "2026-11-23"
+    },
+    {
+      "id": "rev_nn",
+      "label": "Revenue synergies divided by CrowdStrike's record quarterly net new ARR (our arithmetic)",
+      "kind": "derived",
+      "display": "2.4x",
+      "value": 2.4,
+      "formula": "revsyn * 1000 / nnarr",
+      "scale": 1,
+      "inputs": [
+        "revsyn",
+        "nnarr"
+      ],
+      "decimals": 1,
+      "as_of": "2026-11-23"
+    },
+    {
+      "id": "cost_pct",
+      "label": "Cost synergies as a share of low-end fiscal 2027 non-GAAP operating income guidance (our arithmetic)",
+      "kind": "derived",
+      "display": "32.4%",
+      "value": 32.4,
+      "formula": "costsyn / oi_low",
+      "scale": 100,
+      "inputs": [
+        "costsyn",
+        "oi_low"
+      ],
+      "decimals": 1,
+      "as_of": "2026-11-23"
+    },
+    {
+      "id": "rev_gp",
+      "label": "Revenue synergies times CrowdStrike's 82% subscription gross margin, in $ millions (our arithmetic)",
+      "kind": "derived",
+      "display": "$820 million",
+      "value": 820,
+      "formula": "revsyn * 1000 * gm / 100",
+      "scale": 1,
+      "inputs": [
+        "revsyn",
+        "gm"
+      ],
+      "decimals": 0,
+      "as_of": "2026-11-23"
+    },
+    {
+      "id": "per_cust",
+      "label": "Revenue synergies per Zscaler-only customer, if all came from them (our arithmetic)",
+      "kind": "derived",
+      "display": "$125,000",
+      "value": 125000,
+      "formula": "revsyn * 1000000000 / zsonly",
+      "scale": 1,
+      "inputs": [
+        "revsyn",
+        "zsonly"
+      ],
+      "decimals": 0,
+      "as_of": "2026-11-23"
+    },
+    {
+      "id": "path12",
+      "label": "Straight-line revenue synergy run-rate one year after closing, in $ millions (our arithmetic)",
+      "kind": "derived",
+      "display": "$400 million",
+      "value": 400,
+      "formula": "revsyn * 1000 / revwin * 12",
+      "scale": 1,
+      "inputs": [
+        "revsyn",
+        "revwin"
+      ],
+      "decimals": 0,
+      "as_of": "2026-11-23"
+    }
+  ],
+  "time_sensitive": [
+    {
+      "claim": "The deal still needs Zscaler shareholder and regulatory approval and is expected to close in the second half of CrowdStrike's fiscal 2028 (per the November 23, 2026 release).",
+      "as_of": "2026-11-27",
+      "check_again_by": "2026-12-07"
+    },
+    {
+      "claim": "Zscaler ARR of $3.9 billion is for its latest reported fiscal quarter; Zscaler's next quarterly report could update it.",
+      "as_of": "2026-11-27",
+      "check_again_by": "2026-12-07"
+    },
+    {
+      "claim": "CrowdStrike's fiscal 2027 guidance and synergy targets as of November 23, 2026.",
+      "as_of": "2026-11-27",
+      "check_again_by": "2026-12-14"
+    }
+  ]
+}
